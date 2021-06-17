@@ -1,0 +1,151 @@
+
+html {
+  /* font-family: "Montserrat", sans-serif;  */
+}
+
+body {
+  /* min-width: 1000px; */
+}
+
+#root {
+  position: relative;
+  /*
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  */
+}
+
+$error-red: #ff8389;
+
+svg.success_icon {
+  fill: green;
+}
+
+svg.warning_icon {
+  fill: yellow;
+}
+
+svg.danger_icon {
+  fill: $error-red;
+}
+
+.bx--toast-notification {
+  bottom: -24px;
+  position: absolute;
+  right: 0px;
+
+  .bx--toast-notification__details {
+    margin-top: 8px;
+    margin-bottom: 8px;
+
+    .bx--toast-notification__title {
+      margin-top: 0px;
+    }
+
+    .bx--toast-notification__subtitle {
+      margin-bottom: 0px;
+    }
+  }
+}
+
+.error-message {
+  color: $error-red;
+  font-size: 12px;
+}
+
+.bx--header {
+  .metamask-connect-container {
+    .metamask-connect-button {
+      height: 22px;
+      width: 22px;
+    }
+
+    .connect-status-indicator {
+      background-color: $error-red;
+      border-radius: 50%;
+      bottom: 5px;
+      height: 8px;
+      position: absolute;
+      right: 5px;
+      width: 8px;
+
+      &.connected {
+        background-color: green;
+      }
+
+      &.connecting {
+        background-color: yellow;
+      }
+    }
+  }
+}
+
+
+.lock-liquidity-tile {
+  .input-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    position: relative;
+
+    .bx--form-item {
+      flex-basis: 45%;
+    }
+
+    .bx--dropdown__wrapper {
+      flex-basis: 55%;
+    }
+
+    .token-display {
+      border-bottom-color: #6f6f6f;
+      border-bottom-style: solid;
+      border-bottom-width: 1px;
+      width: 55%;
+
+      &.bx--dropdown {
+        bottom: 0px;
+        position: absolute;
+      }
+        
+      .bx--dropdown__wrapper {
+        align-items: end;
+        height: 100%;
+      }
+
+      .bx--list-box__field {
+        margin: 0px;
+      }
+
+      &.token-display-text {
+        display: flex;
+        align-items: center;
+        height: 2.5rem;
+        padding-left: 16px;
+      }
+    }
+  }
+
+  .toggle-button {
+    align-self: center;
+    margin: 1rem;
+  }
+
+  button {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.position-list-container {
+  margin-top: 2rem;
+}
+
+.add-liquidity-button {
+  float: right;
+}
+
+.add-liquidity-container, .create-position-container, .position-details-container, .remove-liquidity-container {
+  display: flex;
+  justify-content: center;
+}
