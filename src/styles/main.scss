@@ -77,6 +77,10 @@ svg.danger_icon {
       &.connecting {
         background-color: yellow;
       }
+
+      &.disconnected {
+        background-color: red;
+      }
     }
   }
 }
@@ -107,7 +111,7 @@ svg.danger_icon {
         bottom: 0px;
         position: absolute;
       }
-        
+
       .bx--dropdown__wrapper {
         align-items: end;
         height: 100%;
