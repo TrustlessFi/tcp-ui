@@ -1,20 +1,19 @@
-import React, { Component, useEffect } from "react";
+import React, { useEffect } from "react";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { ReactComponent as MetamaskLogo } from "../../img/metamask.svg";
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
-import { chainIDUpdated } from '../../slices/chainID'
-
+import { providerFound } from '../../slices/provider'
+import { ethers } from 'ethers'
 
 const MetamaskConnectButton = () => {
   const dispatch = useAppDispatch()
 
-  const chainChanged = (chainId: number) => {
+  const chainChanged = (chainID: number) => {
     // also refetch some of the accounts if the chain has changed from something valid to something valid
     // can probalby combine some logic with wallet connected
-    console.log('chainChanged', {chainId})
 
-    dispatch(chainIDUpdated(chainId))
+    dispatch(providerFound({chainID, provider: new ethers.providers.Web3Provider(window.ethereum)}))
   }
 
   const connectWallet = async () => {
@@ -48,7 +47,6 @@ const MetamaskConnectButton = () => {
     // TODO if new account is different than the current account, and the current account isn't null
     // then clear all of the slices that depend on the user data
     let account = accounts && accounts[0]
-    console.log('walletConnected', {accounts, account, isNull: account == null})
     if (account == null) return
 
     dispatch(connected(account))

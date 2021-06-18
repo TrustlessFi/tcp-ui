@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainID } from '../chainID'
-import { BigNumber } from 'ethers';
+import { ProviderState } from '../provider'
+import { BigNumber, ethers } from 'ethers';
 import { sliceState, nullState } from '../'
 
 import { Accounting } from "../../utils/typechain/Accounting";
@@ -19,12 +19,12 @@ export interface SystemDebtInfoState extends sliceState {
 
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
-  async (chainID: ChainID) => await fetchSystemDebtInfo(chainID)
+  async (provider: ProviderState) => await fetchSystemDebtInfo(provider)
 )
 
-export function fetchSystemDebtInfo(chainID: ChainID) {
+export function fetchSystemDebtInfo(provider: ProviderState) {
   return new Promise<systemDebtInfo>(async () => {
-    const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting
+    const accounting = await getProtocolContract(provider.chainID!, ProtocolContract.Accounting, provider.provider!) as Accounting
     return await accounting.getSystemDebtInfo()
   })
 }
