@@ -1,10 +1,9 @@
 import { Position } from './'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { systemDebtInfo, getSystemDebtInfo } from '../systemDebt'
+import { SystemDebtInfoState, getSystemDebtInfo } from '../systemDebt'
 import { ChainIDState } from '../chainID'
-import { getMarketInfo } from '../market'
 import { BigNumber } from "ethers"
-import { marketInfo } from "../market"
+import { MarketState, getMarketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { PositionMap } from './'
 import { AppDispatch } from '../../app/store'
@@ -16,8 +15,8 @@ export interface fetchPositionsArgs {
   dispatch: AppDispatch,
   chainIDState: ChainIDState,
   userAddress: string | null,
-  sdi: systemDebtInfo | null ,
-  marketInfo: marketInfo | null,
+  sdi: SystemDebtInfoState,
+  marketInfo: MarketState,
 }
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
@@ -26,20 +25,20 @@ export const fetchPositions = async (data: fetchPositionsArgs) => {
   if (chainID === null || data.userAddress === null) return null
 
   // check that dependencies are met for dependecies we can fetch,
-  // and trigger fetch if they are not met
-  if (data.sdi === null) data.dispatch(getSystemDebtInfo(data.chainIDState))
-  if (data.marketInfo === null) data.dispatch(getMarketInfo(data.chainIDState))
+  // and trigger fetch if they are not met and they are not already being fetched
+  const sdi = data.sdi.data
+  const marketInfo = data.marketInfo.data
+  if (sdi === null && !data.sdi.loading) data.dispatch(getSystemDebtInfo(data.chainIDState))
+  if (marketInfo === null && !data.marketInfo.loading) data.dispatch(getMarketInfo(data.chainIDState))
 
   // check that all dependencies are met
-  if (data.sdi === null || data.marketInfo === null) return null
+  if (sdi === null || marketInfo === null) return null
+
   const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting | null
   const positionNFT = await getProtocolContract(chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft | null
   if (accounting === null || positionNFT === null) return null
 
   // fetch the positions
-  const sdi = data.sdi
-  const marketInfo = data.marketInfo
-
   const positionIDs = await positionNFT.positionIDs(data.userAddress)
 
   const marketLastUpdatePeriod = marketInfo.lastPeriodGlobalInterestAccrued
