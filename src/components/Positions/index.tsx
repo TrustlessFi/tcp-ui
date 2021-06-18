@@ -22,8 +22,8 @@ const ExistingPositionsTile = ({}) => {
 
   const chainIDState = selector(state => state.chainID)
   const userAddress = selector(state => state.wallet.address)
-  const sdi = selector(state => state.systemDebt.data)
-  const marketInfo = selector(state => state.market.data)
+  const sdi = selector(state => state.systemDebt)
+  const marketInfo = selector(state => state.market)
 
   const positions = selector(state => state.positions.data)
   if (positions === null) {
