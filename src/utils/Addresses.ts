@@ -1,9 +1,4 @@
-// Rinkeby addresses
-
-enum chainIds {
-  Rinkeby = 4,
-  Hardhat = 1337,
-}
+import { ChainID } from '../slices/chainID'
 
 export enum rootContracts {
   USDC = 'USDC',
@@ -15,8 +10,7 @@ export enum rootContracts {
   UniswapRouter = 'UniswapRouter',
 }
 
-
-const addresses: {[key in chainIds]: { [key in rootContracts]: string}} = {
+const addresses: {[key in ChainID]: { [key in rootContracts]: string}} = {
   4: {
     USDC: "0x640cE1dF688d0Dcb2f3Bf9B1E69d8F64c59D439E",
     USDT: "0xE800ecE7C7B8682C9Af830fAE95514F7c20BACFb",
@@ -37,9 +31,4 @@ const addresses: {[key in chainIds]: { [key in rootContracts]: string}} = {
   }
 }
 
-export const getAddress = (contract: rootContracts): string => {
-  let chainId = chainIds.Rinkeby
-  // TODO
-  // let chainId = WalletStore.getState().chainId;
-  return addresses[chainId][contract]
-}
+export const getAddress = (chainID: ChainID, contract: rootContracts) => addresses[chainID][contract]

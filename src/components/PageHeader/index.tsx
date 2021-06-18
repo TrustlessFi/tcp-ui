@@ -43,16 +43,6 @@ const PageHeader = ({}) => {
     </HeaderMenuItem>
   ));
 
-
-  /*
-  // TODO add into header global bar as the first item
-
-  <HeaderGlobalAction aria-label="Account" className="metamask-connect-container">
-    <MetamaskConnectButton />
-  </HeaderGlobalAction>
-  */
-
-
   return (
     <HeaderContainer
       render={({ isSideNavExpanded, onClickSideNavExpand }) => (
@@ -81,6 +71,9 @@ const PageHeader = ({}) => {
             </SideNavItems>
           </SideNav>
           <HeaderGlobalBar>
+            <HeaderGlobalAction aria-label="Account" className="metamask-connect-container">
+              <MetamaskConnectButton />
+            </HeaderGlobalAction>
             <HeaderGlobalAction aria-label="Txs" onClick={toggleTxsOpen}>
               <Activity20 />
             </HeaderGlobalAction>
