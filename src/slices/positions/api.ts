@@ -21,13 +21,9 @@ export interface fetchPositionsArgs {
 }
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
-  console.log("inside fetch positions")
   // check for dependencies are met for dependencies we cant fetch
   const chainID = data.chainIDState.chainID
-  console.log({chainID, address: data.userAddress})
   if (chainID === null || data.userAddress === null) return null
-
-  console.log({sdi: data.sdi, marketInfo: data.marketInfo})
 
   // check that dependencies are met for dependecies we can fetch,
   // and trigger fetch if they are not met
