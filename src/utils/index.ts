@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 
 export const isDevEnvironment = process.env.NODE_ENV === 'development';
 
@@ -6,8 +6,16 @@ export const sleepS = (seconds: number) => {
   return new Promise(resolve => setTimeout(resolve, seconds * 1000));
 }
 
+// ======================= Number Utils ============================
+export const log = (input: { base: number; val: number }) =>
+  Math.log(input.val) / Math.log(input.base);
+
+export const bnf = (val: BigNumberish) => BigNumber.from(val);
+
 export const unscale = (quantity: BigNumber): number =>
   quantity.eq(0) ? 0 : Number(BigInt(quantity.toString()) / BigInt(1e12)) / 1e6;
+
+export const scale = (quantity: BigNumberish): BigNumber => bnf(quantity).mul(1e9).mul(1e9)
 
 export const timeToPeriod = (time: number, periodLength: number, firstPeriod: number) => {
   return (Math.floor(time / periodLength)) - firstPeriod;
@@ -32,7 +40,3 @@ export const numDisplay = (
   if (isNaN(val)) return "-";
   return addCommas(roundToXDecimals(val, decimals));
 }
-
-// ======================= Math ============================
-export const log = (input: { base: number; val: number }) =>
-  Math.log(input.val) / Math.log(input.base);

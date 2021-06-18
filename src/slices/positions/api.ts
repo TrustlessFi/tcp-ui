@@ -5,7 +5,7 @@ import { ChainIDState } from '../chainID'
 import { getMarketInfo } from '../market'
 import { BigNumber } from "ethers"
 import { marketInfo } from "../market"
-import { timeToPeriod, unscale } from '../../utils'
+import { timeToPeriod, unscale, scale } from '../../utils'
 import { PositionMap } from './'
 import { AppDispatch } from '../../app/store'
 
@@ -20,75 +20,77 @@ export interface fetchPositionsArgs {
   marketInfo: marketInfo | null,
 }
 
-export function fetchPositions(data: fetchPositionsArgs) {
-  return new Promise<{ data: number }>(async () => {
-    // check for dependencies are met for dependencies we cant fetch
-    const chainID = data.chainIDState.chainID
-    if (chainID === null || data.userAddress === null) return null
+export const fetchPositions = async (data: fetchPositionsArgs) => {
+  console.log("inside fetch positions")
+  // check for dependencies are met for dependencies we cant fetch
+  const chainID = data.chainIDState.chainID
+  console.log({chainID, address: data.userAddress})
+  if (chainID === null || data.userAddress === null) return null
 
-    // check that dependencies are met for dependecies we can fetch,
-    // and trigger fetch if they are not met
-    if (data.sdi === null) data.dispatch(getSystemDebtInfo(data.chainIDState))
-    if (data.marketInfo === null) data.dispatch(getMarketInfo(data.chainIDState))
+  console.log({sdi: data.sdi, marketInfo: data.marketInfo})
 
-    // check that all dependencies are met
-    if (data.sdi === null || data.marketInfo === null) return null
-    const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting | null
-    const positionNFT = await getProtocolContract(chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft | null
-    if (accounting === null || positionNFT === null) return null
+  // check that dependencies are met for dependecies we can fetch,
+  // and trigger fetch if they are not met
+  if (data.sdi === null) data.dispatch(getSystemDebtInfo(data.chainIDState))
+  if (data.marketInfo === null) data.dispatch(getMarketInfo(data.chainIDState))
 
-    // fetch the positions
-    const sdi = data.sdi
-    const marketInfo = data.marketInfo
+  // check that all dependencies are met
+  if (data.sdi === null || data.marketInfo === null) return null
+  const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting | null
+  const positionNFT = await getProtocolContract(chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft | null
+  if (accounting === null || positionNFT === null) return null
 
-    const positionIDs = await positionNFT.positionIDs(data.userAddress)
+  // fetch the positions
+  const sdi = data.sdi
+  const marketInfo = data.marketInfo
 
-    const marketLastUpdatePeriod = marketInfo.lastPeriodGlobalInterestAccrued.toNumber()
+  const positionIDs = await positionNFT.positionIDs(data.userAddress)
 
-    const positions = await Promise.all(positionIDs.map(async (positionID) => {
-      const position = await accounting.getPosition(positionID);
+  const marketLastUpdatePeriod = marketInfo.lastPeriodGlobalInterestAccrued
 
-      let positionDebt = position.debt;
+  const positions = await Promise.all(positionIDs.map(async (positionID) => {
+    const position = await accounting.getPosition(positionID);
 
-      // calcuate estimated position debt
-      if (!sdi.debtExchangeRate.eq(position.startDebtExchangeRate) && !position.startDebtExchangeRate.eq(0)) {
-        positionDebt = positionDebt.mul(sdi.debtExchangeRate).div(position.startDebtExchangeRate);
+    let positionDebt = position.debt;
+
+    // calcuate estimated position debt
+    if (!position.startDebtExchangeRate.eq(sdi.debtExchangeRate) && !position.startDebtExchangeRate.eq(0)) {
+      positionDebt = positionDebt.mul(sdi.debtExchangeRate).div(position.startDebtExchangeRate);
+    }
+
+    // calcuate estimated borrow rewards
+    let approximateRewards = BigNumber.from(0)
+    let lastTimeUpdated = position.lastTimeUpdated.toNumber()
+    let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, marketInfo.periodLength, marketInfo.firstPeriod)
+
+    if (lastPeriodUpdated < marketLastUpdatePeriod)   {
+      let avgDebtPerPeriod =
+        scale(sdi.cumulativeDebt)
+          .sub(position.startCumulativeDebt)
+          .div(marketLastUpdatePeriod - lastPeriodUpdated)
+
+      if (!avgDebtPerPeriod.eq(0)) {
+        approximateRewards =
+          position.debt
+            .mul(scale(sdi.totalTCPRewards).sub(position.startTCPRewards))
+            .div(avgDebtPerPeriod)
       }
+    }
 
-      // calcuate estimated borrow rewards
-      let approximateRewards = BigNumber.from(0)
-      let lastTimeUpdated = position.lastTimeUpdated.toNumber()
-      let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, marketInfo.periodLength, marketInfo.firstPeriod)
+    return {
+      collateralCount: unscale(position.collateral),
+      debtCount: unscale(positionDebt),
+      approximateRewards: Math.round(unscale(approximateRewards)),
+      id: positionID.toNumber(),
+      lastBorrowTime: position.lastBorrowTime.toNumber(),
+      updating: false,
+      updated: false,
+      claimingRewards: false,
+      claimedRewards: false,
+    } as Position;
+  }));
 
-      if (lastPeriodUpdated < marketLastUpdatePeriod)   {
-        let avgDebtPerPeriod =
-          sdi.cumulativeDebt
-            .sub(position.startCumulativeDebt)
-            .div(marketLastUpdatePeriod - lastPeriodUpdated)
-
-        if (!avgDebtPerPeriod.eq(0)) {
-          approximateRewards =
-            position.debt
-              .mul(sdi.totalTCPRewards.sub(position.startTCPRewards))
-              .div(avgDebtPerPeriod)
-        }
-      }
-
-      return {
-        collateralCount: unscale(position.collateral),
-        debtCount: unscale(positionDebt),
-        approximateRewards: Math.round(unscale(approximateRewards)),
-        id: positionID.toNumber(),
-        lastBorrowTime: position.lastBorrowTime.toNumber(),
-        updating: false,
-        updated: false,
-        claimingRewards: false,
-        claimedRewards: false,
-      } as Position;
-    }));
-
-    let positionsMap: PositionMap = {}
-    positions.forEach(position => positionsMap[position.id] = position)
-    return positionsMap;
-  })
+  let positionsMap: PositionMap = {}
+  positions.forEach(position => positionsMap[position.id] = position)
+  return positionsMap;
 }

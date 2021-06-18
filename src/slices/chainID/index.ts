@@ -25,8 +25,7 @@ export const chainIDSlice = createSlice({
       if (ChainID[chainID] === undefined) state.unknownChainID = chainID
       else state.chainID = chainID
     },
-  },
-  extraReducers: () => {},
+  }
 })
 
 export const { chainIDFound } = chainIDSlice.actions

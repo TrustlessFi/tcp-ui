@@ -16,7 +16,7 @@ export interface Position {
   claimedRewards: boolean,
 }
 
-export interface PositionMap { [key: string]: Position }
+export interface PositionMap { [key: number]: Position }
 
 export interface PositionsState extends sliceState {
   data: null | PositionMap
@@ -35,19 +35,6 @@ export const positionsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
-    /*
-      .addCase(getPositions.pending, (state) => {
-        state.loading = true
-      })
-      .addCase(getPositions.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.error
-      })
-      .addCase(getPositions.fulfilled, (state, action) => {
-        state.loading = false
-        state.data = action.payload;
-      });
-    */
   },
 });
 
