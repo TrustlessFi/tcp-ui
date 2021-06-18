@@ -1,4 +1,4 @@
-import { ChainID } from '../slices/provider'
+import { ChainID } from '../slices/chainID'
 
 export enum rootContracts {
   USDC = 'USDC',

@@ -10,17 +10,28 @@ import {
   TableCell
 } from "carbon-components-react";
 import AppTile from "../library/AppTile";
-import { useAppDispatch } from '../../app/hooks'
-import { waitForPositions } from '../../slices/positions'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { getPositions } from '../../slices/positions'
 
 import { numDisplay } from "../../utils";
 
 type row = { id: number; debt: string; collateral: string };
 
 const ExistingPositionsTile = ({}) => {
+  const dispatch = useAppDispatch()
+  // try to just retrieve the positions
+  const positions = selector(state => state.positions.data)
+  if (positions === null) {
+    dispatch(getPositions({
+      dispatch,
+      chainIDState: selector(state => state.chainID),
+      userAddress:selector(state => state.wallet.address),
+      sdi: selector(state => state.systemDebt.data),
+      marketInfo: selector(state => state.market.data),
+    }))
+    return <>Loading Spinner</>
+  }
 
-  let positions = waitForPositions(useAppDispatch())
-  if (positions === null) return <>Waiting Spinner</>
   if (Object.values(positions).length === 0) <>There are no positions</>
 
   const rowData: row[] = Object.values(positions).map(position => {
@@ -35,6 +46,11 @@ const ExistingPositionsTile = ({}) => {
     return { key: header.toLowerCase(), header };
   })
 
+  console.log({rowData, headerData})
+
+  return <>Logged rows</>
+
+  /*
   return (
     <AppTile title="Debt Positions">
       <DataTable rows={rowData} headers={headerData}>
@@ -65,6 +81,7 @@ const ExistingPositionsTile = ({}) => {
       </DataTable>
     </AppTile>
   );
+  */
 };
 
 export default ExistingPositionsTile;

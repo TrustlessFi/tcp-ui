@@ -3,48 +3,49 @@
 
 import { ethers } from "ethers";
 
-import { getAddress, rootContracts } from "./Addresses";
-import { ChainID } from "../slices/provider";
+import { getAddress, rootContracts } from "./Addresses"
+import { ChainID } from '../slices/chainID'
+import getProvider from './getProvider'
 
 // ================ CORE CONTRACTS =================
-import { Accounting } from "./typechain/Accounting";
-import { Auctions } from "./typechain/Auctions";
-import { EnforcedDecentralization } from "./typechain/EnforcedDecentralization";
-import { Governor } from "./typechain/Governor";
-import { TcpGovernorAlpha } from "./typechain/TcpGovernorAlpha";
-import { Lend } from "./typechain/Lend";
-import { LendZhu } from "./typechain/LendZhu";
-import { Liquidations } from "./typechain/Liquidations";
-import { Market } from "./typechain/Market";
-import { Prices } from "./typechain/Prices";
-import { ProtocolLock } from "./typechain/ProtocolLock";
-import { Tcp } from "./typechain/Tcp";
-import { Rates } from "./typechain/Rates";
-import { Rewards } from "./typechain/Rewards";
-import { Settlement } from "./typechain/Settlement";
-import { TcpTimelock } from "./typechain/TcpTimelock";
-import { Zhu } from "./typechain/Zhu";
-import { ZhuPositionNft } from "./typechain/ZhuPositionNft";
+import { Accounting } from "./typechain/Accounting"
+import { Auctions } from "./typechain/Auctions"
+import { EnforcedDecentralization } from "./typechain/EnforcedDecentralization"
+import { Governor } from "./typechain/Governor"
+import { TcpGovernorAlpha } from "./typechain/TcpGovernorAlpha"
+import { Lend } from "./typechain/Lend"
+import { LendZhu } from "./typechain/LendZhu"
+import { Liquidations } from "./typechain/Liquidations"
+import { Market } from "./typechain/Market"
+import { Prices } from "./typechain/Prices"
+import { ProtocolLock } from "./typechain/ProtocolLock"
+import { Tcp } from "./typechain/Tcp"
+import { Rates } from "./typechain/Rates"
+import { Rewards } from "./typechain/Rewards"
+import { Settlement } from "./typechain/Settlement"
+import { TcpTimelock } from "./typechain/TcpTimelock"
+import { Zhu } from "./typechain/Zhu"
+import { ZhuPositionNft } from "./typechain/ZhuPositionNft"
 
 // ================ ARTIFACTS =======================
-import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json";
-import auctionsArtifact from "./artifacts/contracts/core/logic/Auctions.sol/Auctions.json";
-import enforcedDecentralizationArtifact from "./artifacts/contracts/core/governance/EnforcedDecentralization.sol/EnforcedDecentralization.json";
-import governorArtifact from "./artifacts/contracts/core/governance/Governor.sol/Governor.json";
-import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TCPGovernorAlpha.json";
-import lendArtifact from "./artifacts/contracts/core/logic/Lend.sol/Lend.json";
-import lendZhuArtifact from "./artifacts/contracts/core/tokens/LendZhu.sol/LendZhu.json";
-import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json";
-import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json";
-import pricesArtifact from "./artifacts/contracts/core/logic/Prices.sol/Prices.json";
-import protocolLockArtifact from "./artifacts/contracts/core/utils/ProtocolLock.sol/ProtocolLock.json";
-import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json";
-import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json";
-import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json";
-import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json";
-import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json";
-import zhuArtifact from "./artifacts/contracts/core/tokens/Zhu.sol/Zhu.json";
-import zhuPositionNFTArtifact from "./artifacts/contracts/core/tokens/ZhuPositionNFT.sol/ZhuPositionNFT.json";
+import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json"
+import auctionsArtifact from "./artifacts/contracts/core/logic/Auctions.sol/Auctions.json"
+import enforcedDecentralizationArtifact from "./artifacts/contracts/core/governance/EnforcedDecentralization.sol/EnforcedDecentralization.json"
+import governorArtifact from "./artifacts/contracts/core/governance/Governor.sol/Governor.json"
+import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TCPGovernorAlpha.json"
+import lendArtifact from "./artifacts/contracts/core/logic/Lend.sol/Lend.json"
+import lendZhuArtifact from "./artifacts/contracts/core/tokens/LendZhu.sol/LendZhu.json"
+import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
+import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
+import pricesArtifact from "./artifacts/contracts/core/logic/Prices.sol/Prices.json"
+import protocolLockArtifact from "./artifacts/contracts/core/utils/ProtocolLock.sol/ProtocolLock.json"
+import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json"
+import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
+import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json"
+import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
+import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
+import zhuArtifact from "./artifacts/contracts/core/tokens/Zhu.sol/Zhu.json"
+import zhuPositionNFTArtifact from "./artifacts/contracts/core/tokens/ZhuPositionNFT.sol/ZhuPositionNFT.json"
 
 export enum ProtocolContract {
   Accounting = "Accounting",
@@ -111,16 +112,16 @@ export type protocolContractsType = {
 
 let protocolContracts: protocolContractsType = {};
 
-const getGovernor = async (
-  chainID: ChainID,
-  provider: ethers.providers.Web3Provider
-): Promise<Governor> => {
+const getGovernor = async (chainID: ChainID): Promise<Governor | null> => {
   const contract = ProtocolContract.Governor;
   let cachedContract = protocolContracts[contract];
 
   if (cachedContract !== undefined) {
     return cachedContract;
   } else {
+    const provider = getProvider()
+    if (provider === null) return null
+
     let result = new ethers.Contract(
       getAddress(chainID, rootContracts.Governor),
       artifactLookup[contract].abi,
@@ -131,16 +132,16 @@ const getGovernor = async (
   }
 };
 
-const getTcpGovernorAlpha = async (
-  chainID: ChainID,
-  provider: ethers.providers.Web3Provider
-): Promise<TcpGovernorAlpha> => {
+const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TcpGovernorAlpha | null> => {
   const contract = ProtocolContract.TcpGovernorAlpha;
   let cachedContract = protocolContracts[contract];
 
   if (cachedContract !== undefined) {
     return cachedContract;
   } else {
+    const provider = getProvider()
+    if (provider === null) return null
+
     let result = new ethers.Contract(
       getAddress(chainID, rootContracts.Governor),
       artifactLookup[contract].abi,
@@ -154,14 +155,17 @@ const getTcpGovernorAlpha = async (
 const getCachedContractFromGovernor = async (
   chainID: ChainID,
   contract: ProtocolContract,
-  provider: ethers.providers.Web3Provider
 ) => {
   let cachedContract = protocolContracts[contract];
 
   if (cachedContract !== undefined) {
     return cachedContract;
   } else {
-    const governor = await getGovernor(chainID, provider);
+    const governor = await getGovernor(chainID);
+    if (governor === null) return null
+
+    const provider = getProvider()
+    if (provider === null) return null
 
     switch (contract) {
       case ProtocolContract.Accounting:
@@ -284,17 +288,13 @@ const getCachedContractFromGovernor = async (
   }
 };
 
-export const getProtocolContract = async (
-  chainID: ChainID,
-  contract: ProtocolContract,
-  provider: ethers.providers.Web3Provider
-) => {
+export const getProtocolContract = async (chainID: ChainID, contract: ProtocolContract) => {
   switch (contract) {
     case ProtocolContract.Governor:
-      return await getGovernor(chainID, provider);
+      return await getGovernor(chainID);
     case ProtocolContract.TcpGovernorAlpha:
-      return await getTcpGovernorAlpha(chainID, provider);
+      return await getTcpGovernorAlpha(chainID);
     default:
-      return await getCachedContractFromGovernor(chainID, contract, provider);
+      return await getCachedContractFromGovernor(chainID, contract);
   }
 };

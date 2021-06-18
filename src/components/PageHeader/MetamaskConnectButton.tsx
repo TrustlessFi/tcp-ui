@@ -3,8 +3,7 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { ReactComponent as MetamaskLogo } from "../../img/metamask.svg";
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
-import { providerFound } from '../../slices/provider'
-import { ethers } from 'ethers'
+import { chainIDFound } from '../../slices/chainID'
 
 const MetamaskConnectButton = () => {
   const dispatch = useAppDispatch()
@@ -13,7 +12,7 @@ const MetamaskConnectButton = () => {
     // also refetch some of the accounts if the chain has changed from something valid to something valid
     // can probalby combine some logic with wallet connected
 
-    dispatch(providerFound({chainID, provider: new ethers.providers.Web3Provider(window.ethereum)}))
+    dispatch(chainIDFound(chainID))
   }
 
   const connectWallet = async () => {
