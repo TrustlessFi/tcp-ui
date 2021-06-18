@@ -8,10 +8,12 @@ import { chainIDFound } from '../../slices/chainID'
 const MetamaskConnectButton = () => {
   const dispatch = useAppDispatch()
 
-  const chainChanged = (chainID: number) => {
+  const chainChanged = (chainID: number | string) => {
+
     // also refetch some of the accounts if the chain has changed from something valid to something valid
     // can probalby combine some logic with wallet connected
 
+    if (typeof chainID === 'string') chainID = parseInt(chainID)
     dispatch(chainIDFound(chainID))
   }
 

@@ -19,16 +19,15 @@ type row = { id: number; debt: string; collateral: string };
 
 const ExistingPositionsTile = ({}) => {
   const dispatch = useAppDispatch()
-  // try to just retrieve the positions
+
+  const chainIDState = selector(state => state.chainID)
+  const userAddress = selector(state => state.wallet.address)
+  const sdi = selector(state => state.systemDebt.data)
+  const marketInfo = selector(state => state.market.data)
+
   const positions = selector(state => state.positions.data)
   if (positions === null) {
-    dispatch(getPositions({
-      dispatch,
-      chainIDState: selector(state => state.chainID),
-      userAddress:selector(state => state.wallet.address),
-      sdi: selector(state => state.systemDebt.data),
-      marketInfo: selector(state => state.market.data),
-    }))
+    dispatch(getPositions({dispatch, chainIDState, userAddress, sdi, marketInfo }))
     return <>Loading Spinner</>
   }
 
@@ -48,7 +47,7 @@ const ExistingPositionsTile = ({}) => {
 
   console.log({rowData, headerData})
 
-  return <>Logged rows</>
+  return <>Logged rows: {Object.keys(positions).length}</>
 
   /*
   return (

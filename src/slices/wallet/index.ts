@@ -17,19 +17,15 @@ export const walletSlice = createSlice({
   initialState,
   reducers: {
     connecting: (state) => {
-      console.log("connecting")
       state.connecting = true
     },
     connected: (state, action: PayloadAction<string>) => {
-      console.log("connected")
       state.connecting = false
       state.address = action.payload
     },
     connectionFailed: (state) => {
-      console.log("connectionFailed")
       state.connecting = false
     },
-
   },
   extraReducers: () => {},
 });
