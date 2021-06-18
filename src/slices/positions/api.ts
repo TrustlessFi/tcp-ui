@@ -1,17 +1,19 @@
 import { Position } from './'
-import { ChainID } from '../chainID'
+import { ChainID } from '../provider'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { systemDebtInfo } from '../systemDebt'
 import { BigNumber } from "ethers"
 import { marketInfo } from "../market"
 import { timeToPeriod, unscale } from '../../utils'
 import { PositionMap } from './'
+import { ethers } from 'ethers'
 
 import { Accounting } from "../../utils/typechain/Accounting";
 import { ZhuPositionNft } from "../../utils/typechain/ZhuPositionNft";
 
-export type fetchPositionsArgs = {
+export interface fetchPositionsArgs {
   chainID: ChainID,
+  provider: ethers.providers.Web3Provider
   userAddress: string,
   sdi: systemDebtInfo,
   marketInfo: marketInfo,
@@ -19,8 +21,8 @@ export type fetchPositionsArgs = {
 
 export function fetchPositions(data: fetchPositionsArgs) {
   return new Promise<{ data: number }>(async () => {
-    const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting
-    const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft
+    const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting, data.provider) as Accounting
+    const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT, data.provider) as ZhuPositionNft
     const positionIDs = await positionNFT.positionIDs(data.userAddress)
 
     const marketLastUpdatePeriod = data.marketInfo.lastPeriodGlobalInterestAccrued.toNumber()

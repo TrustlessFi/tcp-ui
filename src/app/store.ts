@@ -3,8 +3,8 @@ import counterReducer from '../slices/counter/counterSlice'
 import positionsReducer from '../slices/positions'
 import providerReducer from '../slices/provider'
 import walletReducer from '../slices/wallet'
-import chainIDReducer from '../slices/chainID'
 import marketReducer from '../slices/market'
+import systemDebtReducer from '../slices/systemDebt'
 
 
 export const store = configureStore({
@@ -13,8 +13,8 @@ export const store = configureStore({
     positions: positionsReducer,
     provider: providerReducer,
     wallet: walletReducer,
-    chainID: chainIDReducer,
     market: marketReducer,
+    systemDebt: systemDebtReducer,
   },
 });
 
