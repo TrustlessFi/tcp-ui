@@ -6,6 +6,7 @@ import { BigNumber } from "ethers"
 import { MarketState, getMarketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { PositionMap } from './'
+import { idle } from '../'
 import { AppDispatch } from '../../app/store'
 
 import { Accounting } from "../../utils/typechain/Accounting";
@@ -20,18 +21,18 @@ export interface fetchPositionsArgs {
 }
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
-  // check for dependencies are met for dependencies we cant fetch
+  // check dependencies are met for dependencies we cant fetch
   const chainID = data.chainIDState.chainID
   if (chainID === null || data.userAddress === null) return null
 
   // check that dependencies are met for dependecies we can fetch,
   // and trigger fetch if they are not met and they are not already being fetched
-  const sdi = data.sdi.data
-  const marketInfo = data.marketInfo.data
-  if (sdi === null && !data.sdi.loading) data.dispatch(getSystemDebtInfo(data.chainIDState))
-  if (marketInfo === null && !data.marketInfo.loading) data.dispatch(getMarketInfo(data.chainIDState))
+  if (idle(data.sdi)) data.dispatch(getSystemDebtInfo(data.chainIDState))
+  if (idle(data.marketInfo)) data.dispatch(getMarketInfo(data.chainIDState))
 
   // check that all dependencies are met
+  const sdi = data.sdi.data
+  const marketInfo = data.marketInfo.data
   if (sdi === null || marketInfo === null) return null
 
   const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting | null
@@ -50,7 +51,7 @@ export const fetchPositions = async (data: fetchPositionsArgs) => {
 
     // calcuate estimated position debt
     if (!position.startDebtExchangeRate.eq(sdi.debtExchangeRate) && !position.startDebtExchangeRate.eq(0)) {
-      positionDebt = positionDebt.mul(sdi.debtExchangeRate).div(position.startDebtExchangeRate);
+      positionDebt = positionDebt.mul(scale(sdi.debtExchangeRate)).div(position.startDebtExchangeRate);
     }
 
     // calcuate estimated borrow rewards
