@@ -10,7 +10,7 @@ import {
 } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPositions } from '../../slices/positions/api'
+import { waitForPositions } from '../../slices/waitFor'
 import PositionEditor from './PositionEditor'
 import ExistingPositions from './ExistingPositions'
 

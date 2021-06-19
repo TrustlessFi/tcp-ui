@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainIDState } from '../chainID'
+import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 import { Governor } from "../../utils/typechain/Governor"
 
 export type governorInfo = {
   phase: number,
+  collateralPool: string,
 }
 
 export interface GovernorState extends sliceState {
@@ -15,11 +16,10 @@ export interface GovernorState extends sliceState {
 
 export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
-  async (chainIDState: ChainIDState) => await fetchGovernorInfo(chainIDState)
+  async (chainID: ChainID) => await fetchGovernorInfo(chainID)
 )
 
-export const fetchGovernorInfo = async (chainIDState: ChainIDState) => {
-  const chainID = chainIDState.chainID
+export const fetchGovernorInfo = async (chainID: ChainID) => {
   if (chainID === null) return null
 
   const governor = await getProtocolContract(chainID, ProtocolContract.Governor) as Governor
@@ -27,12 +27,15 @@ export const fetchGovernorInfo = async (chainIDState: ChainIDState) => {
 
   let [
     phase,
+    collateralPool,
   ] = await Promise.all([
     governor.currentPhase(),
-  ]);
+    governor.collateralPool(),
+  ])
 
   return {
-    phase
+    phase,
+    collateralPool,
   }
 }
 

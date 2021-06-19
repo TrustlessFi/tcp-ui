@@ -2,20 +2,26 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import positionsReducer from '../slices/positions'
 import chainIDReducer from '../slices/chainID'
 import walletReducer from '../slices/wallet'
-import marketReducer from '../slices/market'
-import governorReducer from '../slices/governor'
 import systemDebtReducer from '../slices/systemDebt'
 import positionsEditorReducer from '../slices/positionsEditor'
+
+import governorReducer from '../slices/governor'
+import liquidationsReducer from '../slices/liquidations'
+import marketReducer from '../slices/market'
+import pricesReducer from '../slices/prices'
 
 export const store = configureStore({
   reducer: {
     positions: positionsReducer,
     chainID: chainIDReducer,
     wallet: walletReducer,
-    market: marketReducer,
-    governor: governorReducer,
     systemDebt: systemDebtReducer,
     positionsEditor: positionsEditorReducer,
+
+    governor: governorReducer,
+    liquidations: liquidationsReducer,
+    market: marketReducer,
+    prices: pricesReducer,
   },
 });
 

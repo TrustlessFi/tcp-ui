@@ -32,5 +32,3 @@ export const getGenericReducerBuilder = (
 
   return builder
 }
-
-export const idle = (state: sliceState) => state.data === null && !state.loading

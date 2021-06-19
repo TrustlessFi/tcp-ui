@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainIDState } from '../chainID'
+import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 
@@ -22,11 +22,10 @@ export interface MarketState extends sliceState {
 
 export const getMarketInfo = createAsyncThunk(
   'market/getMarketInfo',
-  async (chainIDState: ChainIDState) => await fetchMarketInfo(chainIDState)
+  async (chainID: ChainID) => await fetchMarketInfo(chainID)
 )
 
-export const fetchMarketInfo = async (chainIDState: ChainIDState) => {
-  const chainID = chainIDState.chainID
+export const fetchMarketInfo = async (chainID: ChainID) => {
   if (chainID === null) return null
 
   const market = await getProtocolContract(chainID, ProtocolContract.Market) as Market
