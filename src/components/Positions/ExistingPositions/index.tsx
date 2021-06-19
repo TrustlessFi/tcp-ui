@@ -11,8 +11,7 @@ import {
 import AppTile from '../../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { editorOpened } from '../../../slices/positionsEditor'
-import { waitForPositions } from '../../../slices/positions/api'
-import { waitForGovernor } from '../../../slices/governor/api'
+import { waitForPositions, waitForGovernor } from '../../../slices/waitFor'
 import Center from '../../library/Center'
 
 import { numDisplay } from '../../../utils'
