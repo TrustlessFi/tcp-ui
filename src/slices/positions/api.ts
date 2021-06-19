@@ -7,7 +7,7 @@ import { MarketState, getMarketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { PositionMap } from './'
 import { idle } from '../'
-import { AppDispatch } from '../../app/store'
+import { AppDispatch, store } from '../../app/store'
 
 import { Accounting } from "../../utils/typechain/Accounting";
 import { ZhuPositionNft } from "../../utils/typechain/ZhuPositionNft";
@@ -21,6 +21,9 @@ export interface fetchPositionsArgs {
 }
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
+  // const state = store.getState()
+  // if (state.positions.loading) return null
+
   // check dependencies are met for dependencies we cant fetch
   const chainID = data.chainIDState.chainID
   if (chainID === null || data.userAddress === null) return null

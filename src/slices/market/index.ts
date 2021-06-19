@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { ChainIDState } from '../chainID'
-import { sliceState, nullState, getGenericReducerBuilder } from '../'
+import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 
 import { Market } from "../../utils/typechain/Market"
@@ -61,11 +61,9 @@ export const fetchMarketInfo = async (chainIDState: ChainIDState) => {
   }
 }
 
-const initialState: MarketState = nullState
-
 export const marketSlice = createSlice({
   name: 'systemDebt',
-  initialState,
+  initialState: initialState as MarketState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getMarketInfo)
