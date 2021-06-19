@@ -18,9 +18,11 @@ class BorrowCoinTile extends Component<AppTile> {
     let { children, className, title, style } = this.props
 
     return (
-      <Tile style={{ margin: 1, ...style }} className={className}>
+      <Tile style={{ margin: 2, ...style }} className={className}>
         <span style={{fontSize: 24}}>{title}</span>
-        {children}
+        <div style={{marginTop: 12, marginBottom: 12}}>
+          {children}
+        </div>
       </Tile>
     );
   }
