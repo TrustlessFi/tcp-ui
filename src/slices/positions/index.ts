@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { sliceState, nullState } from '../'
+import { sliceState, initialState } from '../'
 import { fetchPositions, fetchPositionsArgs } from './api'
 import { getGenericReducerBuilder } from '../'
 
@@ -27,11 +27,9 @@ export const getPositions = createAsyncThunk(
   async (data: fetchPositionsArgs) => await fetchPositions(data),
 );
 
-const initialState: PositionsState = nullState
-
 export const positionsSlice = createSlice({
   name: 'positions',
-  initialState,
+  initialState: initialState as PositionsState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
