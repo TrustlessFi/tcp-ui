@@ -7,7 +7,7 @@ export interface sliceState {
   data: any | null
 }
 
-export const nullState = {
+export const initialState = {
   loading: false,
   error: null,
   data: null,
@@ -32,3 +32,5 @@ export const getGenericReducerBuilder = (
 
   return builder
 }
+
+export const idle = (state: sliceState) => state.data === null && !state.loading
