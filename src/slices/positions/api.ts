@@ -29,17 +29,13 @@ export const waitForPositions = (selector: AppSelector, dispatch: AppDispatch): 
   const positions = selector(state => state.positions.data)
 
   // cant subscribe to loading or else we would get an infinite loop
-  if (positions === null  && !store.getState().positions.loading) {
+  if (positions === null && !store.getState().positions.loading) {
     dispatch(getPositions({dispatch, chainIDState, userAddress, sdi, marketInfo }))
   }
   return positions
 }
 
-
 export const fetchPositions = async (data: fetchPositionsArgs) => {
-  // const state = store.getState()
-  // if (state.positions.loading) return null
-
   // check dependencies are met for dependencies we cant fetch
   const chainID = data.chainIDState.chainID
   if (chainID === null || data.userAddress === null) return null
