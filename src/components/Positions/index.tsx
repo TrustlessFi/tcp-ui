@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  DataTable,
-  TableContainer,
   Table,
   TableHead,
   TableRow,
@@ -11,29 +9,16 @@ import {
 } from "carbon-components-react";
 import AppTile from "../library/AppTile";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { store } from '../../app/store'
-import { getPositions } from '../../slices/positions'
+import { waitForPositions } from '../../slices/positions/api'
 
 import { numDisplay } from "../../utils";
 
 const ExistingPositionsTile = ({}) => {
-  const dispatch = useAppDispatch()
+  const positions = waitForPositions(selector, useAppDispatch())
 
-  const chainIDState = selector(state => state.chainID)
-  const userAddress = selector(state => state.wallet.address)
-  const sdi = selector(state => state.systemDebt)
-  const marketInfo = selector(state => state.market)
+  if (positions === null) return <>Loading Spinner</>
 
-  const positions = selector(state => state.positions.data)
-  if (positions === null) {
-    // cant subscribe to this update or else we would get an infinite loop
-    if (!store.getState().positions.loading) {
-      dispatch(getPositions({dispatch, chainIDState, userAddress, sdi, marketInfo }))
-    }
-    return <>Loading Spinner</>
-  }
-
-  if (Object.values(positions).length === 0) <>There are no positions</>
+  if (Object.values(positions).length === 0) return <>There are no positions</>
 
   const rows = Object.values(positions).map(position => ({
     key: position.id,

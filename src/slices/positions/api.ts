@@ -5,9 +5,10 @@ import { ChainIDState } from '../chainID'
 import { BigNumber } from "ethers"
 import { MarketState, getMarketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
-import { PositionMap } from './'
+import { PositionMap, getPositions } from './'
 import { idle } from '../'
 import { AppDispatch, store } from '../../app/store'
+import { AppSelector } from '../../app/hooks'
 
 import { Accounting } from "../../utils/typechain/Accounting";
 import { ZhuPositionNft } from "../../utils/typechain/ZhuPositionNft";
@@ -19,6 +20,21 @@ export interface fetchPositionsArgs {
   sdi: SystemDebtInfoState,
   marketInfo: MarketState,
 }
+
+export const waitForPositions = (selector: AppSelector, dispatch: AppDispatch): PositionMap | null => {
+  const chainIDState = selector(state => state.chainID)
+  const userAddress = selector(state => state.wallet.address)
+  const sdi = selector(state => state.systemDebt)
+  const marketInfo = selector(state => state.market)
+  const positions = selector(state => state.positions.data)
+
+  // cant subscribe to loading or else we would get an infinite loop
+  if (positions === null  && !store.getState().positions.loading) {
+    dispatch(getPositions({dispatch, chainIDState, userAddress, sdi, marketInfo }))
+  }
+  return positions
+}
+
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
   // const state = store.getState()
