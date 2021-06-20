@@ -9,17 +9,16 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   PayableOverrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface NonfungiblePositionManagerInterface extends ethers.utils.Interface {
   functions: {
@@ -372,86 +371,69 @@ interface NonfungiblePositionManagerInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export class NonfungiblePositionManager extends Contract {
+export class NonfungiblePositionManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: NonfungiblePositionManagerInterface;
 
   functions: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
 
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    WETH9(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "WETH9()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    WETH9(overrides?: CallOverrides): Promise<[string]>;
 
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "approve(address,uint256)"(
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    balanceOf(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "balanceOf(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    baseURI(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "baseURI()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    baseURI(overrides?: CallOverrides): Promise<[string]>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     collect(
@@ -461,17 +443,7 @@ export class NonfungiblePositionManager extends Contract {
         amount0Max: BigNumberish;
         amount1Max: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "collect(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        recipient: string;
-        amount0Max: BigNumberish;
-        amount1Max: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     createAndInitializePoolIfNecessary(
@@ -479,15 +451,7 @@ export class NonfungiblePositionManager extends Contract {
       token1: string,
       fee: BigNumberish,
       sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "createAndInitializePoolIfNecessary(address,address,uint24,uint160)"(
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     decreaseLiquidity(
@@ -498,41 +462,15 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "decreaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        liquidity: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    factory(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "factory()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    factory(overrides?: CallOverrides): Promise<[string]>;
 
     getApproved(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "getApproved(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     increaseLiquidity(
       params: {
@@ -543,36 +481,14 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "increaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     isApprovedForAll(
       owner: string,
       operator: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "isApprovedForAll(address,address)"(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
     mint(
       params: {
@@ -588,57 +504,20 @@ export class NonfungiblePositionManager extends Contract {
         recipient: string;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "mint(tuple)"(
-      params: {
-        token0: string;
-        token1: string;
-        fee: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        recipient: string;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    name(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "name()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    name(overrides?: CallOverrides): Promise<[string]>;
 
     ownerOf(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "ownerOf(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     permit(
       spender: string,
@@ -647,88 +526,51 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "permit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      spender: string,
-      tokenId: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     positions(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      nonce: BigNumber;
-      operator: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickLower: number;
-      tickUpper: number;
-      liquidity: BigNumber;
-      feeGrowthInside0LastX128: BigNumber;
-      feeGrowthInside1LastX128: BigNumber;
-      tokensOwed0: BigNumber;
-      tokensOwed1: BigNumber;
-      0: BigNumber;
-      1: string;
-      2: string;
-      3: string;
-      4: number;
-      5: number;
-      6: number;
-      7: BigNumber;
-      8: BigNumber;
-      9: BigNumber;
-      10: BigNumber;
-      11: BigNumber;
-    }>;
+    ): Promise<
+      [
+        BigNumber,
+        string,
+        string,
+        string,
+        number,
+        number,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        nonce: BigNumber;
+        operator: string;
+        token0: string;
+        token1: string;
+        fee: number;
+        tickLower: number;
+        tickUpper: number;
+        liquidity: BigNumber;
+        feeGrowthInside0LastX128: BigNumber;
+        feeGrowthInside1LastX128: BigNumber;
+        tokensOwed0: BigNumber;
+        tokensOwed1: BigNumber;
+      }
+    >;
 
-    "positions(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      nonce: BigNumber;
-      operator: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickLower: number;
-      tickUpper: number;
-      liquidity: BigNumber;
-      feeGrowthInside0LastX128: BigNumber;
-      feeGrowthInside1LastX128: BigNumber;
-      tokensOwed0: BigNumber;
-      tokensOwed1: BigNumber;
-      0: BigNumber;
-      1: string;
-      2: string;
-      3: string;
-      4: number;
-      5: number;
-      6: number;
-      7: BigNumber;
-      8: BigNumber;
-      9: BigNumber;
-      10: BigNumber;
-      11: BigNumber;
-    }>;
-
-    refundETH(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -736,7 +578,7 @@ export class NonfungiblePositionManager extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     selfPermit(
@@ -746,17 +588,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "selfPermit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     selfPermitAllowed(
@@ -766,17 +598,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "selfPermitAllowed(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     selfPermitAllowedIfNecessary(
@@ -786,17 +608,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "selfPermitAllowedIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     selfPermitIfNecessary(
@@ -806,203 +618,87 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "selfPermitIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "setApprovalForAll(address,bool)"(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "supportsInterface(bytes4)"(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
     sweepToken(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "symbol()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    symbol(overrides?: CallOverrides): Promise<[string]>;
 
     tokenByIndex(
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "tokenByIndex(uint256)"(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     tokenOfOwnerByIndex(
       owner: string,
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "tokenOfOwnerByIndex(address,uint256)"(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
-    "tokenURI(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    totalSupply(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "totalSupply()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "transferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     uniswapV3MintCallback(
       amount0Owed: BigNumberish,
       amount1Owed: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "uniswapV3MintCallback(uint256,uint256,bytes)"(
-      amount0Owed: BigNumberish,
-      amount1Owed: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
-  "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
-
   PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-  "PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<string>;
-
   WETH9(overrides?: CallOverrides): Promise<string>;
-
-  "WETH9()"(overrides?: CallOverrides): Promise<string>;
 
   approve(
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "approve(address,uint256)"(
-    to: string,
-    tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "balanceOf(address)"(
-    owner: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   baseURI(overrides?: CallOverrides): Promise<string>;
-
-  "baseURI()"(overrides?: CallOverrides): Promise<string>;
 
   burn(
     tokenId: BigNumberish,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "burn(uint256)"(
-    tokenId: BigNumberish,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   collect(
@@ -1012,17 +708,7 @@ export class NonfungiblePositionManager extends Contract {
       amount0Max: BigNumberish;
       amount1Max: BigNumberish;
     },
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "collect(tuple)"(
-    params: {
-      tokenId: BigNumberish;
-      recipient: string;
-      amount0Max: BigNumberish;
-      amount1Max: BigNumberish;
-    },
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   createAndInitializePoolIfNecessary(
@@ -1030,15 +716,7 @@ export class NonfungiblePositionManager extends Contract {
     token1: string,
     fee: BigNumberish,
     sqrtPriceX96: BigNumberish,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "createAndInitializePoolIfNecessary(address,address,uint24,uint160)"(
-    token0: string,
-    token1: string,
-    fee: BigNumberish,
-    sqrtPriceX96: BigNumberish,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   decreaseLiquidity(
@@ -1049,30 +727,12 @@ export class NonfungiblePositionManager extends Contract {
       amount1Min: BigNumberish;
       deadline: BigNumberish;
     },
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "decreaseLiquidity(tuple)"(
-    params: {
-      tokenId: BigNumberish;
-      liquidity: BigNumberish;
-      amount0Min: BigNumberish;
-      amount1Min: BigNumberish;
-      deadline: BigNumberish;
-    },
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   factory(overrides?: CallOverrides): Promise<string>;
 
-  "factory()"(overrides?: CallOverrides): Promise<string>;
-
   getApproved(
-    tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "getApproved(uint256)"(
     tokenId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -1086,28 +746,10 @@ export class NonfungiblePositionManager extends Contract {
       amount1Min: BigNumberish;
       deadline: BigNumberish;
     },
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "increaseLiquidity(tuple)"(
-    params: {
-      tokenId: BigNumberish;
-      amount0Desired: BigNumberish;
-      amount1Desired: BigNumberish;
-      amount0Min: BigNumberish;
-      amount1Min: BigNumberish;
-      deadline: BigNumberish;
-    },
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   isApprovedForAll(
-    owner: string,
-    operator: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  "isApprovedForAll(address,address)"(
     owner: string,
     operator: string,
     overrides?: CallOverrides
@@ -1127,46 +769,17 @@ export class NonfungiblePositionManager extends Contract {
       recipient: string;
       deadline: BigNumberish;
     },
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "mint(tuple)"(
-    params: {
-      token0: string;
-      token1: string;
-      fee: BigNumberish;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      amount0Desired: BigNumberish;
-      amount1Desired: BigNumberish;
-      amount0Min: BigNumberish;
-      amount1Min: BigNumberish;
-      recipient: string;
-      deadline: BigNumberish;
-    },
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   multicall(
     data: BytesLike[],
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "multicall(bytes[])"(
-    data: BytesLike[],
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
-  "name()"(overrides?: CallOverrides): Promise<string>;
-
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  "ownerOf(uint256)"(
-    tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   permit(
     spender: string,
@@ -1175,88 +788,51 @@ export class NonfungiblePositionManager extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "permit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-    spender: string,
-    tokenId: BigNumberish,
-    deadline: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   positions(
     tokenId: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<{
-    nonce: BigNumber;
-    operator: string;
-    token0: string;
-    token1: string;
-    fee: number;
-    tickLower: number;
-    tickUpper: number;
-    liquidity: BigNumber;
-    feeGrowthInside0LastX128: BigNumber;
-    feeGrowthInside1LastX128: BigNumber;
-    tokensOwed0: BigNumber;
-    tokensOwed1: BigNumber;
-    0: BigNumber;
-    1: string;
-    2: string;
-    3: string;
-    4: number;
-    5: number;
-    6: number;
-    7: BigNumber;
-    8: BigNumber;
-    9: BigNumber;
-    10: BigNumber;
-    11: BigNumber;
-  }>;
+  ): Promise<
+    [
+      BigNumber,
+      string,
+      string,
+      string,
+      number,
+      number,
+      number,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      nonce: BigNumber;
+      operator: string;
+      token0: string;
+      token1: string;
+      fee: number;
+      tickLower: number;
+      tickUpper: number;
+      liquidity: BigNumber;
+      feeGrowthInside0LastX128: BigNumber;
+      feeGrowthInside1LastX128: BigNumber;
+      tokensOwed0: BigNumber;
+      tokensOwed1: BigNumber;
+    }
+  >;
 
-  "positions(uint256)"(
-    tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<{
-    nonce: BigNumber;
-    operator: string;
-    token0: string;
-    token1: string;
-    fee: number;
-    tickLower: number;
-    tickUpper: number;
-    liquidity: BigNumber;
-    feeGrowthInside0LastX128: BigNumber;
-    feeGrowthInside1LastX128: BigNumber;
-    tokensOwed0: BigNumber;
-    tokensOwed1: BigNumber;
-    0: BigNumber;
-    1: string;
-    2: string;
-    3: string;
-    4: number;
-    5: number;
-    6: number;
-    7: BigNumber;
-    8: BigNumber;
-    9: BigNumber;
-    10: BigNumber;
-    11: BigNumber;
-  }>;
-
-  refundETH(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-  "refundETH()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+  refundETH(
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256,bytes)"(
@@ -1264,7 +840,7 @@ export class NonfungiblePositionManager extends Contract {
     to: string,
     tokenId: BigNumberish,
     _data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   selfPermit(
@@ -1274,17 +850,7 @@ export class NonfungiblePositionManager extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "selfPermit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-    token: string,
-    value: BigNumberish,
-    deadline: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   selfPermitAllowed(
@@ -1294,17 +860,7 @@ export class NonfungiblePositionManager extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "selfPermitAllowed(address,uint256,uint256,uint8,bytes32,bytes32)"(
-    token: string,
-    nonce: BigNumberish,
-    expiry: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   selfPermitAllowedIfNecessary(
@@ -1314,17 +870,7 @@ export class NonfungiblePositionManager extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "selfPermitAllowedIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-    token: string,
-    nonce: BigNumberish,
-    expiry: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   selfPermitIfNecessary(
@@ -1334,37 +880,16 @@ export class NonfungiblePositionManager extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "selfPermitIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-    token: string,
-    value: BigNumberish,
-    deadline: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setApprovalForAll(
     operator: string,
     approved: boolean,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "setApprovalForAll(address,bool)"(
-    operator: string,
-    approved: boolean,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  "supportsInterface(bytes4)"(
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
@@ -1373,26 +898,12 @@ export class NonfungiblePositionManager extends Contract {
     token: string,
     amountMinimum: BigNumberish,
     recipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "sweepToken(address,uint256,address)"(
-    token: string,
-    amountMinimum: BigNumberish,
-    recipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  "symbol()"(overrides?: CallOverrides): Promise<string>;
-
   tokenByIndex(
-    index: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "tokenByIndex(uint256)"(
     index: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -1403,75 +914,36 @@ export class NonfungiblePositionManager extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "tokenOfOwnerByIndex(address,uint256)"(
-    owner: string,
-    index: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "tokenURI(uint256)"(
-    tokenId: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: string,
     to: string,
     tokenId: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "transferFrom(address,address,uint256)"(
-    from: string,
-    to: string,
-    tokenId: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   uniswapV3MintCallback(
     amount0Owed: BigNumberish,
     amount1Owed: BigNumberish,
     data: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "uniswapV3MintCallback(uint256,uint256,bytes)"(
-    amount0Owed: BigNumberish,
-    amount1Owed: BigNumberish,
-    data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   unwrapWETH9(
     amountMinimum: BigNumberish,
     recipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "unwrapWETH9(uint256,address)"(
-    amountMinimum: BigNumberish,
-    recipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
-
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-    "PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<string>;
-
     WETH9(overrides?: CallOverrides): Promise<string>;
-
-    "WETH9()"(overrides?: CallOverrides): Promise<string>;
 
     approve(
       to: string,
@@ -1479,29 +951,11 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "approve(address,uint256)"(
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "balanceOf(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     baseURI(overrides?: CallOverrides): Promise<string>;
 
-    "baseURI()"(overrides?: CallOverrides): Promise<string>;
-
     burn(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     collect(
       params: {
@@ -1511,37 +965,11 @@ export class NonfungiblePositionManager extends Contract {
         amount1Max: BigNumberish;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "collect(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        recipient: string;
-        amount0Max: BigNumberish;
-        amount1Max: BigNumberish;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
+    >;
 
     createAndInitializePoolIfNecessary(
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "createAndInitializePoolIfNecessary(address,address,uint24,uint160)"(
       token0: string,
       token1: string,
       fee: BigNumberish,
@@ -1558,39 +986,13 @@ export class NonfungiblePositionManager extends Contract {
         deadline: BigNumberish;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "decreaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        liquidity: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
+    >;
 
     factory(overrides?: CallOverrides): Promise<string>;
 
-    "factory()"(overrides?: CallOverrides): Promise<string>;
-
     getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "getApproved(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -1605,41 +1007,15 @@ export class NonfungiblePositionManager extends Contract {
         deadline: BigNumberish;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      liquidity: BigNumber;
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-    }>;
-
-    "increaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      liquidity: BigNumber;
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber] & {
+        liquidity: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
+    >;
 
     isApprovedForAll(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
       overrides?: CallOverrides
@@ -1660,72 +1036,22 @@ export class NonfungiblePositionManager extends Contract {
         deadline: BigNumberish;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      tokenId: BigNumber;
-      liquidity: BigNumber;
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: BigNumber;
-    }>;
-
-    "mint(tuple)"(
-      params: {
-        token0: string;
-        token1: string;
-        fee: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        recipient: string;
-        deadline: BigNumberish;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      tokenId: BigNumber;
-      liquidity: BigNumber;
-      amount0: BigNumber;
-      amount1: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        tokenId: BigNumber;
+        liquidity: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
+    >;
 
     multicall(data: BytesLike[], overrides?: CallOverrides): Promise<string[]>;
 
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: CallOverrides
-    ): Promise<string[]>;
-
     name(overrides?: CallOverrides): Promise<string>;
-
-    "name()"(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "ownerOf(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     permit(
-      spender: string,
-      tokenId: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "permit(address,uint256,uint256,uint8,bytes32,bytes32)"(
       spender: string,
       tokenId: BigNumberish,
       deadline: BigNumberish,
@@ -1738,66 +1064,37 @@ export class NonfungiblePositionManager extends Contract {
     positions(
       tokenId: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      nonce: BigNumber;
-      operator: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickLower: number;
-      tickUpper: number;
-      liquidity: BigNumber;
-      feeGrowthInside0LastX128: BigNumber;
-      feeGrowthInside1LastX128: BigNumber;
-      tokensOwed0: BigNumber;
-      tokensOwed1: BigNumber;
-      0: BigNumber;
-      1: string;
-      2: string;
-      3: string;
-      4: number;
-      5: number;
-      6: number;
-      7: BigNumber;
-      8: BigNumber;
-      9: BigNumber;
-      10: BigNumber;
-      11: BigNumber;
-    }>;
-
-    "positions(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      nonce: BigNumber;
-      operator: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickLower: number;
-      tickUpper: number;
-      liquidity: BigNumber;
-      feeGrowthInside0LastX128: BigNumber;
-      feeGrowthInside1LastX128: BigNumber;
-      tokensOwed0: BigNumber;
-      tokensOwed1: BigNumber;
-      0: BigNumber;
-      1: string;
-      2: string;
-      3: string;
-      4: number;
-      5: number;
-      6: number;
-      7: BigNumber;
-      8: BigNumber;
-      9: BigNumber;
-      10: BigNumber;
-      11: BigNumber;
-    }>;
+    ): Promise<
+      [
+        BigNumber,
+        string,
+        string,
+        string,
+        number,
+        number,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        nonce: BigNumber;
+        operator: string;
+        token0: string;
+        token1: string;
+        fee: number;
+        tickLower: number;
+        tickUpper: number;
+        liquidity: BigNumber;
+        feeGrowthInside0LastX128: BigNumber;
+        feeGrowthInside1LastX128: BigNumber;
+        tokensOwed0: BigNumber;
+        tokensOwed1: BigNumber;
+      }
+    >;
 
     refundETH(overrides?: CallOverrides): Promise<void>;
-
-    "refundETH()"(overrides?: CallOverrides): Promise<void>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -1824,27 +1121,7 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "selfPermit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     selfPermitAllowed(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "selfPermitAllowed(address,uint256,uint256,uint8,bytes32,bytes32)"(
       token: string,
       nonce: BigNumberish,
       expiry: BigNumberish,
@@ -1864,27 +1141,7 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "selfPermitAllowedIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     selfPermitIfNecessary(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "selfPermitIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
       token: string,
       value: BigNumberish,
       deadline: BigNumberish,
@@ -1900,30 +1157,12 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setApprovalForAll(address,bool)"(
-      operator: string,
-      approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "supportsInterface(bytes4)"(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     sweepToken(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "sweepToken(address,uint256,address)"(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
@@ -1932,14 +1171,7 @@ export class NonfungiblePositionManager extends Contract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<string>;
-
     tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "tokenByIndex(uint256)"(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1950,31 +1182,11 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "tokenOfOwnerByIndex(address,uint256)"(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-    "tokenURI(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     transferFrom(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "transferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
@@ -1988,20 +1200,7 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "uniswapV3MintCallback(uint256,uint256,bytes)"(
-      amount0Owed: BigNumberish,
-      amount1Owed: BigNumberish,
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     unwrapWETH9(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "unwrapWETH9(uint256,address)"(
       amountMinimum: BigNumberish,
       recipient: string,
       overrides?: CallOverrides
@@ -2010,89 +1209,98 @@ export class NonfungiblePositionManager extends Contract {
 
   filters: {
     Approval(
-      owner: string | null,
-      approved: string | null,
-      tokenId: BigNumberish | null
-    ): EventFilter;
+      owner?: string | null,
+      approved?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; approved: string; tokenId: BigNumber }
+    >;
 
     ApprovalForAll(
-      owner: string | null,
-      operator: string | null,
-      approved: null
-    ): EventFilter;
+      owner?: string | null,
+      operator?: string | null,
+      approved?: null
+    ): TypedEventFilter<
+      [string, string, boolean],
+      { owner: string; operator: string; approved: boolean }
+    >;
 
     Collect(
-      tokenId: BigNumberish | null,
-      recipient: null,
-      amount0: null,
-      amount1: null
-    ): EventFilter;
+      tokenId?: BigNumberish | null,
+      recipient?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber, BigNumber],
+      {
+        tokenId: BigNumber;
+        recipient: string;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
+    >;
 
     DecreaseLiquidity(
-      tokenId: BigNumberish | null,
-      liquidity: null,
-      amount0: null,
-      amount1: null
-    ): EventFilter;
+      tokenId?: BigNumberish | null,
+      liquidity?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        tokenId: BigNumber;
+        liquidity: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
+    >;
 
     IncreaseLiquidity(
-      tokenId: BigNumberish | null,
-      liquidity: null,
-      amount0: null,
-      amount1: null
-    ): EventFilter;
+      tokenId?: BigNumberish | null,
+      liquidity?: null,
+      amount0?: null,
+      amount1?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        tokenId: BigNumber;
+        liquidity: BigNumber;
+        amount0: BigNumber;
+        amount1: BigNumber;
+      }
+    >;
 
     Transfer(
-      from: string | null,
-      to: string | null,
-      tokenId: BigNumberish | null
-    ): EventFilter;
+      from?: string | null,
+      to?: string | null,
+      tokenId?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; tokenId: BigNumber }
+    >;
   };
 
   estimateGas: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     WETH9(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "WETH9()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "approve(address,uint256)"(
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "balanceOf(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     baseURI(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "baseURI()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     collect(
@@ -2102,17 +1310,7 @@ export class NonfungiblePositionManager extends Contract {
         amount0Max: BigNumberish;
         amount1Max: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "collect(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        recipient: string;
-        amount0Max: BigNumberish;
-        amount1Max: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     createAndInitializePoolIfNecessary(
@@ -2120,15 +1318,7 @@ export class NonfungiblePositionManager extends Contract {
       token1: string,
       fee: BigNumberish,
       sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "createAndInitializePoolIfNecessary(address,address,uint24,uint160)"(
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     decreaseLiquidity(
@@ -2139,30 +1329,12 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "decreaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        liquidity: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     factory(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "factory()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getApproved(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2176,28 +1348,10 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "increaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isApprovedForAll(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
       overrides?: CallOverrides
@@ -2217,46 +1371,17 @@ export class NonfungiblePositionManager extends Contract {
         recipient: string;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "mint(tuple)"(
-      params: {
-        token0: string;
-        token1: string;
-        fee: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        recipient: string;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "name()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     ownerOf(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "ownerOf(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2268,17 +1393,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "permit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      spender: string,
-      tokenId: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     positions(
@@ -2286,20 +1401,15 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "positions(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    refundETH(overrides?: PayableOverrides): Promise<BigNumber>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -2307,7 +1417,7 @@ export class NonfungiblePositionManager extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     selfPermit(
@@ -2317,17 +1427,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "selfPermit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     selfPermitAllowed(
@@ -2337,17 +1437,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "selfPermitAllowed(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     selfPermitAllowedIfNecessary(
@@ -2357,17 +1447,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "selfPermitAllowedIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     selfPermitIfNecessary(
@@ -2377,37 +1457,16 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "selfPermitIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "setApprovalForAll(address,bool)"(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "supportsInterface(bytes4)"(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2416,26 +1475,12 @@ export class NonfungiblePositionManager extends Contract {
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "tokenByIndex(uint256)"(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2446,94 +1491,45 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "tokenOfOwnerByIndex(address,uint256)"(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "tokenURI(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "transferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     uniswapV3MintCallback(
       amount0Owed: BigNumberish,
       amount1Owed: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "uniswapV3MintCallback(uint256,uint256,bytes)"(
-      amount0Owed: BigNumberish,
-      amount1Owed: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "DOMAIN_SEPARATOR()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "PERMIT_TYPEHASH()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     WETH9(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "WETH9()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     approve(
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "approve(address,uint256)"(
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     balanceOf(
@@ -2541,23 +1537,11 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "balanceOf(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "baseURI()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     burn(
       tokenId: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     collect(
@@ -2567,17 +1551,7 @@ export class NonfungiblePositionManager extends Contract {
         amount0Max: BigNumberish;
         amount1Max: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "collect(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        recipient: string;
-        amount0Max: BigNumberish;
-        amount1Max: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     createAndInitializePoolIfNecessary(
@@ -2585,15 +1559,7 @@ export class NonfungiblePositionManager extends Contract {
       token1: string,
       fee: BigNumberish,
       sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "createAndInitializePoolIfNecessary(address,address,uint24,uint160)"(
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      sqrtPriceX96: BigNumberish,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     decreaseLiquidity(
@@ -2604,30 +1570,12 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "decreaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        liquidity: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "factory()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getApproved(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getApproved(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2641,28 +1589,10 @@ export class NonfungiblePositionManager extends Contract {
         amount1Min: BigNumberish;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "increaseLiquidity(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
-      owner: string,
-      operator: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "isApprovedForAll(address,address)"(
       owner: string,
       operator: string,
       overrides?: CallOverrides
@@ -2682,46 +1612,17 @@ export class NonfungiblePositionManager extends Contract {
         recipient: string;
         deadline: BigNumberish;
       },
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "mint(tuple)"(
-      params: {
-        token0: string;
-        token1: string;
-        fee: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        amount0Desired: BigNumberish;
-        amount1Desired: BigNumberish;
-        amount0Min: BigNumberish;
-        amount1Min: BigNumberish;
-        recipient: string;
-        deadline: BigNumberish;
-      },
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     ownerOf(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "ownerOf(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2733,17 +1634,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "permit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      spender: string,
-      tokenId: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     positions(
@@ -2751,20 +1642,15 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "positions(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    refundETH(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256,bytes)"(
@@ -2772,7 +1658,7 @@ export class NonfungiblePositionManager extends Contract {
       to: string,
       tokenId: BigNumberish,
       _data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     selfPermit(
@@ -2782,17 +1668,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "selfPermit(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     selfPermitAllowed(
@@ -2802,17 +1678,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "selfPermitAllowed(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     selfPermitAllowedIfNecessary(
@@ -2822,17 +1688,7 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "selfPermitAllowedIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     selfPermitIfNecessary(
@@ -2842,37 +1698,16 @@ export class NonfungiblePositionManager extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "selfPermitIfNecessary(address,uint256,uint256,uint8,bytes32,bytes32)"(
-      token: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setApprovalForAll(
       operator: string,
       approved: boolean,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "setApprovalForAll(address,bool)"(
-      operator: string,
-      approved: boolean,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "supportsInterface(bytes4)"(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2881,26 +1716,12 @@ export class NonfungiblePositionManager extends Contract {
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "tokenByIndex(uint256)"(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2911,64 +1732,31 @@ export class NonfungiblePositionManager extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "tokenOfOwnerByIndex(address,uint256)"(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     tokenURI(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "tokenURI(uint256)"(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "totalSupply()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "transferFrom(address,address,uint256)"(
-      from: string,
-      to: string,
-      tokenId: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     uniswapV3MintCallback(
       amount0Owed: BigNumberish,
       amount1Owed: BigNumberish,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "uniswapV3MintCallback(uint256,uint256,bytes)"(
-      amount0Owed: BigNumberish,
-      amount1Owed: BigNumberish,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

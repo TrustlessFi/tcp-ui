@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface SettlementInterface extends ethers.utils.Interface {
   functions: {
@@ -231,230 +230,129 @@ interface SettlementInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UnstakedNoConfidenceTokens"): EventFragment;
 }
 
-export class Settlement extends Contract {
+export class Settlement extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: SettlementInterface;
 
   functions: {
     SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD(
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     confirmNoPriceConfidence(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "confirmNoPriceConfidence()"(
-      overrides?: Overrides
+    confirmPrice(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    confirmPrice(overrides?: Overrides): Promise<ContractTransaction>;
+    deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    "confirmPrice()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-    deployer(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    ethPriceProvider(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "ethPriceProvider()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    ethPriceProvider(overrides?: CallOverrides): Promise<[string]>;
 
     getCollateralForZhu(
       positionID: BigNumberish,
       zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "getCollateralForZhu(uint64,uint256)"(
-      positionID: BigNumberish,
-      zhuCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    getRecentPrice(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { ethPrice: BigNumber }>;
 
-    getRecentPrice(overrides?: CallOverrides): Promise<{
-      ethPrice: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "getRecentPrice()"(overrides?: CallOverrides): Promise<{
-      ethPrice: BigNumber;
-      0: BigNumber;
-    }>;
-
-    governor(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "governor()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    governor(overrides?: CallOverrides): Promise<[string]>;
 
     init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    initializeSettlement(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "initializeSettlement()"(
-      overrides?: Overrides
+    initializeSettlement(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     noPriceConfidenceUserVotes(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
-    "noPriceConfidenceUserVotes(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    priceConfidence(overrides?: CallOverrides): Promise<[boolean]>;
 
-    priceConfidence(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "priceConfidence()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    priceDiscoveryStartTime(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "priceDiscoveryStartTime()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    priceDiscoveryStartTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     setEthPriceProvider(
       provider: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "setEthPriceProvider(address)"(
-      provider: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    settlementPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    settlementPrice(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "settlementPrice()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    settlementStage(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
-
-    "settlementStage()"(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
+    settlementStage(overrides?: CallOverrides): Promise<[number]>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    stop(overrides?: Overrides): Promise<ContractTransaction>;
+    stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
-    "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
+    tcp(overrides?: CallOverrides): Promise<[string]>;
 
-    stopped(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "stopped()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    tcp(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    thresholdMet(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "thresholdMet()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    thresholdMet(overrides?: CallOverrides): Promise<[boolean]>;
 
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    validUpdate(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
     withdrawCollateral(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "withdrawCollateral(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -462,144 +360,79 @@ export class Settlement extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()"(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  confirmNoPriceConfidence(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "confirmNoPriceConfidence()"(
-    overrides?: Overrides
+  confirmNoPriceConfidence(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  confirmPrice(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "confirmPrice()"(overrides?: Overrides): Promise<ContractTransaction>;
+  confirmPrice(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  "deployer()"(overrides?: CallOverrides): Promise<string>;
-
   ethPriceProvider(overrides?: CallOverrides): Promise<string>;
-
-  "ethPriceProvider()"(overrides?: CallOverrides): Promise<string>;
 
   getCollateralForZhu(
     positionID: BigNumberish,
     zhuCount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "getCollateralForZhu(uint64,uint256)"(
-    positionID: BigNumberish,
-    zhuCount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "getRecentPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   governor(overrides?: CallOverrides): Promise<string>;
 
-  "governor()"(overrides?: CallOverrides): Promise<string>;
-
-  init(_governor: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "init(address)"(
+  init(
     _governor: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  initializeSettlement(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "initializeSettlement()"(overrides?: Overrides): Promise<ContractTransaction>;
+  initializeSettlement(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   noPriceConfidenceUserVotes(
     arg0: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "noPriceConfidenceUserVotes(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   priceConfidence(overrides?: CallOverrides): Promise<boolean>;
-
-  "priceConfidence()"(overrides?: CallOverrides): Promise<boolean>;
 
   priceDiscoveryStartTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "priceDiscoveryStartTime()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   setEthPriceProvider(
     provider: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "setEthPriceProvider(address)"(
-    provider: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   settlementPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "settlementPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   settlementStage(overrides?: CallOverrides): Promise<number>;
-
-  "settlementStage()"(overrides?: CallOverrides): Promise<number>;
 
   stakeTokensForNoPriceConfidence(
     countTCPToStake: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "stakeTokensForNoPriceConfidence(uint256)"(
-    countTCPToStake: BigNumberish,
-    overrides?: Overrides
+  stop(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
-  "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
   tcp(overrides?: CallOverrides): Promise<string>;
-
-  "tcp()"(overrides?: CallOverrides): Promise<string>;
 
   thresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
-  "thresholdMet()"(overrides?: CallOverrides): Promise<boolean>;
-
   unstakeTokensForNoPriceConfidence(
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "unstakeTokensForNoPriceConfidence()"(
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  "validUpdate(bytes4)"(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   withdrawCollateral(
     positionID: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "withdrawCollateral(uint64)"(
-    positionID: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -607,25 +440,13 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     confirmNoPriceConfidence(overrides?: CallOverrides): Promise<void>;
-
-    "confirmNoPriceConfidence()"(overrides?: CallOverrides): Promise<void>;
 
     confirmPrice(overrides?: CallOverrides): Promise<void>;
 
-    "confirmPrice()"(overrides?: CallOverrides): Promise<void>;
-
     deployer(overrides?: CallOverrides): Promise<string>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<string>;
-
     ethPriceProvider(overrides?: CallOverrides): Promise<string>;
-
-    "ethPriceProvider()"(overrides?: CallOverrides): Promise<string>;
 
     getCollateralForZhu(
       positionID: BigNumberish,
@@ -633,150 +454,120 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "getCollateralForZhu(uint64,uint256)"(
-      positionID: BigNumberish,
-      zhuCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "getRecentPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
 
-    "governor()"(overrides?: CallOverrides): Promise<string>;
-
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
-    "init(address)"(
-      _governor: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     initializeSettlement(overrides?: CallOverrides): Promise<void>;
-
-    "initializeSettlement()"(overrides?: CallOverrides): Promise<void>;
 
     noPriceConfidenceUserVotes(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "noPriceConfidenceUserVotes(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     priceConfidence(overrides?: CallOverrides): Promise<boolean>;
 
-    "priceConfidence()"(overrides?: CallOverrides): Promise<boolean>;
-
     priceDiscoveryStartTime(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "priceDiscoveryStartTime()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     setEthPriceProvider(
       provider: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setEthPriceProvider(address)"(
-      provider: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     settlementPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "settlementPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     settlementStage(overrides?: CallOverrides): Promise<number>;
-
-    "settlementStage()"(overrides?: CallOverrides): Promise<number>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     stop(overrides?: CallOverrides): Promise<void>;
-
-    "stop()"(overrides?: CallOverrides): Promise<void>;
 
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
     tcp(overrides?: CallOverrides): Promise<string>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<string>;
 
     thresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
-    "thresholdMet()"(overrides?: CallOverrides): Promise<boolean>;
-
     unstakeTokensForNoPriceConfidence(overrides?: CallOverrides): Promise<void>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     withdrawCollateral(
-      positionID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "withdrawCollateral(uint64)"(
       positionID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
   filters: {
-    Initialized(governor: string | null): EventFilter;
+    Initialized(
+      governor?: string | null
+    ): TypedEventFilter<[string], { governor: string }>;
 
-    NoConfidenceConfirmed(account: string | null): EventFilter;
+    NoConfidenceConfirmed(
+      account?: string | null
+    ): TypedEventFilter<[string], { account: string }>;
 
     ParameterUpdatedAddress(
-      paramName: string | null,
-      _address: string | null
-    ): EventFilter;
+      paramName?: string | null,
+      _address?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { paramName: string; _address: string }
+    >;
 
     SettlementCollateralForZhu(
-      positionID: BigNumberish | null,
-      caller: string | null,
-      zhuCount: null,
-      collateralCount: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      caller?: string | null,
+      zhuCount?: null,
+      collateralCount?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber, BigNumber],
+      {
+        positionID: BigNumber;
+        caller: string;
+        zhuCount: BigNumber;
+        collateralCount: BigNumber;
+      }
+    >;
 
-    SettlementInitialized(settlementDiscoveryStartTime: null): EventFilter;
+    SettlementInitialized(
+      settlementDiscoveryStartTime?: null
+    ): TypedEventFilter<
+      [BigNumber],
+      { settlementDiscoveryStartTime: BigNumber }
+    >;
 
     SettlementWithdrawCollateral(
-      positionID: BigNumberish | null,
-      owner: string | null,
-      collateralToWithdraw: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      owner?: string | null,
+      collateralToWithdraw?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber],
+      { positionID: BigNumber; owner: string; collateralToWithdraw: BigNumber }
+    >;
 
-    StakedNoConfidenceTokens(account: string | null, count: null): EventFilter;
+    StakedNoConfidenceTokens(
+      account?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; count: BigNumber }
+    >;
 
-    Stopped(): EventFilter;
+    Stopped(): TypedEventFilter<[], {}>;
 
     UnstakedNoConfidenceTokens(
-      account: string | null,
-      count: null
-    ): EventFilter;
+      account?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; count: BigNumber }
+    >;
   };
 
   estimateGas: {
@@ -784,142 +575,79 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()"(
-      overrides?: CallOverrides
+    confirmNoPriceConfidence(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    confirmNoPriceConfidence(overrides?: Overrides): Promise<BigNumber>;
-
-    "confirmNoPriceConfidence()"(overrides?: Overrides): Promise<BigNumber>;
-
-    confirmPrice(overrides?: Overrides): Promise<BigNumber>;
-
-    "confirmPrice()"(overrides?: Overrides): Promise<BigNumber>;
+    confirmPrice(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     ethPriceProvider(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "ethPriceProvider()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getCollateralForZhu(
       positionID: BigNumberish,
       zhuCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "getCollateralForZhu(uint64,uint256)"(
-      positionID: BigNumberish,
-      zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "getRecentPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "governor()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(_governor: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "init(address)"(
+    init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    initializeSettlement(overrides?: Overrides): Promise<BigNumber>;
-
-    "initializeSettlement()"(overrides?: Overrides): Promise<BigNumber>;
+    initializeSettlement(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     noPriceConfidenceUserVotes(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "noPriceConfidenceUserVotes(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     priceConfidence(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "priceConfidence()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     priceDiscoveryStartTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "priceDiscoveryStartTime()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     setEthPriceProvider(
       provider: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "setEthPriceProvider(address)"(
-      provider: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     settlementPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "settlementPrice()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     settlementStage(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "settlementStage()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    stop(overrides?: Overrides): Promise<BigNumber>;
-
-    "stop()"(overrides?: Overrides): Promise<BigNumber>;
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tcp(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     thresholdMet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "thresholdMet()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     withdrawCollateral(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "withdrawCollateral(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -928,68 +656,35 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     confirmNoPriceConfidence(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "confirmNoPriceConfidence()"(
-      overrides?: Overrides
+    confirmPrice(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    confirmPrice(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "confirmPrice()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     ethPriceProvider(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "ethPriceProvider()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     getCollateralForZhu(
       positionID: BigNumberish,
       zhuCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "getCollateralForZhu(uint64,uint256)"(
-      positionID: BigNumberish,
-      zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getRecentPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "getRecentPrice()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "governor()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    initializeSettlement(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "initializeSettlement()"(
-      overrides?: Overrides
+    initializeSettlement(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     noPriceConfidenceUserVotes(
@@ -997,79 +692,38 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "noPriceConfidenceUserVotes(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     priceConfidence(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "priceConfidence()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     priceDiscoveryStartTime(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "priceDiscoveryStartTime()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     setEthPriceProvider(
       provider: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "setEthPriceProvider(address)"(
-      provider: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     settlementPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "settlementPrice()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     settlementStage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "settlementStage()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    stop(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     thresholdMet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "thresholdMet()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     validUpdate(
@@ -1077,19 +731,9 @@ export class Settlement extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     withdrawCollateral(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "withdrawCollateral(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

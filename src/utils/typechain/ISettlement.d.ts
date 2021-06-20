@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ISettlementInterface extends ethers.utils.Interface {
   functions: {
@@ -77,83 +76,85 @@ interface ISettlementInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "UnstakedNoConfidenceTokens"): EventFragment;
 }
 
-export class ISettlement extends Contract {
+export class ISettlement extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: ISettlementInterface;
 
   functions: {
     setEthPriceProvider(
       aggregator: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "setEthPriceProvider(address)"(
-      aggregator: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   setEthPriceProvider(
     aggregator: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "setEthPriceProvider(address)"(
-    aggregator: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   stakeTokensForNoPriceConfidence(
     countTCPToStake: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "stakeTokensForNoPriceConfidence(uint256)"(
-    countTCPToStake: BigNumberish,
-    overrides?: Overrides
+  stop(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   unstakeTokensForNoPriceConfidence(
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "unstakeTokensForNoPriceConfidence()"(
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -162,128 +163,114 @@ export class ISettlement extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setEthPriceProvider(address)"(
-      aggregator: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     stakeTokensForNoPriceConfidence(
-      countTCPToStake: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "stakeTokensForNoPriceConfidence(uint256)"(
       countTCPToStake: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     stop(overrides?: CallOverrides): Promise<void>;
 
-    "stop()"(overrides?: CallOverrides): Promise<void>;
-
     unstakeTokensForNoPriceConfidence(overrides?: CallOverrides): Promise<void>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {
-    NoConfidenceConfirmed(account: string | null): EventFilter;
+    NoConfidenceConfirmed(
+      account?: string | null
+    ): TypedEventFilter<[string], { account: string }>;
 
     ParameterUpdatedAddress(
-      paramName: string | null,
-      _address: string | null
-    ): EventFilter;
+      paramName?: string | null,
+      _address?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { paramName: string; _address: string }
+    >;
 
     SettlementCollateralForZhu(
-      positionID: BigNumberish | null,
-      caller: string | null,
-      zhuCount: null,
-      collateralCount: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      caller?: string | null,
+      zhuCount?: null,
+      collateralCount?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber, BigNumber],
+      {
+        positionID: BigNumber;
+        caller: string;
+        zhuCount: BigNumber;
+        collateralCount: BigNumber;
+      }
+    >;
 
-    SettlementInitialized(settlementDiscoveryStartTime: null): EventFilter;
+    SettlementInitialized(
+      settlementDiscoveryStartTime?: null
+    ): TypedEventFilter<
+      [BigNumber],
+      { settlementDiscoveryStartTime: BigNumber }
+    >;
 
     SettlementWithdrawCollateral(
-      positionID: BigNumberish | null,
-      owner: string | null,
-      collateralToWithdraw: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      owner?: string | null,
+      collateralToWithdraw?: null
+    ): TypedEventFilter<
+      [BigNumber, string, BigNumber],
+      { positionID: BigNumber; owner: string; collateralToWithdraw: BigNumber }
+    >;
 
-    StakedNoConfidenceTokens(account: string | null, count: null): EventFilter;
+    StakedNoConfidenceTokens(
+      account?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; count: BigNumber }
+    >;
 
     UnstakedNoConfidenceTokens(
-      account: string | null,
-      count: null
-    ): EventFilter;
+      account?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { account: string; count: BigNumber }
+    >;
   };
 
   estimateGas: {
     setEthPriceProvider(
       aggregator: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "setEthPriceProvider(address)"(
-      aggregator: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    stop(overrides?: Overrides): Promise<BigNumber>;
-
-    "stop()"(overrides?: Overrides): Promise<BigNumber>;
 
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     setEthPriceProvider(
       aggregator: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "setEthPriceProvider(address)"(
-      aggregator: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     stakeTokensForNoPriceConfidence(
       countTCPToStake: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "stakeTokensForNoPriceConfidence(uint256)"(
-      countTCPToStake: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    stop(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     unstakeTokensForNoPriceConfidence(
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "unstakeTokensForNoPriceConfidence()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

@@ -9,15 +9,14 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface FullMathEchidnaTestInterface extends ethers.utils.Interface {
   functions: {
@@ -55,16 +54,46 @@ interface FullMathEchidnaTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class FullMathEchidnaTest extends Contract {
+export class FullMathEchidnaTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: FullMathEchidnaTestInterface;
 
@@ -74,64 +103,24 @@ export class FullMathEchidnaTest extends Contract {
       y: BigNumberish,
       d: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "checkMulDiv(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     checkMulDivRounding(
       x: BigNumberish,
       y: BigNumberish,
       d: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "checkMulDivRounding(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     checkMulDivRoundingUp(
       x: BigNumberish,
       y: BigNumberish,
       d: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "checkMulDivRoundingUp(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
   };
 
   checkMulDiv(
-    x: BigNumberish,
-    y: BigNumberish,
-    d: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "checkMulDiv(uint256,uint256,uint256)"(
     x: BigNumberish,
     y: BigNumberish,
     d: BigNumberish,
@@ -145,21 +134,7 @@ export class FullMathEchidnaTest extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "checkMulDivRounding(uint256,uint256,uint256)"(
-    x: BigNumberish,
-    y: BigNumberish,
-    d: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   checkMulDivRoundingUp(
-    x: BigNumberish,
-    y: BigNumberish,
-    d: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "checkMulDivRoundingUp(uint256,uint256,uint256)"(
     x: BigNumberish,
     y: BigNumberish,
     d: BigNumberish,
@@ -174,13 +149,6 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "checkMulDiv(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     checkMulDivRounding(
       x: BigNumberish,
       y: BigNumberish,
@@ -188,21 +156,7 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "checkMulDivRounding(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     checkMulDivRoundingUp(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "checkMulDivRoundingUp(uint256,uint256,uint256)"(
       x: BigNumberish,
       y: BigNumberish,
       d: BigNumberish,
@@ -220,13 +174,6 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "checkMulDiv(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     checkMulDivRounding(
       x: BigNumberish,
       y: BigNumberish,
@@ -234,21 +181,7 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "checkMulDivRounding(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     checkMulDivRoundingUp(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "checkMulDivRoundingUp(uint256,uint256,uint256)"(
       x: BigNumberish,
       y: BigNumberish,
       d: BigNumberish,
@@ -264,13 +197,6 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "checkMulDiv(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     checkMulDivRounding(
       x: BigNumberish,
       y: BigNumberish,
@@ -278,21 +204,7 @@ export class FullMathEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "checkMulDivRounding(uint256,uint256,uint256)"(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     checkMulDivRoundingUp(
-      x: BigNumberish,
-      y: BigNumberish,
-      d: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "checkMulDivRoundingUp(uint256,uint256,uint256)"(
       x: BigNumberish,
       y: BigNumberish,
       d: BigNumberish,

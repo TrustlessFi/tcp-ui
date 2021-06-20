@@ -9,18 +9,17 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface Ierc20PermitAllowedInterface extends ethers.utils.Interface {
+interface IERC20PermitAllowedInterface extends ethers.utils.Interface {
   functions: {
     "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)": FunctionFragment;
   };
@@ -44,18 +43,48 @@ interface Ierc20PermitAllowedInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class Ierc20PermitAllowed extends Contract {
+export class IERC20PermitAllowed extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: Ierc20PermitAllowedInterface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: IERC20PermitAllowedInterface;
 
   functions: {
     permit(
@@ -67,19 +96,7 @@ export class Ierc20PermitAllowed extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"(
-      holder: string,
-      spender: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      allowed: boolean,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -92,35 +109,11 @@ export class Ierc20PermitAllowed extends Contract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"(
-    holder: string,
-    spender: string,
-    nonce: BigNumberish,
-    expiry: BigNumberish,
-    allowed: boolean,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     permit(
-      holder: string,
-      spender: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      allowed: boolean,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"(
       holder: string,
       spender: string,
       nonce: BigNumberish,
@@ -145,19 +138,7 @@ export class Ierc20PermitAllowed extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"(
-      holder: string,
-      spender: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      allowed: boolean,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -171,19 +152,7 @@ export class Ierc20PermitAllowed extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"(
-      holder: string,
-      spender: string,
-      nonce: BigNumberish,
-      expiry: BigNumberish,
-      allowed: boolean,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

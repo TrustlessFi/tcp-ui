@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface GovernedInterface extends ethers.utils.Interface {
   functions: {
@@ -56,186 +55,125 @@ interface GovernedInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
 }
 
-export class Governed extends Contract {
+export class Governed extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: GovernedInterface;
 
   functions: {
-    deployer(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    governor(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "governor()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    governor(overrides?: CallOverrides): Promise<[string]>;
 
     init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
-    stopped(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "stopped()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    validUpdate(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  "deployer()"(overrides?: CallOverrides): Promise<string>;
-
   governor(overrides?: CallOverrides): Promise<string>;
 
-  "governor()"(overrides?: CallOverrides): Promise<string>;
-
-  init(_governor: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "init(address)"(
+  init(
     _governor: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
-  "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-  "validUpdate(bytes4)"(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   callStatic: {
     deployer(overrides?: CallOverrides): Promise<string>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<string>;
-
     governor(overrides?: CallOverrides): Promise<string>;
-
-    "governor()"(overrides?: CallOverrides): Promise<string>;
 
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
-    "init(address)"(
-      _governor: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
   };
 
   filters: {
-    Initialized(governor: string | null): EventFilter;
+    Initialized(
+      governor?: string | null
+    ): TypedEventFilter<[string], { governor: string }>;
 
-    Stopped(): EventFilter;
+    Stopped(): TypedEventFilter<[], {}>;
   };
 
   estimateGas: {
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "governor()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(_governor: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "init(address)"(
+    init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "governor()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
       _governor: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     validUpdate(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "validUpdate(bytes4)"(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

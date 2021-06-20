@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface GovernorInterface extends ethers.utils.Interface {
   functions: {
@@ -629,252 +628,133 @@ interface GovernorInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ShutdownTokensUnlocked"): EventFragment;
 }
 
-export class Governor extends Contract {
+export class Governor extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: GovernorInterface;
 
   functions: {
-    EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    EMERGENCY_SHUTDOWN_THRESHOLD(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "EMERGENCY_SHUTDOWN_THRESHOLD()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    GENESIS_PERIODS(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    GENESIS_PERIODS(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    NAME(overrides?: CallOverrides): Promise<[string]>;
 
-    "GENESIS_PERIODS()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    NAME(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "NAME()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    accounting(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "accounting()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    accounting(overrides?: CallOverrides): Promise<[string]>;
 
     addReferencePoolToProtocol(
       pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "addReferencePoolToProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    auctions(overrides?: CallOverrides): Promise<[string]>;
 
-    auctions(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    collateralPool(overrides?: CallOverrides): Promise<[string]>;
 
-    "auctions()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    contractsInitialized(overrides?: CallOverrides): Promise<[boolean]>;
 
-    collateralPool(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    currentDailyRewardCount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "collateralPool()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    currentPeriod(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { period: BigNumber }>;
 
-    contractsInitialized(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "contractsInitialized()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    currentDailyRewardCount(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "currentDailyRewardCount()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    currentPeriod(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "currentPeriod()"(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
-
-    currentPhase(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
-
-    "currentPhase()"(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
+    currentPhase(overrides?: CallOverrides): Promise<[number]>;
 
     distributeLiquidityRewards(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "distributeLiquidityRewards(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    distributedTCP(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    distributionScheduleTokens(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "distributedTCP()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    distributionScheduleTokens(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "distributionScheduleTokens()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "emergencyShutdownThresholdMet()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    emergencyShutdownThresholdMet(
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     emergencyShutdownTokensLocked(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
-    "emergencyShutdownTokensLocked(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    enforcedDecentralization(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "enforcedDecentralization()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    enforcedDecentralization(overrides?: CallOverrides): Promise<[string]>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     executeEmergencyShutdown(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "executeEmergencyShutdown()"(
-      overrides?: Overrides
+    executeShutdown(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    executeShutdown(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "executeShutdown()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-    firstPeriod(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getIsGenesisPhaseAndRequireAuthIfSo(
       caller: string,
       ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
       overrides?: CallOverrides
-    ): Promise<{
-      isGenesis: boolean;
-      0: boolean;
-    }>;
+    ): Promise<[boolean] & { isGenesis: boolean }>;
 
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)"(
-      caller: string,
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: CallOverrides
-    ): Promise<{
-      isGenesis: boolean;
-      0: boolean;
-    }>;
-
-    getReferencePools(overrides?: CallOverrides): Promise<{
-      0: string[];
-    }>;
-
-    "getReferencePools()"(overrides?: CallOverrides): Promise<{
-      0: string[];
-    }>;
+    getReferencePools(overrides?: CallOverrides): Promise<[string[]]>;
 
     getSignaturePayloadForUserAddress(
       userAddress: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "getSignaturePayloadForUserAddress(address)"(
-      userAddress: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     increaseLiquidationAccountRewards(
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "increaseLiquidationAccountRewards(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     initContracts(
@@ -888,629 +768,244 @@ export class Governor extends Contract {
       _protocolLock: string,
       _rewards: string,
       _settlement: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "initContracts(address,address,address,address,address,address,address,address,address,address)"(
-      _auctions: string,
-      _tcp: string,
-      _lend: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     initPools(
       _protocolPool: string,
       _collateralPool: string,
       _referencePool: string[],
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "initPools(address,address,address[])"(
-      _protocolPool: string,
-      _collateralPool: string,
-      _referencePool: string[],
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    isShutdown(overrides?: CallOverrides): Promise<[boolean]>;
 
-    isShutdown(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    lend(overrides?: CallOverrides): Promise<[string]>;
 
-    "isShutdown()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    lendZhu(overrides?: CallOverrides): Promise<[string]>;
 
-    lend(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    liquidationAccountRewards(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "lend()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    lendZhu(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "lendZhu()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    liquidationAccountRewards(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "liquidationAccountRewards()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    liquidations(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "liquidations()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    liquidations(overrides?: CallOverrides): Promise<[string]>;
 
     lockTokensForEmergencyShutdown(
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "lockTokensForEmergencyShutdown(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    market(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "market()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    market(overrides?: CallOverrides): Promise<[string]>;
 
     mintTCP(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "mintTCP(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    periodLength(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "periodLength()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     poolRemovalTime(
       arg0: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
-    "poolRemovalTime(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    pricePoolsInitialized(overrides?: CallOverrides): Promise<[boolean]>;
 
-    pricePoolsInitialized(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    prices(overrides?: CallOverrides): Promise<[string]>;
 
-    "pricePoolsInitialized()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    protocolDeployer(overrides?: CallOverrides): Promise<[string]>;
 
-    prices(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    protocolLock(overrides?: CallOverrides): Promise<[string]>;
 
-    "prices()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    protocolPool(overrides?: CallOverrides): Promise<[string]>;
 
-    protocolDeployer(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "protocolDeployer()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    protocolLock(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "protocolLock()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    protocolPool(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "protocolPool()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    rates(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "rates()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    rates(overrides?: CallOverrides): Promise<[string]>;
 
     referencePool(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "referencePool(uint256)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     removeReferencePoolFromProtocol(
       pool: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "removeReferencePoolFromProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     requireDecreaseDebtAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireDecreaseDebtAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireLentZhuCountAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireLentZhuCountAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requirePositionWriteAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requirePositionWriteAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireStoredCollateralAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireStoredCollateralAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireUpdatePositionAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireValidAction(
       target: string,
       signature: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireValidAction(address,string)"(
-      target: string,
-      signature: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireZhuMintingAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "requireZhuMintingAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     requireZhuReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
-    "requireZhuReservesBurnAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    rewards(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "rewards()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    rewards(overrides?: CallOverrides): Promise<[string]>;
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "setPhaseOneStartTime(uint64)"(
-      phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    settlement(overrides?: CallOverrides): Promise<[string]>;
 
-    settlement(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    shutdownTime(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "settlement()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    tcp(overrides?: CallOverrides): Promise<[string]>;
 
-    shutdownTime(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    tcpMinted(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "shutdownTime()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    timelock(overrides?: CallOverrides): Promise<[string]>;
 
-    tcp(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    tcpMinted(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "tcpMinted()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    timelock(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "timelock()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    totalLiquidityRewards(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "totalLiquidityRewards()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    totalLiquidityRewards(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     unlockTokensForEmergencyShutdown(
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "unlockTokensForEmergencyShutdown()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeAuctions(
       _auctions: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeAuctions(address)"(
-      _auctions: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeLend(
       _lend: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeLend(address)"(
-      _lend: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeLiquidations(
       _liquidations: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeLiquidations(address)"(
-      _liquidations: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeMarket(
       _market: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeMarket(address)"(
-      _market: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradePrices(
       _prices: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradePrices(address)"(
-      _prices: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeProtocol(
       newGovernor: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeProtocol(address)"(
-      newGovernor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeRates(
       _rates: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeRates(address)"(
-      _rates: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeRewards(
       _rewards: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "upgradeRewards(address)"(
-      _rewards: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     upgradeSettlement(
       _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "upgradeSettlement(address)"(
-      _settlement: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
-    validUpdate(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    zhu(overrides?: CallOverrides): Promise<[string]>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    zhu(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "zhu()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "zhuPositionNFT()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    zhuPositionNFT(overrides?: CallOverrides): Promise<[string]>;
   };
 
   EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "EMERGENCY_SHUTDOWN_THRESHOLD()"(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   GENESIS_PERIODS(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "GENESIS_PERIODS()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   NAME(overrides?: CallOverrides): Promise<string>;
 
-  "NAME()"(overrides?: CallOverrides): Promise<string>;
-
   accounting(overrides?: CallOverrides): Promise<string>;
-
-  "accounting()"(overrides?: CallOverrides): Promise<string>;
 
   addReferencePoolToProtocol(
     pool: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "addReferencePoolToProtocol(address)"(
-    pool: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   auctions(overrides?: CallOverrides): Promise<string>;
 
-  "auctions()"(overrides?: CallOverrides): Promise<string>;
-
   collateralPool(overrides?: CallOverrides): Promise<string>;
-
-  "collateralPool()"(overrides?: CallOverrides): Promise<string>;
 
   contractsInitialized(overrides?: CallOverrides): Promise<boolean>;
 
-  "contractsInitialized()"(overrides?: CallOverrides): Promise<boolean>;
-
   currentDailyRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "currentDailyRewardCount()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   currentPhase(overrides?: CallOverrides): Promise<number>;
-
-  "currentPhase()"(overrides?: CallOverrides): Promise<number>;
 
   distributeLiquidityRewards(
     to: string,
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "distributeLiquidityRewards(address,uint256)"(
-    to: string,
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "distributedTCP()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "distributionScheduleTokens()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
-
-  "emergencyShutdownThresholdMet()"(
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   emergencyShutdownTokensLocked(
     arg0: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "emergencyShutdownTokensLocked(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   enforcedDecentralization(overrides?: CallOverrides): Promise<string>;
-
-  "enforcedDecentralization()"(overrides?: CallOverrides): Promise<string>;
 
   execute(
     target: string,
     signature: string,
     data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "execute(address,string,bytes)"(
-    target: string,
-    signature: string,
-    data: BytesLike,
-    overrides?: Overrides
+  executeEmergencyShutdown(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  executeEmergencyShutdown(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "executeEmergencyShutdown()"(
-    overrides?: Overrides
+  executeShutdown(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  executeShutdown(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "executeShutdown()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   getIsGenesisPhaseAndRequireAuthIfSo(
     caller: string,
@@ -1518,34 +1013,16 @@ export class Governor extends Contract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)"(
-    caller: string,
-    ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   getReferencePools(overrides?: CallOverrides): Promise<string[]>;
-
-  "getReferencePools()"(overrides?: CallOverrides): Promise<string[]>;
 
   getSignaturePayloadForUserAddress(
     userAddress: string,
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "getSignaturePayloadForUserAddress(address)"(
-    userAddress: string,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   increaseLiquidationAccountRewards(
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "increaseLiquidationAccountRewards(uint256)"(
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   initContracts(
@@ -1559,141 +1036,63 @@ export class Governor extends Contract {
     _protocolLock: string,
     _rewards: string,
     _settlement: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "initContracts(address,address,address,address,address,address,address,address,address,address)"(
-    _auctions: string,
-    _tcp: string,
-    _lend: string,
-    _liquidations: string,
-    _market: string,
-    _rates: string,
-    _prices: string,
-    _protocolLock: string,
-    _rewards: string,
-    _settlement: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   initPools(
     _protocolPool: string,
     _collateralPool: string,
     _referencePool: string[],
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "initPools(address,address,address[])"(
-    _protocolPool: string,
-    _collateralPool: string,
-    _referencePool: string[],
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-  "isShutdown()"(overrides?: CallOverrides): Promise<boolean>;
-
   lend(overrides?: CallOverrides): Promise<string>;
-
-  "lend()"(overrides?: CallOverrides): Promise<string>;
 
   lendZhu(overrides?: CallOverrides): Promise<string>;
 
-  "lendZhu()"(overrides?: CallOverrides): Promise<string>;
-
   liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "liquidationAccountRewards()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   liquidations(overrides?: CallOverrides): Promise<string>;
 
-  "liquidations()"(overrides?: CallOverrides): Promise<string>;
-
   lockTokensForEmergencyShutdown(
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "lockTokensForEmergencyShutdown(uint256)"(
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   market(overrides?: CallOverrides): Promise<string>;
 
-  "market()"(overrides?: CallOverrides): Promise<string>;
-
   mintTCP(
     to: string,
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "mintTCP(address,uint256)"(
-    to: string,
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   poolRemovalTime(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "poolRemovalTime(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   pricePoolsInitialized(overrides?: CallOverrides): Promise<boolean>;
 
-  "pricePoolsInitialized()"(overrides?: CallOverrides): Promise<boolean>;
-
   prices(overrides?: CallOverrides): Promise<string>;
-
-  "prices()"(overrides?: CallOverrides): Promise<string>;
 
   protocolDeployer(overrides?: CallOverrides): Promise<string>;
 
-  "protocolDeployer()"(overrides?: CallOverrides): Promise<string>;
-
   protocolLock(overrides?: CallOverrides): Promise<string>;
-
-  "protocolLock()"(overrides?: CallOverrides): Promise<string>;
 
   protocolPool(overrides?: CallOverrides): Promise<string>;
 
-  "protocolPool()"(overrides?: CallOverrides): Promise<string>;
-
   rates(overrides?: CallOverrides): Promise<string>;
-
-  "rates()"(overrides?: CallOverrides): Promise<string>;
 
   referencePool(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "referencePool(uint256)"(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   removeReferencePoolFromProtocol(
     pool: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "removeReferencePoolFromProtocol(address)"(
-    pool: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   requireDecreaseDebtAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "requireDecreaseDebtAccess(address)"(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -1703,17 +1102,7 @@ export class Governor extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "requireLentZhuCountAccess(address)"(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   requirePositionWriteAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "requirePositionWriteAccess(address)"(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -1723,17 +1112,7 @@ export class Governor extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "requireStoredCollateralAccess(address)"(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   requireUpdatePositionAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "requireUpdatePositionAccess(address)"(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -1744,18 +1123,7 @@ export class Governor extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "requireValidAction(address,string)"(
-    target: string,
-    signature: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   requireZhuMintingAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "requireZhuMintingAccess(address)"(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -1765,214 +1133,105 @@ export class Governor extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "requireZhuReservesBurnAccess(address)"(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   rewards(overrides?: CallOverrides): Promise<string>;
-
-  "rewards()"(overrides?: CallOverrides): Promise<string>;
 
   setPhaseOneStartTime(
     phaseOneStartTime: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "setPhaseOneStartTime(uint64)"(
-    phaseOneStartTime: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   settlement(overrides?: CallOverrides): Promise<string>;
 
-  "settlement()"(overrides?: CallOverrides): Promise<string>;
-
   shutdownTime(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "shutdownTime()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   tcp(overrides?: CallOverrides): Promise<string>;
 
-  "tcp()"(overrides?: CallOverrides): Promise<string>;
-
   tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "tcpMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   timelock(overrides?: CallOverrides): Promise<string>;
 
-  "timelock()"(overrides?: CallOverrides): Promise<string>;
-
   totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "totalLiquidityRewards()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   unlockTokensForEmergencyShutdown(
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "unlockTokensForEmergencyShutdown()"(
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeAuctions(
     _auctions: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeAuctions(address)"(
-    _auctions: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeLend(
     _lend: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeLend(address)"(
-    _lend: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeLiquidations(
     _liquidations: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeLiquidations(address)"(
-    _liquidations: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeMarket(
     _market: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeMarket(address)"(
-    _market: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradePrices(
     _prices: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradePrices(address)"(
-    _prices: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeProtocol(
     newGovernor: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeProtocol(address)"(
-    newGovernor: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeRates(
     _rates: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeRates(address)"(
-    _rates: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeRewards(
     _rewards: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeRewards(address)"(
-    _rewards: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   upgradeSettlement(
     _settlement: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "upgradeSettlement(address)"(
-    _settlement: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  "validUpdate(bytes4)"(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   zhu(overrides?: CallOverrides): Promise<string>;
 
-  "zhu()"(overrides?: CallOverrides): Promise<string>;
-
   zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
-
-  "zhuPositionNFT()"(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "EMERGENCY_SHUTDOWN_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     GENESIS_PERIODS(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "GENESIS_PERIODS()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     NAME(overrides?: CallOverrides): Promise<string>;
 
-    "NAME()"(overrides?: CallOverrides): Promise<string>;
-
     accounting(overrides?: CallOverrides): Promise<string>;
-
-    "accounting()"(overrides?: CallOverrides): Promise<string>;
 
     addReferencePoolToProtocol(
       pool: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "addReferencePoolToProtocol(address)"(
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     auctions(overrides?: CallOverrides): Promise<string>;
-
-    "auctions()"(overrides?: CallOverrides): Promise<string>;
 
     collateralPool(overrides?: CallOverrides): Promise<string>;
 
-    "collateralPool()"(overrides?: CallOverrides): Promise<string>;
-
     contractsInitialized(overrides?: CallOverrides): Promise<boolean>;
-
-    "contractsInitialized()"(overrides?: CallOverrides): Promise<boolean>;
 
     currentDailyRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "currentDailyRewardCount()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     currentPhase(overrides?: CallOverrides): Promise<number>;
-
-    "currentPhase()"(overrides?: CallOverrides): Promise<number>;
 
     distributeLiquidityRewards(
       to: string,
@@ -1980,77 +1239,31 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "distributeLiquidityRewards(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "distributedTCP()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "distributionScheduleTokens()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
-
-    "emergencyShutdownThresholdMet()"(
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     emergencyShutdownTokensLocked(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "emergencyShutdownTokensLocked(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     enforcedDecentralization(overrides?: CallOverrides): Promise<string>;
-
-    "enforcedDecentralization()"(overrides?: CallOverrides): Promise<string>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      success: boolean;
-      returnData: string;
-      0: boolean;
-      1: string;
-    }>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      success: boolean;
-      returnData: string;
-      0: boolean;
-      1: string;
-    }>;
+    ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
 
     executeEmergencyShutdown(overrides?: CallOverrides): Promise<void>;
 
-    "executeEmergencyShutdown()"(overrides?: CallOverrides): Promise<void>;
-
     executeShutdown(overrides?: CallOverrides): Promise<void>;
 
-    "executeShutdown()"(overrides?: CallOverrides): Promise<void>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getIsGenesisPhaseAndRequireAuthIfSo(
       caller: string,
@@ -2058,32 +1271,14 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)"(
-      caller: string,
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     getReferencePools(overrides?: CallOverrides): Promise<string[]>;
-
-    "getReferencePools()"(overrides?: CallOverrides): Promise<string[]>;
 
     getSignaturePayloadForUserAddress(
       userAddress: string,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "getSignaturePayloadForUserAddress(address)"(
-      userAddress: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     increaseLiquidationAccountRewards(
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "increaseLiquidationAccountRewards(uint256)"(
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -2102,28 +1297,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "initContracts(address,address,address,address,address,address,address,address,address,address)"(
-      _auctions: string,
-      _tcp: string,
-      _lend: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     initPools(
-      _protocolPool: string,
-      _collateralPool: string,
-      _referencePool: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "initPools(address,address,address[])"(
       _protocolPool: string,
       _collateralPool: string,
       _referencePool: string[],
@@ -2132,39 +1306,20 @@ export class Governor extends Contract {
 
     isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-    "isShutdown()"(overrides?: CallOverrides): Promise<boolean>;
-
     lend(overrides?: CallOverrides): Promise<string>;
-
-    "lend()"(overrides?: CallOverrides): Promise<string>;
 
     lendZhu(overrides?: CallOverrides): Promise<string>;
 
-    "lendZhu()"(overrides?: CallOverrides): Promise<string>;
-
     liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "liquidationAccountRewards()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     liquidations(overrides?: CallOverrides): Promise<string>;
-
-    "liquidations()"(overrides?: CallOverrides): Promise<string>;
 
     lockTokensForEmergencyShutdown(
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "lockTokensForEmergencyShutdown(uint256)"(
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     market(overrides?: CallOverrides): Promise<string>;
-
-    "market()"(overrides?: CallOverrides): Promise<string>;
 
     mintTCP(
       to: string,
@@ -2172,56 +1327,26 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "mintTCP(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolRemovalTime(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "poolRemovalTime(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     pricePoolsInitialized(overrides?: CallOverrides): Promise<boolean>;
-
-    "pricePoolsInitialized()"(overrides?: CallOverrides): Promise<boolean>;
 
     prices(overrides?: CallOverrides): Promise<string>;
 
-    "prices()"(overrides?: CallOverrides): Promise<string>;
-
     protocolDeployer(overrides?: CallOverrides): Promise<string>;
-
-    "protocolDeployer()"(overrides?: CallOverrides): Promise<string>;
 
     protocolLock(overrides?: CallOverrides): Promise<string>;
 
-    "protocolLock()"(overrides?: CallOverrides): Promise<string>;
-
     protocolPool(overrides?: CallOverrides): Promise<string>;
-
-    "protocolPool()"(overrides?: CallOverrides): Promise<string>;
 
     rates(overrides?: CallOverrides): Promise<string>;
 
-    "rates()"(overrides?: CallOverrides): Promise<string>;
-
     referencePool(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "referencePool(uint256)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -2231,17 +1356,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "removeReferencePoolFromProtocol(address)"(
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "requireDecreaseDebtAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -2251,17 +1366,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "requireLentZhuCountAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "requirePositionWriteAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -2271,17 +1376,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "requireStoredCollateralAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     requireUpdatePositionAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "requireUpdatePositionAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -2292,18 +1387,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "requireValidAction(address,string)"(
-      target: string,
-      signature: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "requireZhuMintingAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -2313,245 +1397,142 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "requireZhuReservesBurnAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     rewards(overrides?: CallOverrides): Promise<string>;
-
-    "rewards()"(overrides?: CallOverrides): Promise<string>;
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setPhaseOneStartTime(uint64)"(
-      phaseOneStartTime: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     settlement(overrides?: CallOverrides): Promise<string>;
-
-    "settlement()"(overrides?: CallOverrides): Promise<string>;
 
     shutdownTime(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "shutdownTime()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tcp(overrides?: CallOverrides): Promise<string>;
-
-    "tcp()"(overrides?: CallOverrides): Promise<string>;
 
     tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "tcpMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     timelock(overrides?: CallOverrides): Promise<string>;
-
-    "timelock()"(overrides?: CallOverrides): Promise<string>;
 
     totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalLiquidityRewards()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     unlockTokensForEmergencyShutdown(overrides?: CallOverrides): Promise<void>;
-
-    "unlockTokensForEmergencyShutdown()"(
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     upgradeAuctions(
       _auctions: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "upgradeAuctions(address)"(
-      _auctions: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     upgradeLend(_lend: string, overrides?: CallOverrides): Promise<void>;
-
-    "upgradeLend(address)"(
-      _lend: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     upgradeLiquidations(
       _liquidations: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "upgradeLiquidations(address)"(
-      _liquidations: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     upgradeMarket(_market: string, overrides?: CallOverrides): Promise<void>;
 
-    "upgradeMarket(address)"(
-      _market: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     upgradePrices(_prices: string, overrides?: CallOverrides): Promise<void>;
-
-    "upgradePrices(address)"(
-      _prices: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     upgradeProtocol(
       newGovernor: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "upgradeProtocol(address)"(
-      newGovernor: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     upgradeRates(_rates: string, overrides?: CallOverrides): Promise<void>;
 
-    "upgradeRates(address)"(
-      _rates: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     upgradeRewards(_rewards: string, overrides?: CallOverrides): Promise<void>;
-
-    "upgradeRewards(address)"(
-      _rewards: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     upgradeSettlement(
       _settlement: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "upgradeSettlement(address)"(
-      _settlement: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     zhu(overrides?: CallOverrides): Promise<string>;
 
-    "zhu()"(overrides?: CallOverrides): Promise<string>;
-
     zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
-
-    "zhuPositionNFT()"(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    AdminUpdated(from: string | null, to: string | null): EventFilter;
+    AdminUpdated(
+      from?: string | null,
+      to?: string | null
+    ): TypedEventFilter<[string, string], { from: string; to: string }>;
 
     ContractUpgraded(
-      contractName: string | null,
-      contractAddress: string | null
-    ): EventFilter;
+      contractName?: string | null,
+      contractAddress?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { contractName: string; contractAddress: string }
+    >;
 
-    EmergencyShutdownExecuted(shutdownTime: null): EventFilter;
+    EmergencyShutdownExecuted(
+      shutdownTime?: null
+    ): TypedEventFilter<[BigNumber], { shutdownTime: BigNumber }>;
 
-    ProtocolUpgraded(newGovernor: string | null): EventFilter;
+    ProtocolUpgraded(
+      newGovernor?: string | null
+    ): TypedEventFilter<[string], { newGovernor: string }>;
 
-    ShutdownExecuted(): EventFilter;
+    ShutdownExecuted(): TypedEventFilter<[], {}>;
 
-    ShutdownTokensLocked(locker: string | null, count: null): EventFilter;
+    ShutdownTokensLocked(
+      locker?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { locker: string; count: BigNumber }
+    >;
 
-    ShutdownTokensUnlocked(locker: string | null, count: null): EventFilter;
+    ShutdownTokensUnlocked(
+      locker?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { locker: string; count: BigNumber }
+    >;
   };
 
   estimateGas: {
     EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "EMERGENCY_SHUTDOWN_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     GENESIS_PERIODS(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "GENESIS_PERIODS()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     NAME(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "NAME()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     accounting(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "accounting()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     addReferencePoolToProtocol(
       pool: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "addReferencePoolToProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     auctions(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "auctions()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "collateralPool()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     contractsInitialized(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "contractsInitialized()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     currentDailyRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "currentDailyRewardCount()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     currentPhase(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "currentPhase()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     distributeLiquidityRewards(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "distributeLiquidityRewards(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "distributedTCP()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "distributionScheduleTokens()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     emergencyShutdownThresholdMet(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "emergencyShutdownThresholdMet()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -2560,40 +1541,24 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "emergencyShutdownTokensLocked(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     enforcedDecentralization(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "enforcedDecentralization()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+    executeEmergencyShutdown(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    executeEmergencyShutdown(overrides?: Overrides): Promise<BigNumber>;
-
-    "executeEmergencyShutdown()"(overrides?: Overrides): Promise<BigNumber>;
-
-    executeShutdown(overrides?: Overrides): Promise<BigNumber>;
-
-    "executeShutdown()"(overrides?: Overrides): Promise<BigNumber>;
+    executeShutdown(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getIsGenesisPhaseAndRequireAuthIfSo(
       caller: string,
@@ -2601,34 +1566,16 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)"(
-      caller: string,
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getReferencePools(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "getReferencePools()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getSignaturePayloadForUserAddress(
       userAddress: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getSignaturePayloadForUserAddress(address)"(
-      userAddress: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     increaseLiquidationAccountRewards(
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "increaseLiquidationAccountRewards(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     initContracts(
@@ -2642,149 +1589,69 @@ export class Governor extends Contract {
       _protocolLock: string,
       _rewards: string,
       _settlement: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "initContracts(address,address,address,address,address,address,address,address,address,address)"(
-      _auctions: string,
-      _tcp: string,
-      _lend: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     initPools(
       _protocolPool: string,
       _collateralPool: string,
       _referencePool: string[],
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "initPools(address,address,address[])"(
-      _protocolPool: string,
-      _collateralPool: string,
-      _referencePool: string[],
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isShutdown(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "isShutdown()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     lend(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "lend()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     lendZhu(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "lendZhu()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "liquidationAccountRewards()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     liquidations(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "liquidations()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     lockTokensForEmergencyShutdown(
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "lockTokensForEmergencyShutdown(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     market(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "market()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     mintTCP(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "mintTCP(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolRemovalTime(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "poolRemovalTime(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     pricePoolsInitialized(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "pricePoolsInitialized()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     prices(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "prices()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     protocolDeployer(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "protocolDeployer()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     protocolLock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "protocolLock()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     protocolPool(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "protocolPool()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     rates(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "rates()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     referencePool(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "referencePool(uint256)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     removeReferencePoolFromProtocol(
       pool: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "removeReferencePoolFromProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "requireDecreaseDebtAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2794,17 +1661,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "requireLentZhuCountAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "requirePositionWriteAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2814,17 +1671,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "requireStoredCollateralAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     requireUpdatePositionAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "requireUpdatePositionAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2835,18 +1682,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "requireValidAction(address,string)"(
-      target: string,
-      signature: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "requireZhuMintingAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2856,144 +1692,79 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "requireZhuReservesBurnAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     rewards(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "rewards()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "setPhaseOneStartTime(uint64)"(
-      phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     settlement(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "settlement()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     shutdownTime(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "shutdownTime()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     tcp(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "tcp()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "tcpMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "timelock()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalLiquidityRewards()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    unlockTokensForEmergencyShutdown(overrides?: Overrides): Promise<BigNumber>;
-
-    "unlockTokensForEmergencyShutdown()"(
-      overrides?: Overrides
+    unlockTokensForEmergencyShutdown(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     upgradeAuctions(
       _auctions: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "upgradeAuctions(address)"(
-      _auctions: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    upgradeLend(_lend: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "upgradeLend(address)"(
+    upgradeLend(
       _lend: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     upgradeLiquidations(
       _liquidations: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "upgradeLiquidations(address)"(
-      _liquidations: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    upgradeMarket(_market: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "upgradeMarket(address)"(
+    upgradeMarket(
       _market: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    upgradePrices(_prices: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "upgradePrices(address)"(
+    upgradePrices(
       _prices: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     upgradeProtocol(
       newGovernor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "upgradeProtocol(address)"(
-      newGovernor: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    upgradeRates(_rates: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "upgradeRates(address)"(
+    upgradeRates(
       _rates: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    upgradeRewards(_rewards: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "upgradeRewards(address)"(
+    upgradeRewards(
       _rewards: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     upgradeSettlement(
       _settlement: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "upgradeSettlement(address)"(
-      _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     zhu(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "zhu()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     zhuPositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "zhuPositionNFT()"(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -3001,49 +1772,22 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "EMERGENCY_SHUTDOWN_THRESHOLD()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     GENESIS_PERIODS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "GENESIS_PERIODS()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     NAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "NAME()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     accounting(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "accounting()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     addReferencePoolToProtocol(
       pool: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "addReferencePoolToProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     auctions(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "auctions()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "collateralPool()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     contractsInitialized(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "contractsInitialized()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -3051,41 +1795,19 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "currentDailyRewardCount()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "currentPeriod()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     currentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "currentPhase()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     distributeLiquidityRewards(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "distributeLiquidityRewards(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     distributedTCP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "distributedTCP()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     distributionScheduleTokens(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "distributionScheduleTokens()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -3093,16 +1815,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "emergencyShutdownThresholdMet()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     emergencyShutdownTokensLocked(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "emergencyShutdownTokensLocked(address)"(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3111,39 +1824,22 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "enforcedDecentralization()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     executeEmergencyShutdown(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "executeEmergencyShutdown()"(
-      overrides?: Overrides
+    executeShutdown(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    executeShutdown(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "executeShutdown()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getIsGenesisPhaseAndRequireAuthIfSo(
       caller: string,
@@ -3151,36 +1847,16 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)"(
-      caller: string,
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getReferencePools(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "getReferencePools()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     getSignaturePayloadForUserAddress(
       userAddress: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getSignaturePayloadForUserAddress(address)"(
-      userAddress: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     increaseLiquidationAccountRewards(
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "increaseLiquidationAccountRewards(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     initContracts(
@@ -3194,97 +1870,44 @@ export class Governor extends Contract {
       _protocolLock: string,
       _rewards: string,
       _settlement: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "initContracts(address,address,address,address,address,address,address,address,address,address)"(
-      _auctions: string,
-      _tcp: string,
-      _lend: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     initPools(
       _protocolPool: string,
       _collateralPool: string,
       _referencePool: string[],
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "initPools(address,address,address[])"(
-      _protocolPool: string,
-      _collateralPool: string,
-      _referencePool: string[],
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isShutdown(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "isShutdown()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     lend(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "lend()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     lendZhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "lendZhu()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidationAccountRewards(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "liquidationAccountRewards()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     liquidations(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "liquidations()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     lockTokensForEmergencyShutdown(
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "lockTokensForEmergencyShutdown(uint256)"(
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     market(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "market()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     mintTCP(
       to: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "mintTCP(address,uint256)"(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     periodLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "periodLength()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     poolRemovalTime(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "poolRemovalTime(address)"(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3293,58 +1916,27 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "pricePoolsInitialized()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     prices(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "prices()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     protocolDeployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "protocolDeployer()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     protocolLock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "protocolLock()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     protocolPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "protocolPool()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     rates(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "rates()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     referencePool(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "referencePool(uint256)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     removeReferencePoolFromProtocol(
       pool: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "removeReferencePoolFromProtocol(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "requireDecreaseDebtAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3354,17 +1946,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "requireLentZhuCountAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "requirePositionWriteAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3374,17 +1956,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "requireStoredCollateralAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     requireUpdatePositionAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "requireUpdatePositionAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3395,18 +1967,7 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "requireValidAction(address,string)"(
-      target: string,
-      signature: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "requireZhuMintingAccess(address)"(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -3416,149 +1977,74 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "requireZhuReservesBurnAccess(address)"(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     rewards(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "rewards()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "setPhaseOneStartTime(uint64)"(
-      phaseOneStartTime: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     settlement(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "settlement()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     shutdownTime(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "shutdownTime()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "tcp()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tcpMinted(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "tcpMinted()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "timelock()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalLiquidityRewards(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "totalLiquidityRewards()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     unlockTokensForEmergencyShutdown(
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "unlockTokensForEmergencyShutdown()"(
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeAuctions(
       _auctions: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeAuctions(address)"(
-      _auctions: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeLend(
       _lend: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeLend(address)"(
-      _lend: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeLiquidations(
       _liquidations: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeLiquidations(address)"(
-      _liquidations: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeMarket(
       _market: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeMarket(address)"(
-      _market: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradePrices(
       _prices: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradePrices(address)"(
-      _prices: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeProtocol(
       newGovernor: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeProtocol(address)"(
-      newGovernor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeRates(
       _rates: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeRates(address)"(
-      _rates: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeRewards(
       _rewards: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeRewards(address)"(
-      _rewards: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     upgradeSettlement(
       _settlement: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "upgradeSettlement(address)"(
-      _settlement: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     validUpdate(
@@ -3566,19 +2052,8 @@ export class Governor extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     zhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "zhu()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     zhuPositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "zhuPositionNFT()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
   };
 }

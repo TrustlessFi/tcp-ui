@@ -9,17 +9,16 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface NftDescriptorTestInterface extends ethers.utils.Interface {
+interface NFTDescriptorTestInterface extends ethers.utils.Interface {
   functions: {
     "addressToString(address)": FunctionFragment;
     "constructTokenURI(tuple)": FunctionFragment;
@@ -175,33 +174,54 @@ interface NftDescriptorTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class NftDescriptorTest extends Contract {
+export class NFTDescriptorTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: NftDescriptorTestInterface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: NFTDescriptorTestInterface;
 
   functions: {
     addressToString(
       _address: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "addressToString(address)"(
-      _address: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     constructTokenURI(
       params: {
@@ -221,63 +241,19 @@ export class NftDescriptorTest extends Contract {
         poolAddress: string;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "constructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     feeToPercentString(
       fee: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "feeToPercentString(uint24)"(
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     fixedPointToDecimalString(
       sqrtRatioX96: BigNumberish,
       token0Decimals: BigNumberish,
       token1Decimals: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "fixedPointToDecimalString(uint160,uint8,uint8)"(
-      sqrtRatioX96: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     generateSVGImage(
       params: {
@@ -297,31 +273,7 @@ export class NftDescriptorTest extends Contract {
         poolAddress: string;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "generateSVGImage(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     getGasCostOfConstructTokenURI(
       params: {
@@ -341,81 +293,25 @@ export class NftDescriptorTest extends Contract {
         poolAddress: string;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getGasCostOfConstructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     isRare(
       tokenId: BigNumberish,
       poolAddress: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "isRare(uint256,address)"(
-      tokenId: BigNumberish,
-      poolAddress: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
     rangeLocation(
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-      1: string;
-    }>;
-
-    "rangeLocation(int24,int24)"(
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-      1: string;
-    }>;
+    ): Promise<[string, string]>;
 
     sliceTokenHex(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "sliceTokenHex(address,uint256)"(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     tickToDecimalString(
       tick: BigNumberish,
@@ -424,66 +320,18 @@ export class NftDescriptorTest extends Contract {
       token1Decimals: BigNumberish,
       flipRatio: boolean,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "tickToDecimalString(int24,int24,uint8,uint8,bool)"(
-      tick: BigNumberish,
-      tickSpacing: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      flipRatio: boolean,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     tokenToColorHex(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "tokenToColorHex(address,uint256)"(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
   };
 
   addressToString(_address: string, overrides?: CallOverrides): Promise<string>;
 
-  "addressToString(address)"(
-    _address: string,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   constructTokenURI(
-    params: {
-      tokenId: BigNumberish;
-      quoteTokenAddress: string;
-      baseTokenAddress: string;
-      quoteTokenSymbol: string;
-      baseTokenSymbol: string;
-      quoteTokenDecimals: BigNumberish;
-      baseTokenDecimals: BigNumberish;
-      flipRatio: boolean;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      tickCurrent: BigNumberish;
-      tickSpacing: BigNumberish;
-      fee: BigNumberish;
-      poolAddress: string;
-    },
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "constructTokenURI(tuple)"(
     params: {
       tokenId: BigNumberish;
       quoteTokenAddress: string;
@@ -508,11 +356,6 @@ export class NftDescriptorTest extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "feeToPercentString(uint24)"(
-    fee: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   fixedPointToDecimalString(
     sqrtRatioX96: BigNumberish,
     token0Decimals: BigNumberish,
@@ -520,34 +363,7 @@ export class NftDescriptorTest extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "fixedPointToDecimalString(uint160,uint8,uint8)"(
-    sqrtRatioX96: BigNumberish,
-    token0Decimals: BigNumberish,
-    token1Decimals: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   generateSVGImage(
-    params: {
-      tokenId: BigNumberish;
-      quoteTokenAddress: string;
-      baseTokenAddress: string;
-      quoteTokenSymbol: string;
-      baseTokenSymbol: string;
-      quoteTokenDecimals: BigNumberish;
-      baseTokenDecimals: BigNumberish;
-      flipRatio: boolean;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      tickCurrent: BigNumberish;
-      tickSpacing: BigNumberish;
-      fee: BigNumberish;
-      poolAddress: string;
-    },
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "generateSVGImage(tuple)"(
     params: {
       tokenId: BigNumberish;
       quoteTokenAddress: string;
@@ -587,33 +403,7 @@ export class NftDescriptorTest extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "getGasCostOfConstructTokenURI(tuple)"(
-    params: {
-      tokenId: BigNumberish;
-      quoteTokenAddress: string;
-      baseTokenAddress: string;
-      quoteTokenSymbol: string;
-      baseTokenSymbol: string;
-      quoteTokenDecimals: BigNumberish;
-      baseTokenDecimals: BigNumberish;
-      flipRatio: boolean;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      tickCurrent: BigNumberish;
-      tickSpacing: BigNumberish;
-      fee: BigNumberish;
-      poolAddress: string;
-    },
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   isRare(
-    tokenId: BigNumberish,
-    poolAddress: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  "isRare(uint256,address)"(
     tokenId: BigNumberish,
     poolAddress: string,
     overrides?: CallOverrides
@@ -623,27 +413,9 @@ export class NftDescriptorTest extends Contract {
     tickLower: BigNumberish,
     tickUpper: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<{
-    0: string;
-    1: string;
-  }>;
-
-  "rangeLocation(int24,int24)"(
-    tickLower: BigNumberish,
-    tickUpper: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<{
-    0: string;
-    1: string;
-  }>;
+  ): Promise<[string, string]>;
 
   sliceTokenHex(
-    token: string,
-    offset: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "sliceTokenHex(address,uint256)"(
     token: string,
     offset: BigNumberish,
     overrides?: CallOverrides
@@ -658,22 +430,7 @@ export class NftDescriptorTest extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "tickToDecimalString(int24,int24,uint8,uint8,bool)"(
-    tick: BigNumberish,
-    tickSpacing: BigNumberish,
-    token0Decimals: BigNumberish,
-    token1Decimals: BigNumberish,
-    flipRatio: boolean,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   tokenToColorHex(
-    token: string,
-    offset: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "tokenToColorHex(address,uint256)"(
     token: string,
     offset: BigNumberish,
     overrides?: CallOverrides
@@ -681,11 +438,6 @@ export class NftDescriptorTest extends Contract {
 
   callStatic: {
     addressToString(
-      _address: string,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "addressToString(address)"(
       _address: string,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -710,32 +462,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "constructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     feeToPercentString(
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "feeToPercentString(uint24)"(
       fee: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -747,34 +474,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "fixedPointToDecimalString(uint160,uint8,uint8)"(
-      sqrtRatioX96: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     generateSVGImage(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "generateSVGImage(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -814,33 +514,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfConstructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     isRare(
-      tokenId: BigNumberish,
-      poolAddress: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "isRare(uint256,address)"(
       tokenId: BigNumberish,
       poolAddress: string,
       overrides?: CallOverrides
@@ -850,27 +524,9 @@ export class NftDescriptorTest extends Contract {
       tickLower: BigNumberish,
       tickUpper: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-      1: string;
-    }>;
-
-    "rangeLocation(int24,int24)"(
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-      1: string;
-    }>;
+    ): Promise<[string, string]>;
 
     sliceTokenHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "sliceTokenHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -885,22 +541,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "tickToDecimalString(int24,int24,uint8,uint8,bool)"(
-      tick: BigNumberish,
-      tickSpacing: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      flipRatio: boolean,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     tokenToColorHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "tokenToColorHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -915,32 +556,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "addressToString(address)"(
-      _address: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     constructTokenURI(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "constructTokenURI(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -965,11 +581,6 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "feeToPercentString(uint24)"(
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     fixedPointToDecimalString(
       sqrtRatioX96: BigNumberish,
       token0Decimals: BigNumberish,
@@ -977,34 +588,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "fixedPointToDecimalString(uint160,uint8,uint8)"(
-      sqrtRatioX96: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     generateSVGImage(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "generateSVGImage(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -1044,33 +628,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfConstructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     isRare(
-      tokenId: BigNumberish,
-      poolAddress: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "isRare(uint256,address)"(
       tokenId: BigNumberish,
       poolAddress: string,
       overrides?: CallOverrides
@@ -1082,19 +640,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "rangeLocation(int24,int24)"(
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     sliceTokenHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "sliceTokenHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -1109,22 +655,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "tickToDecimalString(int24,int24,uint8,uint8,bool)"(
-      tick: BigNumberish,
-      tickSpacing: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      flipRatio: boolean,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenToColorHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "tokenToColorHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -1137,32 +668,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "addressToString(address)"(
-      _address: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     constructTokenURI(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "constructTokenURI(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -1187,11 +693,6 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "feeToPercentString(uint24)"(
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     fixedPointToDecimalString(
       sqrtRatioX96: BigNumberish,
       token0Decimals: BigNumberish,
@@ -1199,34 +700,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "fixedPointToDecimalString(uint160,uint8,uint8)"(
-      sqrtRatioX96: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     generateSVGImage(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "generateSVGImage(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -1266,33 +740,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getGasCostOfConstructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     isRare(
-      tokenId: BigNumberish,
-      poolAddress: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "isRare(uint256,address)"(
       tokenId: BigNumberish,
       poolAddress: string,
       overrides?: CallOverrides
@@ -1304,19 +752,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "rangeLocation(int24,int24)"(
-      tickLower: BigNumberish,
-      tickUpper: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     sliceTokenHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "sliceTokenHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides
@@ -1331,22 +767,7 @@ export class NftDescriptorTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "tickToDecimalString(int24,int24,uint8,uint8,bool)"(
-      tick: BigNumberish,
-      tickSpacing: BigNumberish,
-      token0Decimals: BigNumberish,
-      token1Decimals: BigNumberish,
-      flipRatio: boolean,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     tokenToColorHex(
-      token: string,
-      offset: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "tokenToColorHex(address,uint256)"(
       token: string,
       offset: BigNumberish,
       overrides?: CallOverrides

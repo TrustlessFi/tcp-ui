@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface UniswapV3FactoryInterface extends ethers.utils.Interface {
   functions: {
@@ -79,16 +78,46 @@ interface UniswapV3FactoryInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "PoolCreated"): EventFragment;
 }
 
-export class UniswapV3Factory extends Contract {
+export class UniswapV3Factory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: UniswapV3FactoryInterface;
 
@@ -97,102 +126,44 @@ export class UniswapV3Factory extends Contract {
       tokenA: string,
       tokenB: string,
       fee: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "createPool(address,address,uint24)"(
-      tokenA: string,
-      tokenB: string,
-      fee: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     enableFeeAmount(
       fee: BigNumberish,
       tickSpacing: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "enableFeeAmount(uint24,int24)"(
-      fee: BigNumberish,
-      tickSpacing: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     feeAmountTickSpacing(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
-
-    "feeAmountTickSpacing(uint24)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
+    ): Promise<[number]>;
 
     getPool(
       arg0: string,
       arg1: string,
       arg2: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
-    "getPool(address,address,uint24)"(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    parameters(
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    owner(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "owner()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    parameters(overrides?: CallOverrides): Promise<{
-      factory: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickSpacing: number;
-      0: string;
-      1: string;
-      2: string;
-      3: number;
-      4: number;
-    }>;
-
-    "parameters()"(overrides?: CallOverrides): Promise<{
-      factory: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickSpacing: number;
-      0: string;
-      1: string;
-      2: string;
-      3: number;
-      4: number;
-    }>;
+    ): Promise<
+      [string, string, string, number, number] & {
+        factory: string;
+        token0: string;
+        token1: string;
+        fee: number;
+        tickSpacing: number;
+      }
+    >;
 
     setOwner(
       _owner: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "setOwner(address)"(
-      _owner: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -200,34 +171,16 @@ export class UniswapV3Factory extends Contract {
     tokenA: string,
     tokenB: string,
     fee: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "createPool(address,address,uint24)"(
-    tokenA: string,
-    tokenB: string,
-    fee: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   enableFeeAmount(
     fee: BigNumberish,
     tickSpacing: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "enableFeeAmount(uint24,int24)"(
-    fee: BigNumberish,
-    tickSpacing: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   feeAmountTickSpacing(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
-  "feeAmountTickSpacing(uint24)"(
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<number>;
@@ -239,48 +192,23 @@ export class UniswapV3Factory extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "getPool(address,address,uint24)"(
-    arg0: string,
-    arg1: string,
-    arg2: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   owner(overrides?: CallOverrides): Promise<string>;
 
-  "owner()"(overrides?: CallOverrides): Promise<string>;
+  parameters(
+    overrides?: CallOverrides
+  ): Promise<
+    [string, string, string, number, number] & {
+      factory: string;
+      token0: string;
+      token1: string;
+      fee: number;
+      tickSpacing: number;
+    }
+  >;
 
-  parameters(overrides?: CallOverrides): Promise<{
-    factory: string;
-    token0: string;
-    token1: string;
-    fee: number;
-    tickSpacing: number;
-    0: string;
-    1: string;
-    2: string;
-    3: number;
-    4: number;
-  }>;
-
-  "parameters()"(overrides?: CallOverrides): Promise<{
-    factory: string;
-    token0: string;
-    token1: string;
-    fee: number;
-    tickSpacing: number;
-    0: string;
-    1: string;
-    2: string;
-    3: number;
-    4: number;
-  }>;
-
-  setOwner(_owner: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "setOwner(address)"(
+  setOwner(
     _owner: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -291,20 +219,7 @@ export class UniswapV3Factory extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "createPool(address,address,uint24)"(
-      tokenA: string,
-      tokenB: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     enableFeeAmount(
-      fee: BigNumberish,
-      tickSpacing: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "enableFeeAmount(uint24,int24)"(
       fee: BigNumberish,
       tickSpacing: BigNumberish,
       overrides?: CallOverrides
@@ -315,19 +230,7 @@ export class UniswapV3Factory extends Contract {
       overrides?: CallOverrides
     ): Promise<number>;
 
-    "feeAmountTickSpacing(uint24)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     getPool(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "getPool(address,address,uint24)"(
       arg0: string,
       arg1: string,
       arg2: BigNumberish,
@@ -336,57 +239,51 @@ export class UniswapV3Factory extends Contract {
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    "owner()"(overrides?: CallOverrides): Promise<string>;
-
-    parameters(overrides?: CallOverrides): Promise<{
-      factory: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickSpacing: number;
-      0: string;
-      1: string;
-      2: string;
-      3: number;
-      4: number;
-    }>;
-
-    "parameters()"(overrides?: CallOverrides): Promise<{
-      factory: string;
-      token0: string;
-      token1: string;
-      fee: number;
-      tickSpacing: number;
-      0: string;
-      1: string;
-      2: string;
-      3: number;
-      4: number;
-    }>;
+    parameters(
+      overrides?: CallOverrides
+    ): Promise<
+      [string, string, string, number, number] & {
+        factory: string;
+        token0: string;
+        token1: string;
+        fee: number;
+        tickSpacing: number;
+      }
+    >;
 
     setOwner(_owner: string, overrides?: CallOverrides): Promise<void>;
-
-    "setOwner(address)"(
-      _owner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {
     FeeAmountEnabled(
-      fee: BigNumberish | null,
-      tickSpacing: BigNumberish | null
-    ): EventFilter;
+      fee?: BigNumberish | null,
+      tickSpacing?: BigNumberish | null
+    ): TypedEventFilter<[number, number], { fee: number; tickSpacing: number }>;
 
-    OwnerChanged(oldOwner: string | null, newOwner: string | null): EventFilter;
+    OwnerChanged(
+      oldOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { oldOwner: string; newOwner: string }
+    >;
 
     PoolCreated(
-      token0: string | null,
-      token1: string | null,
-      fee: BigNumberish | null,
-      tickSpacing: null,
-      pool: null
-    ): EventFilter;
+      token0?: string | null,
+      token1?: string | null,
+      fee?: BigNumberish | null,
+      tickSpacing?: null,
+      pool?: null
+    ): TypedEventFilter<
+      [string, string, number, number, string],
+      {
+        token0: string;
+        token1: string;
+        fee: number;
+        tickSpacing: number;
+        pool: string;
+      }
+    >;
   };
 
   estimateGas: {
@@ -394,26 +291,13 @@ export class UniswapV3Factory extends Contract {
       tokenA: string,
       tokenB: string,
       fee: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "createPool(address,address,uint24)"(
-      tokenA: string,
-      tokenB: string,
-      fee: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     enableFeeAmount(
       fee: BigNumberish,
       tickSpacing: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "enableFeeAmount(uint24,int24)"(
-      fee: BigNumberish,
-      tickSpacing: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     feeAmountTickSpacing(
@@ -421,19 +305,7 @@ export class UniswapV3Factory extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "feeAmountTickSpacing(uint24)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getPool(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getPool(address,address,uint24)"(
       arg0: string,
       arg1: string,
       arg2: BigNumberish,
@@ -442,17 +314,11 @@ export class UniswapV3Factory extends Contract {
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "owner()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     parameters(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "parameters()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setOwner(_owner: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "setOwner(address)"(
+    setOwner(
       _owner: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -461,34 +327,16 @@ export class UniswapV3Factory extends Contract {
       tokenA: string,
       tokenB: string,
       fee: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "createPool(address,address,uint24)"(
-      tokenA: string,
-      tokenB: string,
-      fee: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     enableFeeAmount(
       fee: BigNumberish,
       tickSpacing: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "enableFeeAmount(uint24,int24)"(
-      fee: BigNumberish,
-      tickSpacing: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     feeAmountTickSpacing(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "feeAmountTickSpacing(uint24)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -500,29 +348,13 @@ export class UniswapV3Factory extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getPool(address,address,uint24)"(
-      arg0: string,
-      arg1: string,
-      arg2: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "owner()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     parameters(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "parameters()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     setOwner(
       _owner: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "setOwner(address)"(
-      _owner: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
