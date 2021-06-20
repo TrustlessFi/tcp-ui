@@ -6,10 +6,11 @@ import { liquidationsInfo } from '../liquidations'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 
 import { Prices } from "../../utils/typechain/Prices"
+import { unscale } from "../../utils"
 
 
 export type pricesInfo = {
-  phase: number,
+  ethPrice: number,
 }
 
 export interface PricesState extends sliceState {
@@ -38,7 +39,7 @@ export const fetchPricesInfo = async (data: fetchPricesArgs) => {
   ])
 
   return {
-    ethPrice
+    ethPrice: unscale(ethPrice)
   }
 }
 

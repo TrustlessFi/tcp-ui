@@ -16,13 +16,10 @@ import ExistingPositions from './ExistingPositions'
 
 import { numDisplay } from '../../utils'
 
-export default ({}) => {
-  const editorOpen = selector(state => state.positionsEditor.open)
-  return editorOpen
-    ? <PositionEditor / >
-    : (
-        <>
-          <ExistingPositions />
-        </>
-      )
-}
+export default ({}) => selector(state => state.positionsEditor.open)
+  ? <PositionEditor />
+  : (
+      <>
+        <ExistingPositions />
+      </>
+    )

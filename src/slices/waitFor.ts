@@ -2,6 +2,7 @@ import { AppDispatch, store } from './../app/store'
 import { AppSelector } from './../app/hooks'
 import { governorInfo, getGovernorInfo } from './governor'
 import { marketInfo, getMarketInfo } from './market'
+import { ratesInfo, getRatesInfo } from './rates'
 import { PositionMap, getPositions } from './positions'
 import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
 import { liquidationsInfo, getLiquidationsInfo } from './liquidations'
@@ -56,6 +57,17 @@ export const waitForLiquidations = (selector: AppSelector, dispatch: AppDispatch
     dispatch(getLiquidationsInfo(chainID))
   }
   return liquidationsData
+}
+
+export const waitForRates = (selector: AppSelector, dispatch: AppDispatch): ratesInfo | null => {
+  const chainID = selector(state => state.chainID.chainID)
+  const ratesData = selector(state => state.rates.data)
+  if (chainID === null) return null
+
+  if (ratesData === null && !store.getState().rates.loading) {
+    dispatch(getRatesInfo(chainID))
+  }
+  return ratesData
 }
 
 export const waitForSDI = (selector: AppSelector, dispatch: AppDispatch): systemDebtInfo | null => {

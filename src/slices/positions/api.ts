@@ -21,6 +21,7 @@ export const fetchPositions = async (data: fetchPositionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
   const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft | null
   if (accounting === null || positionNFT === null) return null
+  console.log({accountingAddress: accounting.address})
 
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(data.userAddress)

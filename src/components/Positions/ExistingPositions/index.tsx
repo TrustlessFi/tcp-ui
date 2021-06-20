@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
-  DataTableSkeleton,
-} from 'carbon-components-react'
+import { DataTableSkeleton } from 'carbon-components-react'
 import AppTile from '../../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { editorOpened } from '../../../slices/positionsEditor'
 import { waitForPositions, waitForGovernor } from '../../../slices/waitFor'
 import Center from '../../library/Center'
+import SimpleTable from '../../library/SimpleTable'
 
 import { numDisplay } from '../../../utils'
 
@@ -38,34 +31,16 @@ const ExistingPositionsTable = ({}) => {
   const rows = Object.values(positions).map(position => ({
     key: position.id,
     data: {
-      id: position.id,
-      debt: position.debtCount + ' Hue',
-      collateral: numDisplay(position.collateralCount) + ' Eth',
-    }
+      'Position ID': position.id,
+      'Debt': position.debtCount + ' Hue',
+      'Collateral': numDisplay(position.collateralCount) + ' Eth',
+    },
+    onClick: () => dispatch(editorOpened({
+      positionID: position.id,
+      creating: false,
+      isGenesis: false,
+    }))
   }))
 
-  const rowSelected = (id: number) => () => dispatch(editorOpened({
-    positionID: id,
-    creating: false,
-    isGenesis: false,
-  }))
-
-  return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {headers.map((header) => (
-            <TableHeader key={header}>{header}</TableHeader>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow key={row.key} onClick={rowSelected(row.data.id)}>
-            {Object.values(row.data).map((value) => <TableCell key={row.data.id + value}>{value}</TableCell>)}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )
+  return <SimpleTable rows={rows} />
 }
