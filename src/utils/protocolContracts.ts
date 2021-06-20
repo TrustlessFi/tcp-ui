@@ -12,7 +12,7 @@ import { Accounting } from "./typechain/Accounting"
 import { Auctions } from "./typechain/Auctions"
 import { EnforcedDecentralization } from "./typechain/EnforcedDecentralization"
 import { Governor } from "./typechain/Governor"
-import { TcpGovernorAlpha } from "./typechain/TcpGovernorAlpha"
+import { TCPGovernorAlpha } from "./typechain/TCPGovernorAlpha"
 import { Lend } from "./typechain/Lend"
 import { LendZhu } from "./typechain/LendZhu"
 import { Liquidations } from "./typechain/Liquidations"
@@ -25,7 +25,7 @@ import { Rewards } from "./typechain/Rewards"
 import { Settlement } from "./typechain/Settlement"
 import { TcpTimelock } from "./typechain/TcpTimelock"
 import { Zhu } from "./typechain/Zhu"
-import { ZhuPositionNft } from "./typechain/ZhuPositionNft"
+import { ZhuPositionNFT } from "./typechain/ZhuPositionNFT"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json"
@@ -52,7 +52,7 @@ export enum ProtocolContract {
   Auctions = "Auctions",
   EnforcedDecentralization = "EnforcedDecentralization",
   Governor = "Governor",
-  TcpGovernorAlpha = "TcpGovernorAlpha",
+  TCPGovernorAlpha = "TCPGovernorAlpha",
   Lend = "Lend",
   LendZhu = "LendZhu",
   Liquidations = "Liquidations",
@@ -73,7 +73,7 @@ const artifactLookup = {
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
   [ProtocolContract.Governor]: governorArtifact,
-  [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
+  [ProtocolContract.TCPGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.Lend]: lendArtifact,
   [ProtocolContract.LendZhu]: lendZhuArtifact,
   [ProtocolContract.Liquidations]: liquidationsArtifact,
@@ -94,7 +94,7 @@ export type protocolContractsType = {
   [ProtocolContract.Auctions]?: Auctions;
   [ProtocolContract.EnforcedDecentralization]?: EnforcedDecentralization;
   [ProtocolContract.Governor]?: Governor;
-  [ProtocolContract.TcpGovernorAlpha]?: TcpGovernorAlpha;
+  [ProtocolContract.TCPGovernorAlpha]?: TCPGovernorAlpha;
   [ProtocolContract.Lend]?: Lend;
   [ProtocolContract.LendZhu]?: LendZhu;
   [ProtocolContract.Liquidations]?: Liquidations;
@@ -107,7 +107,7 @@ export type protocolContractsType = {
   [ProtocolContract.Tcp]?: Tcp;
   [ProtocolContract.TcpTimelock]?: TcpTimelock;
   [ProtocolContract.Zhu]?: Zhu;
-  [ProtocolContract.ZhuPositionNFT]?: ZhuPositionNft;
+  [ProtocolContract.ZhuPositionNFT]?: ZhuPositionNFT;
 };
 
 let protocolContracts: protocolContractsType = {};
@@ -126,14 +126,14 @@ const getGovernor = async (chainID: ChainID): Promise<Governor | null> => {
       getAddress(chainID, rootContracts.Governor),
       artifactLookup[contract].abi,
       provider
-    ) as Governor;
+    ) as unknown as Governor;
     protocolContracts[contract] = result;
     return result;
   }
 };
 
-const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TcpGovernorAlpha | null> => {
-  const contract = ProtocolContract.TcpGovernorAlpha;
+const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha | null> => {
+  const contract = ProtocolContract.TCPGovernorAlpha;
   let cachedContract = protocolContracts[contract];
 
   if (cachedContract !== undefined) {
@@ -146,7 +146,7 @@ const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TcpGovernorAlpha |
       getAddress(chainID, rootContracts.Governor),
       artifactLookup[contract].abi,
       provider
-    ) as TcpGovernorAlpha;
+    ) as unknown as TCPGovernorAlpha;
     protocolContracts[contract] = result;
     return result;
   }
@@ -173,128 +173,128 @@ const getCachedContractFromGovernor = async (
           await governor.accounting(),
           artifactLookup[contract].abi,
           provider
-        ) as Accounting;
+        ) as unknown as Accounting
         break;
       case ProtocolContract.Auctions:
         protocolContracts[contract] = new ethers.Contract(
           await governor.auctions(),
           artifactLookup[contract].abi,
           provider
-        ) as Auctions;
+        ) as unknown as Auctions
         break;
       case ProtocolContract.EnforcedDecentralization:
         protocolContracts[contract] = new ethers.Contract(
           await governor.enforcedDecentralization(),
           artifactLookup[contract].abi,
           provider
-        ) as EnforcedDecentralization;
+        ) as unknown as EnforcedDecentralization
         break;
       case ProtocolContract.Lend:
         protocolContracts[contract] = new ethers.Contract(
           await governor.lend(),
           artifactLookup[contract].abi,
           provider
-        ) as Lend;
+        ) as unknown as Lend
         break;
       case ProtocolContract.LendZhu:
         protocolContracts[contract] = new ethers.Contract(
           await governor.lendZhu(),
           artifactLookup[contract].abi,
           provider
-        ) as LendZhu;
+        ) as unknown as LendZhu
         break;
       case ProtocolContract.Liquidations:
         protocolContracts[contract] = new ethers.Contract(
           await governor.liquidations(),
           artifactLookup[contract].abi,
           provider
-        ) as Liquidations;
+        ) as unknown as Liquidations
         break;
       case ProtocolContract.Market:
         protocolContracts[contract] = new ethers.Contract(
           await governor.market(),
           artifactLookup[contract].abi,
           provider
-        ) as Market;
+        ) as unknown as Market
         break;
       case ProtocolContract.Prices:
         protocolContracts[contract] = new ethers.Contract(
           await governor.prices(),
           artifactLookup[contract].abi,
           provider
-        ) as Prices;
+        ) as unknown as Prices
         break;
       case ProtocolContract.ProtocolLock:
         protocolContracts[contract] = new ethers.Contract(
           await governor.protocolLock(),
           artifactLookup[contract].abi,
           provider
-        ) as ProtocolLock;
+        ) as unknown as ProtocolLock
         break;
       case ProtocolContract.Rates:
         protocolContracts[contract] = new ethers.Contract(
           await governor.rates(),
           artifactLookup[contract].abi,
           provider
-        ) as Rates;
+        ) as unknown as Rates
         break;
       case ProtocolContract.Rewards:
         protocolContracts[contract] = new ethers.Contract(
           await governor.rewards(),
           artifactLookup[contract].abi,
           provider
-        ) as Rewards;
+        ) as unknown as Rewards
         break;
       case ProtocolContract.Settlement:
         protocolContracts[contract] = new ethers.Contract(
           await governor.settlement(),
           artifactLookup[contract].abi,
           provider
-        ) as Settlement;
+        ) as unknown as Settlement
         break;
       case ProtocolContract.Tcp:
         protocolContracts[contract] = new ethers.Contract(
           await governor.tcp(),
           artifactLookup[contract].abi,
           provider
-        ) as Tcp;
+        ) as unknown as Tcp
         break;
       case ProtocolContract.TcpTimelock:
         protocolContracts[contract] = new ethers.Contract(
           await governor.timelock(),
           artifactLookup[contract].abi,
           provider
-        ) as TcpTimelock;
+        ) as unknown as TcpTimelock
         break;
       case ProtocolContract.Zhu:
         protocolContracts[contract] = new ethers.Contract(
           await governor.zhu(),
           artifactLookup[contract].abi,
           provider
-        ) as Zhu;
+        ) as unknown as Zhu;
         break;
       case ProtocolContract.ZhuPositionNFT:
         protocolContracts[contract] = new ethers.Contract(
           await governor.zhuPositionNFT(),
           artifactLookup[contract].abi,
           provider
-        ) as ZhuPositionNft;
+        ) as unknown as ZhuPositionNFT
         break;
       default:
-        throw new Error("Contract not found");
+        throw new Error("Contract not found")
     }
 
-    return protocolContracts[contract];
+    return protocolContracts[contract]
   }
 };
 
 export const getProtocolContract = async (chainID: ChainID, contract: ProtocolContract) => {
   switch (contract) {
     case ProtocolContract.Governor:
-      return await getGovernor(chainID);
-    case ProtocolContract.TcpGovernorAlpha:
-      return await getTcpGovernorAlpha(chainID);
+      return await getGovernor(chainID)
+    case ProtocolContract.TCPGovernorAlpha:
+      return await getTcpGovernorAlpha(chainID)
     default:
-      return await getCachedContractFromGovernor(chainID, contract);
+      return await getCachedContractFromGovernor(chainID, contract)
   }
 };

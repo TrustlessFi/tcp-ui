@@ -11,6 +11,10 @@ import marketReducer from '../slices/market'
 import pricesReducer from '../slices/prices'
 import ratesReducer from '../slices/rates'
 
+import ethBalanceReducer from '../slices/ethBalance'
+import hueBalanceReducer from '../slices/balances/hueBalance'
+import lendHueBalanceReducer from '../slices/balances/lendHueBalance'
+
 export const store = configureStore({
   reducer: {
     positions: positionsReducer,
@@ -24,6 +28,10 @@ export const store = configureStore({
     market: marketReducer,
     prices: pricesReducer,
     rates: ratesReducer,
+
+    ethBalance: ethBalanceReducer,
+    hueBalance: hueBalanceReducer,
+    lendHueBalance: lendHueBalanceReducer,
   },
 });
 
