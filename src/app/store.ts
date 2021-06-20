@@ -9,6 +9,7 @@ import governorReducer from '../slices/governor'
 import liquidationsReducer from '../slices/liquidations'
 import marketReducer from '../slices/market'
 import pricesReducer from '../slices/prices'
+import ratesReducer from '../slices/rates'
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     liquidations: liquidationsReducer,
     market: marketReducer,
     prices: pricesReducer,
+    rates: ratesReducer,
   },
 });
 
