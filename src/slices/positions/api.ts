@@ -7,8 +7,8 @@ import { marketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { PositionMap } from './'
 
-import { Accounting } from "../../utils/typechain/Accounting";
-import { ZhuPositionNft } from "../../utils/typechain/ZhuPositionNft";
+import { Accounting } from '../../utils/typechain/Accounting'
+import { ZhuPositionNFT } from '../../utils/typechain/ZhuPositionNFT'
 
 export interface fetchPositionsArgs {
   chainID: ChainID,
@@ -19,9 +19,8 @@ export interface fetchPositionsArgs {
 
 export const fetchPositions = async (data: fetchPositionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
-  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNft | null
+  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNFT | null
   if (accounting === null || positionNFT === null) return null
-  console.log({accountingAddress: accounting.address})
 
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(data.userAddress)

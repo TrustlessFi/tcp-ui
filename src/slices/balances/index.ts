@@ -1,56 +1,53 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
+import { sliceState } from '../'
 import { ChainID } from '../chainID'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { unscale } from '../../utils'
 
-import { Liquidations } from "../../utils/typechain/Liquidations"
+import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
+import { unscale, uint255Max, bnf } from '../../utils'
+import { Contract } from 'ethers'
 
-export type liquidationsInfo = {
-  twapDuration: number,
-  discoveryIncentive: number,
-  liquidationIncentive: number,
+import { ERC20 } from "../../utils/typechain/ERC20"
+
+export interface balanceData {
+  token: ERC20
+  balance: number,
+  approval: { [key in ProtocolContract]?: {
+    allowance: number,
+    approving: boolean,
+    approved: boolean
+  }}
 }
 
-export interface LiquidationsState extends sliceState {
-  data: null | liquidationsInfo
+export interface balanceState extends sliceState {
+  data: balanceData | null
 }
 
-export const getLiquidationsInfo = createAsyncThunk(
-  'liquidations/getLiquidationsInfo',
-  async (chainID: ChainID) => await fetchLiquidationsInfo(chainID)
-)
+export interface fetchTokenBalanceArgs {
+  chainID: ChainID,
+  userAddress: string,
+}
 
-export const fetchLiquidationsInfo = async (chainID: ChainID) => {
-  if (chainID === null) return null
+export const getTokenBalanceThunk = (token: ProtocolContract, approvalsList: ProtocolContract[]) =>
+  async (args: fetchTokenBalanceArgs) => {
+    const hue = await getProtocolContract(args.chainID, token) as unknown as ERC20 | null
+    if (hue === null) return null
 
-  const liquidations = await getProtocolContract(chainID, ProtocolContract.Liquidations) as Liquidations
-  if (liquidations === null) return null
+    const contracts = await Promise.all(
+      approvalsList.map(async contract => (await getProtocolContract(args.chainID, contract)) as unknown as Contract | null))
 
-  let [
-    twapDuration,
-    discoveryIncentive,
-    liquidationIncentive,
-  ] = await Promise.all([
-    liquidations.twapDuration(),
-    liquidations.discoveryIncentive(),
-    liquidations.liquidationIncentive(),
-  ])
+    if (contracts.includes(null)) return null
 
-  return {
-    twapDuration,
-    discoveryIncentive: unscale(discoveryIncentive),
-    liquidationIncentive: unscale(liquidationIncentive),
+    const balance = unscale(await hue.balanceOf(args.userAddress))
+    const approvals = await Promise.all(approvalsList.map(async (_, idx) => {
+      const allowance = await hue.allowance(args.userAddress, contracts[idx]!.address)
+      return {
+        allowance: unscale(allowance),
+        approving: false,
+        approved: allowance.gt(bnf(uint255Max))
+      }
+    }))
+
+    let data: balanceData = { token: hue, balance, approval: {}}
+    approvalsList.map((contract, idx) => { data.approval[contract] = approvals[idx] })
+
+    return data;
   }
-}
-
-export const liquidationsSlice = createSlice({
-  name: 'liquidations',
-  initialState: initialState as LiquidationsState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getLiquidationsInfo)
-  },
-});
-
-export default liquidationsSlice.reducer;
