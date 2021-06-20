@@ -9,378 +9,525 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
+  Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface OracleTestInterface extends ethers.utils.Interface {
   functions: {
-    "consult(address,uint32)": FunctionFragment;
-    "getGasCostOfConsult(address,uint32)": FunctionFragment;
-    "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)": FunctionFragment;
-    "getQuoteAtTick(int24,uint128,address,address)": FunctionFragment;
+    "advanceTime(uint32)": FunctionFragment;
+    "batchUpdate(tuple[])": FunctionFragment;
+    "cardinality()": FunctionFragment;
+    "cardinalityNext()": FunctionFragment;
+    "getGasCostOfObserve(uint32[])": FunctionFragment;
+    "grow(uint16)": FunctionFragment;
+    "index()": FunctionFragment;
+    "initialize(tuple)": FunctionFragment;
+    "liquidity()": FunctionFragment;
+    "observations(uint256)": FunctionFragment;
+    "observe(uint32[])": FunctionFragment;
+    "tick()": FunctionFragment;
+    "time()": FunctionFragment;
+    "update(tuple)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "consult",
-    values: [string, BigNumberish]
+    functionFragment: "advanceTime",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getGasCostOfConsult",
-    values: [string, BigNumberish]
+    functionFragment: "batchUpdate",
+    values: [
+      {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }[]
+    ]
   ): string;
   encodeFunctionData(
-    functionFragment: "getGasCostOfGetQuoteAtTick",
-    values: [BigNumberish, BigNumberish, string, string]
+    functionFragment: "cardinality",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getQuoteAtTick",
-    values: [BigNumberish, BigNumberish, string, string]
+    functionFragment: "cardinalityNext",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getGasCostOfObserve",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(functionFragment: "grow", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "index", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "initialize",
+    values: [
+      { time: BigNumberish; tick: BigNumberish; liquidity: BigNumberish }
+    ]
+  ): string;
+  encodeFunctionData(functionFragment: "liquidity", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "observations",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "observe",
+    values: [BigNumberish[]]
+  ): string;
+  encodeFunctionData(functionFragment: "tick", values?: undefined): string;
+  encodeFunctionData(functionFragment: "time", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "update",
+    values: [
+      {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }
+    ]
   ): string;
 
-  decodeFunctionResult(functionFragment: "consult", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getGasCostOfConsult",
+    functionFragment: "advanceTime",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getGasCostOfGetQuoteAtTick",
+    functionFragment: "batchUpdate",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getQuoteAtTick",
+    functionFragment: "cardinality",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "cardinalityNext",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getGasCostOfObserve",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "grow", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "index", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "liquidity", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "observations",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "observe", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tick", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "time", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "update", data: BytesLike): Result;
 
   events: {};
 }
 
-export class OracleTest extends Contract {
+export class OracleTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: OracleTestInterface;
 
   functions: {
-    consult(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      timeWeightedAverageTick: number;
-      0: number;
-    }>;
+    advanceTime(
+      by: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "consult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      timeWeightedAverageTick: number;
-      0: number;
-    }>;
+    batchUpdate(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    getGasCostOfConsult(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    cardinality(overrides?: CallOverrides): Promise<[number]>;
 
-    "getGasCostOfConsult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    cardinalityNext(overrides?: CallOverrides): Promise<[number]>;
 
-    getGasCostOfGetQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
+    getGasCostOfObserve(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
-    "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    grow(
+      _cardinalityNext: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    getQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      quoteAmount: BigNumber;
-      0: BigNumber;
-    }>;
+    index(overrides?: CallOverrides): Promise<[number]>;
 
-    "getQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
+    initialize(
+      params: {
+        time: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    liquidity(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    observations(
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      quoteAmount: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<
+      [number, BigNumber, BigNumber, boolean] & {
+        blockTimestamp: number;
+        tickCumulative: BigNumber;
+        secondsPerLiquidityCumulativeX128: BigNumber;
+        initialized: boolean;
+      }
+    >;
+
+    observe(
+      secondsAgos: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber[], BigNumber[]] & {
+        tickCumulatives: BigNumber[];
+        secondsPerLiquidityCumulativeX128s: BigNumber[];
+      }
+    >;
+
+    tick(overrides?: CallOverrides): Promise<[number]>;
+
+    time(overrides?: CallOverrides): Promise<[number]>;
+
+    update(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
-  consult(
-    pool: string,
-    period: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
+  advanceTime(
+    by: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  "consult(address,uint32)"(
-    pool: string,
-    period: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
+  batchUpdate(
+    params: {
+      advanceTimeBy: BigNumberish;
+      tick: BigNumberish;
+      liquidity: BigNumberish;
+    }[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  getGasCostOfConsult(
-    pool: string,
-    period: BigNumberish,
+  cardinality(overrides?: CallOverrides): Promise<number>;
+
+  cardinalityNext(overrides?: CallOverrides): Promise<number>;
+
+  getGasCostOfObserve(
+    secondsAgos: BigNumberish[],
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "getGasCostOfConsult(address,uint32)"(
-    pool: string,
-    period: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  grow(
+    _cardinalityNext: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  getGasCostOfGetQuoteAtTick(
-    tick: BigNumberish,
-    baseAmount: BigNumberish,
-    baseToken: string,
-    quoteToken: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  index(overrides?: CallOverrides): Promise<number>;
 
-  "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)"(
-    tick: BigNumberish,
-    baseAmount: BigNumberish,
-    baseToken: string,
-    quoteToken: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  initialize(
+    params: { time: BigNumberish; tick: BigNumberish; liquidity: BigNumberish },
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  getQuoteAtTick(
-    tick: BigNumberish,
-    baseAmount: BigNumberish,
-    baseToken: string,
-    quoteToken: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  liquidity(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "getQuoteAtTick(int24,uint128,address,address)"(
-    tick: BigNumberish,
-    baseAmount: BigNumberish,
-    baseToken: string,
-    quoteToken: string,
+  observations(
+    arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<
+    [number, BigNumber, BigNumber, boolean] & {
+      blockTimestamp: number;
+      tickCumulative: BigNumber;
+      secondsPerLiquidityCumulativeX128: BigNumber;
+      initialized: boolean;
+    }
+  >;
+
+  observe(
+    secondsAgos: BigNumberish[],
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber[], BigNumber[]] & {
+      tickCumulatives: BigNumber[];
+      secondsPerLiquidityCumulativeX128s: BigNumber[];
+    }
+  >;
+
+  tick(overrides?: CallOverrides): Promise<number>;
+
+  time(overrides?: CallOverrides): Promise<number>;
+
+  update(
+    params: {
+      advanceTimeBy: BigNumberish;
+      tick: BigNumberish;
+      liquidity: BigNumberish;
+    },
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
-    consult(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
+    advanceTime(by: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    "consult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
+    batchUpdate(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }[],
       overrides?: CallOverrides
-    ): Promise<number>;
+    ): Promise<void>;
 
-    getGasCostOfConsult(
-      pool: string,
-      period: BigNumberish,
+    cardinality(overrides?: CallOverrides): Promise<number>;
+
+    cardinalityNext(overrides?: CallOverrides): Promise<number>;
+
+    getGasCostOfObserve(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfConsult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
+    grow(
+      _cardinalityNext: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<void>;
 
-    getGasCostOfGetQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    index(overrides?: CallOverrides): Promise<number>;
 
-    "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
+    initialize(
+      params: {
+        time: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<void>;
 
-    getQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    liquidity(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "getQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
+    observations(
+      arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<
+      [number, BigNumber, BigNumber, boolean] & {
+        blockTimestamp: number;
+        tickCumulative: BigNumber;
+        secondsPerLiquidityCumulativeX128: BigNumber;
+        initialized: boolean;
+      }
+    >;
+
+    observe(
+      secondsAgos: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber[], BigNumber[]] & {
+        tickCumulatives: BigNumber[];
+        secondsPerLiquidityCumulativeX128s: BigNumber[];
+      }
+    >;
+
+    tick(overrides?: CallOverrides): Promise<number>;
+
+    time(overrides?: CallOverrides): Promise<number>;
+
+    update(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
-    consult(
-      pool: string,
-      period: BigNumberish,
+    advanceTime(
+      by: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    batchUpdate(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    cardinality(overrides?: CallOverrides): Promise<BigNumber>;
+
+    cardinalityNext(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getGasCostOfObserve(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "consult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
+    grow(
+      _cardinalityNext: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    index(overrides?: CallOverrides): Promise<BigNumber>;
+
+    initialize(
+      params: {
+        time: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    liquidity(overrides?: CallOverrides): Promise<BigNumber>;
+
+    observations(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getGasCostOfConsult(
-      pool: string,
-      period: BigNumberish,
+    observe(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfConsult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    tick(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getGasCostOfGetQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    time(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
+    update(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    consult(
-      pool: string,
-      period: BigNumberish,
+    advanceTime(
+      by: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    batchUpdate(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      }[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    cardinality(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    cardinalityNext(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getGasCostOfObserve(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "consult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
+    grow(
+      _cardinalityNext: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    index(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    initialize(
+      params: {
+        time: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    liquidity(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    observations(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getGasCostOfConsult(
-      pool: string,
-      period: BigNumberish,
+    observe(
+      secondsAgos: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getGasCostOfConsult(address,uint32)"(
-      pool: string,
-      period: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    tick(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getGasCostOfGetQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    time(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "getGasCostOfGetQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getQuoteAtTick(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getQuoteAtTick(int24,uint128,address,address)"(
-      tick: BigNumberish,
-      baseAmount: BigNumberish,
-      baseToken: string,
-      quoteToken: string,
-      overrides?: CallOverrides
+    update(
+      params: {
+        advanceTimeBy: BigNumberish;
+        tick: BigNumberish;
+        liquidity: BigNumberish;
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

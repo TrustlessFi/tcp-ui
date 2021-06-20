@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface OracleEchidnaTestInterface extends ethers.utils.Interface {
   functions: {
@@ -107,147 +106,105 @@ interface OracleEchidnaTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class OracleEchidnaTest extends Contract {
+export class OracleEchidnaTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: OracleEchidnaTestInterface;
 
   functions: {
     advanceTime(
       by: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "advanceTime(uint32)"(
-      by: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     checkTimeWeightedAveragesAlwaysFitsType(
       secondsAgo: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "checkTimeWeightedAveragesAlwaysFitsType(uint32)"(
-      secondsAgo: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(
       index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
-    "checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(uint16)"(
-      index: BigNumberish,
+    echidna_AlwaysInitialized(overrides?: CallOverrides): Promise<[boolean]>;
+
+    echidna_canAlwaysObserve0IfInitialized(
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[boolean]>;
 
-    echidna_AlwaysInitialized(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "echidna_AlwaysInitialized()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    echidna_canAlwaysObserve0IfInitialized(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "echidna_canAlwaysObserve0IfInitialized()"(
+    echidna_cardinalityAlwaysLteNext(
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
-    echidna_cardinalityAlwaysLteNext(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "echidna_cardinalityAlwaysLteNext()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    echidna_indexAlwaysLtCardinality(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "echidna_indexAlwaysLtCardinality()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    echidna_indexAlwaysLtCardinality(
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     grow(
       cardinality: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "grow(uint16)"(
-      cardinality: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     initialize(
       time: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "initialize(uint32,int24,uint128)"(
-      time: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     update(
       advanceTimeBy: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "update(uint32,int24,uint128)"(
-      advanceTimeBy: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   advanceTime(
     by: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "advanceTime(uint32)"(
-    by: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   checkTimeWeightedAveragesAlwaysFitsType(
-    secondsAgo: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  "checkTimeWeightedAveragesAlwaysFitsType(uint32)"(
     secondsAgo: BigNumberish,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -257,87 +214,39 @@ export class OracleEchidnaTest extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(uint16)"(
-    index: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   echidna_AlwaysInitialized(overrides?: CallOverrides): Promise<boolean>;
-
-  "echidna_AlwaysInitialized()"(overrides?: CallOverrides): Promise<boolean>;
 
   echidna_canAlwaysObserve0IfInitialized(
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "echidna_canAlwaysObserve0IfInitialized()"(
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   echidna_cardinalityAlwaysLteNext(overrides?: CallOverrides): Promise<boolean>;
-
-  "echidna_cardinalityAlwaysLteNext()"(
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   echidna_indexAlwaysLtCardinality(overrides?: CallOverrides): Promise<boolean>;
 
-  "echidna_indexAlwaysLtCardinality()"(
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   grow(
     cardinality: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "grow(uint16)"(
-    cardinality: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   initialize(
     time: BigNumberish,
     tick: BigNumberish,
     liquidity: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "initialize(uint32,int24,uint128)"(
-    time: BigNumberish,
-    tick: BigNumberish,
-    liquidity: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   update(
     advanceTimeBy: BigNumberish,
     tick: BigNumberish,
     liquidity: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "update(uint32,int24,uint128)"(
-    advanceTimeBy: BigNumberish,
-    tick: BigNumberish,
-    liquidity: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     advanceTime(by: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    "advanceTime(uint32)"(
-      by: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     checkTimeWeightedAveragesAlwaysFitsType(
-      secondsAgo: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "checkTimeWeightedAveragesAlwaysFitsType(uint32)"(
       secondsAgo: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -347,20 +256,9 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(uint16)"(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     echidna_AlwaysInitialized(overrides?: CallOverrides): Promise<boolean>;
 
-    "echidna_AlwaysInitialized()"(overrides?: CallOverrides): Promise<boolean>;
-
     echidna_canAlwaysObserve0IfInitialized(
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "echidna_canAlwaysObserve0IfInitialized()"(
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -368,24 +266,11 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "echidna_cardinalityAlwaysLteNext()"(
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     echidna_indexAlwaysLtCardinality(
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "echidna_indexAlwaysLtCardinality()"(
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     grow(cardinality: BigNumberish, overrides?: CallOverrides): Promise<void>;
-
-    "grow(uint16)"(
-      cardinality: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     initialize(
       time: BigNumberish,
@@ -394,21 +279,7 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "initialize(uint32,int24,uint128)"(
-      time: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     update(
-      advanceTimeBy: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "update(uint32,int24,uint128)"(
       advanceTimeBy: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
@@ -419,19 +290,12 @@ export class OracleEchidnaTest extends Contract {
   filters: {};
 
   estimateGas: {
-    advanceTime(by: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
-
-    "advanceTime(uint32)"(
+    advanceTime(
       by: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     checkTimeWeightedAveragesAlwaysFitsType(
-      secondsAgo: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "checkTimeWeightedAveragesAlwaysFitsType(uint32)"(
       secondsAgo: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -441,22 +305,9 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(uint16)"(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     echidna_AlwaysInitialized(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "echidna_AlwaysInitialized()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     echidna_canAlwaysObserve0IfInitialized(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "echidna_canAlwaysObserve0IfInitialized()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -464,63 +315,34 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "echidna_cardinalityAlwaysLteNext()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     echidna_indexAlwaysLtCardinality(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "echidna_indexAlwaysLtCardinality()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    grow(cardinality: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
-
-    "grow(uint16)"(
+    grow(
       cardinality: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     initialize(
       time: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "initialize(uint32,int24,uint128)"(
-      time: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     update(
       advanceTimeBy: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "update(uint32,int24,uint128)"(
-      advanceTimeBy: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     advanceTime(
       by: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "advanceTime(uint32)"(
-      by: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     checkTimeWeightedAveragesAlwaysFitsType(
@@ -528,17 +350,7 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "checkTimeWeightedAveragesAlwaysFitsType(uint32)"(
-      secondsAgo: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "checkTwoAdjacentObservationsTickCumulativeModTimeElapsedAlways0(uint16)"(
       index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -547,15 +359,7 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "echidna_AlwaysInitialized()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     echidna_canAlwaysObserve0IfInitialized(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "echidna_canAlwaysObserve0IfInitialized()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -563,54 +367,27 @@ export class OracleEchidnaTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "echidna_cardinalityAlwaysLteNext()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     echidna_indexAlwaysLtCardinality(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "echidna_indexAlwaysLtCardinality()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     grow(
       cardinality: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "grow(uint16)"(
-      cardinality: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     initialize(
       time: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "initialize(uint32,int24,uint128)"(
-      time: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     update(
       advanceTimeBy: BigNumberish,
       tick: BigNumberish,
       liquidity: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "update(uint32,int24,uint128)"(
-      advanceTimeBy: BigNumberish,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

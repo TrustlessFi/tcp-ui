@@ -9,17 +9,16 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TcpSafeCastTestableInterface extends ethers.utils.Interface {
+interface TCPSafeCastTestableInterface extends ethers.utils.Interface {
   functions: {
     "_toInt128(int256)": FunctionFragment;
     "_toInt16(int256)": FunctionFragment;
@@ -148,621 +147,231 @@ interface TcpSafeCastTestableInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class TcpSafeCastTestable extends Contract {
+export class TCPSafeCastTestable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: TcpSafeCastTestableInterface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: TCPSafeCastTestableInterface;
 
   functions: {
     _toInt128(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toInt128(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toInt16(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toInt16(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toInt24(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toInt24(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toInt256(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toInt256(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toInt32(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toInt32(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toInt64(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toInt64(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toInt8(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toInt8(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint128(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint128(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint16(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toUint16(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint160(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint160(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint176(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint176(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint184(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint184(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint192(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint192(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint256(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint256(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint32(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toUint32(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint40(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toUint40(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint48(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toUint48(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint64(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint64(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
 
     _toUint8(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
-
-    "_toUint8(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: number;
-      0: number;
-    }>;
+    ): Promise<[number] & { r: number }>;
 
     _toUint96(
       a: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "_toUint96(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      r: BigNumber;
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber] & { r: BigNumber }>;
   };
 
   _toInt128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "_toInt128(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   _toInt16(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-  "_toInt16(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
 
   _toInt24(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toInt24(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toInt256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toInt256(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toInt32(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toInt32(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toInt64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toInt64(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toInt8(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toInt8(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toUint128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint128(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toUint16(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toUint16(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toUint160(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint160(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toUint176(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "_toUint176(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   _toUint184(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint184(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "_toUint192(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint256(int256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toUint32(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toUint32(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toUint40(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-  "_toUint40(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
 
   _toUint48(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toUint48(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toUint64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint64(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   _toUint8(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-  "_toUint8(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   _toUint96(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_toUint96(uint256)"(
-    a: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   callStatic: {
     _toInt128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toInt128(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toInt16(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-    "_toInt16(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
 
     _toInt24(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toInt24(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toInt256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toInt256(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toInt32(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toInt32(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toInt64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toInt64(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toInt8(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toInt8(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toUint128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint128(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint16(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toUint16(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toUint160(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint160(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint176(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint176(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint184(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint184(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint192(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint256(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint32(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toUint32(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toUint40(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-    "_toUint40(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
 
     _toUint48(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toUint48(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toUint64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint64(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint8(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
-    "_toUint8(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
     _toUint96(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint96(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   filters: {};
@@ -770,143 +379,43 @@ export class TcpSafeCastTestable extends Contract {
   estimateGas: {
     _toInt128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toInt128(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toInt16(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toInt16(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toInt24(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toInt24(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toInt256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toInt256(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toInt32(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toInt32(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toInt64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toInt64(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toInt8(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toInt8(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint128(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint128(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint16(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint16(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint160(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint160(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint176(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint176(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint184(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint184(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint192(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint256(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint32(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint32(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint40(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint40(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint48(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint48(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint64(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint64(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     _toUint8(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "_toUint8(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     _toUint96(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_toUint96(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -915,17 +424,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toInt128(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toInt16(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toInt16(int256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -935,17 +434,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toInt24(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toInt256(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toInt256(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -955,17 +444,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toInt32(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toInt64(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toInt64(int256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -975,17 +454,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toInt8(int256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint128(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint128(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -995,17 +464,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint16(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint160(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint160(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1015,17 +474,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint176(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint184(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint184(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1035,17 +484,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint192(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint256(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint256(int256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1055,17 +494,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint32(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint40(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint40(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1075,17 +504,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint48(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint64(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint64(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1095,17 +514,7 @@ export class TcpSafeCastTestable extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "_toUint8(uint256)"(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     _toUint96(
-      a: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_toUint96(uint256)"(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

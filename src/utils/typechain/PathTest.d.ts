@@ -9,15 +9,14 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface PathTestInterface extends ethers.utils.Interface {
   functions: {
@@ -70,16 +69,46 @@ interface PathTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class PathTest extends Contract {
+export class PathTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: PathTestInterface;
 
@@ -87,121 +116,35 @@ export class PathTest extends Contract {
     decodeFirstPool(
       path: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      tokenA: string;
-      tokenB: string;
-      fee: number;
-      0: string;
-      1: string;
-      2: number;
-    }>;
+    ): Promise<
+      [string, string, number] & { tokenA: string; tokenB: string; fee: number }
+    >;
 
-    "decodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      tokenA: string;
-      tokenB: string;
-      fee: number;
-      0: string;
-      1: string;
-      2: number;
-    }>;
-
-    getFirstPool(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "getFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    getFirstPool(path: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     getGasCostOfDecodeFirstPool(
       path: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getGasCostOfDecodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     hasMultiplePools(
       path: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
-    "hasMultiplePools(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    skipToken(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "skipToken(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    skipToken(path: BytesLike, overrides?: CallOverrides): Promise<[string]>;
   };
 
   decodeFirstPool(
     path: BytesLike,
     overrides?: CallOverrides
-  ): Promise<{
-    tokenA: string;
-    tokenB: string;
-    fee: number;
-    0: string;
-    1: string;
-    2: number;
-  }>;
-
-  "decodeFirstPool(bytes)"(
-    path: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<{
-    tokenA: string;
-    tokenB: string;
-    fee: number;
-    0: string;
-    1: string;
-    2: number;
-  }>;
+  ): Promise<
+    [string, string, number] & { tokenA: string; tokenB: string; fee: number }
+  >;
 
   getFirstPool(path: BytesLike, overrides?: CallOverrides): Promise<string>;
 
-  "getFirstPool(bytes)"(
-    path: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   getGasCostOfDecodeFirstPool(
-    path: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "getGasCostOfDecodeFirstPool(bytes)"(
     path: BytesLike,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -211,56 +154,19 @@ export class PathTest extends Contract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "hasMultiplePools(bytes)"(
-    path: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   skipToken(path: BytesLike, overrides?: CallOverrides): Promise<string>;
-
-  "skipToken(bytes)"(
-    path: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   callStatic: {
     decodeFirstPool(
       path: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      tokenA: string;
-      tokenB: string;
-      fee: number;
-      0: string;
-      1: string;
-      2: number;
-    }>;
-
-    "decodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      tokenA: string;
-      tokenB: string;
-      fee: number;
-      0: string;
-      1: string;
-      2: number;
-    }>;
+    ): Promise<
+      [string, string, number] & { tokenA: string; tokenB: string; fee: number }
+    >;
 
     getFirstPool(path: BytesLike, overrides?: CallOverrides): Promise<string>;
 
-    "getFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     getGasCostOfDecodeFirstPool(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getGasCostOfDecodeFirstPool(bytes)"(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -270,17 +176,7 @@ export class PathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "hasMultiplePools(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     skipToken(path: BytesLike, overrides?: CallOverrides): Promise<string>;
-
-    "skipToken(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
   };
 
   filters: {};
@@ -291,17 +187,7 @@ export class PathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "decodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getFirstPool(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getFirstPool(bytes)"(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -311,27 +197,12 @@ export class PathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfDecodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     hasMultiplePools(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "hasMultiplePools(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     skipToken(path: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "skipToken(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -340,17 +211,7 @@ export class PathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "decodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getFirstPool(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getFirstPool(bytes)"(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -360,27 +221,12 @@ export class PathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getGasCostOfDecodeFirstPool(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     hasMultiplePools(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "hasMultiplePools(bytes)"(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     skipToken(
-      path: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "skipToken(bytes)"(
       path: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

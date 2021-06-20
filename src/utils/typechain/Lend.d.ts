@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface LendInterface extends ethers.utils.Interface {
   functions: {
@@ -181,401 +180,215 @@ interface LendInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
-export class Lend extends Contract {
+export class Lend extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: LendInterface;
 
   functions: {
     addReferencePool(
       pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "addReferencePool(address)"(
-      pool: string,
-      overrides?: Overrides
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    completeSetup(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     countTokensAvailable(
       token: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
-    "countTokensAvailable(address)"(
-      token: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    currentToken(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
-    currentToken(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    "currentToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    deployer(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    governor(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "governor()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    governor(overrides?: CallOverrides): Promise<[string]>;
 
     init(
       _governor: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     lend(
       zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "lend(uint256)"(
-      zhuCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    lendZhu(overrides?: CallOverrides): Promise<[string]>;
 
-    lendZhu(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "lendZhu()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    maxRatioOfTotalDebtAllowedPerBlock(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "maxRatioOfTotalDebtAllowedPerBlock()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    maxRatioOfTotalDebtAllowedPerBlock(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     mintZhu(
       tokenToDeposit: string,
       zhuToMint: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "mintZhu(address,uint256)"(
-      tokenToDeposit: string,
-      zhuToMint: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    oneToOneMintedZhuByBlock(overrides?: CallOverrides): Promise<{
-      blockNumber: BigNumber;
-      count: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "oneToOneMintedZhuByBlock()"(overrides?: CallOverrides): Promise<{
-      blockNumber: BigNumber;
-      count: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    oneToOneMintedZhuByBlock(
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & { blockNumber: BigNumber; count: BigNumber }
+    >;
 
     removeReferencePool(
       pool: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "removeReferencePool(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     returnZhu(
       tokenToRecieve: string,
       zhuToReturn: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "returnZhu(address,uint256)"(
-      tokenToRecieve: string,
-      zhuToReturn: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     setMaxRatioOfTotalDebtAllowedPerBlock(
       ratio: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "setMaxRatioOfTotalDebtAllowedPerBlock(uint256)"(
-      ratio: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-    stopped(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "stopped()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
+    stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
     unlend(
       lendTokenCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "unlend(uint256)"(
-      lendTokenCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    validToken(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
-    validToken(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "validToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    validUpdate(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
-
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
     valueOfLendTokensInZhu(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "valueOfLendTokensInZhu(uint256)"(
-      lendTokenCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
   };
 
   addReferencePool(
     pool: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "addReferencePool(address)"(
-    pool: string,
-    overrides?: Overrides
+  completeSetup(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  completeSetup(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "completeSetup()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   countTokensAvailable(
     token: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "countTokensAvailable(address)"(
-    token: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   currentToken(arg0: string, overrides?: CallOverrides): Promise<boolean>;
-
-  "currentToken(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  "deployer()"(overrides?: CallOverrides): Promise<string>;
-
   governor(overrides?: CallOverrides): Promise<string>;
 
-  "governor()"(overrides?: CallOverrides): Promise<string>;
-
-  init(_governor: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "init(address)"(
+  init(
     _governor: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   lend(
     zhuCount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "lend(uint256)"(
-    zhuCount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   lendZhu(overrides?: CallOverrides): Promise<string>;
 
-  "lendZhu()"(overrides?: CallOverrides): Promise<string>;
-
   maxRatioOfTotalDebtAllowedPerBlock(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "maxRatioOfTotalDebtAllowedPerBlock()"(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   mintZhu(
     tokenToDeposit: string,
     zhuToMint: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "mintZhu(address,uint256)"(
-    tokenToDeposit: string,
-    zhuToMint: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  oneToOneMintedZhuByBlock(overrides?: CallOverrides): Promise<{
-    blockNumber: BigNumber;
-    count: BigNumber;
-    0: BigNumber;
-    1: BigNumber;
-  }>;
-
-  "oneToOneMintedZhuByBlock()"(overrides?: CallOverrides): Promise<{
-    blockNumber: BigNumber;
-    count: BigNumber;
-    0: BigNumber;
-    1: BigNumber;
-  }>;
+  oneToOneMintedZhuByBlock(
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & { blockNumber: BigNumber; count: BigNumber }
+  >;
 
   removeReferencePool(
     pool: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "removeReferencePool(address)"(
-    pool: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   returnZhu(
     tokenToRecieve: string,
     zhuToReturn: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "returnZhu(address,uint256)"(
-    tokenToRecieve: string,
-    zhuToReturn: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   setMaxRatioOfTotalDebtAllowedPerBlock(
     ratio: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "setMaxRatioOfTotalDebtAllowedPerBlock(uint256)"(
-    ratio: BigNumberish,
-    overrides?: Overrides
+  stop(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
-  "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
   unlend(
     lendTokenCount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "unlend(uint256)"(
-    lendTokenCount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   validToken(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
-  "validToken(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  "validUpdate(bytes4)"(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   valueOfLendTokensInZhu(
-    lendTokenCount: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "valueOfLendTokensInZhu(uint256)"(
     lendTokenCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -583,63 +396,26 @@ export class Lend extends Contract {
   callStatic: {
     addReferencePool(pool: string, overrides?: CallOverrides): Promise<void>;
 
-    "addReferencePool(address)"(
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     completeSetup(overrides?: CallOverrides): Promise<void>;
 
-    "completeSetup()"(overrides?: CallOverrides): Promise<void>;
-
     countTokensAvailable(
-      token: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "countTokensAvailable(address)"(
       token: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     currentToken(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
-    "currentToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     deployer(overrides?: CallOverrides): Promise<string>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<string>;
 
     governor(overrides?: CallOverrides): Promise<string>;
 
-    "governor()"(overrides?: CallOverrides): Promise<string>;
-
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
-
-    "init(address)"(
-      _governor: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     lend(zhuCount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    "lend(uint256)"(
-      zhuCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     lendZhu(overrides?: CallOverrides): Promise<string>;
 
-    "lendZhu()"(overrides?: CallOverrides): Promise<string>;
-
     maxRatioOfTotalDebtAllowedPerBlock(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "maxRatioOfTotalDebtAllowedPerBlock()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -649,32 +425,13 @@ export class Lend extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "mintZhu(address,uint256)"(
-      tokenToDeposit: string,
-      zhuToMint: BigNumberish,
+    oneToOneMintedZhuByBlock(
       overrides?: CallOverrides
-    ): Promise<void>;
-
-    oneToOneMintedZhuByBlock(overrides?: CallOverrides): Promise<{
-      blockNumber: BigNumber;
-      count: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "oneToOneMintedZhuByBlock()"(overrides?: CallOverrides): Promise<{
-      blockNumber: BigNumber;
-      count: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber] & { blockNumber: BigNumber; count: BigNumber }
+    >;
 
     removeReferencePool(pool: string, overrides?: CallOverrides): Promise<void>;
-
-    "removeReferencePool(address)"(
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     returnZhu(
       tokenToRecieve: string,
@@ -682,253 +439,166 @@ export class Lend extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "returnZhu(address,uint256)"(
-      tokenToRecieve: string,
-      zhuToReturn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     setMaxRatioOfTotalDebtAllowedPerBlock(
-      ratio: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setMaxRatioOfTotalDebtAllowedPerBlock(uint256)"(
       ratio: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     stop(overrides?: CallOverrides): Promise<void>;
 
-    "stop()"(overrides?: CallOverrides): Promise<void>;
-
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<boolean>;
-
     unlend(
-      lendTokenCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "unlend(uint256)"(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     validToken(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
-    "validToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     valueOfLendTokensInZhu(
-      lendTokenCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "valueOfLendTokensInZhu(uint256)"(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   filters: {
-    Initialized(governor: string | null): EventFilter;
+    Initialized(
+      governor?: string | null
+    ): TypedEventFilter<[string], { governor: string }>;
 
     Lend(
-      account: string | null,
-      zhuCount: null,
-      lendTokenCount: null
-    ): EventFilter;
+      account?: string | null,
+      zhuCount?: null,
+      lendTokenCount?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; zhuCount: BigNumber; lendTokenCount: BigNumber }
+    >;
 
     MintZhu(
-      user: string | null,
-      token: string | null,
-      count: null
-    ): EventFilter;
+      user?: string | null,
+      token?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { user: string; token: string; count: BigNumber }
+    >;
 
-    OneToOneMintingDisabled(): EventFilter;
+    OneToOneMintingDisabled(): TypedEventFilter<[], {}>;
 
-    ParameterUpdated(paramName: string | null, value: null): EventFilter;
+    ParameterUpdated(
+      paramName?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { paramName: string; value: BigNumber }
+    >;
 
     ParameterUpdatedAddress(
-      paramName: string | null,
-      value: string | null
-    ): EventFilter;
+      paramName?: string | null,
+      value?: string | null
+    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
 
     ReturnZhu(
-      user: string | null,
-      token: string | null,
-      count: null
-    ): EventFilter;
+      user?: string | null,
+      token?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { user: string; token: string; count: BigNumber }
+    >;
 
-    Stopped(): EventFilter;
+    Stopped(): TypedEventFilter<[], {}>;
 
     Unlend(
-      account: string | null,
-      zhuCount: null,
-      lendTokenCount: null
-    ): EventFilter;
+      account?: string | null,
+      zhuCount?: null,
+      lendTokenCount?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; zhuCount: BigNumber; lendTokenCount: BigNumber }
+    >;
   };
 
   estimateGas: {
-    addReferencePool(pool: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "addReferencePool(address)"(
+    addReferencePool(
       pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    completeSetup(overrides?: Overrides): Promise<BigNumber>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<BigNumber>;
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     countTokensAvailable(
       token: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "countTokensAvailable(address)"(
-      token: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     currentToken(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "currentToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "deployer()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "governor()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(_governor: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "init(address)"(
+    init(
       _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    lend(zhuCount: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
-
-    "lend(uint256)"(
+    lend(
       zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     lendZhu(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "lendZhu()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     maxRatioOfTotalDebtAllowedPerBlock(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "maxRatioOfTotalDebtAllowedPerBlock()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     mintZhu(
       tokenToDeposit: string,
       zhuToMint: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "mintZhu(address,uint256)"(
-      tokenToDeposit: string,
-      zhuToMint: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     oneToOneMintedZhuByBlock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "oneToOneMintedZhuByBlock()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     removeReferencePool(
       pool: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "removeReferencePool(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     returnZhu(
       tokenToRecieve: string,
       zhuToReturn: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "returnZhu(address,uint256)"(
-      tokenToRecieve: string,
-      zhuToReturn: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     setMaxRatioOfTotalDebtAllowedPerBlock(
       ratio: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "setMaxRatioOfTotalDebtAllowedPerBlock(uint256)"(
-      ratio: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    stop(overrides?: Overrides): Promise<BigNumber>;
-
-    "stop()"(overrides?: Overrides): Promise<BigNumber>;
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     unlend(
       lendTokenCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "unlend(uint256)"(
-      lendTokenCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     validToken(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "validToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     valueOfLendTokensInZhu(
-      lendTokenCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "valueOfLendTokensInZhu(uint256)"(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -937,24 +607,14 @@ export class Lend extends Contract {
   populateTransaction: {
     addReferencePool(
       pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "addReferencePool(address)"(
-      pool: string,
-      overrides?: Overrides
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    completeSetup(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     countTokensAvailable(
-      token: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "countTokensAvailable(address)"(
       token: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -964,127 +624,64 @@ export class Lend extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "currentToken(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "governor()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     init(
       _governor: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "init(address)"(
-      _governor: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     lend(
       zhuCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "lend(uint256)"(
-      zhuCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     lendZhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "lendZhu()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     maxRatioOfTotalDebtAllowedPerBlock(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "maxRatioOfTotalDebtAllowedPerBlock()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     mintZhu(
       tokenToDeposit: string,
       zhuToMint: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "mintZhu(address,uint256)"(
-      tokenToDeposit: string,
-      zhuToMint: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     oneToOneMintedZhuByBlock(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "oneToOneMintedZhuByBlock()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     removeReferencePool(
       pool: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "removeReferencePool(address)"(
-      pool: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     returnZhu(
       tokenToRecieve: string,
       zhuToReturn: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "returnZhu(address,uint256)"(
-      tokenToRecieve: string,
-      zhuToReturn: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setMaxRatioOfTotalDebtAllowedPerBlock(
       ratio: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setMaxRatioOfTotalDebtAllowedPerBlock(uint256)"(
-      ratio: BigNumberish,
-      overrides?: Overrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    stop(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "stopped()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     unlend(
       lendTokenCount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "unlend(uint256)"(
-      lendTokenCount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     validToken(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "validToken(address)"(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1094,17 +691,7 @@ export class Lend extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "validUpdate(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     valueOfLendTokensInZhu(
-      lendTokenCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "valueOfLendTokensInZhu(uint256)"(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

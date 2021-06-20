@@ -9,17 +9,16 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface NftDescriptorInterface extends ethers.utils.Interface {
+interface NFTDescriptorInterface extends ethers.utils.Interface {
   functions: {
     "constructTokenURI(tuple)": FunctionFragment;
   };
@@ -54,18 +53,48 @@ interface NftDescriptorInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class NftDescriptor extends Contract {
+export class NFTDescriptor extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: NftDescriptorInterface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: NFTDescriptorInterface;
 
   functions: {
     constructTokenURI(
@@ -86,31 +115,7 @@ export class NftDescriptor extends Contract {
         poolAddress: string;
       },
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "constructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
   };
 
   constructTokenURI(
@@ -133,48 +138,8 @@ export class NftDescriptor extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  "constructTokenURI(tuple)"(
-    params: {
-      tokenId: BigNumberish;
-      quoteTokenAddress: string;
-      baseTokenAddress: string;
-      quoteTokenSymbol: string;
-      baseTokenSymbol: string;
-      quoteTokenDecimals: BigNumberish;
-      baseTokenDecimals: BigNumberish;
-      flipRatio: boolean;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      tickCurrent: BigNumberish;
-      tickSpacing: BigNumberish;
-      fee: BigNumberish;
-      poolAddress: string;
-    },
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   callStatic: {
     constructTokenURI(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    "constructTokenURI(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;
@@ -217,50 +182,10 @@ export class NftDescriptor extends Contract {
       },
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    "constructTokenURI(tuple)"(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     constructTokenURI(
-      params: {
-        tokenId: BigNumberish;
-        quoteTokenAddress: string;
-        baseTokenAddress: string;
-        quoteTokenSymbol: string;
-        baseTokenSymbol: string;
-        quoteTokenDecimals: BigNumberish;
-        baseTokenDecimals: BigNumberish;
-        flipRatio: boolean;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        tickCurrent: BigNumberish;
-        tickSpacing: BigNumberish;
-        fee: BigNumberish;
-        poolAddress: string;
-      },
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "constructTokenURI(tuple)"(
       params: {
         tokenId: BigNumberish;
         quoteTokenAddress: string;

@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   PayableOverrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface PeripheryPaymentsWithFeeInterface extends ethers.utils.Interface {
   functions: {
@@ -71,52 +70,63 @@ interface PeripheryPaymentsWithFeeInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class PeripheryPaymentsWithFee extends Contract {
+export class PeripheryPaymentsWithFee extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: PeripheryPaymentsWithFeeInterface;
 
   functions: {
-    WETH9(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    WETH9(overrides?: CallOverrides): Promise<[string]>;
 
-    "WETH9()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    factory(overrides?: CallOverrides): Promise<[string]>;
 
-    factory(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "factory()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    refundETH(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     sweepToken(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     sweepTokenWithFee(
@@ -125,28 +135,13 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "sweepTokenWithFee(address,uint256,address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     unwrapWETH9WithFee(
@@ -154,42 +149,23 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<ContractTransaction>;
-
-    "unwrapWETH9WithFee(uint256,address,uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
   WETH9(overrides?: CallOverrides): Promise<string>;
 
-  "WETH9()"(overrides?: CallOverrides): Promise<string>;
-
   factory(overrides?: CallOverrides): Promise<string>;
 
-  "factory()"(overrides?: CallOverrides): Promise<string>;
-
-  refundETH(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-  "refundETH()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+  refundETH(
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   sweepToken(
     token: string,
     amountMinimum: BigNumberish,
     recipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "sweepToken(address,uint256,address)"(
-    token: string,
-    amountMinimum: BigNumberish,
-    recipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   sweepTokenWithFee(
@@ -198,28 +174,13 @@ export class PeripheryPaymentsWithFee extends Contract {
     recipient: string,
     feeBips: BigNumberish,
     feeRecipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "sweepTokenWithFee(address,uint256,address,uint256,address)"(
-    token: string,
-    amountMinimum: BigNumberish,
-    recipient: string,
-    feeBips: BigNumberish,
-    feeRecipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   unwrapWETH9(
     amountMinimum: BigNumberish,
     recipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "unwrapWETH9(uint256,address)"(
-    amountMinimum: BigNumberish,
-    recipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   unwrapWETH9WithFee(
@@ -227,38 +188,17 @@ export class PeripheryPaymentsWithFee extends Contract {
     recipient: string,
     feeBips: BigNumberish,
     feeRecipient: string,
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "unwrapWETH9WithFee(uint256,address,uint256,address)"(
-    amountMinimum: BigNumberish,
-    recipient: string,
-    feeBips: BigNumberish,
-    feeRecipient: string,
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     WETH9(overrides?: CallOverrides): Promise<string>;
 
-    "WETH9()"(overrides?: CallOverrides): Promise<string>;
-
     factory(overrides?: CallOverrides): Promise<string>;
-
-    "factory()"(overrides?: CallOverrides): Promise<string>;
 
     refundETH(overrides?: CallOverrides): Promise<void>;
 
-    "refundETH()"(overrides?: CallOverrides): Promise<void>;
-
     sweepToken(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "sweepToken(address,uint256,address)"(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
@@ -274,36 +214,13 @@ export class PeripheryPaymentsWithFee extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "sweepTokenWithFee(address,uint256,address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     unwrapWETH9WithFee(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "unwrapWETH9WithFee(uint256,address,uint256,address)"(
       amountMinimum: BigNumberish,
       recipient: string,
       feeBips: BigNumberish,
@@ -317,28 +234,17 @@ export class PeripheryPaymentsWithFee extends Contract {
   estimateGas: {
     WETH9(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "WETH9()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     factory(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "factory()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    refundETH(overrides?: PayableOverrides): Promise<BigNumber>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<BigNumber>;
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     sweepToken(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     sweepTokenWithFee(
@@ -347,28 +253,13 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "sweepTokenWithFee(address,uint256,address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     unwrapWETH9WithFee(
@@ -376,43 +267,24 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "unwrapWETH9WithFee(uint256,address,uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     WETH9(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "WETH9()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "factory()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    refundETH(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
-
-    "refundETH()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+    refundETH(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     sweepToken(
       token: string,
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "sweepToken(address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     sweepTokenWithFee(
@@ -421,28 +293,13 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "sweepTokenWithFee(address,uint256,address,uint256,address)"(
-      token: string,
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     unwrapWETH9(
       amountMinimum: BigNumberish,
       recipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "unwrapWETH9(uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     unwrapWETH9WithFee(
@@ -450,15 +307,7 @@ export class PeripheryPaymentsWithFee extends Contract {
       recipient: string,
       feeBips: BigNumberish,
       feeRecipient: string,
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "unwrapWETH9WithFee(uint256,address,uint256,address)"(
-      amountMinimum: BigNumberish,
-      recipient: string,
-      feeBips: BigNumberish,
-      feeRecipient: string,
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

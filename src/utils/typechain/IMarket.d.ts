@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface IMarketInterface extends ethers.utils.Interface {
   functions: {
@@ -93,289 +92,269 @@ interface IMarketInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "PositionUpdated"): EventFragment;
 }
 
-export class IMarket extends Contract {
+export class IMarket extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: IMarketInterface;
 
   functions: {
-    accrueInterest(overrides?: Overrides): Promise<ContractTransaction>;
+    accrueInterest(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "accrueInterest()"(overrides?: Overrides): Promise<ContractTransaction>;
+    collateralizationRequirement(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { ratio: BigNumber }>;
 
-    collateralizationRequirement(overrides?: CallOverrides): Promise<{
-      ratio: BigNumber;
-      0: BigNumber;
-    }>;
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
-    "collateralizationRequirement()"(overrides?: CallOverrides): Promise<{
-      ratio: BigNumber;
-      0: BigNumber;
-    }>;
+    lastPeriodGlobalInterestAccrued(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { period: BigNumber }>;
 
-    completeSetup(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-    lastPeriodGlobalInterestAccrued(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
-
-    "lastPeriodGlobalInterestAccrued()"(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
-
-    stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     systemGetUpdatedPosition(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "systemGetUpdatedPosition(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
-  accrueInterest(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "accrueInterest()"(overrides?: Overrides): Promise<ContractTransaction>;
+  accrueInterest(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "collateralizationRequirement()"(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  completeSetup(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "completeSetup()"(overrides?: Overrides): Promise<ContractTransaction>;
+  completeSetup(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   lastPeriodGlobalInterestAccrued(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "lastPeriodGlobalInterestAccrued()"(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  stop(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "stop()"(overrides?: Overrides): Promise<ContractTransaction>;
+  stop(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   systemGetUpdatedPosition(
     positionID: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "systemGetUpdatedPosition(uint64)"(
-    positionID: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
-    "accrueInterest()"(overrides?: CallOverrides): Promise<void>;
-
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "collateralizationRequirement()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     completeSetup(overrides?: CallOverrides): Promise<void>;
 
-    "completeSetup()"(overrides?: CallOverrides): Promise<void>;
-
     lastPeriodGlobalInterestAccrued(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "lastPeriodGlobalInterestAccrued()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     stop(overrides?: CallOverrides): Promise<void>;
 
-    "stop()"(overrides?: CallOverrides): Promise<void>;
-
     systemGetUpdatedPosition(
       positionID: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      startCumulativeDebt: BigNumber;
-      collateral: BigNumber;
-      debt: BigNumber;
-      startDebtExchangeRate: BigNumber;
-      startTCPRewards: BigNumber;
-      lastTimeUpdated: BigNumber;
-      lastBorrowTime: BigNumber;
-      tick: number;
-      tickSet: boolean;
-      tickIndex: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: BigNumber;
-      4: BigNumber;
-      5: BigNumber;
-      6: BigNumber;
-      7: number;
-      8: boolean;
-      9: BigNumber;
-    }>;
-
-    "systemGetUpdatedPosition(uint64)"(
-      positionID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      startCumulativeDebt: BigNumber;
-      collateral: BigNumber;
-      debt: BigNumber;
-      startDebtExchangeRate: BigNumber;
-      startTCPRewards: BigNumber;
-      lastTimeUpdated: BigNumber;
-      lastBorrowTime: BigNumber;
-      tick: number;
-      tickSet: boolean;
-      tickIndex: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: BigNumber;
-      4: BigNumber;
-      5: BigNumber;
-      6: BigNumber;
-      7: number;
-      8: boolean;
-      9: BigNumber;
-    }>;
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number,
+        boolean,
+        BigNumber
+      ] & {
+        startCumulativeDebt: BigNumber;
+        collateral: BigNumber;
+        debt: BigNumber;
+        startDebtExchangeRate: BigNumber;
+        startTCPRewards: BigNumber;
+        lastTimeUpdated: BigNumber;
+        lastBorrowTime: BigNumber;
+        tick: number;
+        tickSet: boolean;
+        tickIndex: BigNumber;
+      }
+    >;
   };
 
   filters: {
     InterestAccrued(
-      period: BigNumberish | null,
-      periods: null,
-      newDebt: null,
-      rewardCount: null,
-      cumulativeDebt: null,
-      debtExchangeRate: null
-    ): EventFilter;
+      period?: BigNumberish | null,
+      periods?: null,
+      newDebt?: null,
+      rewardCount?: null,
+      cumulativeDebt?: null,
+      debtExchangeRate?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        period: BigNumber;
+        periods: BigNumber;
+        newDebt: BigNumber;
+        rewardCount: BigNumber;
+        cumulativeDebt: BigNumber;
+        debtExchangeRate: BigNumber;
+      }
+    >;
 
     NewPositionCreated(
-      creator: string | null,
-      positionID: BigNumberish | null
-    ): EventFilter;
+      creator?: string | null,
+      positionID?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { creator: string; positionID: BigNumber }
+    >;
 
-    ParameterUpdated(paramName: string | null, value: null): EventFilter;
+    ParameterUpdated(
+      paramName?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { paramName: string; value: BigNumber }
+    >;
 
-    ParameterUpdated64(paramName: string | null, value: null): EventFilter;
+    ParameterUpdated64(
+      paramName?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { paramName: string; value: BigNumber }
+    >;
 
-    ParameterUpdatedAddress(paramName: string | null, value: null): EventFilter;
+    ParameterUpdatedAddress(
+      paramName?: string | null,
+      value?: null
+    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
 
     PositionAdjusted(
-      positionID: BigNumberish | null,
-      debtChange: null,
-      collateralChange: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      debtChange?: null,
+      collateralChange?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber],
+      {
+        positionID: BigNumber;
+        debtChange: BigNumber;
+        collateralChange: BigNumber;
+      }
+    >;
 
     PositionUpdated(
-      positionID: BigNumberish | null,
-      period: BigNumberish | null,
-      debtAfter: null,
-      tcpRewards: null
-    ): EventFilter;
+      positionID?: BigNumberish | null,
+      period?: BigNumberish | null,
+      debtAfter?: null,
+      tcpRewards?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        positionID: BigNumber;
+        period: BigNumber;
+        debtAfter: BigNumber;
+        tcpRewards: BigNumber;
+      }
+    >;
   };
 
   estimateGas: {
-    accrueInterest(overrides?: Overrides): Promise<BigNumber>;
-
-    "accrueInterest()"(overrides?: Overrides): Promise<BigNumber>;
+    accrueInterest(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "collateralizationRequirement()"(
-      overrides?: CallOverrides
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    completeSetup(overrides?: Overrides): Promise<BigNumber>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<BigNumber>;
 
     lastPeriodGlobalInterestAccrued(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "lastPeriodGlobalInterestAccrued()"(
-      overrides?: CallOverrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    stop(overrides?: Overrides): Promise<BigNumber>;
-
-    "stop()"(overrides?: Overrides): Promise<BigNumber>;
 
     systemGetUpdatedPosition(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "systemGetUpdatedPosition(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    accrueInterest(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "accrueInterest()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    accrueInterest(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     collateralizationRequirement(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "collateralizationRequirement()"(
-      overrides?: CallOverrides
+    completeSetup(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    completeSetup(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "completeSetup()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     lastPeriodGlobalInterestAccrued(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "lastPeriodGlobalInterestAccrued()"(
-      overrides?: CallOverrides
+    stop(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    stop(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "stop()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     systemGetUpdatedPosition(
       positionID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "systemGetUpdatedPosition(uint64)"(
-      positionID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

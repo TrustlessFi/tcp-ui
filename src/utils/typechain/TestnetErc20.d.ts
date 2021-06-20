@@ -9,18 +9,17 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TestnetErc20Interface extends ethers.utils.Interface {
+interface TestnetERC20Interface extends ethers.utils.Interface {
   functions: {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
@@ -116,162 +115,103 @@ interface TestnetErc20Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export class TestnetErc20 extends Contract {
+export class TestnetERC20 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: TestnetErc20Interface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: TestnetERC20Interface;
 
   functions: {
     allowance(
       owner: string,
       spender: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "allowance(address,address)"(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     approve(
       spender: string,
       amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "approve(address,uint256)"(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    balanceOf(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "balanceOf(address)"(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    decimals(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
-
-    "decimals()"(overrides?: CallOverrides): Promise<{
-      0: number;
-    }>;
+    decimals(overrides?: CallOverrides): Promise<[number]>;
 
     decreaseAllowance(
       spender: string,
       subtractedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "decreaseAllowance(address,uint256)"(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "increaseAllowance(address,uint256)"(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    initialHolder(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "initialHolder()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    initialHolder(overrides?: CallOverrides): Promise<[string]>;
 
     mintTo(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "mintTo(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    name(overrides?: CallOverrides): Promise<[string]>;
 
-    name(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    "name()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    symbol(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "symbol()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    totalSupply(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "totalSupply()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transfer(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "transfer(address,uint256)"(
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferFrom(
       sender: string,
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "transferFrom(address,address,uint256)"(
-      sender: string,
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
 
@@ -281,111 +221,53 @@ export class TestnetErc20 extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "allowance(address,address)"(
-    owner: string,
-    spender: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   approve(
     spender: string,
     amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "approve(address,uint256)"(
-    spender: string,
-    amount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "balanceOf(address)"(
-    account: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   decimals(overrides?: CallOverrides): Promise<number>;
-
-  "decimals()"(overrides?: CallOverrides): Promise<number>;
 
   decreaseAllowance(
     spender: string,
     subtractedValue: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "decreaseAllowance(address,uint256)"(
-    spender: string,
-    subtractedValue: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "increaseAllowance(address,uint256)"(
-    spender: string,
-    addedValue: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   initialHolder(overrides?: CallOverrides): Promise<string>;
 
-  "initialHolder()"(overrides?: CallOverrides): Promise<string>;
-
   mintTo(
     dest: string,
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "mintTo(address,uint256)"(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
-  "name()"(overrides?: CallOverrides): Promise<string>;
-
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  "symbol()"(overrides?: CallOverrides): Promise<string>;
-
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   transfer(
     recipient: string,
     amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "transfer(address,uint256)"(
-    recipient: string,
-    amount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferFrom(
     sender: string,
     recipient: string,
     amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "transferFrom(address,address,uint256)"(
-    sender: string,
-    recipient: string,
-    amount: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
@@ -395,19 +277,7 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "allowance(address,address)"(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     approve(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "approve(address,uint256)"(
       spender: string,
       amount: BigNumberish,
       overrides?: CallOverrides
@@ -415,22 +285,9 @@ export class TestnetErc20 extends Contract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "balanceOf(address)"(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<number>;
 
-    "decimals()"(overrides?: CallOverrides): Promise<number>;
-
     decreaseAllowance(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "decreaseAllowance(address,uint256)"(
       spender: string,
       subtractedValue: BigNumberish,
       overrides?: CallOverrides
@@ -442,15 +299,7 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "increaseAllowance(address,uint256)"(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     initialHolder(overrides?: CallOverrides): Promise<string>;
-
-    "initialHolder()"(overrides?: CallOverrides): Promise<string>;
 
     mintTo(
       dest: string,
@@ -458,23 +307,11 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "mintTo(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     name(overrides?: CallOverrides): Promise<string>;
-
-    "name()"(overrides?: CallOverrides): Promise<string>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<string>;
-
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       recipient: string,
@@ -482,20 +319,7 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "transfer(address,uint256)"(
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     transferFrom(
-      sender: string,
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "transferFrom(address,address,uint256)"(
       sender: string,
       recipient: string,
       amount: BigNumberish,
@@ -505,12 +329,22 @@ export class TestnetErc20 extends Contract {
 
   filters: {
     Approval(
-      owner: string | null,
-      spender: string | null,
-      value: null
-    ): EventFilter;
+      owner?: string | null,
+      spender?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
 
-    Transfer(from: string | null, to: string | null, value: null): EventFilter;
+    Transfer(
+      from?: string | null,
+      to?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
   };
 
   estimateGas: {
@@ -520,111 +354,53 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "allowance(address,address)"(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     approve(
       spender: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "approve(address,uint256)"(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "balanceOf(address)"(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     decreaseAllowance(
       spender: string,
       subtractedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "decreaseAllowance(address,uint256)"(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "increaseAllowance(address,uint256)"(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     initialHolder(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "initialHolder()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     mintTo(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "mintTo(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "name()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "totalSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     transfer(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "transfer(address,uint256)"(
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferFrom(
       sender: string,
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "transferFrom(address,address,uint256)"(
-      sender: string,
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -635,22 +411,10 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "allowance(address,address)"(
-      owner: string,
-      spender: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     approve(
       spender: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "approve(address,uint256)"(
-      spender: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     balanceOf(
@@ -658,91 +422,45 @@ export class TestnetErc20 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "balanceOf(address)"(
-      account: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decreaseAllowance(
       spender: string,
       subtractedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "decreaseAllowance(address,uint256)"(
-      spender: string,
-      subtractedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "increaseAllowance(address,uint256)"(
-      spender: string,
-      addedValue: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     initialHolder(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "initialHolder()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     mintTo(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "mintTo(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "symbol()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "totalSupply()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transfer(
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "transfer(address,uint256)"(
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferFrom(
       sender: string,
       recipient: string,
       amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "transferFrom(address,address,uint256)"(
-      sender: string,
-      recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

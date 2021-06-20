@@ -9,18 +9,17 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   Overrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TfDaoInterface extends ethers.utils.Interface {
+interface TFDaoInterface extends ethers.utils.Interface {
   functions: {
     "accrueInflation()": FunctionFragment;
     "addToken(address)": FunctionFragment;
@@ -308,532 +307,262 @@ interface TfDaoInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "TokensUnlocked"): EventFragment;
 }
 
-export class TfDao extends Contract {
+export class TFDao extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
 
-  interface: TfDaoInterface;
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
+
+  interface: TFDaoInterface;
 
   functions: {
-    accrueInflation(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "accrueInflation()"(overrides?: Overrides): Promise<ContractTransaction>;
+    accrueInflation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     addToken(
       token: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "addToken(address)"(
-      token: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    availableSupply(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "availableSupply()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    availableSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[boolean]>;
 
-    "blacklistedAction(bytes4)"(
-      arg0: BytesLike,
+    currentPeriod(
       overrides?: CallOverrides
-    ): Promise<{
-      0: boolean;
-    }>;
+    ): Promise<[BigNumber] & { period: BigNumber }>;
 
-    currentPeriod(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
+    dailyProtocolTFIncentiveCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    "currentPeriod()"(overrides?: CallOverrides): Promise<{
-      period: BigNumber;
-      0: BigNumber;
-    }>;
-
-    dailyProtocolTFIncentiveCount(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "dailyProtocolTFIncentiveCount()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    deployer(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    deployer(overrides?: CallOverrides): Promise<[string]>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     executeMetaProposalVote(
       metaProposalID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "executeMetaProposalVote(uint256)"(
-      metaProposalID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    firstPeriod(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getRewards(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "getRewards(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
-    idToToken(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "idToToken(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    incentiveContract(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "incentiveContract()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    incentiveContract(overrides?: CallOverrides): Promise<[string]>;
 
     incentiveContractMint(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "incentiveContractMint(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    incentivesStartPeriod(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "incentivesStartPeriod()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    incentivesStartPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     init(
       _tfPositionNFT: string,
       _tfToken: string,
       _tfGovernorAlpha: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "init(address,address,address)"(
-      _tfPositionNFT: string,
-      _tfToken: string,
-      _tfGovernorAlpha: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    lastPeriodGlobalInflationUpdated(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "lastPeriodGlobalInflationUpdated()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    lastPeriodGlobalInflationUpdated(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     lockTokens(
       token: string,
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "lockTokens(address,uint256,uint8,address)"(
-      token: string,
-      count: BigNumberish,
-      lockDurationMonths: BigNumberish,
-      to: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     mintIncentive(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "mintIncentive(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    multisig(overrides?: CallOverrides): Promise<[string]>;
 
-    multisig(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "multisig()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    periodLength(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "periodLength()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     positions(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      count: BigNumber;
-      startTotalRewards: BigNumber;
-      startCumulativeVirtualCount: BigNumber;
-      lastPeriodUpdated: number;
-      endPeriod: number;
-      tokenID: number;
-      durationMonths: number;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: number;
-      4: number;
-      5: number;
-      6: number;
-    }>;
-
-    "positions(uint64)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      count: BigNumber;
-      startTotalRewards: BigNumber;
-      startCumulativeVirtualCount: BigNumber;
-      lastPeriodUpdated: number;
-      endPeriod: number;
-      tokenID: number;
-      durationMonths: number;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: number;
-      4: number;
-      5: number;
-      6: number;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, number, number, number, number] & {
+        count: BigNumber;
+        startTotalRewards: BigNumber;
+        startCumulativeVirtualCount: BigNumber;
+        lastPeriodUpdated: number;
+        endPeriod: number;
+        tokenID: number;
+        durationMonths: number;
+      }
+    >;
 
     rewardsStatus(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      cumulativeVirtualCount: BigNumber;
-      totalRewards: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "rewardsStatus(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      cumulativeVirtualCount: BigNumber;
-      totalRewards: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        cumulativeVirtualCount: BigNumber;
+        totalRewards: BigNumber;
+      }
+    >;
 
     setIncentiveContract(
       _contract: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "setIncentiveContract(address)"(
-      _contract: string,
-      overrides?: Overrides
+    start(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    start(overrides?: Overrides): Promise<ContractTransaction>;
+    startPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "start()"(overrides?: Overrides): Promise<ContractTransaction>;
+    tfGovernorAlpha(overrides?: CallOverrides): Promise<[string]>;
 
-    startPeriod(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    tfPositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
-    "startPeriod()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    tfToken(overrides?: CallOverrides): Promise<[string]>;
 
-    tfGovernorAlpha(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    timelock(overrides?: CallOverrides): Promise<[string]>;
 
-    "tfGovernorAlpha()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    tokenToID(arg0: string, overrides?: CallOverrides): Promise<[number]>;
 
-    tfPositionNFT(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "tfPositionNFT()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    tfToken(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "tfToken()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    timelock(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "timelock()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    tokenToID(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
-
-    "tokenToID(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
-
-    totalIncentivesMinted(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "totalIncentivesMinted()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    totalIncentivesMinted(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     unlockTokens(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "unlockTokens(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     virtualCount(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "virtualCount(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     voteInUnderlyingProtocol(
       arg0: string,
       arg1: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "voteInUnderlyingProtocol(address,uint256)"(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
   };
 
-  accrueInflation(overrides?: Overrides): Promise<ContractTransaction>;
+  accrueInflation(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
-  "accrueInflation()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-  addToken(token: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "addToken(address)"(
+  addToken(
     token: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   availableSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "availableSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   blacklistedAction(
     arg0: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "blacklistedAction(bytes4)"(
-    arg0: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   dailyProtocolTFIncentiveCount(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "dailyProtocolTFIncentiveCount()"(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   deployer(overrides?: CallOverrides): Promise<string>;
-
-  "deployer()"(overrides?: CallOverrides): Promise<string>;
 
   execute(
     target: string,
     signature: string,
     data: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "execute(address,string,bytes)"(
-    target: string,
-    signature: string,
-    data: BytesLike,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   executeMetaProposalVote(
     metaProposalID: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "executeMetaProposalVote(uint256)"(
-    metaProposalID: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   getRewards(
     positionNFTTokenID: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "getRewards(uint64)"(
-    positionNFTTokenID: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-  "idToToken(uint16)"(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   incentiveContract(overrides?: CallOverrides): Promise<string>;
-
-  "incentiveContract()"(overrides?: CallOverrides): Promise<string>;
 
   incentiveContractMint(
     dest: string,
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "incentiveContractMint(address,uint256)"(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   incentivesStartPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "incentivesStartPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   init(
     _tfPositionNFT: string,
     _tfToken: string,
     _tfGovernorAlpha: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "init(address,address,address)"(
-    _tfPositionNFT: string,
-    _tfToken: string,
-    _tfGovernorAlpha: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   lastPeriodGlobalInflationUpdated(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "lastPeriodGlobalInflationUpdated()"(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -842,158 +571,73 @@ export class TfDao extends Contract {
     count: BigNumberish,
     lockDurationMonths: BigNumberish,
     to: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "lockTokens(address,uint256,uint8,address)"(
-    token: string,
-    count: BigNumberish,
-    lockDurationMonths: BigNumberish,
-    to: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   mintIncentive(
     dest: string,
     count: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "mintIncentive(address,uint256)"(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   multisig(overrides?: CallOverrides): Promise<string>;
 
-  "multisig()"(overrides?: CallOverrides): Promise<string>;
-
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   positions(
     arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<{
-    count: BigNumber;
-    startTotalRewards: BigNumber;
-    startCumulativeVirtualCount: BigNumber;
-    lastPeriodUpdated: number;
-    endPeriod: number;
-    tokenID: number;
-    durationMonths: number;
-    0: BigNumber;
-    1: BigNumber;
-    2: BigNumber;
-    3: number;
-    4: number;
-    5: number;
-    6: number;
-  }>;
-
-  "positions(uint64)"(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<{
-    count: BigNumber;
-    startTotalRewards: BigNumber;
-    startCumulativeVirtualCount: BigNumber;
-    lastPeriodUpdated: number;
-    endPeriod: number;
-    tokenID: number;
-    durationMonths: number;
-    0: BigNumber;
-    1: BigNumber;
-    2: BigNumber;
-    3: number;
-    4: number;
-    5: number;
-    6: number;
-  }>;
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, number, number, number, number] & {
+      count: BigNumber;
+      startTotalRewards: BigNumber;
+      startCumulativeVirtualCount: BigNumber;
+      lastPeriodUpdated: number;
+      endPeriod: number;
+      tokenID: number;
+      durationMonths: number;
+    }
+  >;
 
   rewardsStatus(
     arg0: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<{
-    cumulativeVirtualCount: BigNumber;
-    totalRewards: BigNumber;
-    0: BigNumber;
-    1: BigNumber;
-  }>;
-
-  "rewardsStatus(uint16)"(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<{
-    cumulativeVirtualCount: BigNumber;
-    totalRewards: BigNumber;
-    0: BigNumber;
-    1: BigNumber;
-  }>;
+  ): Promise<
+    [BigNumber, BigNumber] & {
+      cumulativeVirtualCount: BigNumber;
+      totalRewards: BigNumber;
+    }
+  >;
 
   setIncentiveContract(
     _contract: string,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  "setIncentiveContract(address)"(
-    _contract: string,
-    overrides?: Overrides
+  start(
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  start(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "start()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   startPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "startPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   tfGovernorAlpha(overrides?: CallOverrides): Promise<string>;
-
-  "tfGovernorAlpha()"(overrides?: CallOverrides): Promise<string>;
 
   tfPositionNFT(overrides?: CallOverrides): Promise<string>;
 
-  "tfPositionNFT()"(overrides?: CallOverrides): Promise<string>;
-
   tfToken(overrides?: CallOverrides): Promise<string>;
-
-  "tfToken()"(overrides?: CallOverrides): Promise<string>;
 
   timelock(overrides?: CallOverrides): Promise<string>;
 
-  "timelock()"(overrides?: CallOverrides): Promise<string>;
-
   tokenToID(arg0: string, overrides?: CallOverrides): Promise<number>;
-
-  "tokenToID(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<number>;
 
   totalIncentivesMinted(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "totalIncentivesMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   unlockTokens(
     positionNFTTokenID: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "unlockTokens(uint64)"(
-    positionNFTTokenID: BigNumberish,
-    overrides?: Overrides
+    overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   virtualCount(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "virtualCount(uint16)"(
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -1004,112 +648,48 @@ export class TfDao extends Contract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "voteInUnderlyingProtocol(address,uint256)"(
-    arg0: string,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   callStatic: {
     accrueInflation(overrides?: CallOverrides): Promise<void>;
 
-    "accrueInflation()"(overrides?: CallOverrides): Promise<void>;
-
     addToken(token: string, overrides?: CallOverrides): Promise<void>;
 
-    "addToken(address)"(
-      token: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     availableSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "availableSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "blacklistedAction(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     dailyProtocolTFIncentiveCount(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "dailyProtocolTFIncentiveCount()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     deployer(overrides?: CallOverrides): Promise<string>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<string>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
       overrides?: CallOverrides
-    ): Promise<{
-      success: boolean;
-      returnData: string;
-      0: boolean;
-      1: string;
-    }>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<{
-      success: boolean;
-      returnData: string;
-      0: boolean;
-      1: string;
-    }>;
+    ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
 
     executeMetaProposalVote(
       metaProposalID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "executeMetaProposalVote(uint256)"(
-      metaProposalID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRewards(
       positionNFTTokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "getRewards(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
-    "idToToken(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     incentiveContract(overrides?: CallOverrides): Promise<string>;
-
-    "incentiveContract()"(overrides?: CallOverrides): Promise<string>;
 
     incentiveContractMint(
       dest: string,
@@ -1117,15 +697,7 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "incentiveContractMint(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     incentivesStartPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "incentivesStartPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(
       _tfPositionNFT: string,
@@ -1134,18 +706,7 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "init(address,address,address)"(
-      _tfPositionNFT: string,
-      _tfToken: string,
-      _tfGovernorAlpha: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     lastPeriodGlobalInflationUpdated(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "lastPeriodGlobalInflationUpdated()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1157,21 +718,7 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "lockTokens(address,uint256,uint8,address)"(
-      token: string,
-      count: BigNumberish,
-      lockDurationMonths: BigNumberish,
-      to: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     mintIncentive(
-      dest: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "mintIncentive(address,uint256)"(
       dest: string,
       count: BigNumberish,
       overrides?: CallOverrides
@@ -1179,123 +726,55 @@ export class TfDao extends Contract {
 
     multisig(overrides?: CallOverrides): Promise<string>;
 
-    "multisig()"(overrides?: CallOverrides): Promise<string>;
-
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     positions(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      count: BigNumber;
-      startTotalRewards: BigNumber;
-      startCumulativeVirtualCount: BigNumber;
-      lastPeriodUpdated: number;
-      endPeriod: number;
-      tokenID: number;
-      durationMonths: number;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: number;
-      4: number;
-      5: number;
-      6: number;
-    }>;
-
-    "positions(uint64)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      count: BigNumber;
-      startTotalRewards: BigNumber;
-      startCumulativeVirtualCount: BigNumber;
-      lastPeriodUpdated: number;
-      endPeriod: number;
-      tokenID: number;
-      durationMonths: number;
-      0: BigNumber;
-      1: BigNumber;
-      2: BigNumber;
-      3: number;
-      4: number;
-      5: number;
-      6: number;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, number, number, number, number] & {
+        count: BigNumber;
+        startTotalRewards: BigNumber;
+        startCumulativeVirtualCount: BigNumber;
+        lastPeriodUpdated: number;
+        endPeriod: number;
+        tokenID: number;
+        durationMonths: number;
+      }
+    >;
 
     rewardsStatus(
       arg0: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      cumulativeVirtualCount: BigNumber;
-      totalRewards: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
-
-    "rewardsStatus(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      cumulativeVirtualCount: BigNumber;
-      totalRewards: BigNumber;
-      0: BigNumber;
-      1: BigNumber;
-    }>;
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        cumulativeVirtualCount: BigNumber;
+        totalRewards: BigNumber;
+      }
+    >;
 
     setIncentiveContract(
       _contract: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setIncentiveContract(address)"(
-      _contract: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     start(overrides?: CallOverrides): Promise<void>;
-
-    "start()"(overrides?: CallOverrides): Promise<void>;
 
     startPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "startPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tfGovernorAlpha(overrides?: CallOverrides): Promise<string>;
-
-    "tfGovernorAlpha()"(overrides?: CallOverrides): Promise<string>;
 
     tfPositionNFT(overrides?: CallOverrides): Promise<string>;
 
-    "tfPositionNFT()"(overrides?: CallOverrides): Promise<string>;
-
     tfToken(overrides?: CallOverrides): Promise<string>;
-
-    "tfToken()"(overrides?: CallOverrides): Promise<string>;
 
     timelock(overrides?: CallOverrides): Promise<string>;
 
-    "timelock()"(overrides?: CallOverrides): Promise<string>;
-
     tokenToID(arg0: string, overrides?: CallOverrides): Promise<number>;
-
-    "tokenToID(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<number>;
 
     totalIncentivesMinted(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalIncentivesMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     unlockTokens(
-      positionNFTTokenID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "unlockTokens(uint64)"(
       positionNFTTokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1305,18 +784,7 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "virtualCount(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "voteInUnderlyingProtocol(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
       overrides?: CallOverrides
@@ -1324,122 +792,116 @@ export class TfDao extends Contract {
   };
 
   filters: {
-    IncentiveMinted(token: string | null, count: null): EventFilter;
+    IncentiveMinted(
+      token?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { token: string; count: BigNumber }
+    >;
 
     InflationAccrued(
-      currentPeriod: BigNumberish | null,
-      periods: null
-    ): EventFilter;
+      currentPeriod?: BigNumberish | null,
+      periods?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber],
+      { currentPeriod: BigNumber; periods: BigNumber }
+    >;
 
-    LiquidationIncentiveContractSet(_contract: string | null): EventFilter;
+    LiquidationIncentiveContractSet(
+      _contract?: string | null
+    ): TypedEventFilter<[string], { _contract: string }>;
 
     MetaGovernanceDecisionExecuted(
-      governorAlpha: string | null,
-      proposalID: BigNumberish | null,
-      decision: boolean | null
-    ): EventFilter;
+      governorAlpha?: string | null,
+      proposalID?: BigNumberish | null,
+      decision?: boolean | null
+    ): TypedEventFilter<
+      [string, BigNumber, boolean],
+      { governorAlpha: string; proposalID: BigNumber; decision: boolean }
+    >;
 
     RewardsClaimed(
-      positionNFTTokenID: BigNumberish | null,
-      owner: string | null
-    ): EventFilter;
+      positionNFTTokenID?: BigNumberish | null,
+      owner?: string | null
+    ): TypedEventFilter<
+      [BigNumber, string],
+      { positionNFTTokenID: BigNumber; owner: string }
+    >;
 
-    TFDaoStarted(): EventFilter;
+    TFDaoStarted(): TypedEventFilter<[], {}>;
 
-    TokenAdded(token: string | null): EventFilter;
+    TokenAdded(
+      token?: string | null
+    ): TypedEventFilter<[string], { token: string }>;
 
     TokensLocked(
-      tokenID: BigNumberish | null,
-      initialOwner: string | null,
-      lockDurationMonths: BigNumberish | null,
-      count: null
-    ): EventFilter;
+      tokenID?: BigNumberish | null,
+      initialOwner?: string | null,
+      lockDurationMonths?: BigNumberish | null,
+      count?: null
+    ): TypedEventFilter<
+      [number, string, number, BigNumber],
+      {
+        tokenID: number;
+        initialOwner: string;
+        lockDurationMonths: number;
+        count: BigNumber;
+      }
+    >;
 
     TokensUnlocked(
-      tokenID: BigNumberish | null,
-      owner: string | null,
-      count: null
-    ): EventFilter;
+      tokenID?: BigNumberish | null,
+      owner?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [number, string, BigNumber],
+      { tokenID: number; owner: string; count: BigNumber }
+    >;
   };
 
   estimateGas: {
-    accrueInflation(overrides?: Overrides): Promise<BigNumber>;
+    accrueInflation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
-    "accrueInflation()"(overrides?: Overrides): Promise<BigNumber>;
-
-    addToken(token: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "addToken(address)"(
+    addToken(
       token: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     availableSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "availableSupply()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "blacklistedAction(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "currentPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     dailyProtocolTFIncentiveCount(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "dailyProtocolTFIncentiveCount()"(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     executeMetaProposalVote(
       metaProposalID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "executeMetaProposalVote(uint256)"(
-      metaProposalID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "firstPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     getRewards(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "getRewards(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     idToToken(
@@ -1447,50 +909,24 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "idToToken(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     incentiveContract(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "incentiveContract()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     incentiveContractMint(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "incentiveContractMint(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     incentivesStartPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "incentivesStartPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(
       _tfPositionNFT: string,
       _tfToken: string,
       _tfGovernorAlpha: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "init(address,address,address)"(
-      _tfPositionNFT: string,
-      _tfToken: string,
-      _tfGovernorAlpha: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     lastPeriodGlobalInflationUpdated(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "lastPeriodGlobalInflationUpdated()"(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1499,43 +935,20 @@ export class TfDao extends Contract {
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "lockTokens(address,uint256,uint8,address)"(
-      token: string,
-      count: BigNumberish,
-      lockDurationMonths: BigNumberish,
-      to: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     mintIncentive(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "mintIncentive(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     multisig(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "multisig()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "periodLength()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     positions(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "positions(uint64)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1545,72 +958,35 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "rewardsStatus(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     setIncentiveContract(
       _contract: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    "setIncentiveContract(address)"(
-      _contract: string,
-      overrides?: Overrides
+    start(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    start(overrides?: Overrides): Promise<BigNumber>;
-
-    "start()"(overrides?: Overrides): Promise<BigNumber>;
 
     startPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "startPeriod()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tfGovernorAlpha(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "tfGovernorAlpha()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     tfPositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "tfPositionNFT()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tfToken(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "tfToken()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "timelock()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     tokenToID(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "tokenToID(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     totalIncentivesMinted(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "totalIncentivesMinted()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     unlockTokens(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "unlockTokens(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     virtualCount(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "virtualCount(uint16)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1620,97 +996,50 @@ export class TfDao extends Contract {
       arg1: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    "voteInUnderlyingProtocol(address,uint256)"(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    accrueInflation(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "accrueInflation()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    accrueInflation(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     addToken(
       token: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "addToken(address)"(
-      token: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     availableSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "availableSupply()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "blacklistedAction(bytes4)"(
-      arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "currentPeriod()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     dailyProtocolTFIncentiveCount(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "dailyProtocolTFIncentiveCount()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "deployer()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     execute(
       target: string,
       signature: string,
       data: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "execute(address,string,bytes)"(
-      target: string,
-      signature: string,
-      data: BytesLike,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     executeMetaProposalVote(
       metaProposalID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "executeMetaProposalVote(uint256)"(
-      metaProposalID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "firstPeriod()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getRewards(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "getRewards(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     idToToken(
@@ -1718,34 +1047,15 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "idToToken(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     incentiveContract(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "incentiveContract()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     incentiveContractMint(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "incentiveContractMint(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     incentivesStartPeriod(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "incentivesStartPeriod()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1753,21 +1063,10 @@ export class TfDao extends Contract {
       _tfPositionNFT: string,
       _tfToken: string,
       _tfGovernorAlpha: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "init(address,address,address)"(
-      _tfPositionNFT: string,
-      _tfToken: string,
-      _tfGovernorAlpha: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     lastPeriodGlobalInflationUpdated(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "lastPeriodGlobalInflationUpdated()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1776,43 +1075,20 @@ export class TfDao extends Contract {
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "lockTokens(address,uint256,uint8,address)"(
-      token: string,
-      count: BigNumberish,
-      lockDurationMonths: BigNumberish,
-      to: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     mintIncentive(
       dest: string,
       count: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "mintIncentive(address,uint256)"(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     multisig(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "multisig()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     periodLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "periodLength()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     positions(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "positions(uint64)"(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1822,53 +1098,26 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "rewardsStatus(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     setIncentiveContract(
       _contract: string,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setIncentiveContract(address)"(
-      _contract: string,
-      overrides?: Overrides
+    start(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    start(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "start()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     startPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "startPeriod()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tfGovernorAlpha(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "tfGovernorAlpha()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     tfPositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "tfPositionNFT()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tfToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "tfToken()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "timelock()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     tokenToID(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "tokenToID(address)"(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1877,18 +1126,9 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "totalIncentivesMinted()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     unlockTokens(
       positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "unlockTokens(uint64)"(
-      positionNFTTokenID: BigNumberish,
-      overrides?: Overrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     virtualCount(
@@ -1896,18 +1136,7 @@ export class TfDao extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "virtualCount(uint16)"(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "voteInUnderlyingProtocol(address,uint256)"(
       arg0: string,
       arg1: BigNumberish,
       overrides?: CallOverrides

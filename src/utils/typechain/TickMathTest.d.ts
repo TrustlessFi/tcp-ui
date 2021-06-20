@@ -9,15 +9,14 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface TickMathTestInterface extends ethers.utils.Interface {
   functions: {
@@ -82,107 +81,80 @@ interface TickMathTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class TickMathTest extends Contract {
+export class TickMathTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: TickMathTestInterface;
 
   functions: {
-    MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    "MAX_SQRT_RATIO()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "MIN_SQRT_RATIO()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
+    MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getGasCostOfGetSqrtRatioAtTick(
       tick: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getGasCostOfGetSqrtRatioAtTick(int24)"(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     getGasCostOfGetTickAtSqrtRatio(
       sqrtPriceX96: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getGasCostOfGetTickAtSqrtRatio(uint160)"(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     getSqrtRatioAtTick(
       tick: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getSqrtRatioAtTick(int24)"(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
 
     getTickAtSqrtRatio(
       sqrtPriceX96: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
-
-    "getTickAtSqrtRatio(uint160)"(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: number;
-    }>;
+    ): Promise<[number]>;
   };
 
   MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "MAX_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "MIN_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
   getGasCostOfGetSqrtRatioAtTick(
-    tick: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "getGasCostOfGetSqrtRatioAtTick(int24)"(
     tick: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -192,17 +164,7 @@ export class TickMathTest extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "getGasCostOfGetTickAtSqrtRatio(uint160)"(
-    sqrtPriceX96: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   getSqrtRatioAtTick(
-    tick: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "getSqrtRatioAtTick(int24)"(
     tick: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -212,26 +174,12 @@ export class TickMathTest extends Contract {
     overrides?: CallOverrides
   ): Promise<number>;
 
-  "getTickAtSqrtRatio(uint160)"(
-    sqrtPriceX96: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
   callStatic: {
     MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "MAX_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "MIN_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     getGasCostOfGetSqrtRatioAtTick(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getGasCostOfGetSqrtRatioAtTick(int24)"(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -241,27 +189,12 @@ export class TickMathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfGetTickAtSqrtRatio(uint160)"(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getSqrtRatioAtTick(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getSqrtRatioAtTick(int24)"(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getTickAtSqrtRatio(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<number>;
-
-    "getTickAtSqrtRatio(uint160)"(
       sqrtPriceX96: BigNumberish,
       overrides?: CallOverrides
     ): Promise<number>;
@@ -272,18 +205,9 @@ export class TickMathTest extends Contract {
   estimateGas: {
     MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "MAX_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "MIN_SQRT_RATIO()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     getGasCostOfGetSqrtRatioAtTick(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getGasCostOfGetSqrtRatioAtTick(int24)"(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -293,27 +217,12 @@ export class TickMathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getGasCostOfGetTickAtSqrtRatio(uint160)"(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getSqrtRatioAtTick(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "getSqrtRatioAtTick(int24)"(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getTickAtSqrtRatio(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getTickAtSqrtRatio(uint160)"(
       sqrtPriceX96: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -322,22 +231,9 @@ export class TickMathTest extends Contract {
   populateTransaction: {
     MAX_SQRT_RATIO(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "MAX_SQRT_RATIO()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     MIN_SQRT_RATIO(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "MIN_SQRT_RATIO()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getGasCostOfGetSqrtRatioAtTick(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getGasCostOfGetSqrtRatioAtTick(int24)"(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -347,27 +243,12 @@ export class TickMathTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getGasCostOfGetTickAtSqrtRatio(uint160)"(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getSqrtRatioAtTick(
       tick: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "getSqrtRatioAtTick(int24)"(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getTickAtSqrtRatio(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getTickAtSqrtRatio(uint160)"(
       sqrtPriceX96: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

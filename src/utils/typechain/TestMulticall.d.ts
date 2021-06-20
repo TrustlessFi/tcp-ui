@@ -9,16 +9,15 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   PayableOverrides,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface TestMulticallInterface extends ethers.utils.Interface {
   functions: {
@@ -68,16 +67,46 @@ interface TestMulticallInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class TestMulticall extends Contract {
+export class TestMulticall extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: TestMulticallInterface;
 
@@ -86,150 +115,74 @@ export class TestMulticall extends Contract {
       a: BigNumberish,
       b: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      tuple: { a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber };
-      0: { a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber };
-    }>;
-
-    "functionThatReturnsTuple(uint256,uint256)"(
-      a: BigNumberish,
-      b: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      tuple: { a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber };
-      0: { a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber };
-    }>;
+    ): Promise<
+      [[BigNumber, BigNumber] & { a: BigNumber; b: BigNumber }] & {
+        tuple: [BigNumber, BigNumber] & { a: BigNumber; b: BigNumber };
+      }
+    >;
 
     functionThatRevertsWithError(
       error: string,
       overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
-
-    "functionThatRevertsWithError(string)"(
-      error: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: void;
-    }>;
+    ): Promise<[void]>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
+    paid(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    pays(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    paid(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "paid()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    pays(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-    "pays()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-    returnSender(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "returnSender()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    returnSender(overrides?: CallOverrides): Promise<[string]>;
   };
 
   functionThatReturnsTuple(
     a: BigNumberish,
     b: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<{ a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber }>;
-
-  "functionThatReturnsTuple(uint256,uint256)"(
-    a: BigNumberish,
-    b: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<{ a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber }>;
+  ): Promise<[BigNumber, BigNumber] & { a: BigNumber; b: BigNumber }>;
 
   functionThatRevertsWithError(
     error: string,
     overrides?: CallOverrides
   ): Promise<void>;
 
-  "functionThatRevertsWithError(string)"(
-    error: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   multicall(
     data: BytesLike[],
-    overrides?: PayableOverrides
-  ): Promise<ContractTransaction>;
-
-  "multicall(bytes[])"(
-    data: BytesLike[],
-    overrides?: PayableOverrides
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   paid(overrides?: CallOverrides): Promise<BigNumber>;
 
-  "paid()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-  pays(overrides?: PayableOverrides): Promise<ContractTransaction>;
-
-  "pays()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+  pays(
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   returnSender(overrides?: CallOverrides): Promise<string>;
-
-  "returnSender()"(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     functionThatReturnsTuple(
       a: BigNumberish,
       b: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{ a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber }>;
-
-    "functionThatReturnsTuple(uint256,uint256)"(
-      a: BigNumberish,
-      b: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{ a: BigNumber; b: BigNumber; 0: BigNumber; 1: BigNumber }>;
+    ): Promise<[BigNumber, BigNumber] & { a: BigNumber; b: BigNumber }>;
 
     functionThatRevertsWithError(
       error: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "functionThatRevertsWithError(string)"(
-      error: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     multicall(data: BytesLike[], overrides?: CallOverrides): Promise<string[]>;
-
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: CallOverrides
-    ): Promise<string[]>;
 
     paid(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "paid()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     pays(overrides?: CallOverrides): Promise<void>;
 
-    "pays()"(overrides?: CallOverrides): Promise<void>;
-
     returnSender(overrides?: CallOverrides): Promise<string>;
-
-    "returnSender()"(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
@@ -241,43 +194,23 @@ export class TestMulticall extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "functionThatReturnsTuple(uint256,uint256)"(
-      a: BigNumberish,
-      b: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     functionThatRevertsWithError(
-      error: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "functionThatRevertsWithError(string)"(
       error: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
-    ): Promise<BigNumber>;
-
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     paid(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "paid()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pays(overrides?: PayableOverrides): Promise<BigNumber>;
-
-    "pays()"(overrides?: PayableOverrides): Promise<BigNumber>;
+    pays(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     returnSender(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "returnSender()"(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -287,42 +220,22 @@ export class TestMulticall extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "functionThatReturnsTuple(uint256,uint256)"(
-      a: BigNumberish,
-      b: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     functionThatRevertsWithError(
-      error: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "functionThatRevertsWithError(string)"(
       error: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     multicall(
       data: BytesLike[],
-      overrides?: PayableOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "multicall(bytes[])"(
-      data: BytesLike[],
-      overrides?: PayableOverrides
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     paid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "paid()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pays(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
-
-    "pays()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+    pays(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     returnSender(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "returnSender()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

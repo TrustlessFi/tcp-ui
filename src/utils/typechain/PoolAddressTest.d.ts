@@ -9,15 +9,14 @@ import {
   BigNumber,
   BigNumberish,
   PopulatedTransaction,
-} from "ethers";
-import {
-  Contract,
+  BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "@ethersproject/contracts";
+} from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface PoolAddressTestInterface extends ethers.utils.Interface {
   functions: {
@@ -55,27 +54,51 @@ interface PoolAddressTestInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class PoolAddressTest extends Contract {
+export class PoolAddressTest extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  on(event: EventFilter | string, listener: Listener): this;
-  once(event: EventFilter | string, listener: Listener): this;
-  addListener(eventName: EventFilter | string, listener: Listener): this;
-  removeAllListeners(eventName: EventFilter | string): this;
-  removeListener(eventName: any, listener: Listener): this;
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
+  off<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  on<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  once<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeListener<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    listener: TypedListener<EventArgsArray, EventArgsObject>
+  ): this;
+  removeAllListeners<EventArgsArray extends Array<any>, EventArgsObject>(
+    eventFilter: TypedEventFilter<EventArgsArray, EventArgsObject>
+  ): this;
+
+  listeners(eventName?: string): Array<Listener>;
+  off(eventName: string, listener: Listener): this;
+  on(eventName: string, listener: Listener): this;
+  once(eventName: string, listener: Listener): this;
+  removeListener(eventName: string, listener: Listener): this;
+  removeAllListeners(eventName?: string): this;
+
+  queryFilter<EventArgsArray extends Array<any>, EventArgsObject>(
+    event: TypedEventFilter<EventArgsArray, EventArgsObject>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
   interface: PoolAddressTestInterface;
 
   functions: {
-    POOL_INIT_CODE_HASH(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "POOL_INIT_CODE_HASH()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
+    POOL_INIT_CODE_HASH(overrides?: CallOverrides): Promise<[string]>;
 
     computeAddress(
       factory: string,
@@ -83,19 +106,7 @@ export class PoolAddressTest extends Contract {
       token1: string,
       fee: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
-
-    "computeAddress(address,address,address,uint24)"(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: string;
-    }>;
+    ): Promise<[string]>;
 
     getGasCostOfComputeAddress(
       factory: string,
@@ -103,34 +114,12 @@ export class PoolAddressTest extends Contract {
       token1: string,
       fee: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "getGasCostOfComputeAddress(address,address,address,uint24)"(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
+    ): Promise<[BigNumber]>;
   };
 
   POOL_INIT_CODE_HASH(overrides?: CallOverrides): Promise<string>;
 
-  "POOL_INIT_CODE_HASH()"(overrides?: CallOverrides): Promise<string>;
-
   computeAddress(
-    factory: string,
-    token0: string,
-    token1: string,
-    fee: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  "computeAddress(address,address,address,uint24)"(
     factory: string,
     token0: string,
     token1: string,
@@ -146,18 +135,8 @@ export class PoolAddressTest extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  "getGasCostOfComputeAddress(address,address,address,uint24)"(
-    factory: string,
-    token0: string,
-    token1: string,
-    fee: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   callStatic: {
     POOL_INIT_CODE_HASH(overrides?: CallOverrides): Promise<string>;
-
-    "POOL_INIT_CODE_HASH()"(overrides?: CallOverrides): Promise<string>;
 
     computeAddress(
       factory: string,
@@ -167,23 +146,7 @@ export class PoolAddressTest extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "computeAddress(address,address,address,uint24)"(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     getGasCostOfComputeAddress(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getGasCostOfComputeAddress(address,address,address,uint24)"(
       factory: string,
       token0: string,
       token1: string,
@@ -197,8 +160,6 @@ export class PoolAddressTest extends Contract {
   estimateGas: {
     POOL_INIT_CODE_HASH(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "POOL_INIT_CODE_HASH()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     computeAddress(
       factory: string,
       token0: string,
@@ -207,23 +168,7 @@ export class PoolAddressTest extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "computeAddress(address,address,address,uint24)"(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getGasCostOfComputeAddress(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "getGasCostOfComputeAddress(address,address,address,uint24)"(
       factory: string,
       token0: string,
       token1: string,
@@ -237,10 +182,6 @@ export class PoolAddressTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "POOL_INIT_CODE_HASH()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     computeAddress(
       factory: string,
       token0: string,
@@ -249,23 +190,7 @@ export class PoolAddressTest extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "computeAddress(address,address,address,uint24)"(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     getGasCostOfComputeAddress(
-      factory: string,
-      token0: string,
-      token1: string,
-      fee: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "getGasCostOfComputeAddress(address,address,address,uint24)"(
       factory: string,
       token0: string,
       token1: string,
