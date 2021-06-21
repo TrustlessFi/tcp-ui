@@ -21,6 +21,8 @@ export const timeToPeriod = (time: number, periodLength: number, firstPeriod: nu
   return (Math.floor(time / periodLength)) - firstPeriod;
 }
 
+export const toInt = (val: number | string) => typeof val === 'number' ? val : parseInt(val)
+
 // ======================= Number Display Utils ============================
 export const roundToXDecimals = (val: number, decimals: number = 0) =>
   Math.round(val * 10 ** decimals) / 10 ** decimals;

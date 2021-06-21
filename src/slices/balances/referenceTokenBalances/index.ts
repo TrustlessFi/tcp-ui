@@ -36,19 +36,7 @@ export const referenceTokenBalanceSlice = createSlice({
   initialState: initialState as ReferenceTokenBalancesState,
   reducers: {},
   extraReducers: (builder) => {
-    // builder = getGenericReducerBuilder(builder, getReferenceTokenBalances)
-  builder
-    .addCase(getReferenceTokenBalances.pending, (state) => {
-      state.loading = true
-    })
-    .addCase(getReferenceTokenBalances.rejected, (state, action) => {
-      state.loading = false
-      state.error = action.error
-    })
-    .addCase(getReferenceTokenBalances.fulfilled, (state, action) => {
-      state.loading = false
-      state.data = action.payload;
-    });
+    builder = getGenericReducerBuilder(builder, getReferenceTokenBalances)
   },
 });
 
