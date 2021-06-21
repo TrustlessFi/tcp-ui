@@ -20,8 +20,6 @@ const MetamaskConnectButton = () => {
   const connectWallet = async () => {
     dispatch(connecting())
 
-    console.log('connectWallet called')
-
     return window.ethereum
       .request({ method: 'eth_requestAccounts' })
       .then(walletConnected)
@@ -83,7 +81,6 @@ const MetamaskConnectButton = () => {
   const isConnecting = selector(state => state.wallet.connecting)
   const address = selector(state => state.wallet.address)
   const connectingStyle = isConnecting ? 'connecting' : (address != null ? 'connected' : 'disconnected')
-  console.log({isConnecting, address, connectingStyle})
 
   return (
     <>

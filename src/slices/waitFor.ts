@@ -1,8 +1,12 @@
-import { AppDispatch, store } from './../app/store'
+import { AppDispatch, store, RootState } from './../app/store'
+import { AsyncThunkAction } from '@reduxjs/toolkit'
 import { AppSelector } from './../app/hooks'
 import { governorInfo, getGovernorInfo } from './governor'
 import { marketInfo, getMarketInfo } from './market'
 import { ratesInfo, getRatesInfo } from './rates'
+import { referenceTokens, getReferenceTokens } from './referenceTokens'
+import { getReferenceTokenBalances, ReferenceTokenBalancesData } from './balances/referenceTokenBalances'
+import { balanceData, balanceState, fetchTokenBalanceArgs } from './balances'
 import { PositionMap, getPositions } from './positions'
 import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
 import { liquidationsInfo, getLiquidationsInfo } from './liquidations'
@@ -79,6 +83,55 @@ export const waitForSDI = (selector: AppSelector, dispatch: AppDispatch): system
     dispatch(getSystemDebtInfo(chainID))
   }
   return sdi
+}
+
+export const waitForReferenceTokens = (selector: AppSelector, dispatch: AppDispatch): referenceTokens | null => {
+  const chainID = selector(state => state.chainID.chainID)
+  const governorInfo = waitForGovernor(selector, dispatch)
+
+  const referenceTokens = selector(state => state.referenceTokens.data)
+  if (chainID === null || governorInfo === null) return null
+
+  if (referenceTokens === null && !store.getState().referenceTokens.loading) {
+    dispatch(getReferenceTokens({chainID, governorInfo}))
+  }
+  return referenceTokens
+}
+
+export const waitForReferenceTokenBalances = (selector: AppSelector, dispatch: AppDispatch): ReferenceTokenBalancesData | null => {
+  const chainID = selector(state => state.chainID.chainID)
+  const userAddress = selector(state => state.wallet.address)
+  const referenceTokens = waitForReferenceTokens(selector, dispatch)
+
+  let referenceTokenBalances = selector(state => state.referenceTokenBalances.data)
+  if (chainID === null || userAddress === null || referenceTokens === null) return null
+
+  let isEmpty = referenceTokenBalances == null || Object.values(referenceTokenBalances!).length === 0
+
+  console.log({refTokenState: store.getState().referenceTokenBalances})
+
+  if (isEmpty && !store.getState().referenceTokenBalances.loading) {
+    dispatch(getReferenceTokenBalances({tokenAddresses: referenceTokens, args: {chainID, userAddress}}))
+  }
+  return referenceTokenBalances
+}
+
+export const waitForProtocolTokenBalance = (
+  selector: AppSelector,
+  dispatch: AppDispatch,
+  stateSelector: (state: RootState) => balanceState,
+  balanceThunk: (args: fetchTokenBalanceArgs) => AsyncThunkAction<balanceData | null, fetchTokenBalanceArgs, {}>,
+): balanceData | null => {
+  const chainID = selector(state => state.chainID.chainID)
+  const userAddress = selector(state => state.wallet.address)
+
+  const balance = selector(state => stateSelector(state).data)
+  if (chainID === null || userAddress === null) return null
+
+  if (balance === null && !stateSelector(store.getState()).loading) {
+    dispatch(balanceThunk({ chainID, userAddress }))
+  }
+  return balance
 }
 
 export const waitForPositions = (selector: AppSelector, dispatch: AppDispatch): PositionMap | null => {

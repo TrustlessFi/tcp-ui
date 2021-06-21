@@ -8,6 +8,7 @@ import { Governor } from "../../utils/typechain/Governor"
 export type governorInfo = {
   phase: number,
   collateralPool: string,
+  referencePools: string[],
 }
 
 export interface GovernorState extends sliceState {
@@ -28,14 +29,17 @@ export const fetchGovernorInfo = async (chainID: ChainID) => {
   let [
     phase,
     collateralPool,
+    referencePools,
   ] = await Promise.all([
     governor.currentPhase(),
     governor.collateralPool(),
+    governor.getReferencePools(),
   ])
 
   return {
     phase,
     collateralPool,
+    referencePools,
   }
 }
 

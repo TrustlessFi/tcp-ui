@@ -3,9 +3,9 @@ import { ProtocolContract } from '../../../utils/protocolContracts'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, getTokenBalanceThunk } from '../'
 
-export const getHueBalances = createAsyncThunk(
+export const getHueBalance = createAsyncThunk(
   'hueBalance/getBalances',
-  getTokenBalanceThunk(ProtocolContract.Zhu, [ProtocolContract.Market, ProtocolContract.Lend]),
+  getTokenBalanceThunk({contract: ProtocolContract.Zhu}, [ProtocolContract.Market, ProtocolContract.Lend], []),
 )
 
 export const hueBalanceSlice = createSlice({
@@ -13,7 +13,7 @@ export const hueBalanceSlice = createSlice({
   initialState: initialState as balanceState,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getHueBalances)
+    builder = getGenericReducerBuilder(builder, getHueBalance)
   },
 });
 
