@@ -1,20 +1,35 @@
 import { sliceState } from '../'
 import { ChainID } from '../chainID'
+import { ethers, ContractInterface } from 'ethers'
 
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { unscale, uint255Max, bnf } from '../../utils'
+import getProvider from '../../utils/getProvider'
 import { Contract } from 'ethers'
 
 import { ERC20 } from "../../utils/typechain/ERC20"
 
+import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+
+interface tokenInfo {
+  address: string,
+  name: string,
+  symbol: string,
+  decimals: number,
+}
+
+type balancesInfo  = { [key in ProtocolContract]?: number }
+type approvalInfo  = { [key in ProtocolContract]?: {
+  allowance: number,
+  approving: boolean,
+  approved: boolean
+}}
+
 export interface balanceData {
-  token: ERC20
-  balance: number,
-  approval: { [key in ProtocolContract]?: {
-    allowance: number,
-    approving: boolean,
-    approved: boolean
-  }}
+  token: tokenInfo
+  userBalance: number
+  approval: approvalInfo
+  balances: balancesInfo
 }
 
 export interface balanceState extends sliceState {
@@ -26,28 +41,66 @@ export interface fetchTokenBalanceArgs {
   userAddress: string,
 }
 
-export const getTokenBalanceThunk = (token: ProtocolContract, approvalsList: ProtocolContract[]) =>
-  async (args: fetchTokenBalanceArgs) => {
-    const hue = await getProtocolContract(args.chainID, token) as unknown as ERC20 | null
-    if (hue === null) return null
+export const getTokenBalanceThunk = (
+  _token: {tokenAddress?: string, contract?: ProtocolContract},
+  approvalsList: ProtocolContract[],
+  balancesList: ProtocolContract[],
+) => async (args: fetchTokenBalanceArgs): Promise<balanceData | null> => {
+  const provider = getProvider()
+  if (provider === null) return null
+  let token: ERC20 | null = null
+  if (_token.tokenAddress) {
+    token = new ethers.Contract(_token.tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
+  } else if (_token.contract) {
+    token = await getProtocolContract(args.chainID, _token.contract) as unknown as ERC20 | null
+  }
+  if (token === null) return null
 
-    const contracts = await Promise.all(
-      approvalsList.map(async contract => (await getProtocolContract(args.chainID, contract)) as unknown as Contract | null))
+  const contractsMap: {[key in ProtocolContract]?: Contract | null} = {}
 
-    if (contracts.includes(null)) return null
+  const onlyUnique = (value: ProtocolContract, index: number, self: ProtocolContract[]) => self.indexOf(value) === index
 
-    const balance = unscale(await hue.balanceOf(args.userAddress))
-    const approvals = await Promise.all(approvalsList.map(async (_, idx) => {
-      const allowance = await hue.allowance(args.userAddress, contracts[idx]!.address)
-      return {
+  await Promise.all(
+    [...approvalsList, ...balancesList].filter(onlyUnique).map(async contract => {
+      contractsMap[contract] =
+        (await getProtocolContract(args.chainID, contract)) as unknown as Contract | null
+    }
+  ))
+
+  if (Object.values(contractsMap).includes(null)) return null
+
+  let approval: approvalInfo = {}
+  let balances: balancesInfo = {}
+
+  const [
+    _,
+    __,
+    userBalance,
+    tokenInfo
+  ] = await Promise.all([
+    Promise.all(balancesList.map(async (balanceContract) => {
+      balances[balanceContract] = unscale(await token!.balanceOf(contractsMap[balanceContract]!.address))
+    })),
+    Promise.all(approvalsList.map(async (approvalContract) => {
+      const allowance = await token!.allowance(args.userAddress, contractsMap[approvalContract]!.address)
+      approval[approvalContract] = {
         allowance: unscale(allowance),
         approving: false,
         approved: allowance.gt(bnf(uint255Max))
       }
-    }))
+    })),
+    token.balanceOf(args.userAddress),
+    tokenAddressToTokenInfo(token.address, provider),
+  ])
+  return { token: tokenInfo, userBalance: unscale(userBalance), approval, balances}
+}
 
-    let data: balanceData = { token: hue, balance, approval: {}}
-    approvalsList.map((contract, idx) => { data.approval[contract] = approvals[idx] })
-
-    return data;
-  }
+const tokenAddressToTokenInfo = async (tokenAddress: string, provider: ethers.providers.Web3Provider) => {
+  const token = new ethers.Contract(tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
+  const [ name, symbol, decimals] = await Promise.all([
+    token.name(),
+    token.symbol(),
+    token.decimals(),
+  ])
+  return { address: tokenAddress, name, symbol, decimals }
+}
