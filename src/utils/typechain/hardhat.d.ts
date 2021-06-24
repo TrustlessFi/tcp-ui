@@ -785,6 +785,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NFTDescriptorTest__factory>;
     getContractFactory(
+      name: "NonfungiblePositionManagerPositionsGasTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.NonfungiblePositionManagerPositionsGasTest__factory>;
+    getContractFactory(
       name: "OracleTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OracleTest__factory>;

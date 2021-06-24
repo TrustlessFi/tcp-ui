@@ -11,7 +11,7 @@ const MetamaskConnectButton = () => {
   const chainChanged = (chainID: number | string) => {
 
     // also refetch some of the accounts if the chain has changed from something valid to something valid
-    // can probalby combine some logic with wallet connected
+    // can probably combine some logic with wallet connected
 
     if (typeof chainID === 'string') chainID = parseInt(chainID)
     dispatch(chainIDFound(chainID))
