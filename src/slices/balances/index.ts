@@ -20,7 +20,7 @@ interface tokenInfo {
 
 type balancesInfo  = { [key in ProtocolContract]?: number }
 type approvalInfo  = { [key in ProtocolContract]?: {
-  allowance: number,
+  allowance: string,
   approving: boolean,
   approved: boolean
 }}
@@ -45,7 +45,19 @@ export const getTokenBalanceThunk = (
   _token: {tokenAddress?: string, contract?: ProtocolContract},
   approvalsList: ProtocolContract[],
   balancesList: ProtocolContract[],
-) => async (args: fetchTokenBalanceArgs): Promise<balanceData | null> => {
+) => async (args: fetchTokenBalanceArgs): Promise<balanceData | null> => await getTokenBalanceImpl(
+  _token,
+  approvalsList,
+  balancesList,
+  args,
+)
+
+export const getTokenBalanceImpl = async (
+  _token: {tokenAddress?: string, contract?: ProtocolContract},
+  approvalsList: ProtocolContract[],
+  balancesList: ProtocolContract[],
+  args: fetchTokenBalanceArgs
+) => {
   const provider = getProvider()
   if (provider === null) return null
   let token: ERC20 | null = null
@@ -71,28 +83,28 @@ export const getTokenBalanceThunk = (
 
   let approval: approvalInfo = {}
   let balances: balancesInfo = {}
+  const tokenInfo = await tokenAddressToTokenInfo(token.address, provider);
 
   const [
     _,
     __,
     userBalance,
-    tokenInfo
   ] = await Promise.all([
     Promise.all(balancesList.map(async (balanceContract) => {
-      balances[balanceContract] = unscale(await token!.balanceOf(contractsMap[balanceContract]!.address))
+      balances[balanceContract] = unscale(await token!.balanceOf(contractsMap[balanceContract]!.address), tokenInfo.decimals)
     })),
     Promise.all(approvalsList.map(async (approvalContract) => {
       const allowance = await token!.allowance(args.userAddress, contractsMap[approvalContract]!.address)
       approval[approvalContract] = {
-        allowance: unscale(allowance),
+        allowance: allowance.toString(),
         approving: false,
         approved: allowance.gt(bnf(uint255Max))
       }
     })),
     token.balanceOf(args.userAddress),
-    tokenAddressToTokenInfo(token.address, provider),
   ])
-  return { token: tokenInfo, userBalance: unscale(userBalance), approval, balances}
+
+  return { token: tokenInfo, userBalance: unscale(userBalance, tokenInfo.decimals), approval, balances}
 }
 
 const tokenAddressToTokenInfo = async (tokenAddress: string, provider: ethers.providers.Web3Provider) => {
