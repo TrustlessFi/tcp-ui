@@ -50,6 +50,8 @@ const OneToOneMintTile = ({}) => {
   );
   const refTokenBalances = waitForReferenceTokenBalances(selector, dispatch);
 
+  console.log({hueBalance, refTokenBalances})
+
   // check that the component is ready to display
   const loading = (
     <Center>
@@ -72,7 +74,6 @@ const OneToOneMintTile = ({}) => {
 
   const refData = refTokenBalances[refToken];
   const refSymbol = refData.token.symbol;
-  console.log({refData})
 
   const _input1 = {
     name: hueFirst ? "Hue" : refSymbol,

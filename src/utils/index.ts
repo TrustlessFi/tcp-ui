@@ -12,10 +12,37 @@ export const log = (input: { base: number; val: number }) =>
 
 export const bnf = (val: BigNumberish) => BigNumber.from(val);
 
-export const unscale = (quantity: BigNumber): number =>
-  quantity.eq(0) ? 0 : Number(BigInt(quantity.toString()) / BigInt(1e12)) / 1e6;
+export const scale = (_quantity: BigNumberish, decimals = 18): BigNumber => {
+  let quantity = bnf(_quantity)
+  while (decimals > 6) {
+    quantity = quantity.mul(1e6)
+    decimals -= 6
+  }
+  return quantity.mul(10**decimals)
+}
 
-export const scale = (quantity: BigNumberish): BigNumber => bnf(quantity).mul(1e9).mul(1e9)
+export const unscale = (quantity: BigNumber, decimals = 18): number => {
+  const digits = quantity.toString().length
+  let digitsToRemove = digits - 15
+  if (digitsToRemove > decimals) {
+    console.log({quantity: quantity.toString(), decimals, digits})
+    throw 'number too large'
+  }
+  while(digitsToRemove > 9) {
+    quantity = quantity.div(1e9)
+    digitsToRemove -= 9
+    decimals -= 9
+  }
+  let num = 0
+  if (digitsToRemove > 0)  {
+    decimals -= digitsToRemove
+    num = quantity.div(10**digitsToRemove).toNumber()
+  } else {
+    num = quantity.toNumber()
+  }
+  const result = num / (10**decimals)
+  return result
+}
 
 export const timeToPeriod = (time: number, periodLength: number, firstPeriod: number) => {
   return (Math.floor(time / periodLength)) - firstPeriod;
