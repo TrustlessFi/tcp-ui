@@ -7,6 +7,8 @@ import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
 import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
 import { balanceInfo, balanceState, fetchTokenBalanceArgs } from './balances'
+import { getHueBalance } from './balances/hueBalance'
+import { getLendHueBalance } from './balances/lendHueBalance'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
@@ -49,7 +51,7 @@ const getNodeFetch = (
   }
 }
 
-const getManageSelectionFunction = <Args extends {}, Value>(
+const getWaitFunction = <Args extends {}, Value>(
   stateSelector: (state: RootState) => sliceState<Value>,
   thunk: (args: Args) => AsyncThunkAction<Value | null, Args, {}>,
   fetchNodes: FetchNode[],
@@ -78,102 +80,68 @@ const getManageSelectionFunction = <Args extends {}, Value>(
   return state.data.value
 }
 
-export const waitForGovernor = getManageSelectionFunction<governorArgs, governorInfo>(
+export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
   (state: RootState) => state.governor,
   getGovernorInfo,
   [FetchNode.ChainID],
 )
 
-export const waitForPrices = getManageSelectionFunction<pricesArgs, pricesInfo>(
+export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
   (state: RootState) => state.prices,
   getPricesInfo,
   [FetchNode.ChainID, FetchNode.GovernorInfo, FetchNode.LiquidationsInfo],
 )
 
-export const waitForMarket = getManageSelectionFunction<marketArgs, marketInfo>(
+export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
   (state: RootState) => state.market,
   getMarketInfo,
   [FetchNode.ChainID],
 )
 
-export const waitForPositions = getManageSelectionFunction<positionsArgs, positionsInfo>(
+export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
   (state: RootState) => state.positions,
   getPositions,
   [FetchNode.ChainID, FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo],
 )
 
-export const waitForLiquidations = getManageSelectionFunction<liquidationsArgs, liquidationsInfo>(
+export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(
   (state: RootState) => state.liquidations,
   getLiquidationsInfo,
   [FetchNode.ChainID],
 )
 
-export const waitForRates = getManageSelectionFunction<ratesArgs, ratesInfo>(
+export const waitForRates = getWaitFunction<ratesArgs, ratesInfo>(
   (state: RootState) => state.rates,
   getRatesInfo,
   [FetchNode.ChainID],
 )
 
-export const waitForSDI = getManageSelectionFunction<systemDebtArgs, systemDebtInfo>(
+export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
   (state: RootState) => state.systemDebt,
   getSystemDebtInfo,
   [FetchNode.ChainID],
 )
 
-export const waitForReferenceTokens = getManageSelectionFunction<referenceTokenArgs, referenceTokens>(
+export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, referenceTokens>(
   (state: RootState) => state.referenceTokens,
   getReferenceTokens,
   [FetchNode.ChainID, FetchNode.GovernorInfo],
 )
 
-// TODO make one for each protocol token and dont have the extra variables here
-export const waitForProtocolTokenBalance = (
-  selector: AppSelector,
-  dispatch: AppDispatch,
-  stateSelector: (state: RootState) => balanceState,
-  balanceThunk: (args: fetchTokenBalanceArgs) => AsyncThunkAction<balanceInfo | null, fetchTokenBalanceArgs, {}>,
-) => manageSelection<fetchTokenBalanceArgs, balanceInfo>(
-  {
-    chainID: selector(state => state.chainID.chainID),
-    userAddress: selector(state => state.wallet.address),
-  },
-  stateSelector,
-  (data: fetchTokenBalanceArgs) => dispatch(balanceThunk(data)),
-  selector,
+export const waitForHueBalance = getWaitFunction<fetchTokenBalanceArgs, balanceInfo>(
+  (state: RootState) => state.hueBalance,
+  getHueBalance,
+  [FetchNode.ChainID, FetchNode.UserAddress],
 )
 
-// TODO convert this
-export const waitForReferenceTokenBalances = (
-  selector: AppSelector,
-  dispatch: AppDispatch,
-) => manageSelection<referenceTokenBalancesArgs, referenceTokenBalances>(
-  {
-    tokenAddresses: waitForReferenceTokens(selector, dispatch),
-    chainID: selector(state => state.chainID.chainID),
-    userAddress: selector(state => state.wallet.address),
-  },
+export const waitForLendHueBalance = getWaitFunction<fetchTokenBalanceArgs, balanceInfo>(
+  (state: RootState) => state.hueBalance,
+  getLendHueBalance,
+  [FetchNode.ChainID, FetchNode.UserAddress],
+)
+
+export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalancesArgs, referenceTokenBalances>(
   (state: RootState) => state.referenceTokenBalances,
-  (data: referenceTokenBalancesArgs) => dispatch(getReferenceTokenBalances(data)),
-  selector,
+  getReferenceTokenBalances,
+  [FetchNode.TokenAddresses, FetchNode.ChainID, FetchNode.UserAddress],
 )
-
-
-const manageSelection = <Args extends {}, Value>(
-  inputArgs: Nullable<Args>,
-  stateSelector: (state: RootState) => sliceState<Value>,
-  doDispatch: (data: Args) => any,
-  selector: AppSelector,
-) => {
-  const state = selector(stateSelector)
-  if (Object.values(inputArgs).includes(null)) return null
-
-  const error = state.data.error
-  if (error !== null) {
-    console.error(error.message)
-    throw error.message
-  }
-  if (state.data.value === null && !stateSelector(store.getState()).loading) {
-    doDispatch(inputArgs as NonNullable<Args>)
-  }
-  return state.data.value
-}
