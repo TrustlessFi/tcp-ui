@@ -6,17 +6,15 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
 import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
-import { balanceInfo, balanceState, fetchTokenBalanceArgs } from './balances'
+import { balanceInfo, balanceArgs } from './balances'
 import { getHueBalance } from './balances/hueBalance'
 import { getLendHueBalance } from './balances/lendHueBalance'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
 import { sliceState } from './'
-import { Nullable } from '../utils'
 
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices/index'
-
 
 enum FetchNode {
   ChainID,
@@ -64,7 +62,7 @@ const getWaitFunction = <Args extends {}, Value>(
   let inputArgs = {}
   fetchNodes.map(fetchNode => {
     const fetchedNode = getNodeFetch(fetchNode, selector, dispatch)
-    inputArgs = { ...inputArgs, ...fetchedNode}
+    inputArgs = {...inputArgs, ...fetchedNode}
   })
 
   if (Object.values(inputArgs).includes(null)) return null
@@ -74,9 +72,11 @@ const getWaitFunction = <Args extends {}, Value>(
     console.error(error.message)
     throw error.message
   }
+
   if (state.data.value === null && !stateSelector(store.getState()).loading) {
     dispatch(thunk(inputArgs as NonNullable<Args>))
   }
+
   return state.data.value
 }
 
@@ -128,13 +128,13 @@ export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, refere
   [FetchNode.ChainID, FetchNode.GovernorInfo],
 )
 
-export const waitForHueBalance = getWaitFunction<fetchTokenBalanceArgs, balanceInfo>(
+export const waitForHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getHueBalance,
   [FetchNode.ChainID, FetchNode.UserAddress],
 )
 
-export const waitForLendHueBalance = getWaitFunction<fetchTokenBalanceArgs, balanceInfo>(
+export const waitForLendHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getLendHueBalance,
   [FetchNode.ChainID, FetchNode.UserAddress],

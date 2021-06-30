@@ -35,7 +35,7 @@ export interface balanceInfo {
 
 export interface balanceState extends sliceState<balanceInfo> {}
 
-export interface fetchTokenBalanceArgs {
+export interface balanceArgs {
   chainID: ChainID,
   userAddress: string,
 }
@@ -44,7 +44,7 @@ export const getTokenBalanceThunk = (
   _token: {tokenAddress?: string, contract?: ProtocolContract},
   approvalsList: ProtocolContract[],
   balancesList: ProtocolContract[],
-) => async (args: fetchTokenBalanceArgs): Promise<balanceInfo | null> => await getTokenBalanceImpl(
+) => async (args: balanceArgs): Promise<balanceInfo | null> => await getTokenBalanceImpl(
   _token,
   approvalsList,
   balancesList,
@@ -55,7 +55,7 @@ export const getTokenBalanceImpl = async (
   _token: {tokenAddress?: string, contract?: ProtocolContract},
   approvalsList: ProtocolContract[],
   balancesList: ProtocolContract[],
-  args: fetchTokenBalanceArgs
+  args: balanceArgs
 ) => {
   const provider = getProvider()
   if (provider === null) return null
