@@ -1,12 +1,12 @@
 import { AppDispatch, store, RootState } from './../app/store'
-import { AsyncThunkAction, SerializedError } from '@reduxjs/toolkit'
+import { AsyncThunkAction } from '@reduxjs/toolkit'
 import { AppSelector } from './../app/hooks'
 import { getGovernorInfo, governorInfo, governorArgs } from './governor'
 import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
 import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
-import { balanceData, balanceState, fetchTokenBalanceArgs } from './balances'
+import { balanceInfo, balanceState, fetchTokenBalanceArgs } from './balances'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
@@ -63,7 +63,7 @@ export const waitForLiquidations = (
 ) => manageSelection<liquidationsArgs, liquidationsInfo>(
   { chainID: selector(state => state.chainID.chainID) },
   (state: RootState) => state.liquidations,
-  (data: marketArgs) => dispatch(getMarketInfo(data)),
+  (data: marketArgs) => dispatch(getLiquidationsInfo(data)),
   selector,
 )
 
@@ -101,47 +101,34 @@ export const waitForReferenceTokens = (
   selector,
 )
 
-
-export const waitForReferenceTokenBalances = (selector: AppSelector, dispatch: AppDispatch): referenceTokenBalances | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const userAddress = selector(state => state.wallet.address)
-  const referenceTokens = waitForReferenceTokens(selector, dispatch)
-
-  const referenceTokenBalances = selector(state => state.referenceTokenBalances.data.value)
-  const referenceTokenError = selector(state => state.referenceTokenBalances.data.error)
-
-  if (referenceTokenError !== null) {
-    console.error(referenceTokenError)
-    throw referenceTokenError.message
-  }
-
-  if (chainID === null || userAddress === null || referenceTokens === null) return null
-
-  let isEmpty = referenceTokenBalances == null || Object.values(referenceTokenBalances!).length === 0
-
-  if (isEmpty && !store.getState().referenceTokenBalances.loading) {
-    dispatch(getReferenceTokenBalances({tokenAddresses: referenceTokens, args: {chainID, userAddress}}))
-  }
-  return referenceTokenBalances
-}
+export const waitForReferenceTokenBalances = (
+  selector: AppSelector,
+  dispatch: AppDispatch,
+) => manageSelection<referenceTokenBalancesArgs, referenceTokenBalances>(
+  {
+    tokenAddresses: waitForReferenceTokens(selector, dispatch),
+    chainID: selector(state => state.chainID.chainID),
+    userAddress: selector(state => state.wallet.address),
+  },
+  (state: RootState) => state.referenceTokenBalances,
+  (data: referenceTokenBalancesArgs) => dispatch(getReferenceTokenBalances(data)),
+  selector,
+)
 
 export const waitForProtocolTokenBalance = (
   selector: AppSelector,
   dispatch: AppDispatch,
   stateSelector: (state: RootState) => balanceState,
-  balanceThunk: (args: fetchTokenBalanceArgs) => AsyncThunkAction<balanceData | null, fetchTokenBalanceArgs, {}>,
-): balanceData | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const userAddress = selector(state => state.wallet.address)
-
-  const balance = selector(state => stateSelector(state).data.value)
-  if (chainID === null || userAddress === null) return null
-
-  if (balance === null && !stateSelector(store.getState()).loading) {
-    dispatch(balanceThunk({ chainID, userAddress }))
-  }
-  return balance
-}
+  balanceThunk: (args: fetchTokenBalanceArgs) => AsyncThunkAction<balanceInfo | null, fetchTokenBalanceArgs, {}>,
+) => manageSelection<fetchTokenBalanceArgs, balanceInfo>(
+  {
+    chainID: selector(state => state.chainID.chainID),
+    userAddress: selector(state => state.wallet.address),
+  },
+  stateSelector,
+  (data: fetchTokenBalanceArgs) => dispatch(balanceThunk(data)),
+  selector,
+)
 
 export const waitForPositions = (
   selector: AppSelector,
