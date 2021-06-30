@@ -15,106 +15,118 @@ import { Nullable } from '../utils'
 
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices/index'
 
-export const waitForPrices = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<pricesArgs, pricesInfo>(
-  {
-    chainID: selector(state => state.chainID.chainID),
-    governorInfo: waitForGovernor(selector, dispatch),
-    liquidationsInfo: waitForLiquidations(selector, dispatch),
-  },
-  (state: RootState) => state.prices,
-  (args: pricesArgs) => dispatch(getPricesInfo(args)),
-  selector,
-)
 
-export const waitForGovernor = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<governorArgs, governorInfo>(
-  { chainID: selector(state => state.chainID.chainID) },
-  (state: RootState) => state.governor,
-  (args: marketArgs) => dispatch(getGovernorInfo(args)),
-  selector,
-)
+enum FetchNode {
+  ChainID,
+  TokenAddresses,
+  UserAddress,
+  MarketInfo,
+  GovernorInfo,
+  LiquidationsInfo,
+  SDI,
+}
 
-/* // THE DREAM
-export const waitForGovernor = getManageSelectionFunction<governorArgs, governorInfo>(
-  (state: RootState) => state.governor, // the state we care about
-  getGovernorInfo, // the function to get the data
-  [State.ChainID], // the args for the function
-)
-*/
-
-export const waitForMarket = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<marketArgs, marketInfo>(
-  { chainID: selector(state => state.chainID.chainID) },
-  (state: RootState) => state.market,
-  (data: marketArgs) => dispatch(getMarketInfo(data)),
-  selector,
-)
-
-export const waitForLiquidations = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<liquidationsArgs, liquidationsInfo>(
-  { chainID: selector(state => state.chainID.chainID) },
-  (state: RootState) => state.liquidations,
-  (data: marketArgs) => dispatch(getLiquidationsInfo(data)),
-  selector,
-)
-
-
-export const waitForRates = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<ratesArgs, ratesInfo>(
-  { chainID: selector(state => state.chainID.chainID) },
-  (state: RootState) => state.rates,
-  (data: marketArgs) => dispatch(getRatesInfo(data)),
-  selector,
-)
-
-export const waitForSDI = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<systemDebtArgs, systemDebtInfo>(
-  { chainID: selector(state => state.chainID.chainID) },
-  (state: RootState) => state.systemDebt,
-  (data: systemDebtArgs) => dispatch(getSystemDebtInfo(data)),
-  selector,
-)
-
-export const waitForReferenceTokens = (
-  selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<referenceTokenArgs, referenceTokens>(
-  {
-    chainID: selector(state => state.chainID.chainID) ,
-    governorInfo: waitForGovernor(selector, dispatch),
-  },
-  (state: RootState) => state.referenceTokens,
-  (data: referenceTokenArgs) => dispatch(getReferenceTokens(data)),
-  selector,
-)
-
-export const waitForReferenceTokenBalances = (
+const getNodeFetch = (
+  fetchNode: FetchNode,
   selector: AppSelector,
   dispatch: AppDispatch,
-) => manageSelection<referenceTokenBalancesArgs, referenceTokenBalances>(
-  {
-    tokenAddresses: waitForReferenceTokens(selector, dispatch),
-    chainID: selector(state => state.chainID.chainID),
-    userAddress: selector(state => state.wallet.address),
-  },
-  (state: RootState) => state.referenceTokenBalances,
-  (data: referenceTokenBalancesArgs) => dispatch(getReferenceTokenBalances(data)),
-  selector,
+) => {
+  switch(fetchNode) {
+    case FetchNode.ChainID:
+      return {chainID: selector(state => state.chainID.chainID)}
+    case FetchNode.TokenAddresses:
+      return {tokenAddresses: waitForReferenceTokens(selector, dispatch)}
+    case FetchNode.UserAddress:
+      return {userAddress: selector(state => state.wallet.address)}
+    case FetchNode.MarketInfo:
+      return {marketInfo: waitForMarket(selector, dispatch)}
+    case FetchNode.GovernorInfo:
+      return {governorInfo: waitForGovernor(selector, dispatch)}
+    case FetchNode.LiquidationsInfo:
+      return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
+    case FetchNode.SDI:
+      return {sdi: waitForSDI(selector, dispatch)}
+  }
+}
+
+const getManageSelectionFunction = <Args extends {}, Value>(
+  stateSelector: (state: RootState) => sliceState<Value>,
+  thunk: (args: Args) => AsyncThunkAction<Value | null, Args, {}>,
+  fetchNodes: FetchNode[],
+) => (
+  selector: AppSelector,
+  dispatch: AppDispatch
+) => {
+  const state = selector(stateSelector)
+
+  let inputArgs = {}
+  fetchNodes.map(fetchNode => {
+    const fetchedNode = getNodeFetch(fetchNode, selector, dispatch)
+    inputArgs = { ...inputArgs, ...fetchedNode}
+  })
+
+  if (Object.values(inputArgs).includes(null)) return null
+
+  const error = state.data.error
+  if (error !== null) {
+    console.error(error.message)
+    throw error.message
+  }
+  if (state.data.value === null && !stateSelector(store.getState()).loading) {
+    dispatch(thunk(inputArgs as NonNullable<Args>))
+  }
+  return state.data.value
+}
+
+export const waitForGovernor = getManageSelectionFunction<governorArgs, governorInfo>(
+  (state: RootState) => state.governor,
+  getGovernorInfo,
+  [FetchNode.ChainID],
 )
 
+export const waitForPrices = getManageSelectionFunction<pricesArgs, pricesInfo>(
+  (state: RootState) => state.prices,
+  getPricesInfo,
+  [FetchNode.ChainID, FetchNode.GovernorInfo, FetchNode.LiquidationsInfo],
+)
+
+export const waitForMarket = getManageSelectionFunction<marketArgs, marketInfo>(
+  (state: RootState) => state.market,
+  getMarketInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForPositions = getManageSelectionFunction<positionsArgs, positionsInfo>(
+  (state: RootState) => state.positions,
+  getPositions,
+  [FetchNode.ChainID, FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo],
+)
+
+export const waitForLiquidations = getManageSelectionFunction<liquidationsArgs, liquidationsInfo>(
+  (state: RootState) => state.liquidations,
+  getLiquidationsInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForRates = getManageSelectionFunction<ratesArgs, ratesInfo>(
+  (state: RootState) => state.rates,
+  getRatesInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForSDI = getManageSelectionFunction<systemDebtArgs, systemDebtInfo>(
+  (state: RootState) => state.systemDebt,
+  getSystemDebtInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForReferenceTokens = getManageSelectionFunction<referenceTokenArgs, referenceTokens>(
+  (state: RootState) => state.referenceTokens,
+  getReferenceTokens,
+  [FetchNode.ChainID, FetchNode.GovernorInfo],
+)
+
+// TODO make one for each protocol token and dont have the extra variables here
 export const waitForProtocolTokenBalance = (
   selector: AppSelector,
   dispatch: AppDispatch,
@@ -130,20 +142,21 @@ export const waitForProtocolTokenBalance = (
   selector,
 )
 
-export const waitForPositions = (
+// TODO convert this
+export const waitForReferenceTokenBalances = (
   selector: AppSelector,
-  dispatch: AppDispatch
-) => manageSelection<positionsArgs, positionsInfo>(
+  dispatch: AppDispatch,
+) => manageSelection<referenceTokenBalancesArgs, referenceTokenBalances>(
   {
-    chainID: selector(state => state.chainID.chainID) ,
+    tokenAddresses: waitForReferenceTokens(selector, dispatch),
+    chainID: selector(state => state.chainID.chainID),
     userAddress: selector(state => state.wallet.address),
-    sdi: waitForSDI(selector, dispatch),
-    marketInfo: waitForMarket(selector, dispatch),
   },
-  (state: RootState) => state.positions,
-  (data: positionsArgs) => dispatch(getPositions(data)),
+  (state: RootState) => state.referenceTokenBalances,
+  (data: referenceTokenBalancesArgs) => dispatch(getReferenceTokenBalances(data)),
   selector,
 )
+
 
 const manageSelection = <Args extends {}, Value>(
   inputArgs: Nullable<Args>,
