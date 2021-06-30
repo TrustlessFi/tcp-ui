@@ -13,11 +13,9 @@ import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-cor
 
 export type referenceTokens = string[]
 
-export interface ReferenceTokensState extends sliceState {
-  data: null | referenceTokens
-}
+export interface ReferenceTokensState extends sliceState<referenceTokens> {}
 
-interface referenceTokenArgs {
+export interface referenceTokenArgs {
   governorInfo: governorInfo
   chainID: ChainID
 }

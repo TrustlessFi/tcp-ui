@@ -1,152 +1,147 @@
 import { AppDispatch, store, RootState } from './../app/store'
 import { AsyncThunkAction } from '@reduxjs/toolkit'
 import { AppSelector } from './../app/hooks'
-import { governorInfo, getGovernorInfo } from './governor'
-import { marketInfo, getMarketInfo } from './market'
-import { ratesInfo, getRatesInfo } from './rates'
-import { referenceTokens, getReferenceTokens } from './referenceTokens'
-import { getReferenceTokenBalances, ReferenceTokenBalancesData } from './balances/referenceTokenBalances'
-import { balanceData, balanceState, fetchTokenBalanceArgs } from './balances'
-import { PositionMap, getPositions } from './positions'
-import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
-import { liquidationsInfo, getLiquidationsInfo } from './liquidations'
+import { getGovernorInfo, governorInfo, governorArgs } from './governor'
+import { getMarketInfo, marketArgs, marketInfo } from './market'
+import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
+import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
+import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
+import { balanceInfo, balanceArgs } from './balances'
+import { getHueBalance } from './balances/hueBalance'
+import { getLendHueBalance } from './balances/lendHueBalance'
+import { getPositions, positionsInfo, positionsArgs } from './positions'
+import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
+import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
+import { sliceState } from './'
 
-import { getPricesInfo, pricesInfo } from './prices/index'
+import { getPricesInfo, pricesInfo, pricesArgs } from './prices/index'
 
-export const waitForPrices = (selector: AppSelector, dispatch: AppDispatch): pricesInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-
-  const governorInfo = waitForGovernor(selector, dispatch)
-  const liquidationsInfo = waitForLiquidations(selector, dispatch)
-  const pricesData = selector(state => state.prices.data)
-
-  if (chainID === null) return null
-  if (governorInfo === null || liquidationsInfo === null) return null
-
-  if (pricesData === null && !store.getState().prices.loading) {
-    dispatch(getPricesInfo({chainID, governorInfo, liquidationsInfo}))
-  }
-  return pricesData
+enum FetchNode {
+  ChainID,
+  TokenAddresses,
+  UserAddress,
+  MarketInfo,
+  GovernorInfo,
+  LiquidationsInfo,
+  SDI,
 }
 
-export const waitForGovernor = (selector: AppSelector, dispatch: AppDispatch): governorInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const governorData = selector(state => state.governor.data)
-
-  if (chainID === null) return null
-
-  if (governorData === null && !store.getState().governor.loading) {
-    dispatch(getGovernorInfo(chainID))
-  }
-  return governorData
-}
-
-export const waitForMarket = (selector: AppSelector, dispatch: AppDispatch): marketInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const marketData = selector(state => state.market.data)
-  if (chainID === null) return null
-
-  if (marketData === null && !store.getState().market.loading) {
-    dispatch(getMarketInfo(chainID))
-  }
-  return marketData
-}
-
-export const waitForLiquidations = (selector: AppSelector, dispatch: AppDispatch): liquidationsInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const liquidationsData = selector(state => state.liquidations.data)
-  if (chainID === null) return null
-
-  if (liquidationsData === null && !store.getState().liquidations.loading) {
-    dispatch(getLiquidationsInfo(chainID))
-  }
-  return liquidationsData
-}
-
-export const waitForRates = (selector: AppSelector, dispatch: AppDispatch): ratesInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const ratesData = selector(state => state.rates.data)
-  if (chainID === null) return null
-
-  if (ratesData === null && !store.getState().rates.loading) {
-    dispatch(getRatesInfo(chainID))
-  }
-  return ratesData
-}
-
-export const waitForSDI = (selector: AppSelector, dispatch: AppDispatch): systemDebtInfo | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const sdi = selector(state => state.systemDebt.data)
-  if (chainID === null) return null
-
-  if (sdi === null && !store.getState().systemDebt.loading) {
-    dispatch(getSystemDebtInfo(chainID))
-  }
-  return sdi
-}
-
-export const waitForReferenceTokens = (selector: AppSelector, dispatch: AppDispatch): referenceTokens | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const governorInfo = waitForGovernor(selector, dispatch)
-
-  const referenceTokens = selector(state => state.referenceTokens.data)
-  if (chainID === null || governorInfo === null) return null
-
-  if (referenceTokens === null && !store.getState().referenceTokens.loading) {
-    dispatch(getReferenceTokens({chainID, governorInfo}))
-  }
-  return referenceTokens
-}
-
-export const waitForReferenceTokenBalances = (selector: AppSelector, dispatch: AppDispatch): ReferenceTokenBalancesData | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const userAddress = selector(state => state.wallet.address)
-  const referenceTokens = waitForReferenceTokens(selector, dispatch)
-
-  let referenceTokenBalances = selector(state => state.referenceTokenBalances.data)
-  if (chainID === null || userAddress === null || referenceTokens === null) return null
-
-  let isEmpty = referenceTokenBalances == null || Object.values(referenceTokenBalances!).length === 0
-
-  console.log({refTokenState: store.getState().referenceTokenBalances})
-
-  if (isEmpty && !store.getState().referenceTokenBalances.loading) {
-    dispatch(getReferenceTokenBalances({tokenAddresses: referenceTokens, args: {chainID, userAddress}}))
-  }
-  return referenceTokenBalances
-}
-
-export const waitForProtocolTokenBalance = (
+const getNodeFetch = (
+  fetchNode: FetchNode,
   selector: AppSelector,
   dispatch: AppDispatch,
-  stateSelector: (state: RootState) => balanceState,
-  balanceThunk: (args: fetchTokenBalanceArgs) => AsyncThunkAction<balanceData | null, fetchTokenBalanceArgs, {}>,
-): balanceData | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const userAddress = selector(state => state.wallet.address)
-
-  const balance = selector(state => stateSelector(state).data)
-  if (chainID === null || userAddress === null) return null
-
-  if (balance === null && !stateSelector(store.getState()).loading) {
-    dispatch(balanceThunk({ chainID, userAddress }))
+) => {
+  switch(fetchNode) {
+    case FetchNode.ChainID:
+      return {chainID: selector(state => state.chainID.chainID)}
+    case FetchNode.TokenAddresses:
+      return {tokenAddresses: waitForReferenceTokens(selector, dispatch)}
+    case FetchNode.UserAddress:
+      return {userAddress: selector(state => state.wallet.address)}
+    case FetchNode.MarketInfo:
+      return {marketInfo: waitForMarket(selector, dispatch)}
+    case FetchNode.GovernorInfo:
+      return {governorInfo: waitForGovernor(selector, dispatch)}
+    case FetchNode.LiquidationsInfo:
+      return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
+    case FetchNode.SDI:
+      return {sdi: waitForSDI(selector, dispatch)}
   }
-  return balance
 }
 
-export const waitForPositions = (selector: AppSelector, dispatch: AppDispatch): PositionMap | null => {
-  const chainID = selector(state => state.chainID.chainID)
-  const userAddress = selector(state => state.wallet.address)
+const getWaitFunction = <Args extends {}, Value>(
+  stateSelector: (state: RootState) => sliceState<Value>,
+  thunk: (args: Args) => AsyncThunkAction<Value | null, Args, {}>,
+  fetchNodes: FetchNode[],
+) => (
+  selector: AppSelector,
+  dispatch: AppDispatch
+) => {
+  const state = selector(stateSelector)
 
-  const sdi = waitForSDI(selector, dispatch)
-  const marketInfo = waitForMarket(selector, dispatch)
-  const positions = selector(state => state.positions.data)
+  let inputArgs = {}
+  fetchNodes.map(fetchNode => {
+    const fetchedNode = getNodeFetch(fetchNode, selector, dispatch)
+    inputArgs = {...inputArgs, ...fetchedNode}
+  })
 
-  if (chainID === null || userAddress === null) return null
-  if (sdi === null || marketInfo === null) return null
+  if (Object.values(inputArgs).includes(null)) return null
 
-  if (positions === null && !store.getState().positions.loading) {
-    dispatch(getPositions({chainID, userAddress, sdi, marketInfo }))
+  const error = state.data.error
+  if (error !== null) {
+    console.error(error.message)
+    throw error.message
   }
-  return positions
+
+  if (state.data.value === null && !stateSelector(store.getState()).loading) {
+    dispatch(thunk(inputArgs as NonNullable<Args>))
+  }
+
+  return state.data.value
 }
+
+export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
+  (state: RootState) => state.governor,
+  getGovernorInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
+  (state: RootState) => state.prices,
+  getPricesInfo,
+  [FetchNode.ChainID, FetchNode.GovernorInfo, FetchNode.LiquidationsInfo],
+)
+
+export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
+  (state: RootState) => state.market,
+  getMarketInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
+  (state: RootState) => state.positions,
+  getPositions,
+  [FetchNode.ChainID, FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo],
+)
+
+export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(
+  (state: RootState) => state.liquidations,
+  getLiquidationsInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForRates = getWaitFunction<ratesArgs, ratesInfo>(
+  (state: RootState) => state.rates,
+  getRatesInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
+  (state: RootState) => state.systemDebt,
+  getSystemDebtInfo,
+  [FetchNode.ChainID],
+)
+
+export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, referenceTokens>(
+  (state: RootState) => state.referenceTokens,
+  getReferenceTokens,
+  [FetchNode.ChainID, FetchNode.GovernorInfo],
+)
+
+export const waitForHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
+  (state: RootState) => state.hueBalance,
+  getHueBalance,
+  [FetchNode.ChainID, FetchNode.UserAddress],
+)
+
+export const waitForLendHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
+  (state: RootState) => state.hueBalance,
+  getLendHueBalance,
+  [FetchNode.ChainID, FetchNode.UserAddress],
+)
+
+export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalancesArgs, referenceTokenBalances>(
+  (state: RootState) => state.referenceTokenBalances,
+  getReferenceTokenBalances,
+  [FetchNode.TokenAddresses, FetchNode.ChainID, FetchNode.UserAddress],
+)

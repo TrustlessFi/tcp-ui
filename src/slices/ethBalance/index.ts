@@ -4,9 +4,7 @@ import { getGenericReducerBuilder } from '../'
 import { unscale, bnf } from '../../utils'
 import getProvider from '../../utils/getProvider'
 
-export interface EthBalanceState extends sliceState {
-  data: null | number
-}
+export interface EthBalanceState extends sliceState<number> {}
 
 export const getEthBalance = createAsyncThunk(
   'ethBalance/getEthBalance',

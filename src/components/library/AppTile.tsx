@@ -1,5 +1,6 @@
 import { CSSProperties, ReactNode } from "react";
 import { Tile } from "carbon-components-react";
+import ErrorBoundary from './ErrorBoundary'
 
 interface AppTile {
   className?: string
@@ -11,8 +12,10 @@ interface AppTile {
 export default ({className, title, style, children}: AppTile ) => (
   <Tile style={{ margin: 2, ...style }} className={className}>
     <span style={{fontSize: 24}}>{title}</span>
-    <div style={{marginTop: 12, marginBottom: 12}}>
-      {children}
-    </div>
+    <ErrorBoundary>
+      <div style={{marginTop: 12, marginBottom: 12}}>
+        {children}
+      </div>
+    </ErrorBoundary>
   </Tile>
 )

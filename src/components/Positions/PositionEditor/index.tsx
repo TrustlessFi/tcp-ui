@@ -12,7 +12,7 @@ import {
 import AppTile from '../../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../../slices/waitFor'
-import { PositionMap } from '../../../slices/positions'
+import { positionsInfo } from '../../../slices/positions'
 import Center from '../../library/Center'
 import SimpleTable from '../../library/SimpleTable'
 import { editorClosed } from '../../../slices/positionsEditor'
