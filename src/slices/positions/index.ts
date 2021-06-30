@@ -1,7 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, initialState } from '../'
-import { fetchPositions, fetchPositionsArgs } from './api'
+import { fetchPositions } from './api'
 import { getGenericReducerBuilder } from '../'
+import { systemDebtInfo } from '../systemDebt'
+import { ChainID } from '../chainID'
+import { marketInfo } from "../market"
 
 export interface Position {
   collateralCount: number,
@@ -16,16 +19,21 @@ export interface Position {
   claimedRewards: boolean,
 }
 
-export interface PositionMap { [key: number]: Position }
+export interface positionsInfo { [key: number]: Position }
 
-export interface PositionsState extends sliceState {
-  data: null | PositionMap
+export interface positionsArgs {
+  chainID: ChainID,
+  userAddress: string,
+  sdi: systemDebtInfo,
+  marketInfo: marketInfo,
 }
+
+export interface PositionsState extends sliceState<positionsInfo> {}
 
 export const getPositions = createAsyncThunk(
   'positions/getPositions',
-  async (data: fetchPositionsArgs) => await fetchPositions(data),
-);
+  async (data: positionsArgs) => await fetchPositions(data),
+)
 
 export const positionsSlice = createSlice({
   name: 'positions',
@@ -34,6 +42,6 @@ export const positionsSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
   },
-});
+})
 
 export default positionsSlice.reducer

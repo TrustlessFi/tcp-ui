@@ -13,11 +13,9 @@ export type pricesInfo = {
   ethPrice: number,
 }
 
-export interface PricesState extends sliceState {
-  data: null | pricesInfo
-}
+export interface PricesState extends sliceState<pricesInfo> {}
 
-export interface fetchPricesArgs {
+export interface pricesArgs {
   chainID: ChainID,
   governorInfo: governorInfo,
   liquidationsInfo: liquidationsInfo,
@@ -25,23 +23,21 @@ export interface fetchPricesArgs {
 
 export const getPricesInfo = createAsyncThunk(
   'prices/getPricesInfo',
-  async (data: fetchPricesArgs) => await fetchPricesInfo(data)
-)
+  async (data: pricesArgs) => {
+    const prices = await getProtocolContract(data.chainID, ProtocolContract.Prices) as Prices
+    if (prices === null) return null
 
-export const fetchPricesInfo = async (data: fetchPricesArgs) => {
-  const prices = await getProtocolContract(data.chainID, ProtocolContract.Prices) as Prices
-  if (prices === null) return null
+    let [
+      ethPrice,
+    ] = await Promise.all([
+      prices.calculateInstantTwappedPrice(data.governorInfo.collateralPool, data.liquidationsInfo.twapDuration),
+    ])
 
-  let [
-    ethPrice,
-  ] = await Promise.all([
-    prices.calculateInstantTwappedPrice(data.governorInfo.collateralPool, data.liquidationsInfo.twapDuration),
-  ])
-
-  return {
-    ethPrice: unscale(ethPrice)
+    return {
+      ethPrice: unscale(ethPrice)
+    }
   }
-}
+)
 
 export const pricesSlice = createSlice({
   name: 'governor',
@@ -52,4 +48,4 @@ export const pricesSlice = createSlice({
   },
 });
 
-export default pricesSlice.reducer;
+export default pricesSlice.reducer

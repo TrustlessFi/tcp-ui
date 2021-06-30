@@ -32,9 +32,7 @@ export interface balanceData {
   balances: balancesInfo
 }
 
-export interface balanceState extends sliceState {
-  data: balanceData | null
-}
+export interface balanceState extends sliceState<balanceData> {}
 
 export interface fetchTokenBalanceArgs {
   chainID: ChainID,

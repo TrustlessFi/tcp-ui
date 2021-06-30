@@ -11,16 +11,16 @@ export type ratesInfo = {
   interestRateAbsoluteValue: number,
 }
 
-export interface RatesState extends sliceState {
-  data: null | ratesInfo
+export type ratesArgs = {
+  chainID: ChainID
 }
+
+export interface RatesState extends sliceState<ratesInfo> {}
 
 export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
-  async (chainID: ChainID): Promise<null | ratesInfo> => {
-    if (chainID === null) return null
-
-    const rates = await getProtocolContract(chainID, ProtocolContract.Rates) as Rates
+  async (args: ratesArgs): Promise<null | ratesInfo> => {
+    const rates = await getProtocolContract(args.chainID, ProtocolContract.Rates) as Rates
     if (rates === null) return null
 
     let [
