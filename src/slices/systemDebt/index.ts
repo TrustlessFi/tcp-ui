@@ -13,16 +13,16 @@ export type systemDebtInfo = {
   debtExchangeRate: number
 }
 
-export interface SystemDebtInfoState extends sliceState {
-  data: null | systemDebtInfo
+export type systemDebtArgs = {
+  chainID: ChainID
 }
+
+export interface SystemDebtInfoState extends sliceState<systemDebtInfo> {}
 
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
-  async (chainID: ChainID) => {
-    if (chainID === null) return null
-
-    const accounting = await getProtocolContract(chainID, ProtocolContract.Accounting) as Accounting
+  async (args: systemDebtArgs) => {
+    const accounting = await getProtocolContract(args.chainID, ProtocolContract.Accounting) as Accounting
     if (accounting === null) return null
 
     const sdi = await accounting.getSystemDebtInfo()

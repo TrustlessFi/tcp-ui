@@ -5,43 +5,41 @@ import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 import { Governor } from "../../utils/typechain/Governor"
 
+export type governorArgs = {
+  chainID: ChainID
+}
+
 export type governorInfo = {
   phase: number,
   collateralPool: string,
   referencePools: string[],
 }
 
-export interface GovernorState extends sliceState {
-  data: null | governorInfo
-}
+export interface GovernorState extends sliceState<governorInfo> {}
 
 export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
-  async (chainID: ChainID) => await fetchGovernorInfo(chainID)
-)
+  async (args: governorArgs) => {
+    const governor = await getProtocolContract(args.chainID, ProtocolContract.Governor) as Governor
+    if (governor === null) return null
 
-export const fetchGovernorInfo = async (chainID: ChainID) => {
-  if (chainID === null) return null
+    let [
+      phase,
+      collateralPool,
+      referencePools,
+    ] = await Promise.all([
+      governor.currentPhase(),
+      governor.collateralPool(),
+      governor.getReferencePools(),
+    ])
 
-  const governor = await getProtocolContract(chainID, ProtocolContract.Governor) as Governor
-  if (governor === null) return null
-
-  let [
-    phase,
-    collateralPool,
-    referencePools,
-  ] = await Promise.all([
-    governor.currentPhase(),
-    governor.collateralPool(),
-    governor.getReferencePools(),
-  ])
-
-  return {
-    phase,
-    collateralPool,
-    referencePools,
+    return {
+      phase,
+      collateralPool,
+      referencePools,
+    }
   }
-}
+)
 
 export const governorSlice = createSlice({
   name: 'governor',

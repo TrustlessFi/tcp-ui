@@ -50,6 +50,7 @@ const OneToOneMintTile = ({}) => {
   );
   const refTokenBalances = waitForReferenceTokenBalances(selector, dispatch);
 
+
   console.log({hueBalance, refTokenBalances})
 
   // check that the component is ready to display

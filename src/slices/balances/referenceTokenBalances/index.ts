@@ -1,23 +1,21 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ProtocolContract } from '../../../utils/protocolContracts'
-import { balanceData, getTokenBalanceThunk, getTokenBalanceImpl, fetchTokenBalanceArgs } from '../'
+import { balanceData, getTokenBalanceImpl, fetchTokenBalanceArgs } from '../'
 import { sliceState, getGenericReducerBuilder, initialState } from '../../'
 
-export interface externalTokenBalancesArgs {
+export interface referenceTokenBalancesArgs {
   tokenAddresses: string[],
   args: fetchTokenBalanceArgs
 }
 
-export type ReferenceTokenBalancesData = {[key in string]: balanceData}
+export type referenceTokenBalances = {[key in string]: balanceData}
 
-export interface ReferenceTokenBalancesState extends sliceState {
-  data: ReferenceTokenBalancesData | null
-}
+export interface ReferenceTokenBalancesState extends sliceState<referenceTokenBalances> {}
 
 export const getReferenceTokenBalances = createAsyncThunk(
   'referenceTokenBalances/getReferenceTokenBalances',
-  async (args: externalTokenBalancesArgs) => {
-    let data: ReferenceTokenBalancesData = {}
+  async (args: referenceTokenBalancesArgs) => {
+    let data: referenceTokenBalances = {}
 
     await Promise.all(args.tokenAddresses.map(async tokenAddress => {
       const result = await getTokenBalanceImpl(
@@ -29,6 +27,7 @@ export const getReferenceTokenBalances = createAsyncThunk(
 
       if (result !== null) data[tokenAddress] = result
     }))
+
     return data
   }
 )
