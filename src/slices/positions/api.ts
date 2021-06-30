@@ -1,23 +1,13 @@
 import { Position } from './'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { systemDebtInfo } from '../systemDebt'
-import { ChainID } from '../chainID'
 import { BigNumber } from "ethers"
-import { marketInfo } from "../market"
 import { timeToPeriod, unscale, scale } from '../../utils'
-import { PositionMap } from './'
+import { positionsInfo, positionsArgs } from './'
 
 import { Accounting } from '../../utils/typechain/Accounting'
 import { ZhuPositionNFT } from '../../utils/typechain/ZhuPositionNFT'
 
-export interface fetchPositionsArgs {
-  chainID: ChainID,
-  userAddress: string,
-  sdi: systemDebtInfo,
-  marketInfo: marketInfo,
-}
-
-export const fetchPositions = async (data: fetchPositionsArgs) => {
+export const fetchPositions = async (data: positionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
   const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNFT | null
   if (accounting === null || positionNFT === null) return null
@@ -69,7 +59,7 @@ export const fetchPositions = async (data: fetchPositionsArgs) => {
     } as Position;
   }));
 
-  let positionsMap: PositionMap = {}
+  let positionsMap: positionsInfo = {}
   positions.forEach(position => positionsMap[position.id] = position)
   return positionsMap;
 }

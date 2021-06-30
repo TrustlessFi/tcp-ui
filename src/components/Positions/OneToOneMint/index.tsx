@@ -1,23 +1,11 @@
-import React, { useState } from "react";
-import {
-  NumberInput,
-  Loading,
-  Button,
-  Dropdown,
-  TextInput
-} from "carbon-components-react";
+import { useState } from "react";
+import { Loading, Button, Dropdown, TextInput } from "carbon-components-react";
 import AppTile from "../../library/AppTile";
-import { RootState } from "../../../app/store";
 import { useAppDispatch, useAppSelector as selector } from "../../../app/hooks";
-import {
-  waitForReferenceTokens,
-  waitForReferenceTokenBalances,
-  waitForProtocolTokenBalance
-} from "../../../slices/waitFor";
-import { getHueBalance } from "../../../slices/balances/hueBalance";
+import { waitForReferenceTokenBalances, waitForHueBalance } from "../../../slices/waitFor";
 import Center from "../../library/Center";
 import { Arrows16 } from "@carbon/icons-react";
-import { toInt, numDisplay } from "../../../utils";
+import { numDisplay } from "../../../utils";
 import { ProtocolContract } from '../../../utils/protocolContracts'
 
 export default () => (
@@ -42,13 +30,9 @@ const OneToOneMintTile = ({}) => {
   const onLockClick = () => alert("on lock clicked");
 
   // fetch data as needed
-  const hueBalance = waitForProtocolTokenBalance(
-    selector,
-    dispatch,
-    (state: RootState) => state.hueBalance,
-    getHueBalance
-  );
-  const refTokenBalances = waitForReferenceTokenBalances(selector, dispatch);
+  const hueBalance = waitForHueBalance(selector, dispatch)
+  const refTokenBalances = waitForReferenceTokenBalances(selector, dispatch)
+
 
   console.log({hueBalance, refTokenBalances})
 

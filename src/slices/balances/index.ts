@@ -18,25 +18,24 @@ interface tokenInfo {
   decimals: number,
 }
 
-type balancesInfo  = { [key in ProtocolContract]?: number }
-type approvalInfo  = { [key in ProtocolContract]?: {
+type balances = { [key in ProtocolContract]?: number }
+
+type approval = { [key in ProtocolContract]?: {
   allowance: string,
   approving: boolean,
   approved: boolean
 }}
 
-export interface balanceData {
+export interface balanceInfo {
   token: tokenInfo
   userBalance: number
-  approval: approvalInfo
-  balances: balancesInfo
+  approval: approval
+  balances: balances
 }
 
-export interface balanceState extends sliceState {
-  data: balanceData | null
-}
+export interface balanceState extends sliceState<balanceInfo> {}
 
-export interface fetchTokenBalanceArgs {
+export interface balanceArgs {
   chainID: ChainID,
   userAddress: string,
 }
@@ -45,7 +44,7 @@ export const getTokenBalanceThunk = (
   _token: {tokenAddress?: string, contract?: ProtocolContract},
   approvalsList: ProtocolContract[],
   balancesList: ProtocolContract[],
-) => async (args: fetchTokenBalanceArgs): Promise<balanceData | null> => await getTokenBalanceImpl(
+) => async (args: balanceArgs): Promise<balanceInfo | null> => await getTokenBalanceImpl(
   _token,
   approvalsList,
   balancesList,
@@ -56,7 +55,7 @@ export const getTokenBalanceImpl = async (
   _token: {tokenAddress?: string, contract?: ProtocolContract},
   approvalsList: ProtocolContract[],
   balancesList: ProtocolContract[],
-  args: fetchTokenBalanceArgs
+  args: balanceArgs
 ) => {
   const provider = getProvider()
   if (provider === null) return null
@@ -81,8 +80,8 @@ export const getTokenBalanceImpl = async (
 
   if (Object.values(contractsMap).includes(null)) return null
 
-  let approval: approvalInfo = {}
-  let balances: balancesInfo = {}
+  let approval: approval = {}
+  let balances: balances = {}
   const tokenInfo = await tokenAddressToTokenInfo(token.address, provider);
 
   const [

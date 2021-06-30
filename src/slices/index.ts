@@ -1,16 +1,20 @@
 import { SerializedError, AsyncThunk } from '@reduxjs/toolkit';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
-export interface sliceState {
+export interface sliceState<T> {
   loading: boolean
-  error: SerializedError | null
-  data: any | null
+  data: {
+    error: SerializedError | null,
+    value: T | null
+  }
 }
 
 export const initialState = {
   loading: false,
-  error: null,
-  data: null,
+  data: {
+    error: null,
+    value: null,
+  },
 }
 
 export const getGenericReducerBuilder = (
@@ -23,12 +27,11 @@ export const getGenericReducerBuilder = (
     })
     .addCase(thunk.rejected, (state, action) => {
       state.loading = false
-      state.error = action.error
+      state.data.error = action.error
     })
     .addCase(thunk.fulfilled, (state, action) => {
       state.loading = false
-      state.data = action.payload;
-    });
-
+      state.data.value = action.payload;
+    })
   return builder
 }
