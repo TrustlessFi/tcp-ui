@@ -35,6 +35,7 @@ const PageHeader = ({}) => {
   const pages = [
     {display: 'Positions', link: '/'},
     {display: 'Liquidity', link: '/liquidity'},
+    {display: 'Governance', link: '/governance'},
   ]
 
   const headerItems = pages.map((page, index) => (

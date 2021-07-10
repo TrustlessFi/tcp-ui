@@ -1,6 +1,7 @@
 import React from 'react'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
+import Governance from './components/Governance'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import LiquidityPositions from './components/LiquidityPositions'
 import { Switch, Route } from "react-router-dom"
@@ -27,6 +28,9 @@ function App() {
             </Route>
             <Route path={'/liquidity'}>
               <LiquidityPositions />
+            </Route>
+            <Route path={'/governance'}>
+              <Governance />
             </Route>
           </Switch>
         </div>
