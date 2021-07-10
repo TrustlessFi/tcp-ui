@@ -4,21 +4,7 @@ import { ChainID } from '../chainID';
 import { ProtocolContract, getProtocolContract } from '../../utils/protocolContracts';
 import { TCPGovernorAlpha } from "../../utils/typechain";
 import { unscale, zeroAddress } from "../../utils";
-
-type Proposals = {
-  [key in number]: Proposal;
-};
-
-export enum ProposalStates {
-  Pending = 'Pending',
-  Active = 'Active',
-  Canceled = 'Canceled',
-  Defeated = 'Defeated',
-  Succeeded = 'Succeeded',
-  Queued = 'Queued',
-  Expired = 'Expired',
-  Executed = 'Executed',
-}
+import { Proposal, ProposalStates, proposalsInfo } from "./";
 
 const convertStateIDToState = (stateID: number) => {
   switch(stateID) {
@@ -68,33 +54,6 @@ interface RawProposal {
   votingPower: number;
 }
   
-export interface Proposal {
-  proposal: {
-    id: number;
-    proposer: string;
-    eta: number;
-    targets: string[];
-    signatures: string[];
-    calldatas: string[];
-    startBlock: number;
-    endBlock: number;
-    forVotes: number;
-    againstVotes: number;
-    canceled: boolean;
-    executed: boolean;
-    state: ProposalStates | undefined;
-  },
-  receipt: {
-    hasVoted: boolean;
-    support: boolean;
-    votes: number;
-  },
-  voterAddress?: string;
-  votingPower: number;
-  voting: boolean;
-  voted: boolean;
-}
-
 const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   proposal: {
     id: rawProposal.proposal.id,
@@ -122,7 +81,7 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   voterAddress: rawProposal.voterAddress,
 })
 
-export const genProposals = async (chainID: ChainID): Promise<{proposals: Proposals} | null> => {
+export const genProposals = async (chainID: ChainID): Promise<{proposals: proposalsInfo} | null> => {
   const provider = getProvider();
   if (provider === null) return null;
   const [userAddress, tcpGovernorAlpha] = await Promise.all([
@@ -164,7 +123,7 @@ export const genProposals = async (chainID: ChainID): Promise<{proposals: Propos
     proposals.push(rawProposalToProposal(rawProposal));
   }
   
-  const returnProposals = {} as Proposals;
+  const returnProposals = {} as proposalsInfo;
   for (let i = 0; i < proposals.length; i++) {
     const proposal = proposals[i];
     returnProposals[proposal.proposal.id] = proposal;

@@ -143,7 +143,7 @@ const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha |
     if (provider === null) return null
 
     let result = new ethers.Contract(
-      getAddress(chainID, rootContracts.Governor),
+      getAddress(chainID, rootContracts.TcpGovernorAlpha),
       artifactLookup[contract].abi,
       provider
     ) as unknown as TCPGovernorAlpha;
