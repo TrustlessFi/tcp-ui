@@ -7,7 +7,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   ZhuPositionNFT,
   ZhuPositionNFTInterface,
-} from "../ZhuPositionNFT";
+} from "../ZhuPositionNft";
 
 const _abi = [
   {

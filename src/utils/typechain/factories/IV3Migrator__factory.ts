@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { IV3Migrator, IV3MigratorInterface } from "../IV3Migrator";
+import type { IV3Migrator, IV3MigratorInterface } from "../Iv3Migrator";
 
 const _abi = [
   {

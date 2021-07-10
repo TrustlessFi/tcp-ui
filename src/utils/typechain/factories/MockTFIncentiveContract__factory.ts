@@ -7,7 +7,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   MockTFIncentiveContract,
   MockTFIncentiveContractInterface,
-} from "../MockTFIncentiveContract";
+} from "../MockTfIncentiveContract";
 
 const _abi = [
   {

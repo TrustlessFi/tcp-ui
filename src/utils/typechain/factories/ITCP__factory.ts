@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { ITCP, ITCPInterface } from "../ITCP";
+import type { ITCP, ITCPInterface } from "../Itcp";
 
 const _abi = [
   {

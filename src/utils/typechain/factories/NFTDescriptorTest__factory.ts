@@ -7,7 +7,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   NFTDescriptorTest,
   NFTDescriptorTestInterface,
-} from "../NFTDescriptorTest";
+} from "../NftDescriptorTest";
 
 const _abi = [
   {

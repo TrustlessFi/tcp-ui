@@ -7,7 +7,7 @@ import { unscale, uint255Max, bnf } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { Contract } from 'ethers'
 
-import { ERC20 } from "../../utils/typechain/ERC20"
+import { ERC20 } from "../../utils/typechain/Erc20"
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 

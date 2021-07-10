@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { TFPositionNFT, TFPositionNFTInterface } from "../TFPositionNFT";
+import type { TFPositionNFT, TFPositionNFTInterface } from "../TfPositionNft";
 
 const _abi = [
   {

@@ -14,7 +14,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   TestERC20PermitAllowed,
   TestERC20PermitAllowedInterface,
-} from "../TestERC20PermitAllowed";
+} from "../TestErc20PermitAllowed";
 
 const _abi = [
   {

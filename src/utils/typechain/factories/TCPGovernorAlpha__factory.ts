@@ -14,7 +14,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   TCPGovernorAlpha,
   TCPGovernorAlphaInterface,
-} from "../TCPGovernorAlpha";
+} from "../TcpGovernorAlpha";
 
 const _abi = [
   {
