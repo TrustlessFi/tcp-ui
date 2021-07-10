@@ -1,5 +1,7 @@
 import { BigNumber, BigNumberish } from "ethers";
 
+export const zeroAddress = '0x0000000000000000000000000000000000000000';
+
 export const isDevEnvironment = process.env.NODE_ENV === 'development';
 
 export const sleepS = (seconds: number) => {
