@@ -7,7 +7,7 @@ import { Provider } from "@ethersproject/providers";
 import type {
   IERC721Metadata,
   IERC721MetadataInterface,
-} from "../IERC721Metadata";
+} from "../Ierc721Metadata";
 
 const _abi = [
   {

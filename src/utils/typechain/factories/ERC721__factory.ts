@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { ERC721, ERC721Interface } from "../ERC721";
+import type { ERC721, ERC721Interface } from "../Erc721";
 
 const _abi = [
   {

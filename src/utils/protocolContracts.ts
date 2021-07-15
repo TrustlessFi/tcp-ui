@@ -12,7 +12,7 @@ import { Accounting } from "./typechain/Accounting"
 import { Auctions } from "./typechain/Auctions"
 import { EnforcedDecentralization } from "./typechain/EnforcedDecentralization"
 import { Governor } from "./typechain/Governor"
-import { TCPGovernorAlpha } from "./typechain/TCPGovernorAlpha"
+import { TCPGovernorAlpha } from "./typechain/TcpGovernorAlpha"
 import { Lend } from "./typechain/Lend"
 import { LendZhu } from "./typechain/LendZhu"
 import { Liquidations } from "./typechain/Liquidations"
@@ -25,7 +25,7 @@ import { Rewards } from "./typechain/Rewards"
 import { Settlement } from "./typechain/Settlement"
 import { TcpTimelock } from "./typechain/TcpTimelock"
 import { Zhu } from "./typechain/Zhu"
-import { ZhuPositionNFT } from "./typechain/ZhuPositionNFT"
+import { ZhuPositionNFT } from "./typechain/ZhuPositionNft"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json"
@@ -143,7 +143,7 @@ const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha |
     if (provider === null) return null
 
     let result = new ethers.Contract(
-      getAddress(chainID, rootContracts.Governor),
+      getAddress(chainID, rootContracts.TcpGovernorAlpha),
       artifactLookup[contract].abi,
       provider
     ) as unknown as TCPGovernorAlpha;
