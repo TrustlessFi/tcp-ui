@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { ITFDao, ITFDaoInterface } from "../ITFDao";
+import type { ITFDao, ITFDaoInterface } from "../ItfDao";
 
 const _abi = [
   {

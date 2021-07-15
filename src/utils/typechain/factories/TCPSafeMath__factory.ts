@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { TCPSafeMath, TCPSafeMathInterface } from "../TCPSafeMath";
+import type { TCPSafeMath, TCPSafeMathInterface } from "../TcpSafeMath";
 
 const _abi = [
   {

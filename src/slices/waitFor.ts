@@ -10,6 +10,7 @@ import { balanceInfo, balanceArgs } from './balances'
 import { getHueBalance } from './balances/hueBalance'
 import { getLendHueBalance } from './balances/lendHueBalance'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
+import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
 import { sliceState } from './'
@@ -102,6 +103,12 @@ export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
   (state: RootState) => state.positions,
   getPositions,
   [FetchNode.ChainID, FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo],
+)
+
+export const waitForProposals = getWaitFunction<proposalsArgs, proposalsInfo>(
+  (state: RootState) => state.proposals,
+  getProposals,
+  [FetchNode.ChainID],
 )
 
 export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(

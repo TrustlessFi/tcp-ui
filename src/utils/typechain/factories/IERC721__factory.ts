@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { IERC721, IERC721Interface } from "../IERC721";
+import type { IERC721, IERC721Interface } from "../Ierc721";
 
 const _abi = [
   {

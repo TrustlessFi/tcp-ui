@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { TFDao, TFDaoInterface } from "../TFDao";
+import type { TFDao, TFDaoInterface } from "../TfDao";
 
 const _abi = [
   {
