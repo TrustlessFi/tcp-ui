@@ -25,7 +25,7 @@ const convertStateIDToState = (stateID: number) => {
     case 7:
       return ProposalStates.Executed;
     default:
-      // ??
+      throw new Error('stateID not recognized');
   }
 }
 
@@ -87,7 +87,7 @@ export const genProposals = async (chainID: ChainID): Promise<{proposals: propos
   const [userAddress, tcpGovernorAlpha] = await Promise.all([
     provider.getSigner().getAddress(),
     getProtocolContract(chainID, ProtocolContract.TCPGovernorAlpha),
-  ]).then(promises => promises);
+  ]);
   const rawProposalData = await (tcpGovernorAlpha as TCPGovernorAlpha).getAllProposals(userAddress);
   const haveUserAddress = userAddress !== zeroAddress;
   
