@@ -15,7 +15,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "zhuCount",
+          "name": "hueCount",
           "type": "uint256"
         },
         {
@@ -50,7 +50,7 @@
           "type": "uint256"
         }
       ],
-      "name": "MintZhu",
+      "name": "MintHue",
       "type": "event"
     },
     {
@@ -119,7 +119,7 @@
           "type": "uint256"
         }
       ],
-      "name": "ReturnZhu",
+      "name": "ReturnHue",
       "type": "event"
     },
     {
@@ -134,7 +134,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "zhuCount",
+          "name": "hueCount",
           "type": "uint256"
         },
         {

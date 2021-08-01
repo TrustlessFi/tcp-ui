@@ -19,7 +19,7 @@ const injected = new InjectedConnector({
 });
 
 interface UniswapWrapperProps {
-    children: React.ReactNode,
+  children: React.ReactNode,
 }
 
 const getLibrary = (provider: any, connector: any) => {

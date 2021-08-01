@@ -26,7 +26,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     "confirmPrice()": FunctionFragment;
     "deployer()": FunctionFragment;
     "ethPriceProvider()": FunctionFragment;
-    "getCollateralForZhu(uint64,uint256)": FunctionFragment;
+    "getCollateralForHue(uint64,uint256)": FunctionFragment;
     "getRecentPrice()": FunctionFragment;
     "governor()": FunctionFragment;
     "init(address)": FunctionFragment;
@@ -65,7 +65,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getCollateralForZhu",
+    functionFragment: "getCollateralForHue",
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -144,7 +144,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getCollateralForZhu",
+    functionFragment: "getCollateralForHue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -209,7 +209,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     "Initialized(address)": EventFragment;
     "NoConfidenceConfirmed(address)": EventFragment;
     "ParameterUpdatedAddress(string,address)": EventFragment;
-    "SettlementCollateralForZhu(uint64,address,uint256,uint256)": EventFragment;
+    "SettlementCollateralForHue(uint64,address,uint256,uint256)": EventFragment;
     "SettlementInitialized(uint256)": EventFragment;
     "SettlementWithdrawCollateral(uint64,address,uint256)": EventFragment;
     "StakedNoConfidenceTokens(address,uint256)": EventFragment;
@@ -220,7 +220,7 @@ interface SettlementInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NoConfidenceConfirmed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SettlementCollateralForZhu"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SettlementCollateralForHue"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SettlementInitialized"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "SettlementWithdrawCollateral"
@@ -290,9 +290,9 @@ export class Settlement extends BaseContract {
 
     ethPriceProvider(overrides?: CallOverrides): Promise<[string]>;
 
-    getCollateralForZhu(
+    getCollateralForHue(
       positionID: BigNumberish,
-      zhuCount: BigNumberish,
+      hueCount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -372,9 +372,9 @@ export class Settlement extends BaseContract {
 
   ethPriceProvider(overrides?: CallOverrides): Promise<string>;
 
-  getCollateralForZhu(
+  getCollateralForHue(
     positionID: BigNumberish,
-    zhuCount: BigNumberish,
+    hueCount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -448,9 +448,9 @@ export class Settlement extends BaseContract {
 
     ethPriceProvider(overrides?: CallOverrides): Promise<string>;
 
-    getCollateralForZhu(
+    getCollateralForHue(
       positionID: BigNumberish,
-      zhuCount: BigNumberish,
+      hueCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -520,17 +520,17 @@ export class Settlement extends BaseContract {
       { paramName: string; _address: string }
     >;
 
-    SettlementCollateralForZhu(
+    SettlementCollateralForHue(
       positionID?: BigNumberish | null,
       caller?: string | null,
-      zhuCount?: null,
+      hueCount?: null,
       collateralCount?: null
     ): TypedEventFilter<
       [BigNumber, string, BigNumber, BigNumber],
       {
         positionID: BigNumber;
         caller: string;
-        zhuCount: BigNumber;
+        hueCount: BigNumber;
         collateralCount: BigNumber;
       }
     >;
@@ -587,9 +587,9 @@ export class Settlement extends BaseContract {
 
     ethPriceProvider(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getCollateralForZhu(
+    getCollateralForHue(
       positionID: BigNumberish,
-      zhuCount: BigNumberish,
+      hueCount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -668,9 +668,9 @@ export class Settlement extends BaseContract {
 
     ethPriceProvider(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getCollateralForZhu(
+    getCollateralForHue(
       positionID: BigNumberish,
-      zhuCount: BigNumberish,
+      hueCount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

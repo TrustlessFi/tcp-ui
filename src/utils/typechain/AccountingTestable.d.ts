@@ -43,7 +43,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "getTick(uint256,uint256)": FunctionFragment;
     "governor()": FunctionFragment;
     "increaseDebt(uint256)": FunctionFragment;
-    "increaseLentZhu(uint256)": FunctionFragment;
+    "increaseLentHue(uint256)": FunctionFragment;
     "increasePoolLiquidity(address,uint256)": FunctionFragment;
     "indexLocalNftID(uint256,uint256)": FunctionFragment;
     "indexPoolPositionsByOwner(address,uint256,uint256)": FunctionFragment;
@@ -51,7 +51,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "indexPoolPositionsByTickUpper(uint16,int24,uint256,uint256)": FunctionFragment;
     "init(address)": FunctionFragment;
     "isPositionOwner(uint256,address)": FunctionFragment;
-    "lentZhu()": FunctionFragment;
+    "lentHue()": FunctionFragment;
     "localNftID(uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "onRewardsUpgrade(address)": FunctionFragment;
@@ -63,7 +63,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "positionsCollateralization(uint64[])": FunctionFragment;
     "positionsForTick(int24)": FunctionFragment;
     "sendCollateral(address,uint256)": FunctionFragment;
-    "sendLentZhu(address,uint256)": FunctionFragment;
+    "sendLentHue(address,uint256)": FunctionFragment;
     "sendOneToOneBackedTokens(address,address,uint256)": FunctionFragment;
     "setParticipatedInLiquidityGenesis(address,uint16,bool)": FunctionFragment;
     "setParticipatedInMarketGenesis(address,bool)": FunctionFragment;
@@ -75,7 +75,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "stopIndexingDebtPositions()": FunctionFragment;
     "stopIndexingPoolPositions()": FunctionFragment;
     "stopped()": FunctionFragment;
-    "sweepZhu()": FunctionFragment;
+    "sweepHue()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
   };
 
@@ -159,7 +159,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "increaseLentZhu",
+    functionFragment: "increaseLentHue",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -187,7 +187,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     functionFragment: "isPositionOwner",
     values: [BigNumberish, string]
   ): string;
-  encodeFunctionData(functionFragment: "lentZhu", values?: undefined): string;
+  encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "localNftID",
     values: [BigNumberish]
@@ -233,7 +233,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "sendLentZhu",
+    functionFragment: "sendLentHue",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -314,7 +314,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "stopped", values?: undefined): string;
-  encodeFunctionData(functionFragment: "sweepZhu", values?: undefined): string;
+  encodeFunctionData(functionFragment: "sweepHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
@@ -397,7 +397,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "increaseLentZhu",
+    functionFragment: "increaseLentHue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -425,7 +425,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     functionFragment: "isPositionOwner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "lentZhu", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "lentHue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "localNftID", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC721Received",
@@ -468,7 +468,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "sendLentZhu",
+    functionFragment: "sendLentHue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -512,7 +512,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "sweepZhu", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "sweepHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
@@ -780,7 +780,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -831,7 +831,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    lentZhu(overrides?: CallOverrides): Promise<[BigNumber]>;
+    lentHue(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     localNftID(
       arg0: BigNumberish,
@@ -902,7 +902,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -993,7 +993,7 @@ export class AccountingTestable extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
-    sweepZhu(
+    sweepHue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1171,7 +1171,7 @@ export class AccountingTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  increaseLentZhu(
+  increaseLentHue(
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1222,7 +1222,7 @@ export class AccountingTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+  lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
   localNftID(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1287,7 +1287,7 @@ export class AccountingTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  sendLentZhu(
+  sendLentHue(
     dest: string,
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1378,7 +1378,7 @@ export class AccountingTestable extends BaseContract {
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
-  sweepZhu(
+  sweepHue(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1550,7 +1550,7 @@ export class AccountingTestable extends BaseContract {
 
     increaseDebt(count: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1598,7 +1598,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     localNftID(
       arg0: BigNumberish,
@@ -1666,7 +1666,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: CallOverrides
@@ -1753,7 +1753,7 @@ export class AccountingTestable extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
-    sweepZhu(overrides?: CallOverrides): Promise<void>;
+    sweepHue(overrides?: CallOverrides): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
   };
@@ -1877,7 +1877,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1928,7 +1928,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     localNftID(
       arg0: BigNumberish,
@@ -1987,7 +1987,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2078,7 +2078,7 @@ export class AccountingTestable extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
-    sweepZhu(
+    sweepHue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -2194,7 +2194,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -2245,7 +2245,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    lentZhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    lentHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     localNftID(
       arg0: BigNumberish,
@@ -2309,7 +2309,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2400,7 +2400,7 @@ export class AccountingTestable extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    sweepZhu(
+    sweepHue(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

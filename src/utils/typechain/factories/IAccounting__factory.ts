@@ -400,7 +400,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "increaseLentZhu",
+    name: "increaseLentHue",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -449,7 +449,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "lentZhu",
+    name: "lentHue",
     outputs: [
       {
         internalType: "uint256",
@@ -523,7 +523,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "sendLentZhu",
+    name: "sendLentHue",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -36,6 +36,8 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "extensionPerBid()": FunctionFragment;
     "getAllAuctions(uint64,bool)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hueToBeBought()": FunctionFragment;
+    "hueToBeSold()": FunctionFragment;
     "init(address)": FunctionFragment;
     "latestAuctionCompletionTime()": FunctionFragment;
     "maxAuctionDuration()": FunctionFragment;
@@ -74,8 +76,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "tcp()": FunctionFragment;
     "twapDuration()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-    "zhuToBeBought()": FunctionFragment;
-    "zhuToBeSold()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -132,6 +132,14 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "hueToBeBought",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hueToBeSold",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "latestAuctionCompletionTime",
@@ -272,14 +280,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "zhuToBeBought",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "zhuToBeSold",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "aggregateAuctionSize",
@@ -335,6 +335,14 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hueToBeBought",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hueToBeSold",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "latestAuctionCompletionTime",
@@ -470,14 +478,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuToBeBought",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuToBeSold",
     data: BytesLike
   ): Result;
 
@@ -642,6 +642,10 @@ export class AuctionsTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -798,10 +802,6 @@ export class AuctionsTestable extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<[number]>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   aggregateAuctionSize(
@@ -895,6 +895,10 @@ export class AuctionsTestable extends BaseContract {
   >;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+  hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
 
   init(
     _governor: string,
@@ -1051,10 +1055,6 @@ export class AuctionsTestable extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-  zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
-
   callStatic: {
     aggregateAuctionSize(
       amtIn: BigNumberish,
@@ -1143,6 +1143,10 @@ export class AuctionsTestable extends BaseContract {
     >;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
@@ -1290,10 +1294,6 @@ export class AuctionsTestable extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<number>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -1435,6 +1435,10 @@ export class AuctionsTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1574,10 +1578,6 @@ export class AuctionsTestable extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1644,6 +1644,10 @@ export class AuctionsTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hueToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
       _governor: string,
@@ -1801,9 +1805,5 @@ export class AuctionsTestable extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

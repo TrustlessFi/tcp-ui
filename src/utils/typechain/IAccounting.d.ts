@@ -34,14 +34,14 @@ interface IAccountingInterface extends ethers.utils.Interface {
     "getRewardStatus(uint16)": FunctionFragment;
     "getSystemDebtInfo()": FunctionFragment;
     "increaseDebt(uint256)": FunctionFragment;
-    "increaseLentZhu(uint256)": FunctionFragment;
+    "increaseLentHue(uint256)": FunctionFragment;
     "increasePoolLiquidity(address,uint256)": FunctionFragment;
     "isPositionOwner(uint256,address)": FunctionFragment;
-    "lentZhu()": FunctionFragment;
+    "lentHue()": FunctionFragment;
     "onRewardsUpgrade(address)": FunctionFragment;
     "poolLiquidity(address)": FunctionFragment;
     "sendCollateral(address,uint256)": FunctionFragment;
-    "sendLentZhu(address,uint256)": FunctionFragment;
+    "sendLentHue(address,uint256)": FunctionFragment;
     "sendOneToOneBackedTokens(address,address,uint256)": FunctionFragment;
     "setParticipatedInLiquidityGenesis(address,uint16,bool)": FunctionFragment;
     "setParticipatedInMarketGenesis(address,bool)": FunctionFragment;
@@ -101,7 +101,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "increaseLentZhu",
+    functionFragment: "increaseLentHue",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -112,7 +112,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     functionFragment: "isPositionOwner",
     values: [BigNumberish, string]
   ): string;
-  encodeFunctionData(functionFragment: "lentZhu", values?: undefined): string;
+  encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "onRewardsUpgrade",
     values: [string]
@@ -126,7 +126,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "sendLentZhu",
+    functionFragment: "sendLentHue",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -245,7 +245,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "increaseLentZhu",
+    functionFragment: "increaseLentHue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -256,7 +256,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     functionFragment: "isPositionOwner",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "lentZhu", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "lentHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onRewardsUpgrade",
     data: BytesLike
@@ -270,7 +270,7 @@ interface IAccountingInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "sendLentZhu",
+    functionFragment: "sendLentHue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -548,7 +548,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -565,7 +565,7 @@ export class IAccounting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    lentZhu(overrides?: CallOverrides): Promise<[BigNumber]>;
+    lentHue(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     onRewardsUpgrade(
       newRewards: string,
@@ -583,7 +583,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -789,7 +789,7 @@ export class IAccounting extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  increaseLentZhu(
+  increaseLentHue(
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -806,7 +806,7 @@ export class IAccounting extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+  lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
   onRewardsUpgrade(
     newRewards: string,
@@ -821,7 +821,7 @@ export class IAccounting extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  sendLentZhu(
+  sendLentHue(
     dest: string,
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1021,7 +1021,7 @@ export class IAccounting extends BaseContract {
 
     increaseDebt(count: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1038,7 +1038,7 @@ export class IAccounting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     onRewardsUpgrade(
       newRewards: string,
@@ -1053,7 +1053,7 @@ export class IAccounting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: CallOverrides
@@ -1201,7 +1201,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1218,7 +1218,7 @@ export class IAccounting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    lentZhu(overrides?: CallOverrides): Promise<BigNumber>;
+    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     onRewardsUpgrade(
       newRewards: string,
@@ -1233,7 +1233,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1375,7 +1375,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    increaseLentZhu(
+    increaseLentHue(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1392,7 +1392,7 @@ export class IAccounting extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    lentZhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    lentHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     onRewardsUpgrade(
       newRewards: string,
@@ -1410,7 +1410,7 @@ export class IAccounting extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    sendLentZhu(
+    sendLentHue(
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }

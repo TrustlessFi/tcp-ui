@@ -57,20 +57,20 @@ interface ILendInterface extends ethers.utils.Interface {
 
   events: {
     "Lend(address,uint256,uint256)": EventFragment;
-    "MintZhu(address,address,uint256)": EventFragment;
+    "MintHue(address,address,uint256)": EventFragment;
     "OneToOneMintingDisabled()": EventFragment;
     "ParameterUpdated(string,uint256)": EventFragment;
     "ParameterUpdatedAddress(string,address)": EventFragment;
-    "ReturnZhu(address,address,uint256)": EventFragment;
+    "ReturnHue(address,address,uint256)": EventFragment;
     "Unlend(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Lend"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "MintZhu"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MintHue"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OneToOneMintingDisabled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ReturnZhu"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReturnHue"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
@@ -168,14 +168,14 @@ export class ILend extends BaseContract {
   filters: {
     Lend(
       account?: string | null,
-      zhuCount?: null,
+      hueCount?: null,
       lendTokenCount?: null
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
-      { account: string; zhuCount: BigNumber; lendTokenCount: BigNumber }
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
 
-    MintZhu(
+    MintHue(
       user?: string | null,
       token?: string | null,
       count?: null
@@ -199,7 +199,7 @@ export class ILend extends BaseContract {
       value?: string | null
     ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
 
-    ReturnZhu(
+    ReturnHue(
       user?: string | null,
       token?: string | null,
       count?: null
@@ -210,11 +210,11 @@ export class ILend extends BaseContract {
 
     Unlend(
       account?: string | null,
-      zhuCount?: null,
+      hueCount?: null,
       lendTokenCount?: null
     ): TypedEventFilter<
       [string, BigNumber, BigNumber],
-      { account: string; zhuCount: BigNumber; lendTokenCount: BigNumber }
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
   };
 

@@ -34,6 +34,37 @@ const _abi = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "dest",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
+    ],
+    name: "mintTo",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
 export class VotingTokenInterface__factory {

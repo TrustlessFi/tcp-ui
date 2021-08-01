@@ -19,7 +19,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "zhuCount",
+        name: "hueCount",
         type: "uint256",
       },
       {
@@ -54,7 +54,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "MintZhu",
+    name: "MintHue",
     type: "event",
   },
   {
@@ -123,7 +123,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "ReturnZhu",
+    name: "ReturnHue",
     type: "event",
   },
   {
@@ -138,7 +138,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "zhuCount",
+        name: "hueCount",
         type: "uint256",
       },
       {

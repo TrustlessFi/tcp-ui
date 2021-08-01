@@ -176,11 +176,30 @@ const _abi = [
         type: "uint32",
       },
     ],
-    name: "getRealZhuCountForSinglePoolPosition",
+    name: "getRealHueCountForSinglePoolPosition",
     outputs: [
       {
         internalType: "uint256",
-        name: "zhuCount",
+        name: "hueCount",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "twapDuration",
+        type: "uint32",
+      },
+    ],
+    name: "hueTcpPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
         type: "uint256",
       },
     ],
@@ -211,25 +230,6 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "twapDuration",
-        type: "uint32",
-      },
-    ],
-    name: "zhuTcpPrice",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ];

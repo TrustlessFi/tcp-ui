@@ -33,9 +33,10 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     "deployer()": FunctionFragment;
     "getE18PriceForSqrtX96Price(uint160)": FunctionFragment;
     "getPriceForTick(int24,bool)": FunctionFragment;
-    "getRealZhuCountForSinglePoolPosition(address,int24,int24,int24,uint128,uint32)": FunctionFragment;
+    "getRealHueCountForSinglePoolPosition(address,int24,int24,int24,uint128,uint32)": FunctionFragment;
     "getTickForCumulators(int56,int56,uint32)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hueTcpPrice(uint32)": FunctionFragment;
     "init(address)": FunctionFragment;
     "normalizeDecimals(uint256,tuple)": FunctionFragment;
     "obs0()": FunctionFragment;
@@ -46,7 +47,6 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     "stopped()": FunctionFragment;
     "systemObtainReferencePrice(address)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-    "zhuTcpPrice(uint32)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -95,7 +95,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "getRealZhuCountForSinglePoolPosition",
+    functionFragment: "getRealHueCountForSinglePoolPosition",
     values: [
       string,
       BigNumberish,
@@ -110,6 +110,10 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "hueTcpPrice",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "normalizeDecimals",
@@ -144,10 +148,6 @@ interface PricesTestableInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "zhuTcpPrice",
-    values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -196,7 +196,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getRealZhuCountForSinglePoolPosition",
+    functionFragment: "getRealHueCountForSinglePoolPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -204,6 +204,10 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hueTcpPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "normalizeDecimals",
@@ -227,10 +231,6 @@ interface PricesTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuTcpPrice",
     data: BytesLike
   ): Result;
 
@@ -348,7 +348,7 @@ export class PricesTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { price: BigNumber }>;
 
-    getRealZhuCountForSinglePoolPosition(
+    getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
       tickLower: BigNumberish,
@@ -366,6 +366,11 @@ export class PricesTestable extends BaseContract {
     ): Promise<[number] & { tick: number }>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
+
+    hueTcpPrice(
+      twapDuration: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     init(
       _governor: string,
@@ -420,11 +425,6 @@ export class PricesTestable extends BaseContract {
     ): Promise<ContractTransaction>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-
-    zhuTcpPrice(
-      twapDuration: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
   };
 
   addReferencePool(
@@ -484,7 +484,7 @@ export class PricesTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  getRealZhuCountForSinglePoolPosition(
+  getRealHueCountForSinglePoolPosition(
     pool: string,
     tick: BigNumberish,
     tickLower: BigNumberish,
@@ -502,6 +502,11 @@ export class PricesTestable extends BaseContract {
   ): Promise<number>;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  hueTcpPrice(
+    twapDuration: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   init(
     _governor: string,
@@ -553,11 +558,6 @@ export class PricesTestable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-  zhuTcpPrice(
-    twapDuration: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
 
   callStatic: {
     addReferencePool(pool: string, overrides?: CallOverrides): Promise<void>;
@@ -612,7 +612,7 @@ export class PricesTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getRealZhuCountForSinglePoolPosition(
+    getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
       tickLower: BigNumberish,
@@ -630,6 +630,11 @@ export class PricesTestable extends BaseContract {
     ): Promise<number>;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    hueTcpPrice(
+      twapDuration: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
@@ -676,11 +681,6 @@ export class PricesTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    zhuTcpPrice(
-      twapDuration: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   filters: {
@@ -763,7 +763,7 @@ export class PricesTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getRealZhuCountForSinglePoolPosition(
+    getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
       tickLower: BigNumberish,
@@ -781,6 +781,11 @@ export class PricesTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hueTcpPrice(
+      twapDuration: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     init(
       _governor: string,
@@ -823,11 +828,6 @@ export class PricesTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuTcpPrice(
-      twapDuration: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -888,7 +888,7 @@ export class PricesTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getRealZhuCountForSinglePoolPosition(
+    getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
       tickLower: BigNumberish,
@@ -906,6 +906,11 @@ export class PricesTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hueTcpPrice(
+      twapDuration: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     init(
       _governor: string,
@@ -952,11 +957,6 @@ export class PricesTestable extends BaseContract {
 
     validUpdate(
       arg0: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    zhuTcpPrice(
-      twapDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

@@ -130,32 +130,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "PROPOSAL_THRESHOLD_PERCENTAGE",
-    outputs: [
-      {
-        internalType: "uint128",
-        name: "",
-        type: "uint128",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "QUORUM_VOTES_PERCENTAGE",
-    outputs: [
-      {
-        internalType: "uint128",
-        name: "",
-        type: "uint128",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "__abdicate",
     outputs: [],
     stateMutability: "nonpayable",
@@ -346,7 +320,7 @@ const _abi = [
           },
           {
             internalType: "uint128",
-            name: "availableVotingTokens",
+            name: "initialSupply",
             type: "uint128",
           },
         ],
@@ -372,9 +346,14 @@ const _abi = [
             type: "bool",
           },
           {
-            internalType: "uint192",
+            internalType: "bool",
+            name: "rewardReceived",
+            type: "bool",
+          },
+          {
+            internalType: "uint184",
             name: "votes",
-            type: "uint192",
+            type: "uint184",
           },
         ],
         internalType: "struct GovernorAlpha.Receipt[]",
@@ -388,9 +367,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint48",
+        internalType: "uint256",
         name: "proposalId",
-        type: "uint48",
+        type: "uint256",
       },
       {
         internalType: "address",
@@ -413,9 +392,14 @@ const _abi = [
             type: "bool",
           },
           {
-            internalType: "uint192",
+            internalType: "bool",
+            name: "rewardReceived",
+            type: "bool",
+          },
+          {
+            internalType: "uint184",
             name: "votes",
-            type: "uint192",
+            type: "uint184",
           },
         ],
         internalType: "struct GovernorAlpha.Receipt",
@@ -498,13 +482,7 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "availableVotingTokens",
-        type: "uint256",
-      },
-    ],
+    inputs: [],
     name: "proposalThreshold",
     outputs: [
       {
@@ -513,7 +491,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "pure",
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -578,7 +556,7 @@ const _abi = [
       },
       {
         internalType: "uint128",
-        name: "availableVotingTokens",
+        name: "initialSupply",
         type: "uint128",
       },
     ],
@@ -630,6 +608,19 @@ const _abi = [
     name: "queue",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "quorumVotes",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

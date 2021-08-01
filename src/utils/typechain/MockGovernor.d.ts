@@ -22,17 +22,12 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface MockGovernorInterface extends ethers.utils.Interface {
   functions: {
     "currentPhase()": FunctionFragment;
-    "distributedTCP()": FunctionFragment;
     "execute(address,string,bytes)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "currentPhase",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "distributedTCP",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -46,10 +41,6 @@ interface MockGovernorInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "currentPhase",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "distributedTCP",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
@@ -107,8 +98,6 @@ export class MockGovernor extends BaseContract {
   functions: {
     currentPhase(overrides?: CallOverrides): Promise<[number]>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     execute(
       arg0: string,
       arg1: string,
@@ -125,8 +114,6 @@ export class MockGovernor extends BaseContract {
 
   currentPhase(overrides?: CallOverrides): Promise<number>;
 
-  distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
   execute(
     arg0: string,
     arg1: string,
@@ -142,8 +129,6 @@ export class MockGovernor extends BaseContract {
 
   callStatic: {
     currentPhase(overrides?: CallOverrides): Promise<number>;
-
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
 
     execute(
       arg0: string,
@@ -164,8 +149,6 @@ export class MockGovernor extends BaseContract {
   estimateGas: {
     currentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
     execute(
       arg0: string,
       arg1: string,
@@ -182,8 +165,6 @@ export class MockGovernor extends BaseContract {
 
   populateTransaction: {
     currentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    distributedTCP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     execute(
       arg0: string,

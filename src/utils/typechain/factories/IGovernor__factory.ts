@@ -226,19 +226,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "distributedTCP",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "circulating",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "enforcedDecentralization",
     outputs: [
       {
@@ -346,16 +333,29 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
+    inputs: [],
+    name: "hue",
+    outputs: [
       {
-        internalType: "uint256",
-        name: "count",
-        type: "uint256",
+        internalType: "contract IHue",
+        name: "",
+        type: "address",
       },
     ],
-    name: "increaseLiquidationAccountRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "huePositionNFT",
+    outputs: [
+      {
+        internalType: "contract IPositionNFT",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -386,10 +386,10 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "lendZhu",
+    name: "lendHue",
     outputs: [
       {
-        internalType: "contract ILendZhu",
+        internalType: "contract ILendHue",
         name: "",
         type: "address",
       },
@@ -559,7 +559,33 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "requireLentZhuCountAccess",
+    name: "requireHueMintingAccess",
+    outputs: [],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+    ],
+    name: "requireHueReservesBurnAccess",
+    outputs: [],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+    ],
+    name: "requireLentHueCountAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -617,32 +643,6 @@ const _abi = [
       },
     ],
     name: "requireValidAction",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireZhuMintingAccess",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireZhuReservesBurnAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -827,32 +827,6 @@ const _abi = [
     name: "upgradeSettlement",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "zhu",
-    outputs: [
-      {
-        internalType: "contract IZhu",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "zhuPositionNFT",
-    outputs: [
-      {
-        internalType: "contract IPositionNFT",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ];

@@ -36,6 +36,7 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     "deployer()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
+    "huePositionNFT()": FunctionFragment;
     "init(address)": FunctionFragment;
     "interestPortionToLenders()": FunctionFragment;
     "lastPeriodGlobalInterestAccrued()": FunctionFragment;
@@ -52,7 +53,6 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     "twapDuration()": FunctionFragment;
     "updatePositionImpl(tuple,tuple,uint64)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-    "zhuPositionNFT()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -117,6 +117,10 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "huePositionNFT",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "interestPortionToLenders",
@@ -192,10 +196,6 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "zhuPositionNFT",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "accrueInterest",
@@ -247,6 +247,10 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "huePositionNFT",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interestPortionToLenders",
@@ -300,10 +304,6 @@ interface MarketTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuPositionNFT",
     data: BytesLike
   ): Result;
 
@@ -459,6 +459,8 @@ export class MarketTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -588,8 +590,6 @@ export class MarketTestable extends BaseContract {
     >;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<[string]>;
   };
 
   accrueInterest(
@@ -662,6 +662,8 @@ export class MarketTestable extends BaseContract {
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
   init(
     _governor: string,
@@ -793,8 +795,6 @@ export class MarketTestable extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
@@ -862,6 +862,8 @@ export class MarketTestable extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
@@ -1011,8 +1013,6 @@ export class MarketTestable extends BaseContract {
     >;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -1163,6 +1163,8 @@ export class MarketTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1240,8 +1242,6 @@ export class MarketTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1309,6 +1309,8 @@ export class MarketTestable extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
       _governor: string,
@@ -1392,7 +1394,5 @@ export class MarketTestable extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

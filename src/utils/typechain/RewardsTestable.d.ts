@@ -37,7 +37,7 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     "decreaseLiquidityPosition(tuple)": FunctionFragment;
     "deployer()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
-    "getRealZhuCount(tuple,address,int24,uint128)": FunctionFragment;
+    "getRealHueCount(tuple,address,int24,uint128)": FunctionFragment;
     "governor()": FunctionFragment;
     "increaseLiquidityPosition(tuple)": FunctionFragment;
     "init(address)": FunctionFragment;
@@ -46,9 +46,9 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     "liquidateOutofRangePositions(address,uint256[])": FunctionFragment;
     "liquidationPenalty()": FunctionFragment;
     "maxLiquidityDecreasePerPeriod()": FunctionFragment;
+    "minHueCountPerPosition()": FunctionFragment;
     "minLiquidityByPeriod(address)": FunctionFragment;
     "minLiquidityProvideDuration()": FunctionFragment;
-    "minZhuCountPerPosition()": FunctionFragment;
     "periodLength()": FunctionFragment;
     "poolForPoolID(uint16)": FunctionFragment;
     "poolIDForPool(address)": FunctionFragment;
@@ -63,8 +63,8 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     "requirePositionLargeEnough(uint256)": FunctionFragment;
     "setLiquidationPenalty(uint256)": FunctionFragment;
     "setMaxLiquidityDecreasePerPeriod(uint256)": FunctionFragment;
+    "setMinHueCountPerPosition(uint128)": FunctionFragment;
     "setMinLiquidityProvideDuration(uint64)": FunctionFragment;
-    "setMinZhuCountPerPosition(uint128)": FunctionFragment;
     "setRewardsPortions(uint256,uint256,uint256)": FunctionFragment;
     "setTwapDuration(uint32)": FunctionFragment;
     "stop()": FunctionFragment;
@@ -175,7 +175,7 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getRealZhuCount",
+    functionFragment: "getRealHueCount",
     values: [
       {
         owner: string;
@@ -242,15 +242,15 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "minHueCountPerPosition",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "minLiquidityByPeriod",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "minLiquidityProvideDuration",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minZhuCountPerPosition",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -326,11 +326,11 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMinLiquidityProvideDuration",
+    functionFragment: "setMinHueCountPerPosition",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMinZhuCountPerPosition",
+    functionFragment: "setMinLiquidityProvideDuration",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -407,7 +407,7 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getRealZhuCount",
+    functionFragment: "getRealHueCount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
@@ -437,15 +437,15 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "minHueCountPerPosition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "minLiquidityByPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "minLiquidityProvideDuration",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minZhuCountPerPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -505,11 +505,11 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMinLiquidityProvideDuration",
+    functionFragment: "setMinHueCountPerPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMinZhuCountPerPosition",
+    functionFragment: "setMinLiquidityProvideDuration",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -756,7 +756,7 @@ export class RewardsTestable extends BaseContract {
 
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    getRealZhuCount(
+    getRealHueCount(
       position: {
         owner: string;
         poolID: BigNumberish;
@@ -825,6 +825,8 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     minLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
@@ -835,8 +837,6 @@ export class RewardsTestable extends BaseContract {
     minLiquidityProvideDuration(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
-
-    minZhuCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -893,7 +893,7 @@ export class RewardsTestable extends BaseContract {
     ): Promise<[void]>;
 
     requirePositionLargeEnough(
-      __zhuCount: BigNumberish,
+      __hueCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[void]>;
 
@@ -907,12 +907,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMinLiquidityProvideDuration(
+    setMinHueCountPerPosition(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setMinZhuCountPerPosition(
+    setMinLiquidityProvideDuration(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -1076,7 +1076,7 @@ export class RewardsTestable extends BaseContract {
 
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-  getRealZhuCount(
+  getRealHueCount(
     position: {
       owner: string;
       poolID: BigNumberish;
@@ -1141,6 +1141,8 @@ export class RewardsTestable extends BaseContract {
 
   maxLiquidityDecreasePerPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
+  minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
+
   minLiquidityByPeriod(
     arg0: string,
     overrides?: CallOverrides
@@ -1149,8 +1151,6 @@ export class RewardsTestable extends BaseContract {
   >;
 
   minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-
-  minZhuCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1202,7 +1202,7 @@ export class RewardsTestable extends BaseContract {
   ): Promise<void>;
 
   requirePositionLargeEnough(
-    __zhuCount: BigNumberish,
+    __hueCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<void>;
 
@@ -1216,12 +1216,12 @@ export class RewardsTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMinLiquidityProvideDuration(
+  setMinHueCountPerPosition(
     min: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setMinZhuCountPerPosition(
+  setMinLiquidityProvideDuration(
     min: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1382,7 +1382,7 @@ export class RewardsTestable extends BaseContract {
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getRealZhuCount(
+    getRealHueCount(
       position: {
         owner: string;
         poolID: BigNumberish;
@@ -1448,6 +1448,8 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
+
     minLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
@@ -1456,8 +1458,6 @@ export class RewardsTestable extends BaseContract {
     >;
 
     minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minZhuCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1513,7 +1513,7 @@ export class RewardsTestable extends BaseContract {
     ): Promise<void>;
 
     requirePositionLargeEnough(
-      __zhuCount: BigNumberish,
+      __hueCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1527,12 +1527,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setMinLiquidityProvideDuration(
+    setMinHueCountPerPosition(
       min: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setMinZhuCountPerPosition(
+    setMinLiquidityProvideDuration(
       min: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1799,7 +1799,7 @@ export class RewardsTestable extends BaseContract {
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getRealZhuCount(
+    getRealHueCount(
       position: {
         owner: string;
         poolID: BigNumberish;
@@ -1868,14 +1868,14 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
+
     minLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minZhuCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1930,7 +1930,7 @@ export class RewardsTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     requirePositionLargeEnough(
-      __zhuCount: BigNumberish,
+      __hueCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1944,12 +1944,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMinLiquidityProvideDuration(
+    setMinHueCountPerPosition(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setMinZhuCountPerPosition(
+    setMinLiquidityProvideDuration(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -2073,7 +2073,7 @@ export class RewardsTestable extends BaseContract {
 
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getRealZhuCount(
+    getRealHueCount(
       position: {
         owner: string;
         poolID: BigNumberish;
@@ -2144,16 +2144,16 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    minHueCountPerPosition(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     minLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     minLiquidityProvideDuration(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    minZhuCountPerPosition(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2217,7 +2217,7 @@ export class RewardsTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     requirePositionLargeEnough(
-      __zhuCount: BigNumberish,
+      __hueCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2231,12 +2231,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setMinLiquidityProvideDuration(
+    setMinHueCountPerPosition(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setMinZhuCountPerPosition(
+    setMinLiquidityProvideDuration(
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

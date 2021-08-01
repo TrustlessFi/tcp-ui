@@ -33,8 +33,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     "currentPeriod()": FunctionFragment;
     "currentPhase()": FunctionFragment;
     "distributeLiquidityRewards(address,uint256)": FunctionFragment;
-    "distributedTCP()": FunctionFragment;
-    "distributionScheduleTokens()": FunctionFragment;
     "emergencyShutdownThresholdMet()": FunctionFragment;
     "emergencyShutdownTokensLocked(address)": FunctionFragment;
     "enforcedDecentralization()": FunctionFragment;
@@ -45,13 +43,13 @@ interface GovernorInterface extends ethers.utils.Interface {
     "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)": FunctionFragment;
     "getReferencePools()": FunctionFragment;
     "getSignaturePayloadForUserAddress(address)": FunctionFragment;
-    "increaseLiquidationAccountRewards(uint256)": FunctionFragment;
+    "hue()": FunctionFragment;
+    "huePositionNFT()": FunctionFragment;
     "initContracts(address,address,address,address,address,address,address,address,address,address)": FunctionFragment;
     "initPools(address,address,address[])": FunctionFragment;
     "isShutdown()": FunctionFragment;
     "lend()": FunctionFragment;
-    "lendZhu()": FunctionFragment;
-    "liquidationAccountRewards()": FunctionFragment;
+    "lendHue()": FunctionFragment;
     "liquidations()": FunctionFragment;
     "lockTokensForEmergencyShutdown(uint256)": FunctionFragment;
     "market()": FunctionFragment;
@@ -67,21 +65,19 @@ interface GovernorInterface extends ethers.utils.Interface {
     "referencePool(uint256)": FunctionFragment;
     "removeReferencePoolFromProtocol(address)": FunctionFragment;
     "requireDecreaseDebtAccess(address)": FunctionFragment;
-    "requireLentZhuCountAccess(address)": FunctionFragment;
+    "requireHueMintingAccess(address)": FunctionFragment;
+    "requireHueReservesBurnAccess(address)": FunctionFragment;
+    "requireLentHueCountAccess(address)": FunctionFragment;
     "requirePositionWriteAccess(address)": FunctionFragment;
     "requireStoredCollateralAccess(address)": FunctionFragment;
     "requireUpdatePositionAccess(address)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
-    "requireZhuMintingAccess(address)": FunctionFragment;
-    "requireZhuReservesBurnAccess(address)": FunctionFragment;
     "rewards()": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
     "settlement()": FunctionFragment;
     "shutdownTime()": FunctionFragment;
     "tcp()": FunctionFragment;
-    "tcpMinted()": FunctionFragment;
     "timelock()": FunctionFragment;
-    "totalLiquidityRewards()": FunctionFragment;
     "unlockTokensForEmergencyShutdown()": FunctionFragment;
     "upgradeAuctions(address)": FunctionFragment;
     "upgradeLend(address)": FunctionFragment;
@@ -93,8 +89,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     "upgradeRewards(address)": FunctionFragment;
     "upgradeSettlement(address)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-    "zhu()": FunctionFragment;
-    "zhuPositionNFT()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -140,14 +134,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "distributedTCP",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "distributionScheduleTokens",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "emergencyShutdownThresholdMet",
     values?: undefined
   ): string;
@@ -187,9 +173,10 @@ interface GovernorInterface extends ethers.utils.Interface {
     functionFragment: "getSignaturePayloadForUserAddress",
     values: [string]
   ): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "increaseLiquidationAccountRewards",
-    values: [BigNumberish]
+    functionFragment: "huePositionNFT",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "initContracts",
@@ -215,11 +202,7 @@ interface GovernorInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "lend", values?: undefined): string;
-  encodeFunctionData(functionFragment: "lendZhu", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "liquidationAccountRewards",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "lendHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidations",
     values?: undefined
@@ -272,7 +255,15 @@ interface GovernorInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "requireLentZhuCountAccess",
+    functionFragment: "requireHueMintingAccess",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requireHueReservesBurnAccess",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requireLentHueCountAccess",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -291,14 +282,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     functionFragment: "requireValidAction",
     values: [string, string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "requireZhuMintingAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireZhuReservesBurnAccess",
-    values: [string]
-  ): string;
   encodeFunctionData(functionFragment: "rewards", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setPhaseOneStartTime",
@@ -313,12 +296,7 @@ interface GovernorInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
-  encodeFunctionData(functionFragment: "tcpMinted", values?: undefined): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "totalLiquidityRewards",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "unlockTokensForEmergencyShutdown",
     values?: undefined
@@ -359,11 +337,6 @@ interface GovernorInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
-  ): string;
-  encodeFunctionData(functionFragment: "zhu", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "zhuPositionNFT",
-    values?: undefined
   ): string;
 
   decodeFunctionResult(
@@ -406,14 +379,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "distributedTCP",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "distributionScheduleTokens",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "emergencyShutdownThresholdMet",
     data: BytesLike
   ): Result;
@@ -450,8 +415,9 @@ interface GovernorInterface extends ethers.utils.Interface {
     functionFragment: "getSignaturePayloadForUserAddress",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "increaseLiquidationAccountRewards",
+    functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -461,11 +427,7 @@ interface GovernorInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "initPools", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isShutdown", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lend", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "lendZhu", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "liquidationAccountRewards",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "lendHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidations",
     data: BytesLike
@@ -515,7 +477,15 @@ interface GovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "requireLentZhuCountAccess",
+    functionFragment: "requireHueMintingAccess",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "requireHueReservesBurnAccess",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "requireLentHueCountAccess",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -534,14 +504,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     functionFragment: "requireValidAction",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireZhuMintingAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireZhuReservesBurnAccess",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "rewards", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setPhaseOneStartTime",
@@ -553,12 +515,7 @@ interface GovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "tcpMinted", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalLiquidityRewards",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "unlockTokensForEmergencyShutdown",
     data: BytesLike
@@ -601,11 +558,6 @@ interface GovernorInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "zhu", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuPositionNFT",
     data: BytesLike
   ): Result;
 
@@ -707,10 +659,6 @@ export class Governor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    distributionScheduleTokens(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     emergencyShutdownThresholdMet(
       overrides?: CallOverrides
     ): Promise<[boolean]>;
@@ -752,10 +700,9 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    increaseLiquidationAccountRewards(
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    hue(overrides?: CallOverrides): Promise<[string]>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
     initContracts(
       _auctions: string,
@@ -782,9 +729,7 @@ export class Governor extends BaseContract {
 
     lend(overrides?: CallOverrides): Promise<[string]>;
 
-    lendZhu(overrides?: CallOverrides): Promise<[string]>;
-
-    liquidationAccountRewards(overrides?: CallOverrides): Promise<[BigNumber]>;
+    lendHue(overrides?: CallOverrides): Promise<[string]>;
 
     liquidations(overrides?: CallOverrides): Promise<[string]>;
 
@@ -835,7 +780,17 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-    requireLentZhuCountAccess(
+    requireHueMintingAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    requireHueReservesBurnAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
+    requireLentHueCountAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
@@ -861,16 +816,6 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-    requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    requireZhuReservesBurnAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     rewards(overrides?: CallOverrides): Promise<[string]>;
 
     setPhaseOneStartTime(
@@ -884,11 +829,7 @@ export class Governor extends BaseContract {
 
     tcp(overrides?: CallOverrides): Promise<[string]>;
 
-    tcpMinted(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     timelock(overrides?: CallOverrides): Promise<[string]>;
-
-    totalLiquidityRewards(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -940,10 +881,6 @@ export class Governor extends BaseContract {
     ): Promise<ContractTransaction>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-
-    zhu(overrides?: CallOverrides): Promise<[string]>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<[string]>;
   };
 
   EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<BigNumber>;
@@ -976,10 +913,6 @@ export class Governor extends BaseContract {
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
-  distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
 
   emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1020,10 +953,9 @@ export class Governor extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  increaseLiquidationAccountRewards(
-    count: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  hue(overrides?: CallOverrides): Promise<string>;
+
+  huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
   initContracts(
     _auctions: string,
@@ -1050,9 +982,7 @@ export class Governor extends BaseContract {
 
   lend(overrides?: CallOverrides): Promise<string>;
 
-  lendZhu(overrides?: CallOverrides): Promise<string>;
-
-  liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
+  lendHue(overrides?: CallOverrides): Promise<string>;
 
   liquidations(overrides?: CallOverrides): Promise<string>;
 
@@ -1097,7 +1027,17 @@ export class Governor extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  requireLentZhuCountAccess(
+  requireHueMintingAccess(
+    caller: string,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  requireHueReservesBurnAccess(
+    caller: string,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
+  requireLentHueCountAccess(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -1123,16 +1063,6 @@ export class Governor extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-  requireZhuMintingAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  requireZhuReservesBurnAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
   rewards(overrides?: CallOverrides): Promise<string>;
 
   setPhaseOneStartTime(
@@ -1146,11 +1076,7 @@ export class Governor extends BaseContract {
 
   tcp(overrides?: CallOverrides): Promise<string>;
 
-  tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
-
   timelock(overrides?: CallOverrides): Promise<string>;
-
-  totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
   unlockTokensForEmergencyShutdown(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1203,10 +1129,6 @@ export class Governor extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  zhu(overrides?: CallOverrides): Promise<string>;
-
-  zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     EMERGENCY_SHUTDOWN_THRESHOLD(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1238,10 +1160,6 @@ export class Governor extends BaseContract {
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
-    distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
 
     emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1278,10 +1196,9 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    increaseLiquidationAccountRewards(
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    hue(overrides?: CallOverrides): Promise<string>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
     initContracts(
       _auctions: string,
@@ -1308,9 +1225,7 @@ export class Governor extends BaseContract {
 
     lend(overrides?: CallOverrides): Promise<string>;
 
-    lendZhu(overrides?: CallOverrides): Promise<string>;
-
-    liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
+    lendHue(overrides?: CallOverrides): Promise<string>;
 
     liquidations(overrides?: CallOverrides): Promise<string>;
 
@@ -1361,7 +1276,17 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requireLentZhuCountAccess(
+    requireHueMintingAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    requireHueReservesBurnAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    requireLentHueCountAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1387,16 +1312,6 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    requireZhuReservesBurnAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     rewards(overrides?: CallOverrides): Promise<string>;
 
     setPhaseOneStartTime(
@@ -1410,11 +1325,7 @@ export class Governor extends BaseContract {
 
     tcp(overrides?: CallOverrides): Promise<string>;
 
-    tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
-
     timelock(overrides?: CallOverrides): Promise<string>;
-
-    totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
     unlockTokensForEmergencyShutdown(overrides?: CallOverrides): Promise<void>;
 
@@ -1449,10 +1360,6 @@ export class Governor extends BaseContract {
     ): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    zhu(overrides?: CallOverrides): Promise<string>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -1528,10 +1435,6 @@ export class Governor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
-    distributionScheduleTokens(overrides?: CallOverrides): Promise<BigNumber>;
-
     emergencyShutdownThresholdMet(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1573,10 +1476,9 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    increaseLiquidationAccountRewards(
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
     initContracts(
       _auctions: string,
@@ -1603,9 +1505,7 @@ export class Governor extends BaseContract {
 
     lend(overrides?: CallOverrides): Promise<BigNumber>;
 
-    lendZhu(overrides?: CallOverrides): Promise<BigNumber>;
-
-    liquidationAccountRewards(overrides?: CallOverrides): Promise<BigNumber>;
+    lendHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidations(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1656,7 +1556,17 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    requireLentZhuCountAccess(
+    requireHueMintingAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    requireHueReservesBurnAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    requireLentHueCountAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1682,16 +1592,6 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    requireZhuReservesBurnAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     rewards(overrides?: CallOverrides): Promise<BigNumber>;
 
     setPhaseOneStartTime(
@@ -1705,11 +1605,7 @@ export class Governor extends BaseContract {
 
     tcp(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tcpMinted(overrides?: CallOverrides): Promise<BigNumber>;
-
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalLiquidityRewards(overrides?: CallOverrides): Promise<BigNumber>;
 
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1761,10 +1657,6 @@ export class Governor extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhu(overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1803,12 +1695,6 @@ export class Governor extends BaseContract {
       to: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    distributedTCP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    distributionScheduleTokens(
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     emergencyShutdownThresholdMet(
@@ -1854,10 +1740,9 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    increaseLiquidationAccountRewards(
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initContracts(
       _auctions: string,
@@ -1884,11 +1769,7 @@ export class Governor extends BaseContract {
 
     lend(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    lendZhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    liquidationAccountRewards(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    lendHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidations(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1941,7 +1822,17 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    requireLentZhuCountAccess(
+    requireHueMintingAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    requireHueReservesBurnAccess(
+      caller: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    requireLentHueCountAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1967,16 +1858,6 @@ export class Governor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    requireZhuMintingAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    requireZhuReservesBurnAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     rewards(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setPhaseOneStartTime(
@@ -1990,13 +1871,7 @@ export class Governor extends BaseContract {
 
     tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    tcpMinted(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalLiquidityRewards(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2051,9 +1926,5 @@ export class Governor extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    zhu(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    zhuPositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }
