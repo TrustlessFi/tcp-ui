@@ -34,8 +34,6 @@ const appPackageJson = require(paths.appPackageJson);
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
-console.log(path.resolve(__dirname, '../src/components/uniswap'));
-
 const webpackDevClientEntry = require.resolve(
   'react-dev-utils/webpackHotDevClient'
 );
@@ -401,7 +399,7 @@ module.exports = function (webpackEnv) {
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
               include: paths.appSrc,
-              exclude: paths.appSrc + '/components/uniswap',
+              exclude: paths.appSrc + '/components/uniswap/node_modules',
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(

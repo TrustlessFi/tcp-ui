@@ -90,6 +90,9 @@ function getClientEnvironment(publicUrl) {
         // which is why it's disabled by default.
         // It is defined here so it is available in the webpackHotDevClient.
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
+        REACT_APP_CHAIN_ID: '1337',
+        REACT_APP_NETWORK_URL: 'https://localhost:8545',
+        REACT_APP_WALLETCONNECT_BRIDGE_URL: 'https://uniswap.bridge.walletconnect.org'
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin

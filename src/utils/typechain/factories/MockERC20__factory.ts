@@ -11,7 +11,7 @@ import {
   Overrides,
 } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { MockERC20, MockERC20Interface } from "../MockErc20";
+import type { MockERC20, MockERC20Interface } from "../MockERC20";
 
 const _abi = [
   {

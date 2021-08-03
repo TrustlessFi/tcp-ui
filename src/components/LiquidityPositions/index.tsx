@@ -1,14 +1,21 @@
 import React from 'react';
 import { Button } from 'carbon-components-react';
-import { withRouter, useHistory } from 'react-router';
-import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
+import { useHistory } from 'react-router';
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { waitForLiquidityPositions } from '../../slices/waitFor'
+import { formatPositionForUniswap } from '../../utils';
 
 import AppTile from '../library/AppTile'
 import PositionList from '../uniswap/src/components/PositionList';
 import UniswapWrapper from './UniswapWrapper';
 
-const LiquidityPositions = ({}) => {
+const LiquidityPositions = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch()
+
+  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
+
+  const uniswapFormattedPositions = liquidityPositions && Object.values(liquidityPositions).map(formatPositionForUniswap);
 
   return (
     <AppTile title='Liquidity Positions'>
@@ -23,9 +30,12 @@ const LiquidityPositions = ({}) => {
         New Position
       </Button>
       <div className='position-list-container'>
-        <UniswapWrapper>
+        {uniswapFormattedPositions && (
+          <UniswapWrapper>
+            {/* @ts-ignore */} 
             <PositionList positions={uniswapFormattedPositions} />
-        </UniswapWrapper>
+          </UniswapWrapper>
+        )}
       </div>
     </AppTile>
   )

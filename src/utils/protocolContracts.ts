@@ -12,9 +12,9 @@ import { Accounting } from "./typechain/Accounting"
 import { Auctions } from "./typechain/Auctions"
 import { EnforcedDecentralization } from "./typechain/EnforcedDecentralization"
 import { Governor } from "./typechain/Governor"
-import { TCPGovernorAlpha } from "./typechain/TcpGovernorAlpha"
+import { TCPGovernorAlpha } from "./typechain/TCPGovernorAlpha"
 import { Lend } from "./typechain/Lend"
-import { LendZhu } from "./typechain/LendZhu"
+import { LendHue } from "./typechain/LendHue"
 import { Liquidations } from "./typechain/Liquidations"
 import { Market } from "./typechain/Market"
 import { Prices } from "./typechain/Prices"
@@ -24,8 +24,8 @@ import { Rates } from "./typechain/Rates"
 import { Rewards } from "./typechain/Rewards"
 import { Settlement } from "./typechain/Settlement"
 import { TcpTimelock } from "./typechain/TcpTimelock"
-import { Zhu } from "./typechain/Zhu"
-import { ZhuPositionNFT } from "./typechain/ZhuPositionNft"
+import { Hue } from "./typechain/Hue"
+import { HuePositionNFT } from "./typechain/HuePositionNFT"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json"
@@ -34,7 +34,7 @@ import enforcedDecentralizationArtifact from "./artifacts/contracts/core/governa
 import governorArtifact from "./artifacts/contracts/core/governance/Governor.sol/Governor.json"
 import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TCPGovernorAlpha.json"
 import lendArtifact from "./artifacts/contracts/core/logic/Lend.sol/Lend.json"
-import lendZhuArtifact from "./artifacts/contracts/core/tokens/LendZhu.sol/LendZhu.json"
+import lendHueArtifact from "./artifacts/contracts/core/tokens/LendHue.sol/LendHue.json"
 import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
 import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
 import pricesArtifact from "./artifacts/contracts/core/logic/Prices.sol/Prices.json"
@@ -44,8 +44,8 @@ import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Reward
 import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json"
 import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
 import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
-import zhuArtifact from "./artifacts/contracts/core/tokens/Zhu.sol/Zhu.json"
-import zhuPositionNFTArtifact from "./artifacts/contracts/core/tokens/ZhuPositionNFT.sol/ZhuPositionNFT.json"
+import HueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
+import HuePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
 
 export enum ProtocolContract {
   Accounting = "Accounting",
@@ -54,10 +54,10 @@ export enum ProtocolContract {
   Governor = "Governor",
   TCPGovernorAlpha = "TCPGovernorAlpha",
   Lend = "Lend",
-  LendZhu = "LendZhu",
+  LendHue = "LendHue",
   Liquidations = "Liquidations",
   Market = "Market",
-  ZhuPositionNFT = "ZhuPositionNFT",
+  HuePositionNFT = "HuePositionNFT",
   Prices = "Prices",
   ProtocolLock = "ProtocolLock",
   Rates = "Rates",
@@ -65,7 +65,7 @@ export enum ProtocolContract {
   Settlement = "Settlement",
   Tcp = "Tcp",
   TcpTimelock = "TcpTimelock",
-  Zhu = "Zhu"
+  Hue = "Hue"
 }
 
 const artifactLookup = {
@@ -75,7 +75,7 @@ const artifactLookup = {
   [ProtocolContract.Governor]: governorArtifact,
   [ProtocolContract.TCPGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.Lend]: lendArtifact,
-  [ProtocolContract.LendZhu]: lendZhuArtifact,
+  [ProtocolContract.LendHue]: lendHueArtifact,
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
   [ProtocolContract.Prices]: pricesArtifact,
@@ -85,8 +85,8 @@ const artifactLookup = {
   [ProtocolContract.Settlement]: settlementArtifact,
   [ProtocolContract.Tcp]: tcpArtifact,
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
-  [ProtocolContract.Zhu]: zhuArtifact,
-  [ProtocolContract.ZhuPositionNFT]: zhuPositionNFTArtifact
+  [ProtocolContract.Hue]: HueArtifact,
+  [ProtocolContract.HuePositionNFT]: HuePositionNFTArtifact
 };
 
 export type protocolContractsType = {
@@ -96,7 +96,7 @@ export type protocolContractsType = {
   [ProtocolContract.Governor]?: Governor;
   [ProtocolContract.TCPGovernorAlpha]?: TCPGovernorAlpha;
   [ProtocolContract.Lend]?: Lend;
-  [ProtocolContract.LendZhu]?: LendZhu;
+  [ProtocolContract.LendHue]?: LendHue;
   [ProtocolContract.Liquidations]?: Liquidations;
   [ProtocolContract.Market]?: Market;
   [ProtocolContract.Prices]?: Prices;
@@ -106,8 +106,8 @@ export type protocolContractsType = {
   [ProtocolContract.Settlement]?: Settlement;
   [ProtocolContract.Tcp]?: Tcp;
   [ProtocolContract.TcpTimelock]?: TcpTimelock;
-  [ProtocolContract.Zhu]?: Zhu;
-  [ProtocolContract.ZhuPositionNFT]?: ZhuPositionNFT;
+  [ProtocolContract.Hue]?: Hue;
+  [ProtocolContract.HuePositionNFT]?: HuePositionNFT;
 };
 
 let protocolContracts: protocolContractsType = {};
@@ -196,12 +196,12 @@ const getCachedContractFromGovernor = async (
           provider
         ) as unknown as Lend
         break;
-      case ProtocolContract.LendZhu:
+      case ProtocolContract.LendHue:
         protocolContracts[contract] = new ethers.Contract(
-          await governor.lendZhu(),
+          await governor.lendHue(),
           artifactLookup[contract].abi,
           provider
-        ) as unknown as LendZhu
+        ) as unknown as LendHue
         break;
       case ProtocolContract.Liquidations:
         protocolContracts[contract] = new ethers.Contract(
@@ -266,19 +266,19 @@ const getCachedContractFromGovernor = async (
           provider
         ) as unknown as TcpTimelock
         break;
-      case ProtocolContract.Zhu:
+      case ProtocolContract.Hue:
         protocolContracts[contract] = new ethers.Contract(
-          await governor.zhu(),
+          await governor.hue(),
           artifactLookup[contract].abi,
           provider
-        ) as unknown as Zhu;
+        ) as unknown as Hue;
         break;
-      case ProtocolContract.ZhuPositionNFT:
+      case ProtocolContract.HuePositionNFT:
         protocolContracts[contract] = new ethers.Contract(
-          await governor.zhuPositionNFT(),
+          await governor.huePositionNFT(),
           artifactLookup[contract].abi,
           provider
-        ) as unknown as ZhuPositionNFT
+        ) as unknown as HuePositionNFT
         break;
       default:
         throw new Error("Contract not found")

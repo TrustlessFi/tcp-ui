@@ -7,7 +7,7 @@ import { Provider } from "@ethersproject/providers";
 import type {
   ERC721Burnable,
   ERC721BurnableInterface,
-} from "../Erc721Burnable";
+} from "../ERC721Burnable";
 
 const _abi = [
   {

@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { WETH9, WETH9Interface } from "../Weth9";
+import type { WETH9, WETH9Interface } from "../WETH9";
 
 const _abi = [
   {

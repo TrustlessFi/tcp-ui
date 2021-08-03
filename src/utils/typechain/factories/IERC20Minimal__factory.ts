@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { IERC20Minimal, IERC20MinimalInterface } from "../Ierc20Minimal";
+import type { IERC20Minimal, IERC20MinimalInterface } from "../IERC20Minimal";
 
 const _abi = [
   {

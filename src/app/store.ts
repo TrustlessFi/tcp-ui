@@ -1,5 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import positionsReducer from '../slices/positions'
+import liquidityPositionsReducer from '../slices/liquidityPositions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
 import walletReducer from '../slices/wallet'
@@ -21,6 +22,7 @@ import referenceTokenBalancesReducer from '../slices/balances/referenceTokenBala
 export const store = configureStore({
   reducer: {
     positions: positionsReducer,
+    liquidityPositions: liquidityPositionsReducer,
     proposals: proposalsReducer,
     chainID: chainIDReducer,
     wallet: walletReducer,

@@ -14,7 +14,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   TestERC20Metadata,
   TestERC20MetadataInterface,
-} from "../TestErc20Metadata";
+} from "../TestERC20Metadata";
 
 const _abi = [
   {

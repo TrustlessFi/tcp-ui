@@ -7,7 +7,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   TCPSafeCastTestable,
   TCPSafeCastTestableInterface,
-} from "../TcpSafeCastTestable";
+} from "../TCPSafeCastTestable";
 
 const _abi = [
   {

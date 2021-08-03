@@ -1,4 +1,9 @@
+import { Token } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from "ethers";
+//import { BigNumber as UniswapBigNumber } from "../components/uniswap/node_modules/@ethersproject/bignumber"
+
+import { USDC, USDT } from '../components/uniswap/src/constants';
+import { LiquidityPosition } from '../slices/liquidityPositions';
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';
 
@@ -80,3 +85,56 @@ export const uint255Max = '57896044618658097711785492504343953926634992332820282
 
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
+
+
+
+// ======================= Uniswap Data Formatting ============================
+const symbolToTokenMap: { [key: string]: any } = {
+  USDC,
+  USDT
+};
+
+type CombinedLiquidityPosition = LiquidityPosition & {
+  amount0: {
+    token: Token
+  },
+  amount1: {
+    token: Token
+  },
+  fee: number,
+  feeGrowthInside0LastX128: BigNumber,
+  feeGrowthInside1LastX128: BigNumber,
+  nonce: BigNumber,
+  operator: string,
+  slot0: any,
+  token0: string,
+  token1: string,
+  tokenId: BigNumber,
+  tokensOwed0: BigNumber,
+  tokensOwed1: BigNumber,
+}
+
+export const formatPositionForUniswap = (position: LiquidityPosition): CombinedLiquidityPosition => ({
+  ...position,
+  amount0: {
+      token: symbolToTokenMap[position.pool.token0Symbol]
+  },
+  amount1: {
+      token: symbolToTokenMap[position.pool.token1Symbol]
+  },
+  fee: position.pool.fee,
+  liquidity: BigNumber.from(position.liquidity),
+  nonce: position.nonce,
+  feeGrowthInside0LastX128: position.feeGrowthInside0LastX128,
+  feeGrowthInside1LastX128: position.feeGrowthInside1LastX128,
+  operator: position.owner,
+  slot0: {
+      ...position.pool.slot0,
+      sqrtPriceX96: position.pool.slot0.sqrtPriceX96
+  },
+  token0: position.pool.token0Address,
+  token1: position.pool.token1Address,
+  tokenId: BigNumber.from(position.id),
+  tokensOwed0: position.tokensOwed0,
+  tokensOwed1: position.tokensOwed1
+})

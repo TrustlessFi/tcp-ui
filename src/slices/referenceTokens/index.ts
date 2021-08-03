@@ -6,7 +6,7 @@ import { governorInfo } from '../governor'
 import { ethers } from 'ethers'
 import getProvider from '../../utils/getProvider'
 
-import { ERC20 } from "../../utils/typechain/Erc20"
+import { ERC20 } from "../../utils/typechain/ERC20"
 import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
@@ -22,7 +22,7 @@ export interface referenceTokenArgs {
 
 export const getReferenceTokens = createAsyncThunk(
   'referenceTokens/getReferenceTokens', async (args: referenceTokenArgs) => {
-    const zhu = await getProtocolContract(args.chainID, ProtocolContract.Zhu) as unknown as ERC20 | null
+    const zhu = await getProtocolContract(args.chainID, ProtocolContract.Hue) as unknown as ERC20 | null
 
     const provider = getProvider()
     if (zhu === null || provider === null) return null
