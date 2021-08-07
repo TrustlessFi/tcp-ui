@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loading, Button, Dropdown, TextInput } from "carbon-components-react";
+import { Button, Dropdown, TextInput } from "carbon-components-react";
 import AppTile from "../../library/AppTile";
 import { useAppDispatch, useAppSelector as selector } from "../../../app/hooks";
 import { waitForReferenceTokenBalances, waitForHueBalance } from "../../../slices/waitFor";
@@ -7,6 +7,7 @@ import Center from "../../library/Center";
 import { Arrows16 } from "@carbon/icons-react";
 import { numDisplay } from "../../../utils";
 import { ProtocolContract } from '../../../utils/protocolContracts'
+import AppLoading from "../../library/AppLoading";
 
 export default () => (
   <AppTile title="One to one minting">
@@ -37,23 +38,19 @@ const OneToOneMintTile = ({}) => {
   console.log({hueBalance, refTokenBalances})
 
   // check that the component is ready to display
-  const loading = (
-    <Center>
-      <Loading
-        description="One to one minting loading"
-        withOverlay={false}
-        small
-      />
-    </Center>
-  );
+  const appLoadingProps = {
+    description: "One to one minting loading",
+    small: true,
+    withOverlay: false
+  };
 
-  if (refTokenBalances === null || hueBalance === null) return loading;
+  if (refTokenBalances === null || hueBalance === null) return <AppLoading {...appLoadingProps} />;
 
   if (Object.values(refTokenBalances).length === 0)
     throw new Error("No reference tokens.");
   if (refToken === "") {
     setRefToken(Object.keys(refTokenBalances)[0]);
-    return loading;
+    return <AppLoading {...appLoadingProps} />;
   }
 
   const refData = refTokenBalances[refToken];
