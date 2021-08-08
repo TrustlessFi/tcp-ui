@@ -1,12 +1,18 @@
 import React, { FunctionComponent } from 'react';
+import AppTile from '../library/AppTile';
+import ProposalsContainer from './ProposalsContainer';
+import VoteDelegationPanel from './VoteDelegationPanel';
 
 const Governance: FunctionComponent = () => {
   return (
-    <div>
-      <h3>
-        Governance Content
-      </h3>
-    </div>
+    <>
+      <AppTile title="Proposals" className="proposals" >
+        <ProposalsContainer />
+      </AppTile>
+      <AppTile title="Voting Power" className="voting-power" >
+        <VoteDelegationPanel />
+      </AppTile>
+    </>
   );
 }
   

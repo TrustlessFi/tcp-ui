@@ -153,3 +153,12 @@ svg.danger_icon {
   display: flex;
   justify-content: center;
 }
+
+.proposals {
+  .bx--list--unordered {
+    .bx--list__item::before {
+      position: static;
+      content: normal;
+    }
+  }
+}
