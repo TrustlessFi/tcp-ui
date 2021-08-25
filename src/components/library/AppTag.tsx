@@ -5,19 +5,21 @@ interface AppTagProps {
   color?: TagTypeName;
   name: string;
   onClick: () => void;
+  selected?: boolean
 }
 
 export const AppTag: FunctionComponent<AppTagProps> = ({
   color = "grey" as TagTypeName,
   name,
   onClick,
+  selected = false,
 }) => {
   return (
     <Tag
       type={color}
       key={name}
       onClick={onClick}
-      style={{ marginLeft: 8, outline: 0 }}
+      style={{ marginLeft: 8, outline: 0, opacity: selected ? "100%" : "65%" }}
     >
       {name}
     </Tag>

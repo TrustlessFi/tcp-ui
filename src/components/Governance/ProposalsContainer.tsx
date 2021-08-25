@@ -1,23 +1,75 @@
-import React, { FunctionComponent } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { waitForProposals } from '../../slices/waitFor';
 import AppLoading from '../library/AppLoading';
-import { Proposal as IProposal } from '../../slices/proposals';
+import { Proposal as IProposal, ProposalStates } from '../../slices/proposals';
 import Proposal from './Proposal';
 import Center from '../library/Center';
 import { ListItem, UnorderedList } from 'carbon-components-react';
+import { AppTag } from '../library/AppTag';
+import { useDispatch } from 'react-redux';
+
+const defaultSelectedStates = {
+  Pending: true,
+  Active: true,
+  Defeated: false,
+  Succeeded: true,
+  Queued: true,
+  Executed: false,
+  Canceled: false,
+  Expired: false,
+}
 
 const ProposalsContainer: FunctionComponent = () => {
   const dispatch = useDispatch();
+  const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalStates]: boolean}>(defaultSelectedStates);
+  const [ defaultSelected, updateDefaultSelected ] = useState<boolean>(true);
+  const [ allSelected, updateAllSelected ] = useState<boolean>(false);
+  const [ noneSelected, updateNoneSelected ] = useState<boolean>(false);
+
   const proposalsState = waitForProposals(useAppSelector, dispatch);
-  const proposals: IProposal[] | null = proposalsState && Object.values(proposalsState) || null;
+  const [ filteredProposals, updateFilteredProposals ] = useState<IProposal[]>([]);
+  
+  useEffect(() => {
+    const proposals = proposalsState && Object.values(proposalsState);
+    if (proposals && proposals.length) {
+      updateFilteredProposals(proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalStates]));
+    }
+  }, [selectedStates, proposalsState]);
 
-  // optionsTags, typeTags, sortTags, filteredProposals state will live here
-  // update handlers will live here
-  // pass in tags + handlers to ProposalsHeader
-  // pass in tags + filteredProposals to ProposalsList
+  useEffect(() => {
+    const numberOfTrueStates = Object.entries(selectedStates).filter(entry => entry[1]).length;
+    const numberOfFalseStates = Object.entries(selectedStates).filter(entry => !entry[1]).length;
+    if (!numberOfTrueStates) {
+      // none
+      updateAllSelected(false);
+      updateNoneSelected(true);
+      updateDefaultSelected(false);
+    } else if (!numberOfFalseStates) {
+      // all
+      updateAllSelected(true);
+      updateNoneSelected(false);
+      updateDefaultSelected(false);
+    } else {
+      // default
+      updateAllSelected(false);
+      updateNoneSelected(false);
+      updateDefaultSelected(true);
+    }
+  }, [selectedStates]);
 
+  const setAll = (selected: boolean): void => {
+    let newSelectedStates: {[key in ProposalStates]: boolean} = { ...selectedStates };
+    for (const label in selectedStates) {
+      newSelectedStates[label as keyof typeof ProposalStates] = selected;
+    }
+    updateSelectedStates(newSelectedStates);
+  };
+
+  const setDefault = (): void => {
+    updateSelectedStates(defaultSelectedStates);
+  };
+  
   if (!proposalsState) {
     return (
       <AppLoading
@@ -28,27 +80,57 @@ const ProposalsContainer: FunctionComponent = () => {
     );
   }
 
-  if (proposals && !proposals.length) {
+  if (proposalsState && !Object.values(proposalsState).length) {
     return (
-      <Center> There are no proposals </Center>
+      <Center> There are no governance proposals </Center>
     );
   }
 
   return (
     <>
-      <ProposalsHeader />
-      <ProposalsList filteredProposals={[]} />
+      <ProposalsHeader
+        allSelected={allSelected}
+        defaultSelected={defaultSelected}
+        noneSelected={noneSelected}
+        proposalsShown={filteredProposals.length}
+        proposalsTotal={proposalsState && Object.values(proposalsState).length || 0}
+        setAll={setAll}
+        setDefault={setDefault}
+      />
+      <ProposalsList filteredProposals={filteredProposals} />
     </>
   );
 }
 
-// interface ProposalsHeaderProps {
-//   proposals: proposalsInfo | null;
-// }
+// TODO: Consider not making this a separate component as we pass just about everything down anyways
+interface ProposalsHeaderProps {
+  allSelected: boolean;
+  defaultSelected: boolean;
+  noneSelected: boolean;
+  proposalsShown: number;
+  proposalsTotal: number;
+  setAll: (selected: boolean) => void;
+  setDefault: () => void;
+}
 
-const ProposalsHeader: FunctionComponent = () => {
+const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
+  allSelected,
+  defaultSelected,
+  noneSelected,
+  proposalsShown,
+  proposalsTotal,
+  setDefault,
+  setAll,
+}) => {
   return (
-    <div> Displaying x of x </div>
+    <>
+      <div> Displaying {proposalsShown} of {proposalsTotal} </div>
+      <div> 
+        <AppTag name="Default" color="blue" selected={defaultSelected} onClick={setDefault} />
+        <AppTag name="All" color="blue" selected={allSelected} onClick={() => setAll(true)} />
+        <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
+      </div>
+    </>
   );
 }
 
