@@ -9,7 +9,7 @@ interface ProposalProps {
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal }) => {
   return (
     <Tile>
-      Proposal Row content goes here
+      Proposal Row. Status: {proposal.proposal.state}
     </Tile>
   );
 }
