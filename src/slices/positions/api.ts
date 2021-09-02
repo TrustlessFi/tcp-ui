@@ -5,11 +5,11 @@ import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 
 import { Accounting } from '../../utils/typechain/Accounting'
-import { ZhuPositionNFT } from '../../utils/typechain/ZhuPositionNft'
+import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
 
 export const fetchPositions = async (data: positionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
-  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.ZhuPositionNFT) as ZhuPositionNFT | null
+  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.HuePositionNFT) as HuePositionNFT | null
   if (accounting === null || positionNFT === null) return null
 
   // fetch the positions

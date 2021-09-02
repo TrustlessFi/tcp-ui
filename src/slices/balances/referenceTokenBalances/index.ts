@@ -22,7 +22,7 @@ export const getReferenceTokenBalances = createAsyncThunk(
     await Promise.all(args.tokenAddresses.map(async tokenAddress => {
       const result = await getTokenBalanceImpl(
         {tokenAddress},
-        [ProtocolContract.Lend],
+        [ProtocolContract.Market],
         [ProtocolContract.Accounting],
         { chainID: args.chainID, userAddress: args.userAddress },
       )
