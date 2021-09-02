@@ -33,6 +33,7 @@ interface TCPSafeCastTestableInterface extends ethers.utils.Interface {
     "_toUint176(uint256)": FunctionFragment;
     "_toUint184(uint256)": FunctionFragment;
     "_toUint192(uint256)": FunctionFragment;
+    "_toUint216(uint256)": FunctionFragment;
     "_toUint256(int256)": FunctionFragment;
     "_toUint32(uint256)": FunctionFragment;
     "_toUint40(uint256)": FunctionFragment;
@@ -95,6 +96,10 @@ interface TCPSafeCastTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "_toUint216",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "_toUint256",
     values: [BigNumberish]
   ): string;
@@ -136,6 +141,7 @@ interface TCPSafeCastTestableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "_toUint176", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_toUint184", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_toUint192", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "_toUint216", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_toUint256", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_toUint32", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "_toUint40", data: BytesLike): Result;
@@ -256,6 +262,11 @@ export class TCPSafeCastTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { r: BigNumber }>;
 
+    _toUint216(
+      a: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { r: BigNumber }>;
+
     _toUint256(
       a: BigNumberish,
       overrides?: CallOverrides
@@ -318,6 +329,8 @@ export class TCPSafeCastTestable extends BaseContract {
 
   _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+  _toUint216(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
   _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   _toUint32(a: BigNumberish, overrides?: CallOverrides): Promise<number>;
@@ -358,6 +371,8 @@ export class TCPSafeCastTestable extends BaseContract {
     _toUint184(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    _toUint216(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -402,6 +417,8 @@ export class TCPSafeCastTestable extends BaseContract {
     _toUint184(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     _toUint192(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    _toUint216(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     _toUint256(a: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -480,6 +497,11 @@ export class TCPSafeCastTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     _toUint192(
+      a: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _toUint216(
       a: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

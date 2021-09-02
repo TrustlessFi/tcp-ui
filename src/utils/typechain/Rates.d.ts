@@ -22,9 +22,11 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface RatesInterface extends ethers.utils.Interface {
   functions: {
     "addReferencePool(address)": FunctionFragment;
-    "completeSetup()": FunctionFragment;
+    "collateralPool()": FunctionFragment;
     "currentRateData()": FunctionFragment;
     "deployer()": FunctionFragment;
+    "finalizeInitialization(address,address[])": FunctionFragment;
+    "getReferencePools()": FunctionFragment;
     "getRewardCount()": FunctionFragment;
     "governor()": FunctionFragment;
     "init(address)": FunctionFragment;
@@ -42,11 +44,9 @@ interface RatesInterface extends ethers.utils.Interface {
     "setMaxSteps(uint64)": FunctionFragment;
     "setMinRate(int128)": FunctionFragment;
     "setMinTimeBetweenUpdates(uint64)": FunctionFragment;
-    "setValidRangeForRawPrices(uint128)": FunctionFragment;
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
     "update()": FunctionFragment;
-    "validRangeForRawPrices()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
   };
 
@@ -55,7 +55,7 @@ interface RatesInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "completeSetup",
+    functionFragment: "collateralPool",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -63,6 +63,14 @@ interface RatesInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "finalizeInitialization",
+    values: [string, string[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getReferencePools",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getRewardCount",
     values?: undefined
@@ -125,17 +133,9 @@ interface RatesInterface extends ethers.utils.Interface {
     functionFragment: "setMinTimeBetweenUpdates",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setValidRangeForRawPrices",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "stop", values?: undefined): string;
   encodeFunctionData(functionFragment: "stopped", values?: undefined): string;
   encodeFunctionData(functionFragment: "update", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "validRangeForRawPrices",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
@@ -146,7 +146,7 @@ interface RatesInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "completeSetup",
+    functionFragment: "collateralPool",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -154,6 +154,14 @@ interface RatesInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "finalizeInitialization",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getReferencePools",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getRewardCount",
     data: BytesLike
@@ -210,17 +218,9 @@ interface RatesInterface extends ethers.utils.Interface {
     functionFragment: "setMinTimeBetweenUpdates",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setValidRangeForRawPrices",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "stop", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "update", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "validRangeForRawPrices",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
@@ -294,9 +294,7 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    collateralPool(overrides?: CallOverrides): Promise<[string]>;
 
     currentRateData(
       overrides?: CallOverrides
@@ -309,6 +307,14 @@ export class Rates extends BaseContract {
     >;
 
     deployer(overrides?: CallOverrides): Promise<[string]>;
+
+    finalizeInitialization(
+      _collateralPool: string,
+      _referencePools: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    getReferencePools(overrides?: CallOverrides): Promise<[string[]]>;
 
     getRewardCount(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -387,11 +393,6 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setValidRangeForRawPrices(
-      range: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -402,8 +403,6 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    validRangeForRawPrices(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
@@ -412,9 +411,7 @@ export class Rates extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  collateralPool(overrides?: CallOverrides): Promise<string>;
 
   currentRateData(
     overrides?: CallOverrides
@@ -427,6 +424,14 @@ export class Rates extends BaseContract {
   >;
 
   deployer(overrides?: CallOverrides): Promise<string>;
+
+  finalizeInitialization(
+    _collateralPool: string,
+    _referencePools: string[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  getReferencePools(overrides?: CallOverrides): Promise<string[]>;
 
   getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -505,11 +510,6 @@ export class Rates extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setValidRangeForRawPrices(
-    range: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   stop(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -520,14 +520,12 @@ export class Rates extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  validRangeForRawPrices(overrides?: CallOverrides): Promise<BigNumber>;
-
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
     addReferencePool(pool: string, overrides?: CallOverrides): Promise<void>;
 
-    completeSetup(overrides?: CallOverrides): Promise<void>;
+    collateralPool(overrides?: CallOverrides): Promise<string>;
 
     currentRateData(
       overrides?: CallOverrides
@@ -540,6 +538,14 @@ export class Rates extends BaseContract {
     >;
 
     deployer(overrides?: CallOverrides): Promise<string>;
+
+    finalizeInitialization(
+      _collateralPool: string,
+      _referencePools: string[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getReferencePools(overrides?: CallOverrides): Promise<string[]>;
 
     getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -603,18 +609,11 @@ export class Rates extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setValidRangeForRawPrices(
-      range: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     stop(overrides?: CallOverrides): Promise<void>;
 
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
     update(overrides?: CallOverrides): Promise<void>;
-
-    validRangeForRawPrices(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
   };
@@ -677,13 +676,19 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentRateData(overrides?: CallOverrides): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
+
+    finalizeInitialization(
+      _collateralPool: string,
+      _referencePools: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    getReferencePools(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -749,11 +754,6 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setValidRangeForRawPrices(
-      range: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -764,8 +764,6 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    validRangeForRawPrices(overrides?: CallOverrides): Promise<BigNumber>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
@@ -775,13 +773,19 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
+    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     currentRateData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    finalizeInitialization(
+      _collateralPool: string,
+      _referencePools: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getReferencePools(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getRewardCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -857,11 +861,6 @@ export class Rates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setValidRangeForRawPrices(
-      range: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -870,10 +869,6 @@ export class Rates extends BaseContract {
 
     update(
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    validRangeForRawPrices(
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     validUpdate(

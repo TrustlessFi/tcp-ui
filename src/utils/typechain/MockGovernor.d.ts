@@ -22,8 +22,8 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface MockGovernorInterface extends ethers.utils.Interface {
   functions: {
     "currentPhase()": FunctionFragment;
-    "distributedTCP()": FunctionFragment;
     "execute(address,string,bytes)": FunctionFragment;
+    "mintTo(address,address,uint256)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
   };
 
@@ -32,12 +32,12 @@ interface MockGovernorInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "distributedTCP",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "execute",
     values: [string, string, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mintTo",
+    values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "requireValidAction",
@@ -48,11 +48,8 @@ interface MockGovernorInterface extends ethers.utils.Interface {
     functionFragment: "currentPhase",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "distributedTCP",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "requireValidAction",
     data: BytesLike
@@ -107,12 +104,17 @@ export class MockGovernor extends BaseContract {
   functions: {
     currentPhase(overrides?: CallOverrides): Promise<[number]>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     execute(
       arg0: string,
       arg1: string,
       arg2: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -125,12 +127,17 @@ export class MockGovernor extends BaseContract {
 
   currentPhase(overrides?: CallOverrides): Promise<number>;
 
-  distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
   execute(
     arg0: string,
     arg1: string,
     arg2: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  mintTo(
+    token: string,
+    dest: string,
+    count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -143,14 +150,19 @@ export class MockGovernor extends BaseContract {
   callStatic: {
     currentPhase(overrides?: CallOverrides): Promise<number>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
     execute(
       arg0: string,
       arg1: string,
       arg2: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     requireValidAction(
       arg0: string,
@@ -164,12 +176,17 @@ export class MockGovernor extends BaseContract {
   estimateGas: {
     currentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<BigNumber>;
-
     execute(
       arg0: string,
       arg1: string,
       arg2: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -183,12 +200,17 @@ export class MockGovernor extends BaseContract {
   populateTransaction: {
     currentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    distributedTCP(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     execute(
       arg0: string,
       arg1: string,
       arg2: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

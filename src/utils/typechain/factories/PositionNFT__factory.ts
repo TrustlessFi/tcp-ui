@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { PositionNFT, PositionNFTInterface } from "../PositionNft";
+import type { PositionNFT, PositionNFTInterface } from "../PositionNFT";
 
 const _abi = [
   {

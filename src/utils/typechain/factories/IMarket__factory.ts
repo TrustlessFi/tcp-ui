@@ -56,17 +56,23 @@ const _abi = [
       {
         indexed: true,
         internalType: "address",
-        name: "creator",
+        name: "account",
         type: "address",
       },
       {
-        indexed: true,
-        internalType: "uint64",
-        name: "positionID",
-        type: "uint64",
+        indexed: false,
+        internalType: "uint256",
+        name: "hueCount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "lendTokenCount",
+        type: "uint256",
       },
     ],
-    name: "NewPositionCreated",
+    name: "Lend",
     type: "event",
   },
   {
@@ -137,18 +143,49 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "int256",
-        name: "debtChange",
-        type: "int256",
+        internalType: "uint256",
+        name: "debtIncrease",
+        type: "uint256",
       },
       {
         indexed: false,
-        internalType: "int256",
-        name: "collateralChange",
-        type: "int256",
+        internalType: "uint256",
+        name: "debtDecrease",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "collateralIncrease",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "collateralDecrease",
+        type: "uint256",
       },
     ],
     name: "PositionAdjusted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "creator",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint64",
+        name: "positionID",
+        type: "uint64",
+      },
+    ],
+    name: "PositionCreated",
     type: "event",
   },
   {
@@ -183,6 +220,56 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "bool",
+        name: "isKickback",
+        type: "bool",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tcpRewards",
+        type: "uint256",
+      },
+    ],
+    name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "hueCount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "lendTokenCount",
+        type: "uint256",
+      },
+    ],
+    name: "Unlend",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "accrueInterest",
     outputs: [],
@@ -200,13 +287,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "completeSetup",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -289,6 +369,21 @@ const _abi = [
           {
             internalType: "uint64",
             name: "tickIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint32",
+            name: "ui",
+            type: "uint32",
+          },
+          {
+            internalType: "address",
+            name: "kickbackDestination",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "kickbackPortion",
             type: "uint64",
           },
         ],

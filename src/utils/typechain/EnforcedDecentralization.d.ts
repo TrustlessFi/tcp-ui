@@ -31,8 +31,6 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     "requireValidAction(address,string)": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
     "stopped()": FunctionFragment;
-    "tcp()": FunctionFragment;
-    "transferEmergencyShutdownTokens(address,uint256)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
   };
 
@@ -64,11 +62,6 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "stopped", values?: undefined): string;
-  encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "transferEmergencyShutdownTokens",
-    values: [string, BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
@@ -99,11 +92,6 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "transferEmergencyShutdownTokens",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
@@ -214,14 +202,6 @@ export class EnforcedDecentralization extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
-    tcp(overrides?: CallOverrides): Promise<[string]>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
@@ -269,14 +249,6 @@ export class EnforcedDecentralization extends BaseContract {
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
-  tcp(overrides?: CallOverrides): Promise<string>;
-
-  transferEmergencyShutdownTokens(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
@@ -320,14 +292,6 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<void>;
 
     stopped(overrides?: CallOverrides): Promise<boolean>;
-
-    tcp(overrides?: CallOverrides): Promise<string>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
   };
@@ -405,14 +369,6 @@ export class EnforcedDecentralization extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tcp(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
@@ -455,14 +411,6 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     validUpdate(
       arg0: BytesLike,

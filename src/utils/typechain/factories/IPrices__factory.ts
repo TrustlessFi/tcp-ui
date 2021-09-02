@@ -12,25 +12,6 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-    ],
-    name: "ParameterUpdatedAddress",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
         internalType: "address",
         name: "pool",
         type: "address",
@@ -54,14 +35,20 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
-        type: "address",
+        internalType: "uint32",
+        name: "twapDuration",
+        type: "uint32",
       },
     ],
-    name: "addReferencePool",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "calculateInstantCollateralPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "price",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -137,13 +124,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "completeSetup",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "contract IUniswapV3Pool",
@@ -152,12 +132,12 @@ const _abi = [
       },
       {
         internalType: "int24",
-        name: "tickLower",
+        name: "tick",
         type: "int24",
       },
       {
         internalType: "int24",
-        name: "tick",
+        name: "tickLower",
         type: "int24",
       },
       {
@@ -176,12 +156,76 @@ const _abi = [
         type: "uint32",
       },
     ],
-    name: "getRealZhuCountForSinglePoolPosition",
+    name: "getRealHueCountForSinglePoolPosition",
     outputs: [
       {
         internalType: "uint256",
-        name: "zhuCount",
+        name: "hueCount",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32",
+        name: "twapDuration",
+        type: "uint32",
+      },
+    ],
+    name: "hueTcpPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IUniswapV3Pool",
+        name: "pool",
+        type: "address",
+      },
+    ],
+    name: "initializePool",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IUniswapV3Pool",
+        name: "pool",
+        type: "address",
+      },
+    ],
+    name: "initializeWethPool",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IUniswapV3Pool",
+        name: "pool",
+        type: "address",
+      },
+    ],
+    name: "isPoolInitialized",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -211,25 +255,6 @@ const _abi = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "twapDuration",
-        type: "uint32",
-      },
-    ],
-    name: "zhuTcpPrice",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ];

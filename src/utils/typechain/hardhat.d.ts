@@ -125,6 +125,34 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPoolInitializer__factory>;
     getContractFactory(
+      name: "CommunityAllocation",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CommunityAllocation__factory>;
+    getContractFactory(
+      name: "CreatorAllocation",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CreatorAllocation__factory>;
+    getContractFactory(
+      name: "DaoPositionCreator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DaoPositionCreator__factory>;
+    getContractFactory(
+      name: "GenesisAllocation",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GenesisAllocation__factory>;
+    getContractFactory(
+      name: "MinAverageLockDuration",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MinAverageLockDuration__factory>;
+    getContractFactory(
+      name: "ProtocolDataAggregator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ProtocolDataAggregator__factory>;
+    getContractFactory(
+      name: "RewardsContract",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RewardsContract__factory>;
+    getContractFactory(
       name: "EnforcedDecentralization",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EnforcedDecentralization__factory>;
@@ -148,6 +176,10 @@ declare module "hardhat/types/runtime" {
       name: "VotingTokenInterface",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.VotingTokenInterface__factory>;
+    getContractFactory(
+      name: "GovernorAlphaWithVotingRewards",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GovernorAlphaWithVotingRewards__factory>;
     getContractFactory(
       name: "Tcp",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -181,13 +213,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IGovernor__factory>;
     getContractFactory(
-      name: "ILend",
+      name: "IHasVotingRewards",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ILend__factory>;
+    ): Promise<Contracts.IHasVotingRewards__factory>;
     getContractFactory(
-      name: "ILendZhu",
+      name: "IHue",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ILendZhu__factory>;
+    ): Promise<Contracts.IHue__factory>;
+    getContractFactory(
+      name: "ILendHue",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ILendHue__factory>;
     getContractFactory(
       name: "ILiquidations",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -229,25 +265,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ITCP__factory>;
     getContractFactory(
+      name: "ITokenIncentiveMinter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITokenIncentiveMinter__factory>;
+    getContractFactory(
+      name: "ITokenLockDao",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITokenLockDao__factory>;
+    getContractFactory(
       name: "IWETH9",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETH9__factory>;
     getContractFactory(
-      name: "IZhu",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IZhu__factory>;
-    getContractFactory(
       name: "Auctions",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Auctions__factory>;
-    getContractFactory(
-      name: "ERC20Decimals",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC20Decimals__factory>;
-    getContractFactory(
-      name: "Lend",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Lend__factory>;
     getContractFactory(
       name: "Liquidations",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -281,9 +313,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Accounting__factory>;
     getContractFactory(
-      name: "ITFDao",
+      name: "ITDao",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ITFDao__factory>;
+    ): Promise<Contracts.ITDao__factory>;
+    getContractFactory(
+      name: "ITDaoPositionNFTDescriptor",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITDaoPositionNFTDescriptor__factory>;
     getContractFactory(
       name: "IGovernorAlpha",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -293,25 +329,45 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IProtocolToken__factory>;
     getContractFactory(
-      name: "TFDao",
+      name: "TDao",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TFDao__factory>;
+    ): Promise<Contracts.TDao__factory>;
     getContractFactory(
-      name: "TFGovernorAlpha",
+      name: "TDaoGovernorAlpha",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TFGovernorAlpha__factory>;
+    ): Promise<Contracts.TDaoGovernorAlpha__factory>;
     getContractFactory(
-      name: "TFPositionNFT",
+      name: "TDaoPositionNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TFPositionNFT__factory>;
+    ): Promise<Contracts.TDaoPositionNFT__factory>;
     getContractFactory(
-      name: "TfTimelock",
+      name: "TDaoPositionNFTDescriptor",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TfTimelock__factory>;
+    ): Promise<Contracts.TDaoPositionNFTDescriptor__factory>;
     getContractFactory(
-      name: "LendZhu",
+      name: "TDaoTimelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.LendZhu__factory>;
+    ): Promise<Contracts.TDaoTimelock__factory>;
+    getContractFactory(
+      name: "TDaoToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TDaoToken__factory>;
+    getContractFactory(
+      name: "TDaoVotingRewardsSafe",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TDaoVotingRewardsSafe__factory>;
+    getContractFactory(
+      name: "Hue",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Hue__factory>;
+    getContractFactory(
+      name: "HuePositionNFT",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.HuePositionNFT__factory>;
+    getContractFactory(
+      name: "LendHue",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.LendHue__factory>;
     getContractFactory(
       name: "PositionNFT",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -320,18 +376,6 @@ declare module "hardhat/types/runtime" {
       name: "ProtocolToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ProtocolToken__factory>;
-    getContractFactory(
-      name: "Tf",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Tf__factory>;
-    getContractFactory(
-      name: "Zhu",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Zhu__factory>;
-    getContractFactory(
-      name: "ZhuPositionNFT",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ZhuPositionNFT__factory>;
     getContractFactory(
       name: "Governed",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -357,6 +401,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AuctionsTestable__factory>;
     getContractFactory(
+      name: "EnumerableUint128SetTestable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EnumerableUint128SetTestable__factory>;
+    getContractFactory(
       name: "GovernorTestable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GovernorTestable__factory>;
@@ -377,6 +425,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockGovernor__factory>;
     getContractFactory(
+      name: "MockTokenMinter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockTokenMinter__factory>;
+    getContractFactory(
+      name: "MockNftPositionManager",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockNftPositionManager__factory>;
+    getContractFactory(
       name: "MockPriceAggregator",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockPriceAggregator__factory>;
@@ -385,13 +441,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockProtocolToken__factory>;
     getContractFactory(
-      name: "MockTFIncentiveContract",
+      name: "ITDaoWithIncentiveContractMint",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MockTFIncentiveContract__factory>;
+    ): Promise<Contracts.ITDaoWithIncentiveContractMint__factory>;
     getContractFactory(
-      name: "MockTFInflationIncentiveDistributionContract",
+      name: "MockTDaoIncentiveContract",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MockTFInflationIncentiveDistributionContract__factory>;
+    ): Promise<Contracts.MockTDaoIncentiveContract__factory>;
+    getContractFactory(
+      name: "MockTokenDescriptor",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockTokenDescriptor__factory>;
+    getContractFactory(
+      name: "MockTokenIncentiveMinter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockTokenIncentiveMinter__factory>;
     getContractFactory(
       name: "Multicall2",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -433,13 +497,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TCPSafeMathTestable__factory>;
     getContractFactory(
+      name: "TDaoTestable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TDaoTestable__factory>;
+    getContractFactory(
       name: "TestnetERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TestnetERC20__factory>;
     getContractFactory(
-      name: "TFDaoTestable",
+      name: "TickConversion",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TFDaoTestable__factory>;
+    ): Promise<Contracts.TickConversion__factory>;
     getContractFactory(
       name: "TimeTestable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -745,6 +813,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TickLens__factory>;
     getContractFactory(
+      name: "UniswapInterfaceMulticall",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UniswapInterfaceMulticall__factory>;
+    getContractFactory(
       name: "NFTDescriptor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NFTDescriptor__factory>;
@@ -784,6 +856,10 @@ declare module "hardhat/types/runtime" {
       name: "NFTDescriptorTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NFTDescriptorTest__factory>;
+    getContractFactory(
+      name: "NonfungiblePositionManagerPositionsGasTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.NonfungiblePositionManagerPositionsGasTest__factory>;
     getContractFactory(
       name: "OracleTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -840,6 +916,10 @@ declare module "hardhat/types/runtime" {
       name: "TickLensTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TickLensTest__factory>;
+    getContractFactory(
+      name: "WeightedOracleTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WeightedOracleTest__factory>;
     getContractFactory(
       name: "V3Migrator",
       signerOrOptions?: ethers.Signer | FactoryOptions

@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { NFTDescriptor, NFTDescriptorInterface } from "../NftDescriptor";
+import type { NFTDescriptor, NFTDescriptorInterface } from "../NFTDescriptor";
 
 const _abi = [
   {

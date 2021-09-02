@@ -57,7 +57,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "uint256",
-        name: "zhuCount",
+        name: "hueCount",
         type: "uint256",
       },
       {
@@ -67,7 +67,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "SettlementCollateralForZhu",
+    name: "SettlementCollateralForHue",
     type: "event",
   },
   {
