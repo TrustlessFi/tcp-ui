@@ -1,4 +1,4 @@
-  import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+  import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
   import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
   import { ChainID } from '../chainID'
   import { sliceState, initialState, getGenericReducerBuilder } from '../'
@@ -45,7 +45,7 @@
         market.interestPortionToLenders(),
         market.periodLength(),
         market.firstPeriod(),
-      ]);
+      ])
 
       return {
         lastPeriodGlobalInterestAccrued: lastPeriodGlobalInterestAccrued.toNumber(),
@@ -66,6 +66,6 @@
     extraReducers: (builder) => {
       builder = getGenericReducerBuilder(builder, getMarketInfo)
     },
-  });
+  })
 
-  export default marketSlice.reducer;
+  export default marketSlice.reducer
