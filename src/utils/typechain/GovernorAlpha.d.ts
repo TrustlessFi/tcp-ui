@@ -23,8 +23,6 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
   functions: {
     "BALLOT_TYPEHASH()": FunctionFragment;
     "DOMAIN_TYPEHASH()": FunctionFragment;
-    "PROPOSAL_THRESHOLD_PERCENTAGE()": FunctionFragment;
-    "QUORUM_VOTES_PERCENTAGE()": FunctionFragment;
     "__abdicate()": FunctionFragment;
     "cancel(uint256)": FunctionFragment;
     "castVote(uint256,bool)": FunctionFragment;
@@ -32,16 +30,17 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
     "execute(uint256)": FunctionFragment;
     "getActions(uint256)": FunctionFragment;
     "getAllProposals(address)": FunctionFragment;
-    "getReceipt(uint48,address)": FunctionFragment;
+    "getReceipt(uint256,address)": FunctionFragment;
     "guardian()": FunctionFragment;
     "latestProposalIds(address)": FunctionFragment;
     "name()": FunctionFragment;
     "proposalCount()": FunctionFragment;
     "proposalMaxOperations()": FunctionFragment;
-    "proposalThreshold(uint256)": FunctionFragment;
+    "proposalThreshold()": FunctionFragment;
     "proposals(uint256)": FunctionFragment;
     "propose(address[],string[],bytes[],string)": FunctionFragment;
     "queue(uint256)": FunctionFragment;
+    "quorumVotes()": FunctionFragment;
     "state(uint256)": FunctionFragment;
     "timelock()": FunctionFragment;
     "votingDelay()": FunctionFragment;
@@ -56,14 +55,6 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "DOMAIN_TYPEHASH",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "PROPOSAL_THRESHOLD_PERCENTAGE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "QUORUM_VOTES_PERCENTAGE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -114,7 +105,7 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "proposalThreshold",
-    values: [BigNumberish]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "proposals",
@@ -125,6 +116,10 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
     values: [string[], string[], BytesLike[], string]
   ): string;
   encodeFunctionData(functionFragment: "queue", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "quorumVotes",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "state", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
@@ -150,14 +145,6 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "DOMAIN_TYPEHASH",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "PROPOSAL_THRESHOLD_PERCENTAGE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "QUORUM_VOTES_PERCENTAGE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "__abdicate", data: BytesLike): Result;
@@ -195,6 +182,10 @@ interface GovernorAlphaInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "proposals", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "propose", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "queue", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "quorumVotes",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "state", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
@@ -277,12 +268,6 @@ export class GovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -357,12 +342,13 @@ export class GovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[],
         number[],
-        ([boolean, boolean, BigNumber] & {
+        ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[]
       ] & {
@@ -395,12 +381,13 @@ export class GovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[];
         _proposalStates: number[];
-        _receipts: ([boolean, boolean, BigNumber] & {
+        _receipts: ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[];
       }
@@ -412,9 +399,10 @@ export class GovernorAlpha extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        [boolean, boolean, BigNumber] & {
+        [boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         }
       ]
@@ -433,10 +421,7 @@ export class GovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    proposalThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     proposals(
       arg0: BigNumberish,
@@ -465,7 +450,7 @@ export class GovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       }
     >;
 
@@ -481,6 +466,8 @@ export class GovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     state(
       proposalId: BigNumberish,
@@ -501,10 +488,6 @@ export class GovernorAlpha extends BaseContract {
   BALLOT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
-
-  PROPOSAL_THRESHOLD_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
-
-  QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
   __abdicate(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -580,12 +563,13 @@ export class GovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       })[],
       number[],
-      ([boolean, boolean, BigNumber] & {
+      ([boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       })[]
     ] & {
@@ -618,12 +602,13 @@ export class GovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       })[];
       _proposalStates: number[];
-      _receipts: ([boolean, boolean, BigNumber] & {
+      _receipts: ([boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       })[];
     }
@@ -634,9 +619,10 @@ export class GovernorAlpha extends BaseContract {
     voter: string,
     overrides?: CallOverrides
   ): Promise<
-    [boolean, boolean, BigNumber] & {
+    [boolean, boolean, boolean, BigNumber] & {
       hasVoted: boolean;
       support: boolean;
+      rewardReceived: boolean;
       votes: BigNumber;
     }
   >;
@@ -654,10 +640,7 @@ export class GovernorAlpha extends BaseContract {
 
   proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-  proposalThreshold(
-    availableVotingTokens: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
   proposals(
     arg0: BigNumberish,
@@ -686,7 +669,7 @@ export class GovernorAlpha extends BaseContract {
       canceled: boolean;
       executed: boolean;
       againstVotes: BigNumber;
-      availableVotingTokens: BigNumber;
+      initialSupply: BigNumber;
     }
   >;
 
@@ -702,6 +685,8 @@ export class GovernorAlpha extends BaseContract {
     proposalId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
   state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
@@ -719,12 +704,6 @@ export class GovernorAlpha extends BaseContract {
     BALLOT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
-
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
     __abdicate(overrides?: CallOverrides): Promise<void>;
 
@@ -792,12 +771,13 @@ export class GovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[],
         number[],
-        ([boolean, boolean, BigNumber] & {
+        ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[]
       ] & {
@@ -830,12 +810,13 @@ export class GovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[];
         _proposalStates: number[];
-        _receipts: ([boolean, boolean, BigNumber] & {
+        _receipts: ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[];
       }
@@ -846,9 +827,10 @@ export class GovernorAlpha extends BaseContract {
       voter: string,
       overrides?: CallOverrides
     ): Promise<
-      [boolean, boolean, BigNumber] & {
+      [boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       }
     >;
@@ -866,10 +848,7 @@ export class GovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
     proposals(
       arg0: BigNumberish,
@@ -898,7 +877,7 @@ export class GovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       }
     >;
 
@@ -911,6 +890,8 @@ export class GovernorAlpha extends BaseContract {
     ): Promise<BigNumber>;
 
     queue(proposalId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
     state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
@@ -971,12 +952,6 @@ export class GovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
-
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1035,10 +1010,7 @@ export class GovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
     proposals(
       arg0: BigNumberish,
@@ -1057,6 +1029,8 @@ export class GovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
     state(
       proposalId: BigNumberish,
@@ -1078,14 +1052,6 @@ export class GovernorAlpha extends BaseContract {
     BALLOT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    QUORUM_VOTES_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1147,10 +1113,7 @@ export class GovernorAlpha extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    proposalThreshold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     proposals(
       arg0: BigNumberish,
@@ -1169,6 +1132,8 @@ export class GovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     state(
       proposalId: BigNumberish,

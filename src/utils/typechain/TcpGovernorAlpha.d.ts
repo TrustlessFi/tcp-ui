@@ -23,26 +23,28 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   functions: {
     "BALLOT_TYPEHASH()": FunctionFragment;
     "DOMAIN_TYPEHASH()": FunctionFragment;
-    "PROPOSAL_THRESHOLD_PERCENTAGE()": FunctionFragment;
-    "QUORUM_VOTES_PERCENTAGE()": FunctionFragment;
+    "INFLATION_PERCENTAGE()": FunctionFragment;
     "__abdicate()": FunctionFragment;
     "cancel(uint256)": FunctionFragment;
     "castVote(uint256,bool)": FunctionFragment;
     "castVoteBySig(uint256,bool,uint8,bytes32,bytes32)": FunctionFragment;
+    "claimVotingRewards(uint256)": FunctionFragment;
     "execute(uint256)": FunctionFragment;
     "getActions(uint256)": FunctionFragment;
     "getAllProposals(address)": FunctionFragment;
-    "getReceipt(uint48,address)": FunctionFragment;
+    "getReceipt(uint256,address)": FunctionFragment;
     "governor()": FunctionFragment;
     "guardian()": FunctionFragment;
+    "implementsVotingRewardsWithToken()": FunctionFragment;
     "latestProposalIds(address)": FunctionFragment;
     "name()": FunctionFragment;
     "proposalCount()": FunctionFragment;
     "proposalMaxOperations()": FunctionFragment;
-    "proposalThreshold(uint256)": FunctionFragment;
+    "proposalThreshold()": FunctionFragment;
     "proposals(uint256)": FunctionFragment;
     "propose(address[],string[],bytes[],string)": FunctionFragment;
     "queue(uint256)": FunctionFragment;
+    "quorumVotes()": FunctionFragment;
     "state(uint256)": FunctionFragment;
     "timelock()": FunctionFragment;
     "votingDelay()": FunctionFragment;
@@ -60,11 +62,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "PROPOSAL_THRESHOLD_PERCENTAGE",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "QUORUM_VOTES_PERCENTAGE",
+    functionFragment: "INFLATION_PERCENTAGE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -82,6 +80,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "castVoteBySig",
     values: [BigNumberish, boolean, BigNumberish, BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "claimVotingRewards",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "execute",
@@ -102,6 +104,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
   encodeFunctionData(functionFragment: "guardian", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "implementsVotingRewardsWithToken",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "latestProposalIds",
     values: [string]
   ): string;
@@ -116,7 +122,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "proposalThreshold",
-    values: [BigNumberish]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "proposals",
@@ -127,6 +133,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     values: [string[], string[], BytesLike[], string]
   ): string;
   encodeFunctionData(functionFragment: "queue", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "quorumVotes",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "state", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
@@ -155,11 +165,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "PROPOSAL_THRESHOLD_PERCENTAGE",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "QUORUM_VOTES_PERCENTAGE",
+    functionFragment: "INFLATION_PERCENTAGE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "__abdicate", data: BytesLike): Result;
@@ -167,6 +173,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "castVote", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "castVoteBySig",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "claimVotingRewards",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
@@ -178,6 +188,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "getReceipt", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "guardian", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "implementsVotingRewardsWithToken",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "latestProposalIds",
     data: BytesLike
@@ -198,6 +212,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "proposals", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "propose", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "queue", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "quorumVotes",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "state", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
@@ -223,6 +241,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     "ProposalExecuted(uint256)": EventFragment;
     "ProposalQueued(uint256,uint256)": EventFragment;
     "VoteCast(address,uint256,bool,uint256)": EventFragment;
+    "VotingRewardsDistributed(address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ProposalCanceled"): EventFragment;
@@ -230,6 +249,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ProposalExecuted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProposalQueued"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "VoteCast"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VotingRewardsDistributed"): EventFragment;
 }
 
 export class TCPGovernorAlpha extends BaseContract {
@@ -280,11 +300,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<[BigNumber]>;
+    INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -307,6 +323,11 @@ export class TCPGovernorAlpha extends BaseContract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    claimVotingRewards(
+      proposalID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -360,12 +381,13 @@ export class TCPGovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[],
         number[],
-        ([boolean, boolean, BigNumber] & {
+        ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[]
       ] & {
@@ -398,12 +420,13 @@ export class TCPGovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[];
         _proposalStates: number[];
-        _receipts: ([boolean, boolean, BigNumber] & {
+        _receipts: ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[];
       }
@@ -415,9 +438,10 @@ export class TCPGovernorAlpha extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        [boolean, boolean, BigNumber] & {
+        [boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         }
       ]
@@ -426,6 +450,10 @@ export class TCPGovernorAlpha extends BaseContract {
     governor(overrides?: CallOverrides): Promise<[string]>;
 
     guardian(overrides?: CallOverrides): Promise<[string]>;
+
+    implementsVotingRewardsWithToken(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     latestProposalIds(
       arg0: string,
@@ -438,10 +466,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    proposalThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     proposals(
       arg0: BigNumberish,
@@ -470,7 +495,7 @@ export class TCPGovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       }
     >;
 
@@ -486,6 +511,8 @@ export class TCPGovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     state(
       proposalId: BigNumberish,
@@ -507,9 +534,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
   DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-  PROPOSAL_THRESHOLD_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
-
-  QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
+  INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
   __abdicate(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -532,6 +557,11 @@ export class TCPGovernorAlpha extends BaseContract {
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  claimVotingRewards(
+    proposalID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -585,12 +615,13 @@ export class TCPGovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       })[],
       number[],
-      ([boolean, boolean, BigNumber] & {
+      ([boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       })[]
     ] & {
@@ -623,12 +654,13 @@ export class TCPGovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       })[];
       _proposalStates: number[];
-      _receipts: ([boolean, boolean, BigNumber] & {
+      _receipts: ([boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       })[];
     }
@@ -639,9 +671,10 @@ export class TCPGovernorAlpha extends BaseContract {
     voter: string,
     overrides?: CallOverrides
   ): Promise<
-    [boolean, boolean, BigNumber] & {
+    [boolean, boolean, boolean, BigNumber] & {
       hasVoted: boolean;
       support: boolean;
+      rewardReceived: boolean;
       votes: BigNumber;
     }
   >;
@@ -649,6 +682,8 @@ export class TCPGovernorAlpha extends BaseContract {
   governor(overrides?: CallOverrides): Promise<string>;
 
   guardian(overrides?: CallOverrides): Promise<string>;
+
+  implementsVotingRewardsWithToken(overrides?: CallOverrides): Promise<string>;
 
   latestProposalIds(
     arg0: string,
@@ -661,10 +696,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
   proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-  proposalThreshold(
-    availableVotingTokens: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
   proposals(
     arg0: BigNumberish,
@@ -693,7 +725,7 @@ export class TCPGovernorAlpha extends BaseContract {
       canceled: boolean;
       executed: boolean;
       againstVotes: BigNumber;
-      availableVotingTokens: BigNumber;
+      initialSupply: BigNumber;
     }
   >;
 
@@ -709,6 +741,8 @@ export class TCPGovernorAlpha extends BaseContract {
     proposalId: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
   state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
@@ -727,11 +761,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
+    INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
     __abdicate(overrides?: CallOverrides): Promise<void>;
 
@@ -749,6 +779,11 @@ export class TCPGovernorAlpha extends BaseContract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    claimVotingRewards(
+      proposalID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -799,12 +834,13 @@ export class TCPGovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[],
         number[],
-        ([boolean, boolean, BigNumber] & {
+        ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[]
       ] & {
@@ -837,12 +873,13 @@ export class TCPGovernorAlpha extends BaseContract {
           canceled: boolean;
           executed: boolean;
           againstVotes: BigNumber;
-          availableVotingTokens: BigNumber;
+          initialSupply: BigNumber;
         })[];
         _proposalStates: number[];
-        _receipts: ([boolean, boolean, BigNumber] & {
+        _receipts: ([boolean, boolean, boolean, BigNumber] & {
           hasVoted: boolean;
           support: boolean;
+          rewardReceived: boolean;
           votes: BigNumber;
         })[];
       }
@@ -853,9 +890,10 @@ export class TCPGovernorAlpha extends BaseContract {
       voter: string,
       overrides?: CallOverrides
     ): Promise<
-      [boolean, boolean, BigNumber] & {
+      [boolean, boolean, boolean, BigNumber] & {
         hasVoted: boolean;
         support: boolean;
+        rewardReceived: boolean;
         votes: BigNumber;
       }
     >;
@@ -863,6 +901,10 @@ export class TCPGovernorAlpha extends BaseContract {
     governor(overrides?: CallOverrides): Promise<string>;
 
     guardian(overrides?: CallOverrides): Promise<string>;
+
+    implementsVotingRewardsWithToken(
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     latestProposalIds(
       arg0: string,
@@ -875,10 +917,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
     proposals(
       arg0: BigNumberish,
@@ -907,7 +946,7 @@ export class TCPGovernorAlpha extends BaseContract {
         canceled: boolean;
         executed: boolean;
         againstVotes: BigNumber;
-        availableVotingTokens: BigNumber;
+        initialSupply: BigNumber;
       }
     >;
 
@@ -920,6 +959,8 @@ export class TCPGovernorAlpha extends BaseContract {
     ): Promise<BigNumber>;
 
     queue(proposalId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
     state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
 
@@ -973,6 +1014,14 @@ export class TCPGovernorAlpha extends BaseContract {
         votes: BigNumber;
       }
     >;
+
+    VotingRewardsDistributed(
+      voter?: string | null,
+      count?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { voter: string; count: BigNumber }
+    >;
   };
 
   estimateGas: {
@@ -980,11 +1029,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    QUORUM_VOTES_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
+    INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1007,6 +1052,11 @@ export class TCPGovernorAlpha extends BaseContract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    claimVotingRewards(
+      proposalID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1035,6 +1085,10 @@ export class TCPGovernorAlpha extends BaseContract {
 
     guardian(overrides?: CallOverrides): Promise<BigNumber>;
 
+    implementsVotingRewardsWithToken(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     latestProposalIds(
       arg0: string,
       overrides?: CallOverrides
@@ -1046,10 +1100,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     proposalMaxOperations(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    proposalThreshold(overrides?: CallOverrides): Promise<BigNumber>;
 
     proposals(
       arg0: BigNumberish,
@@ -1068,6 +1119,8 @@ export class TCPGovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
 
     state(
       proposalId: BigNumberish,
@@ -1090,11 +1143,7 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    PROPOSAL_THRESHOLD_PERCENTAGE(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    QUORUM_VOTES_PERCENTAGE(
+    INFLATION_PERCENTAGE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1119,6 +1168,11 @@ export class TCPGovernorAlpha extends BaseContract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    claimVotingRewards(
+      proposalID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1147,6 +1201,10 @@ export class TCPGovernorAlpha extends BaseContract {
 
     guardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    implementsVotingRewardsWithToken(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     latestProposalIds(
       arg0: string,
       overrides?: CallOverrides
@@ -1160,10 +1218,7 @@ export class TCPGovernorAlpha extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    proposalThreshold(
-      availableVotingTokens: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    proposalThreshold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     proposals(
       arg0: BigNumberish,
@@ -1182,6 +1237,8 @@ export class TCPGovernorAlpha extends BaseContract {
       proposalId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    quorumVotes(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     state(
       proposalId: BigNumberish,

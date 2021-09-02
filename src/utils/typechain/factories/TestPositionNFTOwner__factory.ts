@@ -7,7 +7,7 @@ import { Provider, TransactionRequest } from "@ethersproject/providers";
 import type {
   TestPositionNFTOwner,
   TestPositionNFTOwnerInterface,
-} from "../TestPositionNftOwner";
+} from "../TestPositionNFTOwner";
 
 const _abi = [
   {

@@ -11,6 +11,7 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
+  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -21,15 +22,30 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface VotingTokenInterfaceInterface extends ethers.utils.Interface {
   functions: {
     "getPriorVotes(address,uint256)": FunctionFragment;
+    "mintTo(address,uint256)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: "getPriorVotes",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "mintTo",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "getPriorVotes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
 
@@ -85,6 +101,14 @@ export class VotingTokenInterface extends BaseContract {
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    mintTo(
+      dest: string,
+      count: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   getPriorVotes(
@@ -93,12 +117,28 @@ export class VotingTokenInterface extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  mintTo(
+    dest: string,
+    count: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     getPriorVotes(
       account: string,
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    mintTo(
+      dest: string,
+      count: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -109,6 +149,14 @@ export class VotingTokenInterface extends BaseContract {
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    mintTo(
+      dest: string,
+      count: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -117,5 +165,13 @@ export class VotingTokenInterface extends BaseContract {
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    mintTo(
+      dest: string,
+      count: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

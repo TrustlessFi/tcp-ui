@@ -12,25 +12,6 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-    ],
-    name: "AdminUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
         internalType: "string",
         name: "contractName",
         type: "string",
@@ -43,19 +24,6 @@ const _abi = [
       },
     ],
     name: "ContractUpgraded",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "shutdownTime",
-        type: "uint64",
-      },
-    ],
-    name: "EmergencyShutdownExecuted",
     type: "event",
   },
   {
@@ -117,19 +85,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "GENESIS_PERIODS",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "periods",
-        type: "uint64",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "accounting",
     outputs: [
       {
@@ -139,19 +94,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    name: "addReferencePoolToProtocol",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -169,28 +111,28 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "collateralPool",
+    name: "calculateCurrentDailyDebtRewardCount",
     outputs: [
       {
-        internalType: "contract IUniswapV3Pool",
+        internalType: "uint256",
         name: "",
-        type: "address",
+        type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [],
-    name: "currentDailyRewardCount",
+    name: "calculateCurrentDailyLiquidityRewardCount",
     outputs: [
       {
         internalType: "uint256",
-        name: "count",
+        name: "",
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -201,37 +143,6 @@ const _abi = [
         internalType: "uint8",
         name: "",
         type: "uint8",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "count",
-        type: "uint256",
-      },
-    ],
-    name: "distributeLiquidityRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "distributedTCP",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "circulating",
-        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -292,41 +203,13 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-      {
-        components: [
-          {
-            internalType: "uint8",
-            name: "v",
-            type: "uint8",
-          },
-          {
-            internalType: "bytes32",
-            name: "r",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes32",
-            name: "s",
-            type: "bytes32",
-          },
-        ],
-        internalType: "struct IGovernor.GenesisAuth",
-        name: "ga",
-        type: "tuple",
-      },
-    ],
-    name: "getIsGenesisPhaseAndRequireAuthIfSo",
+    inputs: [],
+    name: "hue",
     outputs: [
       {
-        internalType: "bool",
-        name: "isGenesis",
-        type: "bool",
+        internalType: "contract IHue",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -334,28 +217,15 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "getReferencePools",
+    name: "huePositionNFT",
     outputs: [
       {
-        internalType: "contract IUniswapV3Pool[]",
+        internalType: "contract IPositionNFT",
         name: "",
-        type: "address[]",
+        type: "address",
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "count",
-        type: "uint256",
-      },
-    ],
-    name: "increaseLiquidationAccountRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -373,23 +243,10 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "lend",
+    name: "lendHue",
     outputs: [
       {
-        internalType: "contract ILend",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "lendZhu",
-    outputs: [
-      {
-        internalType: "contract ILendZhu",
+        internalType: "contract ILendHue",
         name: "",
         type: "address",
       },
@@ -427,6 +284,24 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "dest",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
+      },
+    ],
+    name: "mintIncentive",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "to",
         type: "address",
       },
@@ -444,19 +319,18 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
+        internalType: "address",
+        name: "to",
         type: "address",
       },
-    ],
-    name: "poolRemovalTime",
-    outputs: [
       {
-        internalType: "uint64",
-        name: "",
-        type: "uint64",
+        internalType: "uint256",
+        name: "count",
+        type: "uint256",
       },
     ],
+    name: "mintVotingRewards",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -475,36 +349,10 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "protocolDeployer",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "protocolLock",
     outputs: [
       {
         internalType: "contract IProtocolLock",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "protocolPool",
-    outputs: [
-      {
-        internalType: "contract IUniswapV3Pool",
         name: "",
         type: "address",
       },
@@ -528,25 +376,12 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    name: "removeReferencePoolFromProtocol",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "caller",
         type: "address",
       },
     ],
-    name: "requireDecreaseDebtAccess",
+    name: "requireDebtServicesAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -559,7 +394,7 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "requireLentZhuCountAccess",
+    name: "requireHueReservesBurnAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -572,20 +407,7 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "requirePositionWriteAccess",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireStoredCollateralAccess",
+    name: "requireInitializePoolAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -617,32 +439,6 @@ const _abi = [
       },
     ],
     name: "requireValidAction",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireZhuMintingAccess",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireZhuReservesBurnAccess",
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -700,19 +496,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "timelock",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "contract IAuctions",
@@ -721,19 +504,6 @@ const _abi = [
       },
     ],
     name: "upgradeAuctions",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ILend",
-        name: "_lend",
-        type: "address",
-      },
-    ],
-    name: "upgradeLend",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -827,32 +597,6 @@ const _abi = [
     name: "upgradeSettlement",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "zhu",
-    outputs: [
-      {
-        internalType: "contract IZhu",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "zhuPositionNFT",
-    outputs: [
-      {
-        internalType: "contract IPositionNFT",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
 ];

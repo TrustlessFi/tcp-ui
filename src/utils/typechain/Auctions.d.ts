@@ -24,8 +24,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     "bidDeficitAuction(uint64,uint128)": FunctionFragment;
     "bidSurplusAuction(uint64,uint128)": FunctionFragment;
     "checkReservesAndStartAuctions()": FunctionFragment;
-    "collateralPool()": FunctionFragment;
-    "completeSetup()": FunctionFragment;
     "deficitAuction(uint64)": FunctionFragment;
     "deficitAuctionComplete(uint64)": FunctionFragment;
     "deficitAuctionCount()": FunctionFragment;
@@ -34,6 +32,8 @@ interface AuctionsInterface extends ethers.utils.Interface {
     "extensionPerBid()": FunctionFragment;
     "getAllAuctions(uint64,bool)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hueToBeBought()": FunctionFragment;
+    "hueToBeSold()": FunctionFragment;
     "init(address)": FunctionFragment;
     "latestAuctionCompletionTime()": FunctionFragment;
     "maxAuctionDuration()": FunctionFragment;
@@ -43,7 +43,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     "minAuctionDuration()": FunctionFragment;
     "minBidDelta()": FunctionFragment;
     "minLotSize()": FunctionFragment;
-    "protocolPool()": FunctionFragment;
     "reservesBufferLowerBound()": FunctionFragment;
     "reservesBufferUpperBound()": FunctionFragment;
     "setExtensionPerBid(uint64)": FunctionFragment;
@@ -69,8 +68,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     "tcp()": FunctionFragment;
     "twapDuration()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-    "zhuToBeBought()": FunctionFragment;
-    "zhuToBeSold()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -83,14 +80,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "checkReservesAndStartAuctions",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "collateralPool",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -119,6 +108,14 @@ interface AuctionsInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "hueToBeBought",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hueToBeSold",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "latestAuctionCompletionTime",
@@ -150,10 +147,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "minLotSize",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "protocolPool",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -247,14 +240,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "zhuToBeBought",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "zhuToBeSold",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "bidDeficitAuction",
@@ -266,14 +251,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "checkReservesAndStartAuctions",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "collateralPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -302,6 +279,14 @@ interface AuctionsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "hueToBeBought",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "hueToBeSold",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "latestAuctionCompletionTime",
@@ -332,10 +317,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "minLotSize", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "protocolPool",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "reservesBufferLowerBound",
     data: BytesLike
@@ -427,14 +408,6 @@ interface AuctionsInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuToBeBought",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "zhuToBeSold",
-    data: BytesLike
-  ): Result;
 
   events: {
     "DeficitAuctionBid(uint64,address,uint256)": EventFragment;
@@ -521,12 +494,6 @@ export class Auctions extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    collateralPool(overrides?: CallOverrides): Promise<[string]>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -586,6 +553,10 @@ export class Auctions extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -608,8 +579,6 @@ export class Auctions extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     minLotSize(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    protocolPool(overrides?: CallOverrides): Promise<[string]>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -725,10 +694,6 @@ export class Auctions extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<[number]>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   bidDeficitAuction(
@@ -744,12 +709,6 @@ export class Auctions extends BaseContract {
   ): Promise<ContractTransaction>;
 
   checkReservesAndStartAuctions(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  collateralPool(overrides?: CallOverrides): Promise<string>;
-
-  completeSetup(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -812,6 +771,10 @@ export class Auctions extends BaseContract {
 
   governor(overrides?: CallOverrides): Promise<string>;
 
+  hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+  hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
+
   init(
     _governor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -832,8 +795,6 @@ export class Auctions extends BaseContract {
   minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
   minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-  protocolPool(overrides?: CallOverrides): Promise<string>;
 
   reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -950,10 +911,6 @@ export class Auctions extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-  zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-  zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
-
   callStatic: {
     bidDeficitAuction(
       auctionID: BigNumberish,
@@ -968,10 +925,6 @@ export class Auctions extends BaseContract {
     ): Promise<void>;
 
     checkReservesAndStartAuctions(overrides?: CallOverrides): Promise<void>;
-
-    collateralPool(overrides?: CallOverrides): Promise<string>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
 
     deficitAuction(
       arg0: BigNumberish,
@@ -1032,6 +985,10 @@ export class Auctions extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<string>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
+
     init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     latestAuctionCompletionTime(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1049,8 +1006,6 @@ export class Auctions extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
     minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-    protocolPool(overrides?: CallOverrides): Promise<string>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1161,10 +1116,6 @@ export class Auctions extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<number>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {
@@ -1260,12 +1211,6 @@ export class Auctions extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1295,6 +1240,10 @@ export class Auctions extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1315,8 +1264,6 @@ export class Auctions extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
     minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-    protocolPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1417,10 +1364,6 @@ export class Auctions extends BaseContract {
     twapDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1437,12 +1380,6 @@ export class Auctions extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     checkReservesAndStartAuctions(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    completeSetup(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1477,6 +1414,10 @@ export class Auctions extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    hueToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hueToBeSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     init(
       _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1503,8 +1444,6 @@ export class Auctions extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     minLotSize(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    protocolPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     reservesBufferLowerBound(
       overrides?: CallOverrides
@@ -1616,9 +1555,5 @@ export class Auctions extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    zhuToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    zhuToBeSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

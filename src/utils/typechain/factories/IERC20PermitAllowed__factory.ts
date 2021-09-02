@@ -7,7 +7,7 @@ import { Provider } from "@ethersproject/providers";
 import type {
   IERC20PermitAllowed,
   IERC20PermitAllowedInterface,
-} from "../Ierc20PermitAllowed";
+} from "../IERC20PermitAllowed";
 
 const _abi = [
   {

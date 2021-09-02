@@ -24,7 +24,6 @@ interface IEnforcedDecentralizationInterface extends ethers.utils.Interface {
     "currentPhase()": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
-    "transferEmergencyShutdownTokens(address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -39,10 +38,6 @@ interface IEnforcedDecentralizationInterface extends ethers.utils.Interface {
     functionFragment: "setPhaseOneStartTime",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "transferEmergencyShutdownTokens",
-    values: [string, BigNumberish]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "currentPhase",
@@ -54,10 +49,6 @@ interface IEnforcedDecentralizationInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setPhaseOneStartTime",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferEmergencyShutdownTokens",
     data: BytesLike
   ): Result;
 
@@ -130,12 +121,6 @@ export class IEnforcedDecentralization extends BaseContract {
       phaseOneStartTime: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
   };
 
   currentPhase(overrides?: CallOverrides): Promise<number>;
@@ -151,12 +136,6 @@ export class IEnforcedDecentralization extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  transferEmergencyShutdownTokens(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
     currentPhase(overrides?: CallOverrides): Promise<number>;
 
@@ -168,12 +147,6 @@ export class IEnforcedDecentralization extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -218,12 +191,6 @@ export class IEnforcedDecentralization extends BaseContract {
       phaseOneStartTime: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -237,12 +204,6 @@ export class IEnforcedDecentralization extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferEmergencyShutdownTokens(
-      dest: string,
-      count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

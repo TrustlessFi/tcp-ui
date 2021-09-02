@@ -18,56 +18,6 @@ const _abi = [
       },
       {
         indexed: true,
-        internalType: "uint256",
-        name: "nftTokenID",
-        type: "uint256",
-      },
-    ],
-    name: "ClaimedInflationRewards",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "nftTokenID",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount0",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount1",
-        type: "uint256",
-      },
-    ],
-    name: "CollectedFees",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
         internalType: "uint16",
         name: "poolID",
         type: "uint16",
@@ -154,16 +104,10 @@ const _abi = [
         type: "uint256",
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount0",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount1",
-        type: "uint256",
+        indexed: true,
+        internalType: "address",
+        name: "liquidator",
+        type: "address",
       },
     ],
     name: "LiquidityPositionLiquidated",
@@ -293,6 +237,50 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "address",
+        name: "pool",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint16",
+        name: "poolID",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "rewardsPortion",
+        type: "uint64",
+      },
+    ],
+    name: "PoolAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint16",
+        name: "poolID",
+        type: "uint16",
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "incentive",
+        type: "uint64",
+      },
+    ],
+    name: "PoolIncentiveUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: false,
         internalType: "uint256",
         name: "count",
@@ -314,14 +302,45 @@ const _abi = [
       {
         indexed: true,
         internalType: "address",
+        name: "caller",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "nftTokenID",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount0",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount1",
+        type: "uint256",
+      },
+    ],
+    name: "RewardsClaimed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "account",
         type: "address",
       },
       {
         indexed: true,
-        internalType: "uint64",
-        name: "period",
-        type: "uint64",
+        internalType: "bool",
+        name: "isKickback",
+        type: "bool",
       },
       {
         indexed: false,
@@ -334,79 +353,8 @@ const _abi = [
     type: "event",
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "protocolPortion",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "collateralPortion",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "referencePortion",
-        type: "uint256",
-      },
-    ],
-    name: "RewardsPortionsUpdated",
-    type: "event",
-  },
-  {
     inputs: [],
     name: "accrueRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    name: "addReferencePool",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "borrowRewardsPortion",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "completeSetup",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract IUniswapV3Pool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    name: "removeReferencePool",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -58,7 +58,7 @@ interface ISettlementInterface extends ethers.utils.Interface {
   events: {
     "NoConfidenceConfirmed(address)": EventFragment;
     "ParameterUpdatedAddress(string,address)": EventFragment;
-    "SettlementCollateralForZhu(uint64,address,uint256,uint256)": EventFragment;
+    "SettlementCollateralForHue(uint64,address,uint256,uint256)": EventFragment;
     "SettlementInitialized(uint256)": EventFragment;
     "SettlementWithdrawCollateral(uint64,address,uint256)": EventFragment;
     "StakedNoConfidenceTokens(address,uint256)": EventFragment;
@@ -67,7 +67,7 @@ interface ISettlementInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "NoConfidenceConfirmed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SettlementCollateralForZhu"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SettlementCollateralForHue"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SettlementInitialized"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "SettlementWithdrawCollateral"
@@ -186,17 +186,17 @@ export class ISettlement extends BaseContract {
       { paramName: string; _address: string }
     >;
 
-    SettlementCollateralForZhu(
+    SettlementCollateralForHue(
       positionID?: BigNumberish | null,
       caller?: string | null,
-      zhuCount?: null,
+      hueCount?: null,
       collateralCount?: null
     ): TypedEventFilter<
       [BigNumber, string, BigNumber, BigNumber],
       {
         positionID: BigNumber;
         caller: string;
-        zhuCount: BigNumber;
+        hueCount: BigNumber;
         collateralCount: BigNumber;
       }
     >;
