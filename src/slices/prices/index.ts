@@ -17,7 +17,6 @@ export interface PricesState extends sliceState<pricesInfo> {}
 
 export interface pricesArgs {
   chainID: ChainID,
-  governorInfo: governorInfo,
   liquidationsInfo: liquidationsInfo,
 }
 
@@ -30,7 +29,7 @@ export const getPricesInfo = createAsyncThunk(
     let [
       ethPrice,
     ] = await Promise.all([
-      prices.calculateInstantTwappedPrice(data.governorInfo.collateralPool, data.liquidationsInfo.twapDuration),
+      prices.calculateInstantCollateralPrice(data.liquidationsInfo.twapDuration),
     ])
 
     return {
