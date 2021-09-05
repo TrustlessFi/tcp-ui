@@ -9,6 +9,8 @@ import { Rates } from "../../utils/typechain/Rates"
 export type ratesInfo = {
   positiveInterestRate: boolean,
   interestRateAbsoluteValue: number,
+  referencePools: string[]
+
 }
 
 export type ratesArgs = {
@@ -26,14 +28,17 @@ export const getRatesInfo = createAsyncThunk(
     let [
       positiveInterestRate,
       interestRateAbsoluteValue,
+      referencePools
     ] = await Promise.all([
       rates.positiveInterestRate(),
       rates.interestRateAbsoluteValue(),
+      rates.getReferencePools(),
     ])
 
     return {
       positiveInterestRate,
       interestRateAbsoluteValue: unscale(interestRateAbsoluteValue),
+      referencePools
     }
   }
 )

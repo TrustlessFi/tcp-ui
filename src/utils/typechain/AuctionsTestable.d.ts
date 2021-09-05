@@ -25,8 +25,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "bidDeficitAuction(uint64,uint128)": FunctionFragment;
     "bidSurplusAuction(uint64,uint128)": FunctionFragment;
     "checkReservesAndStartAuctions()": FunctionFragment;
-    "collateralPool()": FunctionFragment;
-    "completeSetup()": FunctionFragment;
     "deficitAuction(uint64)": FunctionFragment;
     "deficitAuctionComplete(uint64)": FunctionFragment;
     "deficitAuctionCount()": FunctionFragment;
@@ -47,7 +45,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "minAuctionDuration()": FunctionFragment;
     "minBidDelta()": FunctionFragment;
     "minLotSize()": FunctionFragment;
-    "protocolPool()": FunctionFragment;
     "reservesBufferLowerBound()": FunctionFragment;
     "reservesBufferUpperBound()": FunctionFragment;
     "setExtensionPerBid(uint64)": FunctionFragment;
@@ -92,14 +89,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "checkReservesAndStartAuctions",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "collateralPool",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -171,10 +160,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "minLotSize",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "protocolPool",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -298,14 +283,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "collateralPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "deficitAuction",
     data: BytesLike
   ): Result;
@@ -373,10 +350,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "minLotSize", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "protocolPool",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "reservesBufferLowerBound",
     data: BytesLike
@@ -572,12 +545,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    collateralPool(overrides?: CallOverrides): Promise<[string]>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -668,8 +635,6 @@ export class AuctionsTestable extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     minLotSize(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    protocolPool(overrides?: CallOverrides): Promise<[string]>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -826,12 +791,6 @@ export class AuctionsTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  collateralPool(overrides?: CallOverrides): Promise<string>;
-
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   deficitAuction(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -920,8 +879,6 @@ export class AuctionsTestable extends BaseContract {
   minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
   minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-  protocolPool(overrides?: CallOverrides): Promise<string>;
 
   reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1076,10 +1033,6 @@ export class AuctionsTestable extends BaseContract {
 
     checkReservesAndStartAuctions(overrides?: CallOverrides): Promise<void>;
 
-    collateralPool(overrides?: CallOverrides): Promise<string>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1165,8 +1118,6 @@ export class AuctionsTestable extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
     minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-    protocolPool(overrides?: CallOverrides): Promise<string>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1395,12 +1346,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1459,8 +1404,6 @@ export class AuctionsTestable extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<BigNumber>;
 
     minLotSize(overrides?: CallOverrides): Promise<BigNumber>;
-
-    protocolPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     reservesBufferLowerBound(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1603,12 +1546,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     deficitAuction(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1675,8 +1612,6 @@ export class AuctionsTestable extends BaseContract {
     minBidDelta(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     minLotSize(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    protocolPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     reservesBufferLowerBound(
       overrides?: CallOverrides

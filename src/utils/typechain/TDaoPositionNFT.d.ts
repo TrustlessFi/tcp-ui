@@ -21,11 +21,14 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface TDaoPositionNFTInterface extends ethers.utils.Interface {
   functions: {
-    "administrator()": FunctionFragment;
+    "abdicateDescriptorUpdate()": FunctionFragment;
+    "admin()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
     "burn(uint256)": FunctionFragment;
+    "canUpdateDescriptor()": FunctionFragment;
+    "descriptor()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "isApprovedOrOwner(address,uint256)": FunctionFragment;
@@ -36,6 +39,7 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
     "positionIDs(address)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
+    "setPositionDescriptor(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
@@ -46,9 +50,10 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(
-    functionFragment: "administrator",
+    functionFragment: "abdicateDescriptorUpdate",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
@@ -56,6 +61,14 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "canUpdateDescriptor",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "descriptor",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -88,6 +101,10 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(
+    functionFragment: "setPositionDescriptor",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -114,13 +131,19 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "administrator",
+    functionFragment: "abdicateDescriptorUpdate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "canUpdateDescriptor",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "descriptor", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -153,6 +176,10 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setPositionDescriptor",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
@@ -178,11 +205,17 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "PositionDescriptorUpdateAbdicated()": EventFragment;
+    "PositionDescriptorUpdated(address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "PositionDescriptorUpdateAbdicated"
+  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PositionDescriptorUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -230,7 +263,11 @@ export class TDaoPositionNFT extends BaseContract {
   interface: TDaoPositionNFTInterface;
 
   functions: {
-    administrator(overrides?: CallOverrides): Promise<[string]>;
+    abdicateDescriptorUpdate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<[string]>;
 
     approve(
       to: string,
@@ -251,6 +288,10 @@ export class TDaoPositionNFT extends BaseContract {
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    canUpdateDescriptor(overrides?: CallOverrides): Promise<[boolean]>;
+
+    descriptor(overrides?: CallOverrides): Promise<[string]>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -309,6 +350,11 @@ export class TDaoPositionNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setPositionDescriptor(
+      _descriptor: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -328,7 +374,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<[BigNumber]>;
 
     tokenURI(
-      tokenId: BigNumberish,
+      tokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
@@ -342,7 +388,11 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  administrator(overrides?: CallOverrides): Promise<string>;
+  abdicateDescriptorUpdate(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  admin(overrides?: CallOverrides): Promise<string>;
 
   approve(
     to: string,
@@ -363,6 +413,10 @@ export class TDaoPositionNFT extends BaseContract {
     tokenID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  canUpdateDescriptor(overrides?: CallOverrides): Promise<boolean>;
+
+  descriptor(overrides?: CallOverrides): Promise<string>;
 
   getApproved(
     tokenId: BigNumberish,
@@ -415,6 +469,11 @@ export class TDaoPositionNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setPositionDescriptor(
+    _descriptor: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -433,7 +492,7 @@ export class TDaoPositionNFT extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  tokenURI(tokenID: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -445,7 +504,9 @@ export class TDaoPositionNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    administrator(overrides?: CallOverrides): Promise<string>;
+    abdicateDescriptorUpdate(overrides?: CallOverrides): Promise<void>;
+
+    admin(overrides?: CallOverrides): Promise<string>;
 
     approve(
       to: string,
@@ -466,6 +527,10 @@ export class TDaoPositionNFT extends BaseContract {
       tokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    canUpdateDescriptor(overrides?: CallOverrides): Promise<boolean>;
+
+    descriptor(overrides?: CallOverrides): Promise<string>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -518,6 +583,11 @@ export class TDaoPositionNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setPositionDescriptor(
+      _descriptor: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -536,7 +606,7 @@ export class TDaoPositionNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    tokenURI(tokenID: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -567,6 +637,12 @@ export class TDaoPositionNFT extends BaseContract {
       { owner: string; operator: string; approved: boolean }
     >;
 
+    PositionDescriptorUpdateAbdicated(): TypedEventFilter<[], {}>;
+
+    PositionDescriptorUpdated(
+      newPositionDescriptor?: string | null
+    ): TypedEventFilter<[string], { newPositionDescriptor: string }>;
+
     Transfer(
       from?: string | null,
       to?: string | null,
@@ -578,7 +654,11 @@ export class TDaoPositionNFT extends BaseContract {
   };
 
   estimateGas: {
-    administrator(overrides?: CallOverrides): Promise<BigNumber>;
+    abdicateDescriptorUpdate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    admin(overrides?: CallOverrides): Promise<BigNumber>;
 
     approve(
       to: string,
@@ -599,6 +679,10 @@ export class TDaoPositionNFT extends BaseContract {
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    canUpdateDescriptor(overrides?: CallOverrides): Promise<BigNumber>;
+
+    descriptor(overrides?: CallOverrides): Promise<BigNumber>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -654,6 +738,11 @@ export class TDaoPositionNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setPositionDescriptor(
+      _descriptor: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -673,7 +762,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     tokenURI(
-      tokenId: BigNumberish,
+      tokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -688,7 +777,11 @@ export class TDaoPositionNFT extends BaseContract {
   };
 
   populateTransaction: {
-    administrator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    abdicateDescriptorUpdate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     approve(
       to: string,
@@ -712,6 +805,12 @@ export class TDaoPositionNFT extends BaseContract {
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    canUpdateDescriptor(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    descriptor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -770,6 +869,11 @@ export class TDaoPositionNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setPositionDescriptor(
+      _descriptor: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -789,7 +893,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     tokenURI(
-      tokenId: BigNumberish,
+      tokenID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

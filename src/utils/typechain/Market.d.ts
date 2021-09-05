@@ -23,25 +23,24 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface MarketInterface extends ethers.utils.Interface {
   functions: {
     "accrueInterest()": FunctionFragment;
-    "adjustGenesisPositionCollateral(uint64,uint256)": FunctionFragment;
-    "adjustPosition(uint64,int256,uint256)": FunctionFragment;
-    "claimRewards(uint64)": FunctionFragment;
-    "collateralPool()": FunctionFragment;
+    "adjustPosition(uint64,int256,uint256,uint32)": FunctionFragment;
+    "claimRewards(uint64,uint32)": FunctionFragment;
     "collateralizationRequirement()": FunctionFragment;
-    "completeSetup()": FunctionFragment;
-    "createGenesisPosition(tuple)": FunctionFragment;
-    "createPosition(uint256)": FunctionFragment;
+    "createPosition(uint256,uint32)": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "deployer()": FunctionFragment;
+    "finalizeInitialization()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
     "huePositionNFT()": FunctionFragment;
     "init(address)": FunctionFragment;
     "interestPortionToLenders()": FunctionFragment;
     "lastPeriodGlobalInterestAccrued()": FunctionFragment;
+    "lend(uint256)": FunctionFragment;
+    "lendHue()": FunctionFragment;
     "minPositionSize()": FunctionFragment;
     "periodLength()": FunctionFragment;
-    "removeGenesisPosition(uint64)": FunctionFragment;
+    "removeKickback(uint64)": FunctionFragment;
     "setCollateralizationRequirement(uint256)": FunctionFragment;
     "setInterestPortionToLenders(uint256)": FunctionFragment;
     "setMinPositionSize(uint256)": FunctionFragment;
@@ -50,7 +49,12 @@ interface MarketInterface extends ethers.utils.Interface {
     "stopped()": FunctionFragment;
     "systemGetUpdatedPosition(uint64)": FunctionFragment;
     "twapDuration()": FunctionFragment;
+    "unlend(uint256)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
+<<<<<<< HEAD
+=======
+    "valueOfLendTokensInHue(uint256)": FunctionFragment;
+>>>>>>> master
   };
 
   encodeFunctionData(
@@ -58,42 +62,30 @@ interface MarketInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "adjustGenesisPositionCollateral",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "adjustPosition",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "claimRewards",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "collateralPool",
-    values?: undefined
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "collateralizationRequirement",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "completeSetup",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "createGenesisPosition",
-    values: [{ v: BigNumberish; r: BytesLike; s: BytesLike }]
-  ): string;
-  encodeFunctionData(
     functionFragment: "createPosition",
-    values: [BigNumberish]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "currentPeriod",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "finalizeInitialization",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "firstPeriod",
     values?: undefined
@@ -112,6 +104,8 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "lastPeriodGlobalInterestAccrued",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "lend", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "lendHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "minPositionSize",
     values?: undefined
@@ -121,7 +115,7 @@ interface MarketInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "removeGenesisPosition",
+    functionFragment: "removeKickback",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -151,16 +145,23 @@ interface MarketInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "unlend",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
+<<<<<<< HEAD
+=======
+  encodeFunctionData(
+    functionFragment: "valueOfLendTokensInHue",
+    values: [BigNumberish]
+  ): string;
+>>>>>>> master
 
   decodeFunctionResult(
     functionFragment: "accrueInterest",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "adjustGenesisPositionCollateral",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -172,19 +173,7 @@ interface MarketInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "collateralPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "collateralizationRequirement",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "createGenesisPosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -197,6 +186,10 @@ interface MarketInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "finalizeInitialization",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "firstPeriod",
     data: BytesLike
   ): Result;
@@ -205,6 +198,14 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
+<<<<<<< HEAD
+  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "huePositionNFT",
+    data: BytesLike
+  ): Result;
+=======
+>>>>>>> master
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interestPortionToLenders",
@@ -214,6 +215,8 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "lastPeriodGlobalInterestAccrued",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "lend", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "lendHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "minPositionSize",
     data: BytesLike
@@ -223,7 +226,7 @@ interface MarketInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeGenesisPosition",
+    functionFragment: "removeKickback",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -252,32 +255,46 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "twapDuration",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "unlend", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
+<<<<<<< HEAD
+=======
+  decodeFunctionResult(
+    functionFragment: "valueOfLendTokensInHue",
+    data: BytesLike
+  ): Result;
+>>>>>>> master
 
   events: {
     "Initialized(address)": EventFragment;
     "InterestAccrued(uint64,uint64,uint256,uint256,uint256,uint256)": EventFragment;
-    "NewPositionCreated(address,uint64)": EventFragment;
+    "Lend(address,uint256,uint256)": EventFragment;
     "ParameterUpdated(string,uint256)": EventFragment;
     "ParameterUpdated64(string,uint64)": EventFragment;
     "ParameterUpdatedAddress(string,address)": EventFragment;
-    "PositionAdjusted(uint64,int256,int256)": EventFragment;
+    "PositionAdjusted(uint64,uint256,uint256,uint256,uint256)": EventFragment;
+    "PositionCreated(address,uint64)": EventFragment;
     "PositionUpdated(uint256,uint64,uint256,uint256)": EventFragment;
+    "RewardsDistributed(address,bool,uint256)": EventFragment;
     "Stopped()": EventFragment;
+    "Unlend(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "InterestAccrued"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewPositionCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Lend"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionAdjusted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
 export class Market extends BaseContract {
@@ -328,41 +345,27 @@ export class Market extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    adjustGenesisPositionCollateral(
-      positionID: BigNumberish,
-      collateralDecrease: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     adjustPosition(
       positionID: BigNumberish,
       debtChange: BigNumberish,
       collateralDecrease: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     claimRewards(
       positionID: BigNumberish,
+      ui: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    collateralPool(overrides?: CallOverrides): Promise<[string]>;
 
     collateralizationRequirement(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    createGenesisPosition(
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     createPosition(
       initialDebt: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -371,6 +374,10 @@ export class Market extends BaseContract {
     ): Promise<[BigNumber] & { period: BigNumber }>;
 
     deployer(overrides?: CallOverrides): Promise<[string]>;
+
+    finalizeInitialization(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -389,11 +396,18 @@ export class Market extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    lend(
+      hueCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    lendHue(overrides?: CallOverrides): Promise<[string]>;
+
     minPositionSize(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    removeGenesisPosition(
+    removeKickback(
       positionID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -431,52 +445,55 @@ export class Market extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<[number]>;
 
+    unlend(
+      lendTokenCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
+<<<<<<< HEAD
+=======
+
+    valueOfLendTokensInHue(
+      lendTokenCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+>>>>>>> master
   };
 
   accrueInterest(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  adjustGenesisPositionCollateral(
-    positionID: BigNumberish,
-    collateralDecrease: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   adjustPosition(
     positionID: BigNumberish,
     debtChange: BigNumberish,
     collateralDecrease: BigNumberish,
+    ui: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   claimRewards(
     positionID: BigNumberish,
+    ui: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  collateralPool(overrides?: CallOverrides): Promise<string>;
 
   collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
 
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  createGenesisPosition(
-    ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   createPosition(
     initialDebt: BigNumberish,
+    ui: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   deployer(overrides?: CallOverrides): Promise<string>;
+
+  finalizeInitialization(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -495,11 +512,18 @@ export class Market extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  lend(
+    hueCount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  lendHue(overrides?: CallOverrides): Promise<string>;
+
   minPositionSize(overrides?: CallOverrides): Promise<BigNumber>;
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-  removeGenesisPosition(
+  removeKickback(
     positionID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -537,48 +561,51 @@ export class Market extends BaseContract {
 
   twapDuration(overrides?: CallOverrides): Promise<number>;
 
+  unlend(
+    lendTokenCount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
+<<<<<<< HEAD
+=======
+  valueOfLendTokensInHue(
+    lendTokenCount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+>>>>>>> master
   callStatic: {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
-
-    adjustGenesisPositionCollateral(
-      positionID: BigNumberish,
-      collateralDecrease: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     adjustPosition(
       positionID: BigNumberish,
       debtChange: BigNumberish,
       collateralDecrease: BigNumberish,
+      ui: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     claimRewards(
       positionID: BigNumberish,
+      ui: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    collateralPool(overrides?: CallOverrides): Promise<string>;
-
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
-
-    createGenesisPosition(
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     createPosition(
       initialDebt: BigNumberish,
+      ui: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<string>;
+
+    finalizeInitialization(overrides?: CallOverrides): Promise<void>;
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -594,11 +621,15 @@ export class Market extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    lend(hueCount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    lendHue(overrides?: CallOverrides): Promise<string>;
+
     minPositionSize(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-    removeGenesisPosition(
+    removeKickback(
       positionID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -641,6 +672,9 @@ export class Market extends BaseContract {
         BigNumber,
         number,
         boolean,
+        BigNumber,
+        number,
+        string,
         BigNumber
       ] & {
         startCumulativeDebt: BigNumber;
@@ -653,12 +687,28 @@ export class Market extends BaseContract {
         tick: number;
         tickSet: boolean;
         tickIndex: BigNumber;
+        ui: number;
+        kickbackDestination: string;
+        kickbackPortion: BigNumber;
       }
     >;
 
     twapDuration(overrides?: CallOverrides): Promise<number>;
 
+    unlend(
+      lendTokenCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+<<<<<<< HEAD
+=======
+
+    valueOfLendTokensInHue(
+      lendTokenCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+>>>>>>> master
   };
 
   filters: {
@@ -685,12 +735,13 @@ export class Market extends BaseContract {
       }
     >;
 
-    NewPositionCreated(
-      creator?: string | null,
-      positionID?: BigNumberish | null
+    Lend(
+      account?: string | null,
+      hueCount?: null,
+      lendTokenCount?: null
     ): TypedEventFilter<
-      [string, BigNumber],
-      { creator: string; positionID: BigNumber }
+      [string, BigNumber, BigNumber],
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
 
     ParameterUpdated(
@@ -716,15 +767,27 @@ export class Market extends BaseContract {
 
     PositionAdjusted(
       positionID?: BigNumberish | null,
-      debtChange?: null,
-      collateralChange?: null
+      debtIncrease?: null,
+      debtDecrease?: null,
+      collateralIncrease?: null,
+      collateralDecrease?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
         positionID: BigNumber;
-        debtChange: BigNumber;
-        collateralChange: BigNumber;
+        debtIncrease: BigNumber;
+        debtDecrease: BigNumber;
+        collateralIncrease: BigNumber;
+        collateralDecrease: BigNumber;
       }
+    >;
+
+    PositionCreated(
+      creator?: string | null,
+      positionID?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { creator: string; positionID: BigNumber }
     >;
 
     PositionUpdated(
@@ -742,7 +805,25 @@ export class Market extends BaseContract {
       }
     >;
 
+    RewardsDistributed(
+      account?: string | null,
+      isKickback?: boolean | null,
+      tcpRewards?: null
+    ): TypedEventFilter<
+      [string, boolean, BigNumber],
+      { account: string; isKickback: boolean; tcpRewards: BigNumber }
+    >;
+
     Stopped(): TypedEventFilter<[], {}>;
+
+    Unlend(
+      account?: string | null,
+      hueCount?: null,
+      lendTokenCount?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
+    >;
   };
 
   estimateGas: {
@@ -750,45 +831,35 @@ export class Market extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    adjustGenesisPositionCollateral(
-      positionID: BigNumberish,
-      collateralDecrease: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     adjustPosition(
       positionID: BigNumberish,
       debtChange: BigNumberish,
       collateralDecrease: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     claimRewards(
       positionID: BigNumberish,
+      ui: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
 
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    createGenesisPosition(
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     createPosition(
       initialDebt: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
+
+    finalizeInitialization(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -807,11 +878,18 @@ export class Market extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    lend(
+      hueCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    lendHue(overrides?: CallOverrides): Promise<BigNumber>;
+
     minPositionSize(overrides?: CallOverrides): Promise<BigNumber>;
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-    removeGenesisPosition(
+    removeKickback(
       positionID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -849,7 +927,20 @@ export class Market extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
+    unlend(
+      lendTokenCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+<<<<<<< HEAD
+=======
+
+    valueOfLendTokensInHue(
+      lendTokenCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+>>>>>>> master
   };
 
   populateTransaction: {
@@ -857,47 +948,37 @@ export class Market extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    adjustGenesisPositionCollateral(
-      positionID: BigNumberish,
-      collateralDecrease: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     adjustPosition(
       positionID: BigNumberish,
       debtChange: BigNumberish,
       collateralDecrease: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     claimRewards(
       positionID: BigNumberish,
+      ui: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     collateralizationRequirement(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    createGenesisPosition(
-      ga: { v: BigNumberish; r: BytesLike; s: BytesLike },
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     createPosition(
       initialDebt: BigNumberish,
+      ui: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    finalizeInitialization(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -918,11 +999,18 @@ export class Market extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    lend(
+      hueCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    lendHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     minPositionSize(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     periodLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    removeGenesisPosition(
+    removeKickback(
       positionID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -960,9 +1048,22 @@ export class Market extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    unlend(
+      lendTokenCount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     validUpdate(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+<<<<<<< HEAD
+=======
+
+    valueOfLendTokensInHue(
+      lendTokenCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+>>>>>>> master
   };
 }

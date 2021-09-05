@@ -21,20 +21,11 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ILiquidationsInterface extends ethers.utils.Interface {
   functions: {
-    "completeSetup()": FunctionFragment;
     "stop()": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "completeSetup",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "stop", values?: undefined): string;
 
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "stop", data: BytesLike): Result;
 
   events: {
@@ -98,26 +89,16 @@ export class ILiquidations extends BaseContract {
   interface: ILiquidationsInterface;
 
   functions: {
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
-
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   stop(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    completeSetup(overrides?: CallOverrides): Promise<void>;
-
     stop(overrides?: CallOverrides): Promise<void>;
   };
 
@@ -168,20 +149,12 @@ export class ILiquidations extends BaseContract {
   };
 
   estimateGas: {
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     stop(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

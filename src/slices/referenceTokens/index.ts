@@ -3,6 +3,7 @@ import { getProtocolContract, ProtocolContract } from '../../utils/protocolContr
 import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { governorInfo } from '../governor'
+import { ratesInfo } from '../rates'
 import { ethers } from 'ethers'
 import getProvider from '../../utils/getProvider'
 
@@ -16,8 +17,8 @@ export type referenceTokens = string[]
 export interface ReferenceTokensState extends sliceState<referenceTokens> {}
 
 export interface referenceTokenArgs {
-  governorInfo: governorInfo
   chainID: ChainID
+  ratesInfo: ratesInfo
 }
 
 export const getReferenceTokens = createAsyncThunk(
@@ -27,7 +28,7 @@ export const getReferenceTokens = createAsyncThunk(
     const provider = getProvider()
     if (zhu === null || provider === null) return null
 
-    return await Promise.all(args.governorInfo.referencePools.map(async refPoolAddress => {
+    return await Promise.all(args.ratesInfo.referencePools.map(async refPoolAddress => {
       const refPool = new ethers.Contract(refPoolAddress, poolArtifact.abi, provider) as unknown as UniswapV3Pool
       const [token0, token1] = await Promise.all([refPool.token0(), refPool.token1()])
       return token0 === zhu.address ? token1: token0

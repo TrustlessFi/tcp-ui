@@ -10,9 +10,7 @@ export type governorArgs = {
 }
 
 export type governorInfo = {
-  phase: number,
-  collateralPool: string,
-  referencePools: string[],
+  phase: number
 }
 
 export interface GovernorState extends sliceState<governorInfo> {}
@@ -23,21 +21,13 @@ export const getGovernorInfo = createAsyncThunk(
     const governor = await getProtocolContract(args.chainID, ProtocolContract.Governor) as Governor
     if (governor === null) return null
 
-    let [
+    const [
       phase,
-      collateralPool,
-      referencePools,
     ] = await Promise.all([
       governor.currentPhase(),
-      governor.collateralPool(),
-      governor.getReferencePools(),
     ])
 
-    return {
-      phase,
-      collateralPool,
-      referencePools,
-    }
+    return { phase }
   }
 )
 

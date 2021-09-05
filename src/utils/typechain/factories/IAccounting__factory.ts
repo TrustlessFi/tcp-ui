@@ -20,34 +20,58 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "uint256",
-        name: "nftID",
-        type: "uint256",
+        indexed: false,
+        internalType: "uint32[]",
+        name: "uis",
+        type: "uint32[]",
       },
+    ],
+    name: "UIsApproved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
       {
-        internalType: "uint16",
-        name: "poolID",
-        type: "uint16",
+        indexed: false,
+        internalType: "uint32[]",
+        name: "uis",
+        type: "uint32[]",
       },
-      {
-        internalType: "int24",
-        name: "tickLower",
-        type: "int24",
-      },
-      {
-        internalType: "int24",
-        name: "tickUpper",
-        type: "int24",
-      },
+    ],
+    name: "UIsDisapproved",
+    type: "event",
+  },
+  {
+    inputs: [
       {
         internalType: "address",
         name: "owner",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "nftID",
+        type: "uint256",
+      },
     ],
     name: "addPositionToIndex",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint32[]",
+        name: "ids",
+        type: "uint32[]",
+      },
+    ],
+    name: "approveUIs",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -112,6 +136,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint32[]",
+        name: "ids",
+        type: "uint32[]",
+      },
+    ],
+    name: "disapproveUIs",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint64",
         name: "positionID",
         type: "uint64",
@@ -128,49 +165,6 @@ const _abi = [
         internalType: "uint256",
         name: "collateralCount",
         type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        internalType: "uint16",
-        name: "poolID",
-        type: "uint16",
-      },
-    ],
-    name: "getParticipatedInLiquidityGenesis",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "getParticipatedInMarketGenesis",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "participated",
-        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -209,14 +203,19 @@ const _abi = [
             type: "uint256",
           },
           {
-            internalType: "uint64",
-            name: "lastTimeRewarded",
-            type: "uint64",
-          },
-          {
             internalType: "uint256",
             name: "lastBlockPositionIncreased",
             type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "liquidity",
+            type: "uint128",
+          },
+          {
+            internalType: "uint64",
+            name: "lastTimeRewarded",
+            type: "uint64",
           },
           {
             internalType: "int24",
@@ -229,9 +228,19 @@ const _abi = [
             type: "int24",
           },
           {
-            internalType: "uint128",
-            name: "liquidity",
-            type: "uint128",
+            internalType: "uint32",
+            name: "ui",
+            type: "uint32",
+          },
+          {
+            internalType: "address",
+            name: "kickbackDestination",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "kickbackPortion",
+            type: "uint64",
           },
         ],
         internalType: "struct IAccounting.PoolPosition",
@@ -302,6 +311,21 @@ const _abi = [
           {
             internalType: "uint64",
             name: "tickIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint32",
+            name: "ui",
+            type: "uint32",
+          },
+          {
+            internalType: "address",
+            name: "kickbackDestination",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "kickbackPortion",
             type: "uint64",
           },
         ],
@@ -424,30 +448,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "nftID",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "addressToCheck",
-        type: "address",
-      },
-    ],
-    name: "isPositionOwner",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "lentHue",
     outputs: [
@@ -524,6 +524,7 @@ const _abi = [
       },
     ],
     name: "sendLentHue",
+<<<<<<< HEAD
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -588,6 +589,8 @@ const _abi = [
       },
     ],
     name: "setParticipatedInMarketGenesis",
+=======
+>>>>>>> master
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -622,14 +625,19 @@ const _abi = [
             type: "uint256",
           },
           {
-            internalType: "uint64",
-            name: "lastTimeRewarded",
-            type: "uint64",
-          },
-          {
             internalType: "uint256",
             name: "lastBlockPositionIncreased",
             type: "uint256",
+          },
+          {
+            internalType: "uint128",
+            name: "liquidity",
+            type: "uint128",
+          },
+          {
+            internalType: "uint64",
+            name: "lastTimeRewarded",
+            type: "uint64",
           },
           {
             internalType: "int24",
@@ -642,9 +650,19 @@ const _abi = [
             type: "int24",
           },
           {
-            internalType: "uint128",
-            name: "liquidity",
-            type: "uint128",
+            internalType: "uint32",
+            name: "ui",
+            type: "uint32",
+          },
+          {
+            internalType: "address",
+            name: "kickbackDestination",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "kickbackPortion",
+            type: "uint64",
           },
         ],
         internalType: "struct IAccounting.PoolPosition",
@@ -714,6 +732,21 @@ const _abi = [
           {
             internalType: "uint64",
             name: "tickIndex",
+            type: "uint64",
+          },
+          {
+            internalType: "uint32",
+            name: "ui",
+            type: "uint32",
+          },
+          {
+            internalType: "address",
+            name: "kickbackDestination",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "kickbackPortion",
             type: "uint64",
           },
         ],

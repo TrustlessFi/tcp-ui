@@ -23,6 +23,7 @@ interface MockGovernorInterface extends ethers.utils.Interface {
   functions: {
     "currentPhase()": FunctionFragment;
     "execute(address,string,bytes)": FunctionFragment;
+    "mintTo(address,address,uint256)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
   };
 
@@ -35,6 +36,10 @@ interface MockGovernorInterface extends ethers.utils.Interface {
     values: [string, string, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "mintTo",
+    values: [string, string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "requireValidAction",
     values: [string, string]
   ): string;
@@ -44,6 +49,7 @@ interface MockGovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "requireValidAction",
     data: BytesLike
@@ -105,6 +111,13 @@ export class MockGovernor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     requireValidAction(
       arg0: string,
       arg1: string,
@@ -118,6 +131,13 @@ export class MockGovernor extends BaseContract {
     arg0: string,
     arg1: string,
     arg2: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  mintTo(
+    token: string,
+    dest: string,
+    count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -136,6 +156,13 @@ export class MockGovernor extends BaseContract {
       arg2: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean, string] & { success: boolean; returnData: string }>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     requireValidAction(
       arg0: string,
@@ -156,6 +183,13 @@ export class MockGovernor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     requireValidAction(
       arg0: string,
       arg1: string,
@@ -170,6 +204,13 @@ export class MockGovernor extends BaseContract {
       arg0: string,
       arg1: string,
       arg2: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    mintTo(
+      token: string,
+      dest: string,
+      count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

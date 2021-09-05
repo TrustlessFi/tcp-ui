@@ -185,13 +185,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "completeSetup",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "latestAuctionCompletionTime",
     outputs: [
       {

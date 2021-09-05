@@ -137,7 +137,9 @@ export class NonfungibleTokenPositionDescriptor__factory extends ContractFactory
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$28ca7891a259b174646586e2ff5520b353\\$__", "g"),
-      linkLibraryAddresses["__$28ca7891a259b174646586e2ff5520b353$__"]
+      linkLibraryAddresses[
+        "contracts/uniswap/uniswap-v3-periphery/contracts/libraries/NFTDescriptor.sol:NFTDescriptor"
+      ]
         .replace(/^0x/, "")
         .toLowerCase()
     );
@@ -186,5 +188,5 @@ export class NonfungibleTokenPositionDescriptor__factory extends ContractFactory
 }
 
 export interface NonfungibleTokenPositionDescriptorLibraryAddresses {
-  ["__$28ca7891a259b174646586e2ff5520b353$__"]: string;
+  ["contracts/uniswap/uniswap-v3-periphery/contracts/libraries/NFTDescriptor.sol:NFTDescriptor"]: string;
 }

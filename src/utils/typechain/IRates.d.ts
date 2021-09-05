@@ -22,7 +22,6 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface IRatesInterface extends ethers.utils.Interface {
   functions: {
     "addReferencePool(address)": FunctionFragment;
-    "completeSetup()": FunctionFragment;
     "interestRateAbsoluteValue()": FunctionFragment;
     "positiveInterestRate()": FunctionFragment;
     "removeReferencePool(address)": FunctionFragment;
@@ -33,10 +32,6 @@ interface IRatesInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "addReferencePool",
     values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "interestRateAbsoluteValue",
@@ -58,10 +53,6 @@ interface IRatesInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "addReferencePool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -146,10 +137,6 @@ export class IRates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     interestRateAbsoluteValue(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     positiveInterestRate(overrides?: CallOverrides): Promise<[boolean]>;
@@ -174,10 +161,6 @@ export class IRates extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   interestRateAbsoluteValue(overrides?: CallOverrides): Promise<BigNumber>;
 
   positiveInterestRate(overrides?: CallOverrides): Promise<boolean>;
@@ -198,8 +181,6 @@ export class IRates extends BaseContract {
 
   callStatic: {
     addReferencePool(pool: string, overrides?: CallOverrides): Promise<void>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
 
     interestRateAbsoluteValue(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -267,10 +248,6 @@ export class IRates extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     interestRateAbsoluteValue(overrides?: CallOverrides): Promise<BigNumber>;
 
     positiveInterestRate(overrides?: CallOverrides): Promise<BigNumber>;
@@ -293,10 +270,6 @@ export class IRates extends BaseContract {
   populateTransaction: {
     addReferencePool(
       pool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    completeSetup(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

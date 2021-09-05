@@ -24,6 +24,7 @@ enum FetchNode {
   UserAddress,
   MarketInfo,
   GovernorInfo,
+  RatesInfo,
   LiquidationsInfo,
   SDI,
 }
@@ -44,6 +45,8 @@ const getNodeFetch = (
       return {marketInfo: waitForMarket(selector, dispatch)}
     case FetchNode.GovernorInfo:
       return {governorInfo: waitForGovernor(selector, dispatch)}
+    case FetchNode.RatesInfo:
+      return {ratesInfo: waitForRates(selector, dispatch)}
     case FetchNode.LiquidationsInfo:
       return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
     case FetchNode.SDI:
@@ -91,7 +94,7 @@ export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
 export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
   (state: RootState) => state.prices,
   getPricesInfo,
-  [FetchNode.ChainID, FetchNode.GovernorInfo, FetchNode.LiquidationsInfo],
+  [FetchNode.ChainID, FetchNode.LiquidationsInfo],
 )
 
 export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
@@ -133,7 +136,7 @@ export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
 export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, referenceTokens>(
   (state: RootState) => state.referenceTokens,
   getReferenceTokens,
-  [FetchNode.ChainID, FetchNode.GovernorInfo],
+  [FetchNode.ChainID, FetchNode.RatesInfo],
 )
 
 export const waitForHueBalance = getWaitFunction<balanceArgs, balanceInfo>(

@@ -23,7 +23,6 @@ interface IMarketInterface extends ethers.utils.Interface {
   functions: {
     "accrueInterest()": FunctionFragment;
     "collateralizationRequirement()": FunctionFragment;
-    "completeSetup()": FunctionFragment;
     "lastPeriodGlobalInterestAccrued()": FunctionFragment;
     "stop()": FunctionFragment;
     "systemGetUpdatedPosition(uint64)": FunctionFragment;
@@ -35,10 +34,6 @@ interface IMarketInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "collateralizationRequirement",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -60,10 +55,6 @@ interface IMarketInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "lastPeriodGlobalInterestAccrued",
     data: BytesLike
   ): Result;
@@ -75,21 +66,27 @@ interface IMarketInterface extends ethers.utils.Interface {
 
   events: {
     "InterestAccrued(uint64,uint64,uint256,uint256,uint256,uint256)": EventFragment;
-    "NewPositionCreated(address,uint64)": EventFragment;
+    "Lend(address,uint256,uint256)": EventFragment;
     "ParameterUpdated(string,uint256)": EventFragment;
     "ParameterUpdated64(string,uint64)": EventFragment;
     "ParameterUpdatedAddress(string,address)": EventFragment;
-    "PositionAdjusted(uint64,int256,int256)": EventFragment;
+    "PositionAdjusted(uint64,uint256,uint256,uint256,uint256)": EventFragment;
+    "PositionCreated(address,uint64)": EventFragment;
     "PositionUpdated(uint256,uint64,uint256,uint256)": EventFragment;
+    "RewardsDistributed(address,bool,uint256)": EventFragment;
+    "Unlend(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "InterestAccrued"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewPositionCreated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Lend"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionAdjusted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "PositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
 export class IMarket extends BaseContract {
@@ -144,10 +141,6 @@ export class IMarket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { ratio: BigNumber }>;
 
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     lastPeriodGlobalInterestAccrued(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { period: BigNumber }>;
@@ -168,10 +161,6 @@ export class IMarket extends BaseContract {
 
   collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
 
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   lastPeriodGlobalInterestAccrued(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -189,8 +178,6 @@ export class IMarket extends BaseContract {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
 
     lastPeriodGlobalInterestAccrued(
       overrides?: CallOverrides
@@ -212,6 +199,9 @@ export class IMarket extends BaseContract {
         BigNumber,
         number,
         boolean,
+        BigNumber,
+        number,
+        string,
         BigNumber
       ] & {
         startCumulativeDebt: BigNumber;
@@ -224,6 +214,9 @@ export class IMarket extends BaseContract {
         tick: number;
         tickSet: boolean;
         tickIndex: BigNumber;
+        ui: number;
+        kickbackDestination: string;
+        kickbackPortion: BigNumber;
       }
     >;
   };
@@ -248,12 +241,13 @@ export class IMarket extends BaseContract {
       }
     >;
 
-    NewPositionCreated(
-      creator?: string | null,
-      positionID?: BigNumberish | null
+    Lend(
+      account?: string | null,
+      hueCount?: null,
+      lendTokenCount?: null
     ): TypedEventFilter<
-      [string, BigNumber],
-      { creator: string; positionID: BigNumber }
+      [string, BigNumber, BigNumber],
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
 
     ParameterUpdated(
@@ -279,15 +273,27 @@ export class IMarket extends BaseContract {
 
     PositionAdjusted(
       positionID?: BigNumberish | null,
-      debtChange?: null,
-      collateralChange?: null
+      debtIncrease?: null,
+      debtDecrease?: null,
+      collateralIncrease?: null,
+      collateralDecrease?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber, BigNumber],
+      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
       {
         positionID: BigNumber;
-        debtChange: BigNumber;
-        collateralChange: BigNumber;
+        debtIncrease: BigNumber;
+        debtDecrease: BigNumber;
+        collateralIncrease: BigNumber;
+        collateralDecrease: BigNumber;
       }
+    >;
+
+    PositionCreated(
+      creator?: string | null,
+      positionID?: BigNumberish | null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { creator: string; positionID: BigNumber }
     >;
 
     PositionUpdated(
@@ -304,6 +310,24 @@ export class IMarket extends BaseContract {
         tcpRewards: BigNumber;
       }
     >;
+
+    RewardsDistributed(
+      account?: string | null,
+      isKickback?: boolean | null,
+      tcpRewards?: null
+    ): TypedEventFilter<
+      [string, boolean, BigNumber],
+      { account: string; isKickback: boolean; tcpRewards: BigNumber }
+    >;
+
+    Unlend(
+      account?: string | null,
+      hueCount?: null,
+      lendTokenCount?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber],
+      { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
+    >;
   };
 
   estimateGas: {
@@ -312,10 +336,6 @@ export class IMarket extends BaseContract {
     ): Promise<BigNumber>;
 
     collateralizationRequirement(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
 
     lastPeriodGlobalInterestAccrued(
       overrides?: CallOverrides
@@ -338,10 +358,6 @@ export class IMarket extends BaseContract {
 
     collateralizationRequirement(
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     lastPeriodGlobalInterestAccrued(

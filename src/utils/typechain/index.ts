@@ -29,12 +29,20 @@ export type { INonfungiblePositionManager } from "./INonfungiblePositionManager"
 export type { IPeripheryImmutableState } from "./IPeripheryImmutableState";
 export type { IPeripheryPayments } from "./IPeripheryPayments";
 export type { IPoolInitializer } from "./IPoolInitializer";
+export type { CommunityAllocation } from "./CommunityAllocation";
+export type { CreatorAllocation } from "./CreatorAllocation";
+export type { DaoPositionCreator } from "./DaoPositionCreator";
+export type { GenesisAllocation } from "./GenesisAllocation";
+export type { MinAverageLockDuration } from "./MinAverageLockDuration";
+export type { ProtocolDataAggregator } from "./ProtocolDataAggregator";
+export type { RewardsContract } from "./RewardsContract";
 export type { EnforcedDecentralization } from "./EnforcedDecentralization";
 export type { UpdateableContract } from "./UpdateableContract";
 export type { Governor } from "./Governor";
 export type { GovernorAlpha } from "./GovernorAlpha";
 export type { TimelockInterface } from "./TimelockInterface";
 export type { VotingTokenInterface } from "./VotingTokenInterface";
+export type { GovernorAlphaWithVotingRewards } from "./GovernorAlphaWithVotingRewards";
 export type { Tcp } from "./Tcp";
 export type { TCPGovernorAlpha } from "./TCPGovernorAlpha";
 export type { TcpTimelock } from "./TcpTimelock";
@@ -43,8 +51,13 @@ export type { IAccounting } from "./IAccounting";
 export type { IAuctions } from "./IAuctions";
 export type { IEnforcedDecentralization } from "./IEnforcedDecentralization";
 export type { IGovernor } from "./IGovernor";
+<<<<<<< HEAD
 export type { IHue } from "./IHue";
 export type { ILend } from "./ILend";
+=======
+export type { IHasVotingRewards } from "./IHasVotingRewards";
+export type { IHue } from "./IHue";
+>>>>>>> master
 export type { ILendHue } from "./ILendHue";
 export type { ILiquidations } from "./ILiquidations";
 export type { IMarket } from "./IMarket";
@@ -56,28 +69,48 @@ export type { IRewards } from "./IRewards";
 export type { IPriceProvider } from "./IPriceProvider";
 export type { ISettlement } from "./ISettlement";
 export type { ITCP } from "./ITCP";
+<<<<<<< HEAD
 export type { IWETH9 } from "./IWETH9";
 export type { Auctions } from "./Auctions";
 export type { ERC20Decimals } from "./ERC20Decimals";
 export type { Lend } from "./Lend";
+=======
+export type { ITokenIncentiveMinter } from "./ITokenIncentiveMinter";
+export type { ITokenLockDao } from "./ITokenLockDao";
+export type { IWETH9 } from "./IWETH9";
+export type { Auctions } from "./Auctions";
+>>>>>>> master
 export type { Liquidations } from "./Liquidations";
 export type { Market } from "./Market";
+export type { ERC20Decimals } from "./ERC20Decimals";
 export type { Prices } from "./Prices";
 export type { Rates } from "./Rates";
 export type { Rewards } from "./Rewards";
 export type { Settlement } from "./Settlement";
 export type { Accounting } from "./Accounting";
+<<<<<<< HEAD
 export type { ITDaoNFTLock } from "./ITDaoNFTLock";
 export type { TDaoNFTLock } from "./TDaoNFTLock";
 export type { TDaoNFTLockFactory } from "./TDaoNFTLockFactory";
 export type { ITDao } from "./ITDao";
+=======
+export type { ITDao } from "./ITDao";
+export type { ITDaoPositionNFTDescriptor } from "./ITDaoPositionNFTDescriptor";
+>>>>>>> master
 export type { IGovernorAlpha } from "./IGovernorAlpha";
 export type { IProtocolToken } from "./IProtocolToken";
 export type { TDao } from "./TDao";
 export type { TDaoGovernorAlpha } from "./TDaoGovernorAlpha";
 export type { TDaoPositionNFT } from "./TDaoPositionNFT";
+<<<<<<< HEAD
 export type { TDaoTimelock } from "./TDaoTimelock";
 export type { TDaoToken } from "./TDaoToken";
+=======
+export type { TDaoPositionNFTDescriptor } from "./TDaoPositionNFTDescriptor";
+export type { TDaoTimelock } from "./TDaoTimelock";
+export type { TDaoToken } from "./TDaoToken";
+export type { TDaoVotingRewardsSafe } from "./TDaoVotingRewardsSafe";
+>>>>>>> master
 export type { Hue } from "./Hue";
 export type { HuePositionNFT } from "./HuePositionNFT";
 export type { LendHue } from "./LendHue";
@@ -89,15 +122,25 @@ export type { TCPSafeMath } from "./TCPSafeMath";
 export type { PeriodTime } from "./PeriodTime";
 export type { AccountingTestable } from "./AccountingTestable";
 export type { AuctionsTestable } from "./AuctionsTestable";
+export type { EnumerableUint128SetTestable } from "./EnumerableUint128SetTestable";
 export type { GovernorTestable } from "./GovernorTestable";
 export type { MarketTestable } from "./MarketTestable";
 export type { MathTestable } from "./MathTestable";
 export type { MockERC20 } from "./MockERC20";
 export type { MockGovernor } from "./MockGovernor";
+export type { MockTokenMinter } from "./MockTokenMinter";
+export type { MockNftPositionManager } from "./MockNftPositionManager";
 export type { MockPriceAggregator } from "./MockPriceAggregator";
 export type { MockProtocolToken } from "./MockProtocolToken";
+<<<<<<< HEAD
 export type { MockTDaoIncentiveContract } from "./MockTDaoIncentiveContract";
 export type { MockTDaoInflationIncentiveDistributionContract } from "./MockTDaoInflationIncentiveDistributionContract";
+=======
+export type { ITDaoWithIncentiveContractMint } from "./ITDaoWithIncentiveContractMint";
+export type { MockTDaoIncentiveContract } from "./MockTDaoIncentiveContract";
+export type { MockTokenDescriptor } from "./MockTokenDescriptor";
+export type { MockTokenIncentiveMinter } from "./MockTokenIncentiveMinter";
+>>>>>>> master
 export type { Multicall2 } from "./Multicall2";
 export type { PricesTestable } from "./PricesTestable";
 export type { RatesTestable } from "./RatesTestable";
@@ -108,8 +151,14 @@ export type { SafeMathTestable } from "./SafeMathTestable";
 export type { StaleMockPriceAggregator } from "./StaleMockPriceAggregator";
 export type { TCPSafeCastTestable } from "./TCPSafeCastTestable";
 export type { TCPSafeMathTestable } from "./TCPSafeMathTestable";
+<<<<<<< HEAD
 export type { TestnetERC20 } from "./TestnetERC20";
 export type { TDaoTestable } from "./TDaoTestable";
+=======
+export type { TDaoTestable } from "./TDaoTestable";
+export type { TestnetERC20 } from "./TestnetERC20";
+export type { TickConversion } from "./TickConversion";
+>>>>>>> master
 export type { TimeTestable } from "./TimeTestable";
 export type { WETH9 } from "./WETH9";
 export type { IUniswapV3FlashCallback } from "./IUniswapV3FlashCallback";
@@ -170,6 +219,10 @@ export type { IV3Migrator } from "./IV3Migrator";
 export type { Quoter } from "./Quoter";
 export type { QuoterV2 } from "./QuoterV2";
 export type { TickLens } from "./TickLens";
+<<<<<<< HEAD
+=======
+export type { UniswapInterfaceMulticall } from "./UniswapInterfaceMulticall";
+>>>>>>> master
 export type { NFTDescriptor } from "./NFTDescriptor";
 export type { NonfungiblePositionManager } from "./NonfungiblePositionManager";
 export type { NonfungibleTokenPositionDescriptor } from "./NonfungibleTokenPositionDescriptor";
@@ -192,6 +245,7 @@ export type { TestERC20PermitAllowed } from "./TestERC20PermitAllowed";
 export type { TestMulticall } from "./TestMulticall";
 export type { TestPositionNFTOwner } from "./TestPositionNFTOwner";
 export type { TickLensTest } from "./TickLensTest";
+export type { WeightedOracleTest } from "./WeightedOracleTest";
 export type { V3Migrator } from "./V3Migrator";
 
 export { ERC20Permit__factory } from "./factories/ERC20Permit__factory";
@@ -222,12 +276,20 @@ export { INonfungiblePositionManager__factory } from "./factories/INonfungiblePo
 export { IPeripheryImmutableState__factory } from "./factories/IPeripheryImmutableState__factory";
 export { IPeripheryPayments__factory } from "./factories/IPeripheryPayments__factory";
 export { IPoolInitializer__factory } from "./factories/IPoolInitializer__factory";
+export { CommunityAllocation__factory } from "./factories/CommunityAllocation__factory";
+export { CreatorAllocation__factory } from "./factories/CreatorAllocation__factory";
+export { DaoPositionCreator__factory } from "./factories/DaoPositionCreator__factory";
+export { GenesisAllocation__factory } from "./factories/GenesisAllocation__factory";
+export { MinAverageLockDuration__factory } from "./factories/MinAverageLockDuration__factory";
+export { ProtocolDataAggregator__factory } from "./factories/ProtocolDataAggregator__factory";
+export { RewardsContract__factory } from "./factories/RewardsContract__factory";
 export { EnforcedDecentralization__factory } from "./factories/EnforcedDecentralization__factory";
 export { UpdateableContract__factory } from "./factories/UpdateableContract__factory";
 export { Governor__factory } from "./factories/Governor__factory";
 export { GovernorAlpha__factory } from "./factories/GovernorAlpha__factory";
 export { TimelockInterface__factory } from "./factories/TimelockInterface__factory";
 export { VotingTokenInterface__factory } from "./factories/VotingTokenInterface__factory";
+export { GovernorAlphaWithVotingRewards__factory } from "./factories/GovernorAlphaWithVotingRewards__factory";
 export { Tcp__factory } from "./factories/Tcp__factory";
 export { TCPGovernorAlpha__factory } from "./factories/TCPGovernorAlpha__factory";
 export { TcpTimelock__factory } from "./factories/TcpTimelock__factory";
@@ -236,8 +298,13 @@ export { IAccounting__factory } from "./factories/IAccounting__factory";
 export { IAuctions__factory } from "./factories/IAuctions__factory";
 export { IEnforcedDecentralization__factory } from "./factories/IEnforcedDecentralization__factory";
 export { IGovernor__factory } from "./factories/IGovernor__factory";
+<<<<<<< HEAD
 export { IHue__factory } from "./factories/IHue__factory";
 export { ILend__factory } from "./factories/ILend__factory";
+=======
+export { IHasVotingRewards__factory } from "./factories/IHasVotingRewards__factory";
+export { IHue__factory } from "./factories/IHue__factory";
+>>>>>>> master
 export { ILendHue__factory } from "./factories/ILendHue__factory";
 export { ILiquidations__factory } from "./factories/ILiquidations__factory";
 export { IMarket__factory } from "./factories/IMarket__factory";
@@ -249,28 +316,41 @@ export { IRewards__factory } from "./factories/IRewards__factory";
 export { IPriceProvider__factory } from "./factories/IPriceProvider__factory";
 export { ISettlement__factory } from "./factories/ISettlement__factory";
 export { ITCP__factory } from "./factories/ITCP__factory";
+export { ITokenIncentiveMinter__factory } from "./factories/ITokenIncentiveMinter__factory";
+export { ITokenLockDao__factory } from "./factories/ITokenLockDao__factory";
 export { IWETH9__factory } from "./factories/IWETH9__factory";
 export { Auctions__factory } from "./factories/Auctions__factory";
-export { ERC20Decimals__factory } from "./factories/ERC20Decimals__factory";
-export { Lend__factory } from "./factories/Lend__factory";
 export { Liquidations__factory } from "./factories/Liquidations__factory";
 export { Market__factory } from "./factories/Market__factory";
+export { ERC20Decimals__factory } from "./factories/ERC20Decimals__factory";
 export { Prices__factory } from "./factories/Prices__factory";
 export { Rates__factory } from "./factories/Rates__factory";
 export { Rewards__factory } from "./factories/Rewards__factory";
 export { Settlement__factory } from "./factories/Settlement__factory";
 export { Accounting__factory } from "./factories/Accounting__factory";
+<<<<<<< HEAD
 export { ITDaoNFTLock__factory } from "./factories/ITDaoNFTLock__factory";
 export { TDaoNFTLock__factory } from "./factories/TDaoNFTLock__factory";
 export { TDaoNFTLockFactory__factory } from "./factories/TDaoNFTLockFactory__factory";
 export { ITDao__factory } from "./factories/ITDao__factory";
+=======
+export { ITDao__factory } from "./factories/ITDao__factory";
+export { ITDaoPositionNFTDescriptor__factory } from "./factories/ITDaoPositionNFTDescriptor__factory";
+>>>>>>> master
 export { IGovernorAlpha__factory } from "./factories/IGovernorAlpha__factory";
 export { IProtocolToken__factory } from "./factories/IProtocolToken__factory";
 export { TDao__factory } from "./factories/TDao__factory";
 export { TDaoGovernorAlpha__factory } from "./factories/TDaoGovernorAlpha__factory";
 export { TDaoPositionNFT__factory } from "./factories/TDaoPositionNFT__factory";
+<<<<<<< HEAD
 export { TDaoTimelock__factory } from "./factories/TDaoTimelock__factory";
 export { TDaoToken__factory } from "./factories/TDaoToken__factory";
+=======
+export { TDaoPositionNFTDescriptor__factory } from "./factories/TDaoPositionNFTDescriptor__factory";
+export { TDaoTimelock__factory } from "./factories/TDaoTimelock__factory";
+export { TDaoToken__factory } from "./factories/TDaoToken__factory";
+export { TDaoVotingRewardsSafe__factory } from "./factories/TDaoVotingRewardsSafe__factory";
+>>>>>>> master
 export { Hue__factory } from "./factories/Hue__factory";
 export { HuePositionNFT__factory } from "./factories/HuePositionNFT__factory";
 export { LendHue__factory } from "./factories/LendHue__factory";
@@ -282,15 +362,25 @@ export { TCPSafeMath__factory } from "./factories/TCPSafeMath__factory";
 export { PeriodTime__factory } from "./factories/PeriodTime__factory";
 export { AccountingTestable__factory } from "./factories/AccountingTestable__factory";
 export { AuctionsTestable__factory } from "./factories/AuctionsTestable__factory";
+export { EnumerableUint128SetTestable__factory } from "./factories/EnumerableUint128SetTestable__factory";
 export { GovernorTestable__factory } from "./factories/GovernorTestable__factory";
 export { MarketTestable__factory } from "./factories/MarketTestable__factory";
 export { MathTestable__factory } from "./factories/MathTestable__factory";
 export { MockERC20__factory } from "./factories/MockERC20__factory";
 export { MockGovernor__factory } from "./factories/MockGovernor__factory";
+export { MockTokenMinter__factory } from "./factories/MockTokenMinter__factory";
+export { MockNftPositionManager__factory } from "./factories/MockNftPositionManager__factory";
 export { MockPriceAggregator__factory } from "./factories/MockPriceAggregator__factory";
 export { MockProtocolToken__factory } from "./factories/MockProtocolToken__factory";
+<<<<<<< HEAD
 export { MockTDaoIncentiveContract__factory } from "./factories/MockTDaoIncentiveContract__factory";
 export { MockTDaoInflationIncentiveDistributionContract__factory } from "./factories/MockTDaoInflationIncentiveDistributionContract__factory";
+=======
+export { ITDaoWithIncentiveContractMint__factory } from "./factories/ITDaoWithIncentiveContractMint__factory";
+export { MockTDaoIncentiveContract__factory } from "./factories/MockTDaoIncentiveContract__factory";
+export { MockTokenDescriptor__factory } from "./factories/MockTokenDescriptor__factory";
+export { MockTokenIncentiveMinter__factory } from "./factories/MockTokenIncentiveMinter__factory";
+>>>>>>> master
 export { Multicall2__factory } from "./factories/Multicall2__factory";
 export { PricesTestable__factory } from "./factories/PricesTestable__factory";
 export { RatesTestable__factory } from "./factories/RatesTestable__factory";
@@ -301,8 +391,13 @@ export { SafeMathTestable__factory } from "./factories/SafeMathTestable__factory
 export { StaleMockPriceAggregator__factory } from "./factories/StaleMockPriceAggregator__factory";
 export { TCPSafeCastTestable__factory } from "./factories/TCPSafeCastTestable__factory";
 export { TCPSafeMathTestable__factory } from "./factories/TCPSafeMathTestable__factory";
-export { TestnetERC20__factory } from "./factories/TestnetERC20__factory";
 export { TDaoTestable__factory } from "./factories/TDaoTestable__factory";
+export { TestnetERC20__factory } from "./factories/TestnetERC20__factory";
+<<<<<<< HEAD
+export { TDaoTestable__factory } from "./factories/TDaoTestable__factory";
+=======
+export { TickConversion__factory } from "./factories/TickConversion__factory";
+>>>>>>> master
 export { TimeTestable__factory } from "./factories/TimeTestable__factory";
 export { WETH9__factory } from "./factories/WETH9__factory";
 export { IUniswapV3FlashCallback__factory } from "./factories/IUniswapV3FlashCallback__factory";
@@ -363,6 +458,7 @@ export { IV3Migrator__factory } from "./factories/IV3Migrator__factory";
 export { Quoter__factory } from "./factories/Quoter__factory";
 export { QuoterV2__factory } from "./factories/QuoterV2__factory";
 export { TickLens__factory } from "./factories/TickLens__factory";
+export { UniswapInterfaceMulticall__factory } from "./factories/UniswapInterfaceMulticall__factory";
 export { NFTDescriptor__factory } from "./factories/NFTDescriptor__factory";
 export { NonfungiblePositionManager__factory } from "./factories/NonfungiblePositionManager__factory";
 export { NonfungibleTokenPositionDescriptor__factory } from "./factories/NonfungibleTokenPositionDescriptor__factory";
@@ -385,4 +481,5 @@ export { TestERC20PermitAllowed__factory } from "./factories/TestERC20PermitAllo
 export { TestMulticall__factory } from "./factories/TestMulticall__factory";
 export { TestPositionNFTOwner__factory } from "./factories/TestPositionNFTOwner__factory";
 export { TickLensTest__factory } from "./factories/TickLensTest__factory";
+export { WeightedOracleTest__factory } from "./factories/WeightedOracleTest__factory";
 export { V3Migrator__factory } from "./factories/V3Migrator__factory";

@@ -63,31 +63,6 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "address",
-        name: "governorAlpha",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "proposalID",
-        type: "uint256",
-      },
-      {
-        indexed: true,
-        internalType: "bool",
-        name: "decision",
-        type: "bool",
-      },
-    ],
-    name: "MetaGovernanceDecisionExecuted",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
         internalType: "uint64",
         name: "positionNFTTokenID",
         type: "uint64",
@@ -180,6 +155,7 @@ const _abi = [
   {
     inputs: [
       {
+<<<<<<< HEAD:src/utils/typechain/factories/ITDao__factory.ts
         internalType: "uint64",
         name: "positionNFTTokenID",
         type: "uint64",
@@ -195,6 +171,10 @@ const _abi = [
       {
         internalType: "address",
         name: "dest",
+=======
+        internalType: "contract IERC20",
+        name: "token",
+>>>>>>> master:src/utils/typechain/factories/ITFDao__factory.ts
         type: "address",
       },
       {
@@ -202,9 +182,30 @@ const _abi = [
         name: "count",
         type: "uint256",
       },
+      {
+        internalType: "uint8",
+        name: "lockDurationMonths",
+        type: "uint8",
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
     ],
+<<<<<<< HEAD:src/utils/typechain/factories/ITDao__factory.ts
     name: "incentiveContractMint",
     outputs: [],
+=======
+    name: "lockTokens",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "positionNFTTokenID",
+        type: "uint64",
+      },
+    ],
+>>>>>>> master:src/utils/typechain/factories/ITFDao__factory.ts
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -229,19 +230,29 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract GovernorAlpha",
-        name: "",
+        internalType: "address",
+        name: "governorAlpha",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "",
+        name: "proposalID",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "voter",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "votePortion",
         type: "uint256",
       },
     ],
-    name: "voteInUnderlyingProtocol",
+    name: "sendUnderlyingVotingRewards",
     outputs: [],
-    stateMutability: "pure",
+    stateMutability: "nonpayable",
     type: "function",
   },
 ];

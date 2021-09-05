@@ -5,7 +5,7 @@ import { balanceState, getTokenBalanceThunk } from '../'
 
 export const getLendHueBalance = createAsyncThunk(
   'lendHueBalance/getBalances',
-  getTokenBalanceThunk({contract: ProtocolContract.LendHue}, [ProtocolContract.Market, ProtocolContract.Lend], []),
+  getTokenBalanceThunk({contract: ProtocolContract.LendHue}, [ProtocolContract.Market], []),
 )
 
 export const lendHueBalanceSlice = createSlice({

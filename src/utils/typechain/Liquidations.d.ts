@@ -21,8 +21,6 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface LiquidationsInterface extends ethers.utils.Interface {
   functions: {
-    "collateralPool()": FunctionFragment;
-    "completeSetup()": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "deployer()": FunctionFragment;
     "discoverUndercollateralizedPositions(uint64[])": FunctionFragment;
@@ -48,14 +46,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     "validUpdate(bytes4)": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "collateralPool",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "currentPeriod",
     values?: undefined
@@ -134,14 +124,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "collateralPool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "currentPeriod",
     data: BytesLike
@@ -282,12 +264,6 @@ export class Liquidations extends BaseContract {
   interface: LiquidationsInterface;
 
   functions: {
-    collateralPool(overrides?: CallOverrides): Promise<[string]>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     currentPeriod(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { period: BigNumber }>;
@@ -369,12 +345,6 @@ export class Liquidations extends BaseContract {
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
-  collateralPool(overrides?: CallOverrides): Promise<string>;
-
-  completeSetup(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   deployer(overrides?: CallOverrides): Promise<string>;
@@ -454,10 +424,6 @@ export class Liquidations extends BaseContract {
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
-    collateralPool(overrides?: CallOverrides): Promise<string>;
-
-    completeSetup(overrides?: CallOverrides): Promise<void>;
-
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<string>;
@@ -583,12 +549,6 @@ export class Liquidations extends BaseContract {
   };
 
   estimateGas: {
-    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
@@ -665,12 +625,6 @@ export class Liquidations extends BaseContract {
   };
 
   populateTransaction: {
-    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    completeSetup(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
