@@ -49,10 +49,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     "systemObtainReferencePrice(address)": FunctionFragment;
     "tcp()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-<<<<<<< HEAD
-=======
     "weth()": FunctionFragment;
->>>>>>> master
   };
 
   encodeFunctionData(functionFragment: "__now", values?: undefined): string;
@@ -160,10 +157,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-<<<<<<< HEAD
-=======
   encodeFunctionData(functionFragment: "weth", values?: undefined): string;
->>>>>>> master
 
   decodeFunctionResult(functionFragment: "__now", data: BytesLike): Result;
   decodeFunctionResult(
@@ -213,11 +207,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "getRealHueCountForSinglePoolPosition",
-=======
     functionFragment: "hueTcpPrice",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
@@ -233,15 +223,6 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     functionFragment: "isPoolInitialized",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "hueTcpPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
-=======
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "normalizeDecimals",
     data: BytesLike
@@ -266,10 +247,7 @@ interface PricesTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
->>>>>>> master
 
   events: {
     "Initialized(address)": EventFragment;
@@ -470,11 +448,8 @@ export class PricesTestable extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<[string]>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<[string]>;
->>>>>>> master
   };
 
   __now(overrides?: CallOverrides): Promise<number[]>;
@@ -616,11 +591,8 @@ export class PricesTestable extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
   weth(overrides?: CallOverrides): Promise<string>;
 
->>>>>>> master
   callStatic: {
     __now(overrides?: CallOverrides): Promise<number[]>;
 
@@ -752,11 +724,8 @@ export class PricesTestable extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<string>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<string>;
->>>>>>> master
   };
 
   filters: {
@@ -909,11 +878,8 @@ export class PricesTestable extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
   };
 
   populateTransaction: {
@@ -1055,10 +1021,7 @@ export class PricesTestable extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
->>>>>>> master
   };
 }

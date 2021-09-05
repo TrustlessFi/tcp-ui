@@ -1,44 +1,43 @@
-import React from 'react';
-import { Button } from 'carbon-components-react';
-import { useHistory } from 'react-router';
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForLiquidityPositions } from '../../slices/waitFor'
-import { formatPositionForUniswap } from '../../utils';
+import { Switch, Route } from "react-router-dom";
 
-import AppTile from '../library/AppTile'
-import PositionList from '../uniswap/src/components/PositionList';
-import UniswapWrapper from './UniswapWrapper';
+// import AddLiquidity from './AddLiquidity';
+// import CreatePosition from './CreatePosition';
+import PositionList from './PositionList';
+// import PositionDetails from './PositionDetails';
+// import RemoveLiquidity from './RemoveLiquidity';
 
-const LiquidityPositions = () => {
-  const history = useHistory();
-  const dispatch = useAppDispatch()
+const LiquidityPositions = () => (
+    <Switch>
+        {/*<Route
+          path='/liquidity/add/:currencyIdA?/:currencyIdB?/:feeAmount?'
+          render={routeProps => (
+            <CreatePosition {...routeProps} />
+          )}
+        />
+        <Route
+          exact
+          strict
+          path='/liquidity/increase/:currencyIdA?/:currencyIdB?/:feeAmount?/:positionId?'
+          render={routeProps => (
+            <AddLiquidity {...routeProps} />
+          )}
+        />
+        <Route
+          path = '/liquidity/remove/:positionId'
+          render={routeProps => (
+            <RemoveLiquidity {...routeProps} />
+          )}
+        />
+        <Route
+          path='/liquidity/position/:positionId'
+          render={routeProps => (
+            <PositionDetails {...routeProps} />
+          )}
+        />*/}
+        <Route path='/liquidity'>
+          <PositionList />
+        </Route>
+    </Switch>
+);
 
-  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
-
-  const uniswapFormattedPositions = liquidityPositions && Object.values(liquidityPositions).map(formatPositionForUniswap);
-
-  return (
-    <AppTile title='Liquidity Positions'>
-      <Button
-          className='add-liquidity-button'
-          kind='primary'
-          onClick={e => history.push('/liquidity/add')}
-          size='sm'
-          tabIndex={0}
-          type='submit'
-      >
-        New Position
-      </Button>
-      <div className='position-list-container'>
-        {uniswapFormattedPositions && (
-          <UniswapWrapper>
-            {/* @ts-ignore */} 
-            <PositionList positions={uniswapFormattedPositions} />
-          </UniswapWrapper>
-        )}
-      </div>
-    </AppTile>
-  )
-}
-
-export default LiquidityPositions
+export default LiquidityPositions;

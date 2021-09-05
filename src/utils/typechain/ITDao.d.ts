@@ -21,17 +21,6 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ITDaoInterface extends ethers.utils.Interface {
   functions: {
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    "getRewards(uint64)": FunctionFragment;
-    "incentiveContractMint(address,uint256)": FunctionFragment;
-    "mintVotingRewards(address,uint256)": FunctionFragment;
-    "voteInUnderlyingProtocol(address,uint256)": FunctionFragment;
-  };
-
-  encodeFunctionData(
-    functionFragment: "getRewards",
-    values: [BigNumberish]
-=======
     "lockTokens(address,uint256,uint8,address)": FunctionFragment;
     "mintVotingRewards(address,uint256)": FunctionFragment;
     "sendUnderlyingVotingRewards(address,uint256,address,uint256)": FunctionFragment;
@@ -40,34 +29,12 @@ interface ITDaoInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "lockTokens",
     values: [string, BigNumberish, BigNumberish, string]
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
   ): string;
   encodeFunctionData(
     functionFragment: "mintVotingRewards",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    functionFragment: "mintVotingRewards",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "voteInUnderlyingProtocol",
-    values: [string, BigNumberish]
-  ): string;
-
-  decodeFunctionResult(functionFragment: "getRewards", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "incentiveContractMint",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "mintVotingRewards",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "voteInUnderlyingProtocol",
-=======
     functionFragment: "sendUnderlyingVotingRewards",
     values: [string, BigNumberish, string, BigNumberish]
   ): string;
@@ -79,7 +46,6 @@ interface ITDaoInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "sendUnderlyingVotingRewards",
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
     data: BytesLike
   ): Result;
 
@@ -150,16 +116,11 @@ export class ITDao extends BaseContract {
   interface: ITDaoInterface;
 
   functions: {
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    getRewards(
-      positionNFTTokenID: BigNumberish,
-=======
     lockTokens(
       token: string,
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -169,23 +130,6 @@ export class ITDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    mintVotingRewards(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-  };
-
-  getRewards(
-    positionNFTTokenID: BigNumberish,
-=======
     sendUnderlyingVotingRewards(
       governorAlpha: string,
       proposalID: BigNumberish,
@@ -200,7 +144,6 @@ export class ITDao extends BaseContract {
     count: BigNumberish,
     lockDurationMonths: BigNumberish,
     to: string,
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -210,25 +153,6 @@ export class ITDao extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-  mintVotingRewards(
-    dest: string,
-    count: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  voteInUnderlyingProtocol(
-    arg0: string,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  callStatic: {
-    getRewards(
-      positionNFTTokenID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-=======
   sendUnderlyingVotingRewards(
     governorAlpha: string,
     proposalID: BigNumberish,
@@ -245,7 +169,6 @@ export class ITDao extends BaseContract {
       to: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
 
     mintVotingRewards(
       dest: string,
@@ -253,23 +176,11 @@ export class ITDao extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    mintVotingRewards(
-      dest: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-=======
     sendUnderlyingVotingRewards(
       governorAlpha: string,
       proposalID: BigNumberish,
       voter: string,
       votePortion: BigNumberish,
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -335,16 +246,11 @@ export class ITDao extends BaseContract {
   };
 
   estimateGas: {
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    getRewards(
-      positionNFTTokenID: BigNumberish,
-=======
     lockTokens(
       token: string,
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -354,39 +260,21 @@ export class ITDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    mintVotingRewards(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-=======
     sendUnderlyingVotingRewards(
       governorAlpha: string,
       proposalID: BigNumberish,
       voter: string,
       votePortion: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    getRewards(
-      positionNFTTokenID: BigNumberish,
-=======
     lockTokens(
       token: string,
       count: BigNumberish,
       lockDurationMonths: BigNumberish,
       to: string,
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -396,25 +284,12 @@ export class ITDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD:src/utils/typechain/ITDao.d.ts
-    mintVotingRewards(
-      dest: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    voteInUnderlyingProtocol(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-=======
     sendUnderlyingVotingRewards(
       governorAlpha: string,
       proposalID: BigNumberish,
       voter: string,
       votePortion: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master:src/utils/typechain/ItfDao.d.ts
     ): Promise<PopulatedTransaction>;
   };
 }

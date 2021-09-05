@@ -168,8 +168,6 @@ const _abi = [
     type: "function",
   },
   {
-<<<<<<< HEAD
-=======
     inputs: [
       {
         internalType: "uint32",
@@ -202,17 +200,13 @@ const _abi = [
     type: "function",
   },
   {
->>>>>>> master
     inputs: [
       {
-        internalType: "uint32",
-        name: "twapDuration",
-        type: "uint32",
+        internalType: "contract IUniswapV3Pool",
+        name: "pool",
+        type: "address",
       },
     ],
-<<<<<<< HEAD
-    name: "hueTcpPrice",
-=======
     name: "initializeWethPool",
     outputs: [],
     stateMutability: "nonpayable",
@@ -227,7 +221,6 @@ const _abi = [
       },
     ],
     name: "isPoolInitialized",
->>>>>>> master
     outputs: [
       {
         internalType: "bool",

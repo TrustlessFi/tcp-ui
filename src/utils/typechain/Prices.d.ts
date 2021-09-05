@@ -27,10 +27,7 @@ interface PricesInterface extends ethers.utils.Interface {
     "calculateTwappedPrice(address,bool)": FunctionFragment;
     "collateralPool()": FunctionFragment;
     "deployer()": FunctionFragment;
-<<<<<<< HEAD
-=======
     "finalizeInitialization(address,address,address)": FunctionFragment;
->>>>>>> master
     "getRealHueCountForSinglePoolPosition(address,int24,int24,int24,uint128,uint32)": FunctionFragment;
     "governor()": FunctionFragment;
     "hueTcpPrice(uint32)": FunctionFragment;
@@ -45,10 +42,7 @@ interface PricesInterface extends ethers.utils.Interface {
     "systemObtainReferencePrice(address)": FunctionFragment;
     "tcp()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-<<<<<<< HEAD
-=======
     "weth()": FunctionFragment;
->>>>>>> master
   };
 
   encodeFunctionData(
@@ -121,10 +115,7 @@ interface PricesInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-<<<<<<< HEAD
-=======
   encodeFunctionData(functionFragment: "weth", values?: undefined): string;
->>>>>>> master
 
   decodeFunctionResult(
     functionFragment: "calculateInstantCollateralPrice",
@@ -162,17 +153,6 @@ interface PricesInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "getRealHueCountForSinglePoolPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "hueTcpPrice",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
-=======
     functionFragment: "initializePool",
     data: BytesLike
   ): Result;
@@ -184,7 +164,6 @@ interface PricesInterface extends ethers.utils.Interface {
     functionFragment: "isPoolInitialized",
     data: BytesLike
   ): Result;
->>>>>>> master
   decodeFunctionResult(functionFragment: "priceInfo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "protocolPool",
@@ -201,10 +180,7 @@ interface PricesInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
->>>>>>> master
 
   events: {
     "Initialized(address)": EventFragment;
@@ -295,21 +271,6 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    convertSqrtPriceX96ToTick(
-      sqrtPriceX96: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[number]>;
-
-    convertTickToSqrtPriceX96(
-      tick: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master
     getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
@@ -377,11 +338,8 @@ export class Prices extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<[string]>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<[string]>;
->>>>>>> master
   };
 
   calculateInstantCollateralPrice(
@@ -418,21 +376,6 @@ export class Prices extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-  convertSqrtPriceX96ToTick(
-    sqrtPriceX96: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<number>;
-
-  convertTickToSqrtPriceX96(
-    tick: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  deployer(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
   getRealHueCountForSinglePoolPosition(
     pool: string,
     tick: BigNumberish,
@@ -498,11 +441,8 @@ export class Prices extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
   weth(overrides?: CallOverrides): Promise<string>;
 
->>>>>>> master
   callStatic: {
     calculateInstantCollateralPrice(
       twapDuration: BigNumberish,
@@ -538,11 +478,6 @@ export class Prices extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-<<<<<<< HEAD
-    deployer(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
     getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
@@ -599,11 +534,8 @@ export class Prices extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<string>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<string>;
->>>>>>> master
   };
 
   filters: {
@@ -658,11 +590,6 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master
     getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
@@ -718,11 +645,8 @@ export class Prices extends BaseContract {
     tcp(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
   };
 
   populateTransaction: {
@@ -760,11 +684,6 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     getRealHueCountForSinglePoolPosition(
       pool: string,
       tick: BigNumberish,
@@ -826,10 +745,7 @@ export class Prices extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-<<<<<<< HEAD
-=======
 
     weth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
->>>>>>> master
   };
 }

@@ -33,10 +33,6 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     "deployer()": FunctionFragment;
     "finalizeInitialization(address,address)": FunctionFragment;
     "firstPeriod()": FunctionFragment;
-<<<<<<< HEAD
-    "getRealHueCount(tuple,address,int24,uint128)": FunctionFragment;
-=======
->>>>>>> master
     "governor()": FunctionFragment;
     "increaseLiquidityPosition(tuple,uint32)": FunctionFragment;
     "init(address)": FunctionFragment;
@@ -44,34 +40,18 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     "lastPeriodGlobalRewardsAccrued()": FunctionFragment;
     "liquidateOutofRangePositions(address,uint256[])": FunctionFragment;
     "liquidationPenalty()": FunctionFragment;
-<<<<<<< HEAD
-    "maxLiquidityDecreasePerPeriod()": FunctionFragment;
-    "minHueCountPerPosition()": FunctionFragment;
-    "minLiquidityByPeriod(address)": FunctionFragment;
-    "minLiquidityProvideDuration()": FunctionFragment;
-=======
     "maxCollateralLiquidityDecreasePerPeriod()": FunctionFragment;
     "minCollateralLiquidityByPeriod(address)": FunctionFragment;
     "minHueCountPerPosition()": FunctionFragment;
->>>>>>> master
     "periodLength()": FunctionFragment;
     "poolConfigForPoolID(uint16)": FunctionFragment;
     "poolIDForPool(address)": FunctionFragment;
     "removeKickback(uint256)": FunctionFragment;
     "removeLiquidityPosition(tuple)": FunctionFragment;
     "requireAuthorized(bool)": FunctionFragment;
-<<<<<<< HEAD
-    "requirePositionLargeEnough(uint256)": FunctionFragment;
-    "setLiquidationPenalty(uint256)": FunctionFragment;
-    "setMaxLiquidityDecreasePerPeriod(uint256)": FunctionFragment;
-    "setMinHueCountPerPosition(uint128)": FunctionFragment;
-    "setMinLiquidityProvideDuration(uint64)": FunctionFragment;
-    "setRewardsPortions(uint256,uint256,uint256)": FunctionFragment;
-=======
     "setLiquidationPenalty(uint64)": FunctionFragment;
     "setMaxCollateralLiquidityDecreasePerPeriod(uint64)": FunctionFragment;
     "setMinHueCountPerPosition(uint128)": FunctionFragment;
->>>>>>> master
     "setTwapDuration(uint32)": FunctionFragment;
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
@@ -159,28 +139,8 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "getRealHueCount",
-    values: [
-      {
-        owner: string;
-        poolID: BigNumberish;
-        cumulativeLiquidity: BigNumberish;
-        totalRewards: BigNumberish;
-        lastTimeRewarded: BigNumberish;
-        lastBlockPositionIncreased: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        liquidity: BigNumberish;
-      },
-      string,
-      BigNumberish,
-      BigNumberish
-    ]
-=======
     functionFragment: "firstPeriod",
     values?: undefined
->>>>>>> master
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
   encodeFunctionData(
@@ -235,23 +195,11 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "minHueCountPerPosition",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minLiquidityByPeriod",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minLiquidityProvideDuration",
-=======
     functionFragment: "minCollateralLiquidityByPeriod",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "minHueCountPerPosition",
->>>>>>> master
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -299,17 +247,6 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "setMinLiquidityProvideDuration",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setRewardsPortions",
-    values: [BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-=======
->>>>>>> master
     functionFragment: "setTwapDuration",
     values: [BigNumberish]
   ): string;
@@ -363,11 +300,7 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "getRealHueCount",
-=======
     functionFragment: "firstPeriod",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
@@ -397,23 +330,11 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "minHueCountPerPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minLiquidityByPeriod",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minLiquidityProvideDuration",
-=======
     functionFragment: "minCollateralLiquidityByPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "minHueCountPerPosition",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -445,27 +366,11 @@ interface RewardsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "setMaxLiquidityDecreasePerPeriod",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMinHueCountPerPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMinLiquidityProvideDuration",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRewardsPortions",
-=======
     functionFragment: "setMaxCollateralLiquidityDecreasePerPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setMinHueCountPerPosition",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -712,27 +617,7 @@ export class RewardsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    getRealHueCount(
-      position: {
-        owner: string;
-        poolID: BigNumberish;
-        cumulativeLiquidity: BigNumberish;
-        totalRewards: BigNumberish;
-        lastTimeRewarded: BigNumberish;
-        lastBlockPositionIncreased: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        liquidity: BigNumberish;
-      },
-      pool: string,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-=======
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
->>>>>>> master
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
@@ -789,26 +674,14 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
     >;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -842,14 +715,6 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-<<<<<<< HEAD
-    requirePositionLargeEnough(
-      __hueCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-=======
->>>>>>> master
     setLiquidationPenalty(
       penalty: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -865,21 +730,6 @@ export class RewardsTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    setMinLiquidityProvideDuration(
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setRewardsPortions(
-      _protocol: BigNumberish,
-      _collateral: BigNumberish,
-      _reference: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-=======
->>>>>>> master
     setTwapDuration(
       duration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1040,27 +890,7 @@ export class RewardsTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-  getRealHueCount(
-    position: {
-      owner: string;
-      poolID: BigNumberish;
-      cumulativeLiquidity: BigNumberish;
-      totalRewards: BigNumberish;
-      lastTimeRewarded: BigNumberish;
-      lastBlockPositionIncreased: BigNumberish;
-      tickLower: BigNumberish;
-      tickUpper: BigNumberish;
-      liquidity: BigNumberish;
-    },
-    pool: string,
-    tick: BigNumberish,
-    liquidity: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-=======
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
   governor(overrides?: CallOverrides): Promise<string>;
 
@@ -1115,24 +945,14 @@ export class RewardsTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-  minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-  minLiquidityByPeriod(
-=======
   minCollateralLiquidityByPeriod(
->>>>>>> master
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
   >;
 
-<<<<<<< HEAD
-  minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
   minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1164,14 +984,6 @@ export class RewardsTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-<<<<<<< HEAD
-  requirePositionLargeEnough(
-    __hueCount: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-=======
->>>>>>> master
   setLiquidationPenalty(
     penalty: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1183,14 +995,6 @@ export class RewardsTestable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setMinHueCountPerPosition(
-<<<<<<< HEAD
-    min: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setMinLiquidityProvideDuration(
-=======
->>>>>>> master
     min: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1353,29 +1157,9 @@ export class RewardsTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-    firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRealHueCount(
-      position: {
-        owner: string;
-        poolID: BigNumberish;
-        cumulativeLiquidity: BigNumberish;
-        totalRewards: BigNumberish;
-        lastTimeRewarded: BigNumberish;
-        lastBlockPositionIncreased: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        liquidity: BigNumberish;
-      },
-      pool: string,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-=======
     finalizeInitialization(
       _collateralPool: string,
       _protocolPool: string,
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1433,24 +1217,14 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
     >;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1486,14 +1260,6 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-<<<<<<< HEAD
-    requirePositionLargeEnough(
-      __hueCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-=======
->>>>>>> master
     setLiquidationPenalty(
       penalty: BigNumberish,
       overrides?: CallOverrides
@@ -1505,14 +1271,6 @@ export class RewardsTestable extends BaseContract {
     ): Promise<void>;
 
     setMinHueCountPerPosition(
-<<<<<<< HEAD
-      min: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setMinLiquidityProvideDuration(
-=======
->>>>>>> master
       min: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1757,31 +1515,10 @@ export class RewardsTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRealHueCount(
-      position: {
-        owner: string;
-        poolID: BigNumberish;
-        cumulativeLiquidity: BigNumberish;
-        totalRewards: BigNumberish;
-        lastTimeRewarded: BigNumberish;
-        lastBlockPositionIncreased: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        liquidity: BigNumberish;
-      },
-      pool: string,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-=======
     finalizeInitialization(
       _collateralPool: string,
       _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master
     ): Promise<BigNumber>;
 
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1841,22 +1578,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1888,14 +1615,6 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    requirePositionLargeEnough(
-      __hueCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-=======
->>>>>>> master
     setLiquidationPenalty(
       penalty: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1907,14 +1626,6 @@ export class RewardsTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     setMinHueCountPerPosition(
-<<<<<<< HEAD
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setMinLiquidityProvideDuration(
-=======
->>>>>>> master
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -2014,31 +1725,10 @@ export class RewardsTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRealHueCount(
-      position: {
-        owner: string;
-        poolID: BigNumberish;
-        cumulativeLiquidity: BigNumberish;
-        totalRewards: BigNumberish;
-        lastTimeRewarded: BigNumberish;
-        lastBlockPositionIncreased: BigNumberish;
-        tickLower: BigNumberish;
-        tickUpper: BigNumberish;
-        liquidity: BigNumberish;
-      },
-      pool: string,
-      tick: BigNumberish,
-      liquidity: BigNumberish,
-      overrides?: CallOverrides
-=======
     finalizeInitialization(
       _collateralPool: string,
       _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master
     ): Promise<PopulatedTransaction>;
 
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -2100,25 +1790,12 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    minLiquidityByPeriod(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    minLiquidityProvideDuration(
-=======
     minCollateralLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     minHueCountPerPosition(
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2155,14 +1832,6 @@ export class RewardsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    requirePositionLargeEnough(
-      __hueCount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     setLiquidationPenalty(
       penalty: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2174,14 +1843,6 @@ export class RewardsTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setMinHueCountPerPosition(
-<<<<<<< HEAD
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMinLiquidityProvideDuration(
-=======
->>>>>>> master
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

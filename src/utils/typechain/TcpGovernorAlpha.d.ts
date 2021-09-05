@@ -23,10 +23,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   functions: {
     "BALLOT_TYPEHASH()": FunctionFragment;
     "DOMAIN_TYPEHASH()": FunctionFragment;
-<<<<<<< HEAD
-=======
     "INFLATION_PERCENTAGE()": FunctionFragment;
->>>>>>> master
     "__abdicate()": FunctionFragment;
     "cancel(uint256)": FunctionFragment;
     "castVote(uint256,bool)": FunctionFragment;
@@ -65,13 +62,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-=======
     functionFragment: "INFLATION_PERCENTAGE",
     values?: undefined
   ): string;
   encodeFunctionData(
->>>>>>> master
     functionFragment: "__abdicate",
     values?: undefined
   ): string;
@@ -170,13 +164,10 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
     functionFragment: "DOMAIN_TYPEHASH",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(
     functionFragment: "INFLATION_PERCENTAGE",
     data: BytesLike
   ): Result;
->>>>>>> master
   decodeFunctionResult(functionFragment: "__abdicate", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "cancel", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "castVote", data: BytesLike): Result;
@@ -309,11 +300,8 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-=======
     INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<[BigNumber]>;
 
->>>>>>> master
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -546,11 +534,8 @@ export class TCPGovernorAlpha extends BaseContract {
 
   DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-=======
   INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
->>>>>>> master
   __abdicate(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -776,11 +761,8 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-=======
     INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
->>>>>>> master
     __abdicate(overrides?: CallOverrides): Promise<void>;
 
     cancel(proposalId: BigNumberish, overrides?: CallOverrides): Promise<void>;
@@ -1047,11 +1029,8 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-=======
     INFLATION_PERCENTAGE(overrides?: CallOverrides): Promise<BigNumber>;
 
->>>>>>> master
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1164,13 +1143,10 @@ export class TCPGovernorAlpha extends BaseContract {
 
     DOMAIN_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-=======
     INFLATION_PERCENTAGE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
->>>>>>> master
     __abdicate(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

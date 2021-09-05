@@ -19,12 +19,8 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-interface TDaoGovernorAlphaInterface extends ethers.utils.Interface {
-=======
 interface GovernorAlphaWithVotingRewardsInterface
   extends ethers.utils.Interface {
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
   functions: {
     "BALLOT_TYPEHASH()": FunctionFragment;
     "DOMAIN_TYPEHASH()": FunctionFragment;
@@ -50,10 +46,6 @@ interface GovernorAlphaWithVotingRewardsInterface
     "queue(uint256)": FunctionFragment;
     "quorumVotes()": FunctionFragment;
     "state(uint256)": FunctionFragment;
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-    "tDao()": FunctionFragment;
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
     "timelock()": FunctionFragment;
     "votingDelay()": FunctionFragment;
     "votingPeriod()": FunctionFragment;
@@ -145,10 +137,6 @@ interface GovernorAlphaWithVotingRewardsInterface
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "state", values: [BigNumberish]): string;
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-  encodeFunctionData(functionFragment: "tDao", values?: undefined): string;
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "votingDelay",
@@ -227,10 +215,6 @@ interface GovernorAlphaWithVotingRewardsInterface
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "state", data: BytesLike): Result;
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-  decodeFunctionResult(functionFragment: "tDao", data: BytesLike): Result;
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "votingDelay",
@@ -266,11 +250,7 @@ interface GovernorAlphaWithVotingRewardsInterface
   getEvent(nameOrSignatureOrTopic: "VotingRewardsDistributed"): EventFragment;
 }
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-export class TDaoGovernorAlpha extends BaseContract {
-=======
 export class GovernorAlphaWithVotingRewards extends BaseContract {
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -311,11 +291,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-  interface: TDaoGovernorAlphaInterface;
-=======
   interface: GovernorAlphaWithVotingRewardsInterface;
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
 
   functions: {
     BALLOT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
@@ -349,11 +325,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     ): Promise<ContractTransaction>;
 
     claimVotingRewards(
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-      proposalId: BigNumberish,
-=======
       proposalID: BigNumberish,
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -543,11 +515,6 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[number]>;
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-    tDao(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
     timelock(overrides?: CallOverrides): Promise<[string]>;
 
     votingDelay(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -590,11 +557,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
   ): Promise<ContractTransaction>;
 
   claimVotingRewards(
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-    proposalId: BigNumberish,
-=======
     proposalID: BigNumberish,
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -774,15 +737,8 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
   ): Promise<ContractTransaction>;
 
   quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
 
   state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-  tDao(overrides?: CallOverrides): Promise<string>;
-=======
-
-  state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
 
   timelock(overrides?: CallOverrides): Promise<string>;
 
@@ -821,11 +777,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     ): Promise<void>;
 
     claimVotingRewards(
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-      proposalId: BigNumberish,
-=======
       proposalID: BigNumberish,
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1001,15 +953,8 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     queue(proposalId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     quorumVotes(overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
 
     state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
-
-    tDao(overrides?: CallOverrides): Promise<string>;
-=======
-
-    state(proposalId: BigNumberish, overrides?: CallOverrides): Promise<number>;
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
 
     timelock(overrides?: CallOverrides): Promise<string>;
 
@@ -1103,11 +1048,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     ): Promise<BigNumber>;
 
     claimVotingRewards(
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-      proposalId: BigNumberish,
-=======
       proposalID: BigNumberish,
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1176,11 +1117,6 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-    tDao(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
     votingDelay(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1226,11 +1162,7 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     claimVotingRewards(
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-      proposalId: BigNumberish,
-=======
       proposalID: BigNumberish,
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1301,11 +1233,6 @@ export class GovernorAlphaWithVotingRewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD:src/utils/typechain/TDaoGovernorAlpha.d.ts
-    tDao(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master:src/utils/typechain/GovernorAlphaWithVotingRewards.d.ts
     timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     votingDelay(overrides?: CallOverrides): Promise<PopulatedTransaction>;

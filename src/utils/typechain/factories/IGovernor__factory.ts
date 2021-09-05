@@ -149,27 +149,6 @@ const _abi = [
     type: "function",
   },
   {
-<<<<<<< HEAD
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "count",
-        type: "uint256",
-      },
-    ],
-    name: "distributeLiquidityRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-=======
->>>>>>> master
     inputs: [],
     name: "enforcedDecentralization",
     outputs: [
@@ -250,35 +229,6 @@ const _abi = [
     type: "function",
   },
   {
-<<<<<<< HEAD
-    inputs: [],
-    name: "hue",
-    outputs: [
-      {
-        internalType: "contract IHue",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "huePositionNFT",
-    outputs: [
-      {
-        internalType: "contract IPositionNFT",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-=======
->>>>>>> master
     inputs: [],
     name: "isShutdown",
     outputs: [
@@ -293,22 +243,6 @@ const _abi = [
   },
   {
     inputs: [],
-<<<<<<< HEAD
-    name: "lend",
-    outputs: [
-      {
-        internalType: "contract ILend",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-=======
->>>>>>> master
     name: "lendHue",
     outputs: [
       {
@@ -447,11 +381,7 @@ const _abi = [
         type: "address",
       },
     ],
-<<<<<<< HEAD
-    name: "requireHueMintingAccess",
-=======
     name: "requireDebtServicesAccess",
->>>>>>> master
     outputs: [],
     stateMutability: "view",
     type: "function",
@@ -477,43 +407,12 @@ const _abi = [
         type: "address",
       },
     ],
-<<<<<<< HEAD
-    name: "requireLentHueCountAccess",
-=======
     name: "requireInitializePoolAccess",
->>>>>>> master
     outputs: [],
     stateMutability: "view",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requirePositionWriteAccess",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "caller",
-        type: "address",
-      },
-    ],
-    name: "requireStoredCollateralAccess",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-<<<<<<< HEAD
     inputs: [
       {
         internalType: "address",
@@ -545,8 +444,6 @@ const _abi = [
     type: "function",
   },
   {
-=======
->>>>>>> master
     inputs: [],
     name: "rewards",
     outputs: [

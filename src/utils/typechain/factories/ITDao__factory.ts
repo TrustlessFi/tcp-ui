@@ -155,26 +155,8 @@ const _abi = [
   {
     inputs: [
       {
-<<<<<<< HEAD:src/utils/typechain/factories/ITDao__factory.ts
-        internalType: "uint64",
-        name: "positionNFTTokenID",
-        type: "uint64",
-      },
-    ],
-    name: "getRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "dest",
-=======
         internalType: "contract IERC20",
         name: "token",
->>>>>>> master:src/utils/typechain/factories/ITFDao__factory.ts
         type: "address",
       },
       {
@@ -193,10 +175,6 @@ const _abi = [
         type: "address",
       },
     ],
-<<<<<<< HEAD:src/utils/typechain/factories/ITDao__factory.ts
-    name: "incentiveContractMint",
-    outputs: [],
-=======
     name: "lockTokens",
     outputs: [
       {
@@ -205,7 +183,6 @@ const _abi = [
         type: "uint64",
       },
     ],
->>>>>>> master:src/utils/typechain/factories/ITFDao__factory.ts
     stateMutability: "nonpayable",
     type: "function",
   },

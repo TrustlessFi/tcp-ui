@@ -24,24 +24,12 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     "EMERGENCY_SHUTDOWN_THRESHOLD()": FunctionFragment;
     "accounting()": FunctionFragment;
     "auctions()": FunctionFragment;
-<<<<<<< HEAD
-    "calculateCurrentDailyRewardCount(uint64)": FunctionFragment;
-    "calculateRewardsForBootstrapPeriod(uint64)": FunctionFragment;
-    "collateralPool()": FunctionFragment;
-    "contains(address[],address)": FunctionFragment;
-    "contractsInitialized()": FunctionFragment;
-    "currentDailyRewardCount()": FunctionFragment;
-    "currentPeriod()": FunctionFragment;
-    "currentPhase()": FunctionFragment;
-    "distributeLiquidityRewards(address,uint256)": FunctionFragment;
-=======
     "borrowRewardsPortion()": FunctionFragment;
     "calculateCurrentDailyDebtRewardCount()": FunctionFragment;
     "calculateCurrentDailyLiquidityRewardCount()": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "currentPhase()": FunctionFragment;
     "deployer()": FunctionFragment;
->>>>>>> master
     "emergencyShutdownThresholdMet()": FunctionFragment;
     "emergencyShutdownTokensLocked(address)": FunctionFragment;
     "enforcedDecentralization()": FunctionFragment;
@@ -49,24 +37,12 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     "executeEmergencyShutdown()": FunctionFragment;
     "executeShutdown()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
-<<<<<<< HEAD
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)": FunctionFragment;
-    "getReferencePools()": FunctionFragment;
-    "getSignaturePayloadForUserAddress(address)": FunctionFragment;
-    "hue()": FunctionFragment;
-    "huePositionNFT()": FunctionFragment;
-    "initContracts(address,address,address,address,address,address,address,address,address,address)": FunctionFragment;
-    "initPools(address,address,address[])": FunctionFragment;
-    "isShutdown()": FunctionFragment;
-    "lend()": FunctionFragment;
-=======
     "firstRewardsPeriod()": FunctionFragment;
     "governorAlpha()": FunctionFragment;
     "hue()": FunctionFragment;
     "huePositionNFT()": FunctionFragment;
     "initialize(address,address,address,address,address,address,address,address,address,address)": FunctionFragment;
     "isShutdown()": FunctionFragment;
->>>>>>> master
     "lendHue()": FunctionFragment;
     "liquidations()": FunctionFragment;
     "lockTokensForEmergencyShutdown(uint256)": FunctionFragment;
@@ -80,21 +56,9 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     "prices()": FunctionFragment;
     "protocolLock()": FunctionFragment;
     "rates()": FunctionFragment;
-<<<<<<< HEAD
-    "referencePool(uint256)": FunctionFragment;
-    "removePoolFromPools(address[],address)": FunctionFragment;
-    "removeReferencePoolFromProtocol(address)": FunctionFragment;
-    "requireDecreaseDebtAccess(address)": FunctionFragment;
-    "requireHueMintingAccess(address)": FunctionFragment;
-    "requireHueReservesBurnAccess(address)": FunctionFragment;
-    "requireLentHueCountAccess(address)": FunctionFragment;
-    "requirePositionWriteAccess(address)": FunctionFragment;
-    "requireStoredCollateralAccess(address)": FunctionFragment;
-=======
     "requireDebtServicesAccess(address)": FunctionFragment;
     "requireHueReservesBurnAccess(address)": FunctionFragment;
     "requireInitializePoolAccess(address)": FunctionFragment;
->>>>>>> master
     "requireUpdatePositionAccess(address)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
     "rewards()": FunctionFragment;
@@ -106,10 +70,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     "shutdownTime()": FunctionFragment;
     "tcp()": FunctionFragment;
     "timelock()": FunctionFragment;
-<<<<<<< HEAD
-=======
     "tokenIncentiveMintCaps(address)": FunctionFragment;
->>>>>>> master
     "unlockTokensForEmergencyShutdown()": FunctionFragment;
     "upgradeAuctions(address)": FunctionFragment;
     "upgradeLiquidations(address)": FunctionFragment;
@@ -132,19 +93,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "auctions", values?: undefined): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "calculateCurrentDailyRewardCount",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "calculateRewardsForBootstrapPeriod",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "collateralPool",
-=======
     functionFragment: "borrowRewardsPortion",
->>>>>>> master
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -163,14 +112,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     functionFragment: "currentPhase",
     values?: undefined
   ): string;
-<<<<<<< HEAD
-  encodeFunctionData(
-    functionFragment: "distributeLiquidityRewards",
-    values: [string, BigNumberish]
-  ): string;
-=======
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
->>>>>>> master
   encodeFunctionData(
     functionFragment: "emergencyShutdownThresholdMet",
     values?: undefined
@@ -231,10 +173,6 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     functionFragment: "isShutdown",
     values?: undefined
   ): string;
-<<<<<<< HEAD
-  encodeFunctionData(functionFragment: "lend", values?: undefined): string;
-=======
->>>>>>> master
   encodeFunctionData(functionFragment: "lendHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidations",
@@ -276,27 +214,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "rates", values?: undefined): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "referencePool",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removePoolFromPools",
-    values: [string[], string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeReferencePoolFromProtocol",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireDecreaseDebtAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireHueMintingAccess",
-=======
     functionFragment: "requireDebtServicesAccess",
->>>>>>> master
     values: [string]
   ): string;
   encodeFunctionData(
@@ -304,38 +222,25 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "requireLentHueCountAccess",
-=======
     functionFragment: "requireInitializePoolAccess",
->>>>>>> master
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "requirePositionWriteAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireStoredCollateralAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(functionFragment: "rewards", values?: undefined): string;
-  encodeFunctionData(
-<<<<<<< HEAD
     functionFragment: "requireUpdatePositionAccess",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "requireValidAction",
     values: [string, string]
-=======
+  ): string;
+  encodeFunctionData(functionFragment: "rewards", values?: undefined): string;
+  encodeFunctionData(
     functionFragment: "setBorrowRewardsPortion",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setFirstRewardsPeriodToCurrentPeriod",
     values?: undefined
->>>>>>> master
   ): string;
   encodeFunctionData(
     functionFragment: "setPhaseOneStartTime",
@@ -356,13 +261,10 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(
-<<<<<<< HEAD
-=======
     functionFragment: "tokenIncentiveMintCaps",
     values: [string]
   ): string;
   encodeFunctionData(
->>>>>>> master
     functionFragment: "unlockTokensForEmergencyShutdown",
     values?: undefined
   ): string;
@@ -410,19 +312,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "accounting", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "auctions", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "calculateCurrentDailyRewardCount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "calculateRewardsForBootstrapPeriod",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "collateralPool",
-=======
     functionFragment: "borrowRewardsPortion",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -441,14 +331,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     functionFragment: "currentPhase",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(
-    functionFragment: "distributeLiquidityRewards",
-    data: BytesLike
-  ): Result;
-=======
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "emergencyShutdownThresholdMet",
     data: BytesLike
@@ -489,10 +372,6 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isShutdown", data: BytesLike): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "lend", data: BytesLike): Result;
-=======
->>>>>>> master
   decodeFunctionResult(functionFragment: "lendHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidations",
@@ -531,27 +410,7 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "rates", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "referencePool",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "removePoolFromPools",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "removeReferencePoolFromProtocol",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireDecreaseDebtAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireHueMintingAccess",
-=======
     functionFragment: "requireDebtServicesAccess",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -559,36 +418,24 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "requireLentHueCountAccess",
-=======
     functionFragment: "requireInitializePoolAccess",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "requirePositionWriteAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireStoredCollateralAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "rewards", data: BytesLike): Result;
-  decodeFunctionResult(
-<<<<<<< HEAD
     functionFragment: "requireUpdatePositionAccess",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "requireValidAction",
-=======
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "rewards", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "setBorrowRewardsPortion",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setFirstRewardsPeriodToCurrentPeriod",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -607,13 +454,10 @@ interface GovernorTestableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-=======
     functionFragment: "tokenIncentiveMintCaps",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
->>>>>>> master
     functionFragment: "unlockTokensForEmergencyShutdown",
     data: BytesLike
   ): Result;
@@ -721,21 +565,7 @@ export class GovernorTestable extends BaseContract {
 
     auctions(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-    calculateCurrentDailyRewardCount(
-      rewardsPeriod: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { result: BigNumber }>;
-
-    calculateRewardsForBootstrapPeriod(
-      bootsrapPeriod: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { result: BigNumber }>;
-
-    collateralPool(overrides?: CallOverrides): Promise<[string]>;
-=======
     borrowRewardsPortion(overrides?: CallOverrides): Promise<[BigNumber]>;
->>>>>>> master
 
     calculateCurrentDailyDebtRewardCount(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -751,15 +581,7 @@ export class GovernorTestable extends BaseContract {
 
     currentPhase(overrides?: CallOverrides): Promise<[number]>;
 
-<<<<<<< HEAD
-    distributeLiquidityRewards(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-=======
     deployer(overrides?: CallOverrides): Promise<[string]>;
->>>>>>> master
 
     emergencyShutdownThresholdMet(
       overrides?: CallOverrides
@@ -795,11 +617,6 @@ export class GovernorTestable extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
     initialize(
@@ -818,11 +635,6 @@ export class GovernorTestable extends BaseContract {
 
     isShutdown(overrides?: CallOverrides): Promise<[boolean]>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<[string]>;
 
     liquidations(overrides?: CallOverrides): Promise<[string]>;
@@ -876,40 +688,16 @@ export class GovernorTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-<<<<<<< HEAD
-    requireHueMintingAccess(
-=======
-    requireHueReservesBurnAccess(
->>>>>>> master
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-<<<<<<< HEAD
     requireHueReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -920,14 +708,13 @@ export class GovernorTestable extends BaseContract {
       signature: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
-=======
+
     rewards(overrides?: CallOverrides): Promise<[string]>;
 
     setBorrowRewardsPortion(
       portion: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
->>>>>>> master
 
     setFirstRewardsPeriodToCurrentPeriod(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -952,14 +739,11 @@ export class GovernorTestable extends BaseContract {
 
     timelock(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-=======
     tokenIncentiveMintCaps(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
->>>>>>> master
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -1013,27 +797,7 @@ export class GovernorTestable extends BaseContract {
 
   auctions(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-  calculateCurrentDailyRewardCount(
-    rewardsPeriod: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  calculateRewardsForBootstrapPeriod(
-    bootsrapPeriod: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  collateralPool(overrides?: CallOverrides): Promise<string>;
-
-  contains(
-    pools: string[],
-    pool: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-=======
   borrowRewardsPortion(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
   calculateCurrentDailyDebtRewardCount(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1047,15 +811,7 @@ export class GovernorTestable extends BaseContract {
 
   currentPhase(overrides?: CallOverrides): Promise<number>;
 
-<<<<<<< HEAD
-  distributeLiquidityRewards(
-    to: string,
-    count: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-=======
   deployer(overrides?: CallOverrides): Promise<string>;
->>>>>>> master
 
   emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1089,11 +845,6 @@ export class GovernorTestable extends BaseContract {
 
   hue(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-  hue(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
   huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
   initialize(
@@ -1112,11 +863,6 @@ export class GovernorTestable extends BaseContract {
 
   isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-  lend(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
   lendHue(overrides?: CallOverrides): Promise<string>;
 
   liquidations(overrides?: CallOverrides): Promise<string>;
@@ -1170,40 +916,16 @@ export class GovernorTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-<<<<<<< HEAD
-  requireHueMintingAccess(
-=======
-  requireHueReservesBurnAccess(
->>>>>>> master
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-<<<<<<< HEAD
   requireHueReservesBurnAccess(
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
 
-  requireLentHueCountAccess(
-=======
   requireInitializePoolAccess(
->>>>>>> master
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
 
-  requirePositionWriteAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  requireStoredCollateralAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-<<<<<<< HEAD
   requireUpdatePositionAccess(
     caller: string,
     overrides?: CallOverrides
@@ -1214,14 +936,13 @@ export class GovernorTestable extends BaseContract {
     signature: string,
     overrides?: CallOverrides
   ): Promise<void>;
-=======
+
   rewards(overrides?: CallOverrides): Promise<string>;
 
   setBorrowRewardsPortion(
     portion: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
->>>>>>> master
 
   setFirstRewardsPeriodToCurrentPeriod(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1246,14 +967,11 @@ export class GovernorTestable extends BaseContract {
 
   timelock(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-=======
   tokenIncentiveMintCaps(
     arg0: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
->>>>>>> master
   unlockTokensForEmergencyShutdown(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -1313,37 +1031,15 @@ export class GovernorTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    collateralPool(overrides?: CallOverrides): Promise<string>;
-
-    contains(
-      pools: string[],
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    contractsInitialized(overrides?: CallOverrides): Promise<boolean>;
-
-    currentDailyRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
-=======
     calculateCurrentDailyLiquidityRewardCount(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentPhase(overrides?: CallOverrides): Promise<number>;
 
-<<<<<<< HEAD
-    distributeLiquidityRewards(
-      to: string,
-      count: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-=======
     deployer(overrides?: CallOverrides): Promise<string>;
->>>>>>> master
 
     emergencyShutdownThresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1373,11 +1069,6 @@ export class GovernorTestable extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
     initialize(
@@ -1396,11 +1087,6 @@ export class GovernorTestable extends BaseContract {
 
     isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<string>;
 
     liquidations(overrides?: CallOverrides): Promise<string>;
@@ -1454,40 +1140,16 @@ export class GovernorTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-<<<<<<< HEAD
-    requireHueMintingAccess(
-=======
-    requireHueReservesBurnAccess(
->>>>>>> master
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-<<<<<<< HEAD
     requireHueReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -1496,7 +1158,9 @@ export class GovernorTestable extends BaseContract {
     requireValidAction(
       target: string,
       signature: string,
-=======
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     rewards(overrides?: CallOverrides): Promise<string>;
 
     setBorrowRewardsPortion(
@@ -1505,7 +1169,6 @@ export class GovernorTestable extends BaseContract {
     ): Promise<void>;
 
     setFirstRewardsPeriodToCurrentPeriod(
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1528,14 +1191,11 @@ export class GovernorTestable extends BaseContract {
 
     timelock(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-=======
     tokenIncentiveMintCaps(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
->>>>>>> master
     unlockTokensForEmergencyShutdown(overrides?: CallOverrides): Promise<void>;
 
     upgradeAuctions(
@@ -1610,36 +1270,19 @@ export class GovernorTestable extends BaseContract {
 
     borrowRewardsPortion(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    collateralPool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    contains(
-      pools: string[],
-      pool: string,
-      overrides?: CallOverrides
-=======
     calculateCurrentDailyDebtRewardCount(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateCurrentDailyLiquidityRewardCount(
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master
     ): Promise<BigNumber>;
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     currentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    distributeLiquidityRewards(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-=======
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     emergencyShutdownThresholdMet(
       overrides?: CallOverrides
@@ -1675,11 +1318,6 @@ export class GovernorTestable extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
     initialize(
@@ -1698,11 +1336,6 @@ export class GovernorTestable extends BaseContract {
 
     isShutdown(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidations(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1744,32 +1377,7 @@ export class GovernorTestable extends BaseContract {
 
     rates(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    referencePool(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    removePoolFromPools(
-      pools: string[],
-      pool: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    removeReferencePoolFromProtocol(
-      pool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    requireHueMintingAccess(
-=======
     requireDebtServicesAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1779,26 +1387,11 @@ export class GovernorTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -1808,13 +1401,13 @@ export class GovernorTestable extends BaseContract {
       target: string,
       signature: string,
       overrides?: CallOverrides
-=======
+    ): Promise<BigNumber>;
+
     rewards(overrides?: CallOverrides): Promise<BigNumber>;
 
     setBorrowRewardsPortion(
       portion: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master
     ): Promise<BigNumber>;
 
     setFirstRewardsPeriodToCurrentPeriod(
@@ -1840,14 +1433,11 @@ export class GovernorTestable extends BaseContract {
 
     timelock(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-=======
     tokenIncentiveMintCaps(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
->>>>>>> master
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1904,25 +1494,7 @@ export class GovernorTestable extends BaseContract {
 
     auctions(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    calculateCurrentDailyRewardCount(
-      rewardsPeriod: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    calculateRewardsForBootstrapPeriod(
-      bootsrapPeriod: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    collateralPool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    contains(
-      pools: string[],
-      pool: string,
-=======
     borrowRewardsPortion(
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1938,15 +1510,7 @@ export class GovernorTestable extends BaseContract {
 
     currentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    distributeLiquidityRewards(
-      to: string,
-      count: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-=======
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
->>>>>>> master
 
     emergencyShutdownThresholdMet(
       overrides?: CallOverrides
@@ -1986,11 +1550,6 @@ export class GovernorTestable extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initialize(
@@ -2009,11 +1568,6 @@ export class GovernorTestable extends BaseContract {
 
     isShutdown(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidations(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -2060,40 +1614,16 @@ export class GovernorTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    requireHueMintingAccess(
-=======
-    requireHueReservesBurnAccess(
->>>>>>> master
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-<<<<<<< HEAD
     requireHueReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -2103,13 +1633,13 @@ export class GovernorTestable extends BaseContract {
       target: string,
       signature: string,
       overrides?: CallOverrides
-=======
+    ): Promise<PopulatedTransaction>;
+
     rewards(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setBorrowRewardsPortion(
       portion: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
->>>>>>> master
     ): Promise<PopulatedTransaction>;
 
     setFirstRewardsPeriodToCurrentPeriod(
@@ -2135,14 +1665,11 @@ export class GovernorTestable extends BaseContract {
 
     timelock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-=======
     tokenIncentiveMintCaps(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
->>>>>>> master
     unlockTokensForEmergencyShutdown(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

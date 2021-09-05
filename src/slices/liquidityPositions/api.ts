@@ -20,8 +20,8 @@ const poolCache: PoolCache = {}
 
 const fetchLiquidityPool = async (data: liquidityPoolArgs): Promise<LiquidityPool> => {
   const rewards = await getProtocolContract(data.chainID, ProtocolContract.Rewards) as Rewards;
-  const poolAddress = await rewards.poolForPoolID(data.poolID);
-  return getPoolInformationForAddress(poolAddress);
+  const poolAddress = await rewards.poolConfigForPoolID(data.poolID);
+  return getPoolInformationForAddress(poolAddress.pool);
 }
 
 export const getPoolInformationForAddress = async (poolAddress: string): Promise<LiquidityPool> => {
@@ -92,11 +92,11 @@ export const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promi
       poolID,
       cumulativeLiquidity,
       totalRewards,
+      lastBlockPositionIncreased,
+      liquidity,
       lastTimeRewarded,
-      lastTimePositionIncreased,
       tickLower,
-      tickUpper,
-      liquidity
+      tickUpper
   ] = await accounting.getPoolPosition(data.positionID);
 
   let pool = poolCache[poolID];
@@ -110,16 +110,16 @@ export const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promi
   }
 
   return {
+      cumulativeLiquidity: unscale(cumulativeLiquidity),
       id: data.positionID,
+      lastTimeRewarded: unscale(lastTimeRewarded),
+      lastBlockPositionIncreased: unscale(lastBlockPositionIncreased),
+      liquidity,
       owner,
       pool,
-      cumulativeLiquidity: unscale(cumulativeLiquidity),
-      totalRewards: unscale(totalRewards),
-      lastTimeRewarded: unscale(lastTimeRewarded),
-      lastTimePositionIncreased: unscale(lastTimePositionIncreased),
       tickLower,
       tickUpper,
-      liquidity,
+      totalRewards: unscale(totalRewards),
   } as LiquidityPosition;
 }
 

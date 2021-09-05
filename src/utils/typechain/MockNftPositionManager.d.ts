@@ -18,12 +18,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-<<<<<<< HEAD:src/utils/typechain/MockTDaoInflationIncentiveDistributionContract.d.ts
-interface MockTDaoInflationIncentiveDistributionContractInterface
-  extends ethers.utils.Interface {
-=======
 interface MockNftPositionManagerInterface extends ethers.utils.Interface {
->>>>>>> master:src/utils/typechain/MockNftPositionManager.d.ts
   functions: {
     "WETH9()": FunctionFragment;
   };
@@ -35,11 +30,7 @@ interface MockNftPositionManagerInterface extends ethers.utils.Interface {
   events: {};
 }
 
-<<<<<<< HEAD:src/utils/typechain/MockTDaoInflationIncentiveDistributionContract.d.ts
-export class MockTDaoInflationIncentiveDistributionContract extends BaseContract {
-=======
 export class MockNftPositionManager extends BaseContract {
->>>>>>> master:src/utils/typechain/MockNftPositionManager.d.ts
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -80,11 +71,7 @@ export class MockNftPositionManager extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-<<<<<<< HEAD:src/utils/typechain/MockTDaoInflationIncentiveDistributionContract.d.ts
-  interface: MockTDaoInflationIncentiveDistributionContractInterface;
-=======
   interface: MockNftPositionManagerInterface;
->>>>>>> master:src/utils/typechain/MockNftPositionManager.d.ts
 
   functions: {
     WETH9(overrides?: CallOverrides): Promise<[string]>;

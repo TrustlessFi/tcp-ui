@@ -45,14 +45,8 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "increaseLentHue(uint256)": FunctionFragment;
     "increasePoolLiquidity(address,uint256)": FunctionFragment;
     "init(address)": FunctionFragment;
-<<<<<<< HEAD
-    "isPositionOwner(uint256,address)": FunctionFragment;
-    "lentHue()": FunctionFragment;
-    "localNftID(uint256)": FunctionFragment;
-=======
     "lentHue()": FunctionFragment;
     "nextUserInterfaceID()": FunctionFragment;
->>>>>>> master
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "onRewardsUpgrade(address)": FunctionFragment;
     "poolLiquidity(address)": FunctionFragment;
@@ -61,12 +55,6 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "registerUI(uint64,uint24,string)": FunctionFragment;
     "sendCollateral(address,uint256)": FunctionFragment;
     "sendLentHue(address,uint256)": FunctionFragment;
-<<<<<<< HEAD
-    "sendOneToOneBackedTokens(address,address,uint256)": FunctionFragment;
-    "setParticipatedInLiquidityGenesis(address,uint16,bool)": FunctionFragment;
-    "setParticipatedInMarketGenesis(address,bool)": FunctionFragment;
-=======
->>>>>>> master
     "setPoolPosition(uint256,tuple)": FunctionFragment;
     "setPosition(uint64,tuple)": FunctionFragment;
     "setRewardStatus(uint16,tuple)": FunctionFragment;
@@ -76,10 +64,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "stopIndexingPoolPositions()": FunctionFragment;
     "stopped()": FunctionFragment;
     "sweepHue()": FunctionFragment;
-<<<<<<< HEAD
-=======
     "userInterfaces(uint256)": FunctionFragment;
->>>>>>> master
     "validUpdate(bytes4)": FunctionFragment;
   };
 
@@ -169,18 +154,8 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "isPositionOwner",
-    values: [BigNumberish, string]
-  ): string;
-  encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "localNftID",
-    values: [BigNumberish]
-=======
     functionFragment: "nextUserInterfaceID",
     values?: undefined
->>>>>>> master
   ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
@@ -207,11 +182,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish, string]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "sendLentHue",
-=======
     functionFragment: "sendCollateral",
->>>>>>> master
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -291,13 +262,10 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "stopped", values?: undefined): string;
   encodeFunctionData(functionFragment: "sweepHue", values?: undefined): string;
-<<<<<<< HEAD
-=======
   encodeFunctionData(
     functionFragment: "userInterfaces",
     values: [BigNumberish]
   ): string;
->>>>>>> master
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
@@ -383,11 +351,6 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     functionFragment: "nextUserInterfaceID",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "lentHue", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "localNftID", data: BytesLike): Result;
-=======
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "onERC721Received",
     data: BytesLike
@@ -415,21 +378,6 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "sendLentHue",
-<<<<<<< HEAD
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sendOneToOneBackedTokens",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setParticipatedInLiquidityGenesis",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setParticipatedInMarketGenesis",
-=======
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -462,13 +410,10 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sweepHue", data: BytesLike): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(
     functionFragment: "userInterfaces",
     data: BytesLike
   ): Result;
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
@@ -808,15 +753,6 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    isPositionOwner(
-      nftID: BigNumberish,
-      addressToCheck: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-=======
->>>>>>> master
     lentHue(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     nextUserInterfaceID(overrides?: CallOverrides): Promise<[number]>;
@@ -853,11 +789,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    sendLentHue(
-=======
     sendCollateral(
->>>>>>> master
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1153,15 +1085,6 @@ export class AccountingTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-  isPositionOwner(
-    nftID: BigNumberish,
-    addressToCheck: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-=======
->>>>>>> master
   lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
   nextUserInterfaceID(overrides?: CallOverrides): Promise<number>;
@@ -1195,11 +1118,7 @@ export class AccountingTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-  sendLentHue(
-=======
   sendCollateral(
->>>>>>> master
     dest: string,
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1485,16 +1404,7 @@ export class AccountingTestable extends BaseContract {
 
     lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
-
-    localNftID(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-=======
     nextUserInterfaceID(overrides?: CallOverrides): Promise<number>;
->>>>>>> master
 
     onERC721Received(
       arg0: string,
@@ -1525,11 +1435,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<number>;
 
-<<<<<<< HEAD
-    sendLentHue(
-=======
     sendCollateral(
->>>>>>> master
       dest: string,
       count: BigNumberish,
       overrides?: CallOverrides
@@ -1609,8 +1515,6 @@ export class AccountingTestable extends BaseContract {
     stopped(overrides?: CallOverrides): Promise<boolean>;
 
     sweepHue(overrides?: CallOverrides): Promise<void>;
-<<<<<<< HEAD
-=======
 
     userInterfaces(
       arg0: BigNumberish,
@@ -1624,7 +1528,6 @@ export class AccountingTestable extends BaseContract {
         ipfsHash: string;
       }
     >;
->>>>>>> master
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
   };
@@ -1756,16 +1659,7 @@ export class AccountingTestable extends BaseContract {
 
     lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    lentHue(overrides?: CallOverrides): Promise<BigNumber>;
-
-    localNftID(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-=======
     nextUserInterfaceID(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     onERC721Received(
       arg0: string,
@@ -1796,11 +1690,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    sendLentHue(
-=======
     sendCollateral(
->>>>>>> master
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2008,14 +1898,7 @@ export class AccountingTestable extends BaseContract {
 
     lentHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    lentHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    localNftID(
-      arg0: BigNumberish,
-=======
     nextUserInterfaceID(
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -2053,11 +1936,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    sendLentHue(
-=======
     sendCollateral(
->>>>>>> master
       dest: string,
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }

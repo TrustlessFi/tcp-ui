@@ -19,29 +19,14 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
->>>>>>> master
 interface TDaoTestableInterface extends ethers.utils.Interface {
   functions: {
     "accrueInflation()": FunctionFragment;
     "addToken(address)": FunctionFragment;
-<<<<<<< HEAD
-=======
-interface TDaoInterface extends ethers.utils.Interface {
-  functions: {
-    "accrueInflation()": FunctionFragment;
-    "addToken(address)": FunctionFragment;
-    "admin()": FunctionFragment;
->>>>>>> master:src/utils/typechain/TDao.d.ts
-    "blacklistedAction(bytes4)": FunctionFragment;
-=======
     "admin()": FunctionFragment;
     "blacklistedAction(bytes4)": FunctionFragment;
     "calculateMonthsToDays(uint64)": FunctionFragment;
     "calculateVirtualCount(uint256,uint64)": FunctionFragment;
->>>>>>> master
     "countUnderlyingProtocolTokens()": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "dailyProtocolTDaoIncentiveCount()": FunctionFragment;
@@ -61,13 +46,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     "lockTokens(address,uint256,uint8,address)": FunctionFragment;
     "mintIncentive(address,uint256)": FunctionFragment;
     "mintVotingRewards(address,uint256)": FunctionFragment;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-    "multisig()": FunctionFragment;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
     "periodLength()": FunctionFragment;
     "selfDelegate(address)": FunctionFragment;
     "sendUnderlyingVotingRewards(address,uint256,address,uint256)": FunctionFragment;
@@ -92,21 +70,12 @@ interface TDaoInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "addToken", values: [string]): string;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
   encodeFunctionData(functionFragment: "admin", values?: undefined): string;
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
->>>>>>> master
   encodeFunctionData(
     functionFragment: "blacklistedAction",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-=======
     functionFragment: "calculateMonthsToDays",
     values: [BigNumberish]
   ): string;
@@ -115,7 +84,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
->>>>>>> master
     functionFragment: "countUnderlyingProtocolTokens",
     values?: undefined
   ): string;
@@ -188,13 +156,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     functionFragment: "mintVotingRewards",
     values: [string, BigNumberish]
   ): string;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-  encodeFunctionData(functionFragment: "multisig", values?: undefined): string;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
   encodeFunctionData(
     functionFragment: "periodLength",
     values?: undefined
@@ -257,21 +218,12 @@ interface TDaoInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "addToken", data: BytesLike): Result;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
   decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "blacklistedAction",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-=======
     functionFragment: "calculateMonthsToDays",
     data: BytesLike
   ): Result;
@@ -280,7 +232,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
->>>>>>> master
     functionFragment: "countUnderlyingProtocolTokens",
     data: BytesLike
   ): Result;
@@ -338,13 +289,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     functionFragment: "mintVotingRewards",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-  decodeFunctionResult(functionFragment: "multisig", data: BytesLike): Result;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
   decodeFunctionResult(
     functionFragment: "periodLength",
     data: BytesLike
@@ -425,15 +369,7 @@ interface TDaoInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "TokensUnlocked"): EventFragment;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
 export class TDaoTestable extends BaseContract {
-=======
-export class TDao extends BaseContract {
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-export class TDaoTestable extends BaseContract {
->>>>>>> master
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -474,15 +410,7 @@ export class TDaoTestable extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
   interface: TDaoTestableInterface;
-=======
-  interface: TDaoInterface;
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-  interface: TDaoTestableInterface;
->>>>>>> master
 
   functions: {
     accrueInflation(
@@ -494,23 +422,13 @@ export class TDaoTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
     admin(overrides?: CallOverrides): Promise<[string]>;
 
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-    admin(overrides?: CallOverrides): Promise<[string]>;
-
->>>>>>> master
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-<<<<<<< HEAD
-=======
     calculateMonthsToDays(
       months: BigNumberish,
       overrides?: CallOverrides
@@ -522,7 +440,6 @@ export class TDaoTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
->>>>>>> master
     countUnderlyingProtocolTokens(overrides?: CallOverrides): Promise<[number]>;
 
     currentPeriod(
@@ -633,14 +550,6 @@ export class TDaoTestable extends BaseContract {
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-
-    multisig(overrides?: CallOverrides): Promise<[string]>;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -713,23 +622,13 @@ export class TDaoTestable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
   admin(overrides?: CallOverrides): Promise<string>;
 
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-  admin(overrides?: CallOverrides): Promise<string>;
-
->>>>>>> master
   blacklistedAction(
     arg0: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
   calculateMonthsToDays(
     months: BigNumberish,
     overrides?: CallOverrides
@@ -741,7 +640,6 @@ export class TDaoTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
->>>>>>> master
   countUnderlyingProtocolTokens(overrides?: CallOverrides): Promise<number>;
 
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
@@ -846,14 +744,6 @@ export class TDaoTestable extends BaseContract {
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-
-  multisig(overrides?: CallOverrides): Promise<string>;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -921,23 +811,13 @@ export class TDaoTestable extends BaseContract {
 
     addToken(token: string, overrides?: CallOverrides): Promise<void>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
     admin(overrides?: CallOverrides): Promise<string>;
 
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-    admin(overrides?: CallOverrides): Promise<string>;
-
->>>>>>> master
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
     calculateMonthsToDays(
       months: BigNumberish,
       overrides?: CallOverrides
@@ -949,7 +829,6 @@ export class TDaoTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
->>>>>>> master
     countUnderlyingProtocolTokens(overrides?: CallOverrides): Promise<number>;
 
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1054,14 +933,6 @@ export class TDaoTestable extends BaseContract {
       count: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-
-    multisig(overrides?: CallOverrides): Promise<string>;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1187,23 +1058,13 @@ export class TDaoTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
     admin(overrides?: CallOverrides): Promise<BigNumber>;
 
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-    admin(overrides?: CallOverrides): Promise<BigNumber>;
-
->>>>>>> master
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-=======
     calculateMonthsToDays(
       months: BigNumberish,
       overrides?: CallOverrides
@@ -1215,7 +1076,6 @@ export class TDaoTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
->>>>>>> master
     countUnderlyingProtocolTokens(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1302,14 +1162,6 @@ export class TDaoTestable extends BaseContract {
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-
-    multisig(overrides?: CallOverrides): Promise<BigNumber>;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1383,23 +1235,13 @@ export class TDaoTestable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-=======
     admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
-    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
->>>>>>> master
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-=======
     calculateMonthsToDays(
       months: BigNumberish,
       overrides?: CallOverrides
@@ -1411,7 +1253,6 @@ export class TDaoTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
->>>>>>> master
     countUnderlyingProtocolTokens(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1500,14 +1341,6 @@ export class TDaoTestable extends BaseContract {
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-<<<<<<< HEAD
-<<<<<<< HEAD:src/utils/typechain/TDaoTestable.d.ts
-
-    multisig(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-=======
->>>>>>> master:src/utils/typechain/TDao.d.ts
-=======
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

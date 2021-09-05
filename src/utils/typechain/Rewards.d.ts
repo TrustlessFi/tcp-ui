@@ -38,34 +38,17 @@ interface RewardsInterface extends ethers.utils.Interface {
     "lastPeriodGlobalRewardsAccrued()": FunctionFragment;
     "liquidateOutofRangePositions(address,uint256[])": FunctionFragment;
     "liquidationPenalty()": FunctionFragment;
-<<<<<<< HEAD
-    "maxLiquidityDecreasePerPeriod()": FunctionFragment;
-    "minHueCountPerPosition()": FunctionFragment;
-    "minLiquidityByPeriod(address)": FunctionFragment;
-    "minLiquidityProvideDuration()": FunctionFragment;
-=======
     "maxCollateralLiquidityDecreasePerPeriod()": FunctionFragment;
     "minCollateralLiquidityByPeriod(address)": FunctionFragment;
     "minHueCountPerPosition()": FunctionFragment;
->>>>>>> master
     "periodLength()": FunctionFragment;
     "poolConfigForPoolID(uint16)": FunctionFragment;
     "poolIDForPool(address)": FunctionFragment;
     "removeKickback(uint256)": FunctionFragment;
     "removeLiquidityPosition(tuple)": FunctionFragment;
-<<<<<<< HEAD
-    "removeLiquidityPositionAfterShutdown(tuple)": FunctionFragment;
-    "removeReferencePool(address)": FunctionFragment;
-    "setLiquidationPenalty(uint256)": FunctionFragment;
-    "setMaxLiquidityDecreasePerPeriod(uint256)": FunctionFragment;
-    "setMinHueCountPerPosition(uint128)": FunctionFragment;
-    "setMinLiquidityProvideDuration(uint64)": FunctionFragment;
-    "setRewardsPortions(uint256,uint256,uint256)": FunctionFragment;
-=======
     "setLiquidationPenalty(uint64)": FunctionFragment;
     "setMaxCollateralLiquidityDecreasePerPeriod(uint64)": FunctionFragment;
     "setMinHueCountPerPosition(uint128)": FunctionFragment;
->>>>>>> master
     "setTwapDuration(uint32)": FunctionFragment;
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
@@ -168,23 +151,11 @@ interface RewardsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "minHueCountPerPosition",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minLiquidityByPeriod",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minLiquidityProvideDuration",
-=======
     functionFragment: "minCollateralLiquidityByPeriod",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "minHueCountPerPosition",
->>>>>>> master
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -220,23 +191,11 @@ interface RewardsInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "setMaxLiquidityDecreasePerPeriod",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMinHueCountPerPosition",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMinLiquidityProvideDuration",
-=======
     functionFragment: "setMaxCollateralLiquidityDecreasePerPeriod",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setMinHueCountPerPosition",
->>>>>>> master
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -315,23 +274,11 @@ interface RewardsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "minHueCountPerPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minLiquidityByPeriod",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "minLiquidityProvideDuration",
-=======
     functionFragment: "minCollateralLiquidityByPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "minHueCountPerPosition",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -359,27 +306,11 @@ interface RewardsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "setMaxLiquidityDecreasePerPeriod",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMinHueCountPerPosition",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMinLiquidityProvideDuration",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRewardsPortions",
-=======
     functionFragment: "setMaxCollateralLiquidityDecreasePerPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setMinHueCountPerPosition",
->>>>>>> master
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -584,26 +515,14 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
     >;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -647,21 +566,6 @@ export class Rewards extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-    setMinLiquidityProvideDuration(
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setRewardsPortions(
-      _protocol: BigNumberish,
-      _collateral: BigNumberish,
-      _reference: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-=======
->>>>>>> master
     setTwapDuration(
       duration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -778,24 +682,14 @@ export class Rewards extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-  minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-  minLiquidityByPeriod(
-=======
   minCollateralLiquidityByPeriod(
->>>>>>> master
     arg0: string,
     overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
   >;
 
-<<<<<<< HEAD
-  minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
   minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -833,14 +727,6 @@ export class Rewards extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setMinHueCountPerPosition(
-<<<<<<< HEAD
-    min: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setMinLiquidityProvideDuration(
-=======
->>>>>>> master
     min: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -964,24 +850,14 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber] & { period: BigNumber; minLiquidity: BigNumber }
     >;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1023,14 +899,6 @@ export class Rewards extends BaseContract {
     ): Promise<void>;
 
     setMinHueCountPerPosition(
-<<<<<<< HEAD
-      min: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setMinLiquidityProvideDuration(
-=======
->>>>>>> master
       min: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1299,22 +1167,12 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
-
-    minLiquidityByPeriod(
-=======
     minCollateralLiquidityByPeriod(
->>>>>>> master
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    minLiquidityProvideDuration(overrides?: CallOverrides): Promise<BigNumber>;
-=======
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
->>>>>>> master
 
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1356,21 +1214,6 @@ export class Rewards extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    setMinLiquidityProvideDuration(
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setRewardsPortions(
-      _protocol: BigNumberish,
-      _collateral: BigNumberish,
-      _reference: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-=======
->>>>>>> master
     setTwapDuration(
       duration: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1492,25 +1335,12 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    minHueCountPerPosition(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    minLiquidityByPeriod(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    minLiquidityProvideDuration(
-=======
     minCollateralLiquidityByPeriod(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     minHueCountPerPosition(
->>>>>>> master
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1553,14 +1383,6 @@ export class Rewards extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setMinHueCountPerPosition(
-<<<<<<< HEAD
-      min: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMinLiquidityProvideDuration(
-=======
->>>>>>> master
       min: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

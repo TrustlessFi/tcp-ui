@@ -51,10 +51,7 @@ interface MarketInterface extends ethers.utils.Interface {
     "twapDuration()": FunctionFragment;
     "unlend(uint256)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-<<<<<<< HEAD
-=======
     "valueOfLendTokensInHue(uint256)": FunctionFragment;
->>>>>>> master
   };
 
   encodeFunctionData(
@@ -152,13 +149,10 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-<<<<<<< HEAD
-=======
   encodeFunctionData(
     functionFragment: "valueOfLendTokensInHue",
     values: [BigNumberish]
   ): string;
->>>>>>> master
 
   decodeFunctionResult(
     functionFragment: "accrueInterest",
@@ -198,14 +192,6 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "huePositionNFT",
-    data: BytesLike
-  ): Result;
-=======
->>>>>>> master
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interestPortionToLenders",
@@ -260,13 +246,10 @@ interface MarketInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(
     functionFragment: "valueOfLendTokensInHue",
     data: BytesLike
   ): Result;
->>>>>>> master
 
   events: {
     "Initialized(address)": EventFragment;
@@ -451,14 +434,11 @@ export class Market extends BaseContract {
     ): Promise<ContractTransaction>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
->>>>>>> master
   };
 
   accrueInterest(
@@ -568,14 +548,11 @@ export class Market extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
   valueOfLendTokensInHue(
     lendTokenCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
->>>>>>> master
   callStatic: {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
@@ -701,14 +678,11 @@ export class Market extends BaseContract {
     ): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master
   };
 
   filters: {
@@ -933,14 +907,11 @@ export class Market extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master
   };
 
   populateTransaction: {
@@ -1057,13 +1028,10 @@ export class Market extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
->>>>>>> master
   };
 }

@@ -53,10 +53,7 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     "unlend(uint256)": FunctionFragment;
     "updatePositionImpl(tuple,tuple,uint64)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
-<<<<<<< HEAD
-=======
     "valueOfLendTokensInHue(uint256)": FunctionFragment;
->>>>>>> master
   };
 
   encodeFunctionData(
@@ -197,13 +194,10 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
-<<<<<<< HEAD
-=======
   encodeFunctionData(
     functionFragment: "valueOfLendTokensInHue",
     values: [BigNumberish]
   ): string;
->>>>>>> master
 
   decodeFunctionResult(
     functionFragment: "accrueInterest",
@@ -247,14 +241,6 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "huePositionNFT",
-    data: BytesLike
-  ): Result;
-=======
->>>>>>> master
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "interestPortionToLenders",
@@ -313,13 +299,10 @@ interface MarketTestableInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
-<<<<<<< HEAD
-=======
   decodeFunctionResult(
     functionFragment: "valueOfLendTokensInHue",
     data: BytesLike
   ): Result;
->>>>>>> master
 
   events: {
     "Initialized(address)": EventFragment;
@@ -627,14 +610,11 @@ export class MarketTestable extends BaseContract {
     >;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
->>>>>>> master
   };
 
   accrueInterest(
@@ -857,14 +837,11 @@ export class MarketTestable extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-=======
   valueOfLendTokensInHue(
     lendTokenCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
->>>>>>> master
   callStatic: {
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
@@ -1103,14 +1080,11 @@ export class MarketTestable extends BaseContract {
     >;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master
   };
 
   filters: {
@@ -1376,14 +1350,11 @@ export class MarketTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
->>>>>>> master
   };
 
   populateTransaction: {
@@ -1541,13 +1512,10 @@ export class MarketTestable extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-<<<<<<< HEAD
-=======
 
     valueOfLendTokensInHue(
       lendTokenCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
->>>>>>> master
   };
 }

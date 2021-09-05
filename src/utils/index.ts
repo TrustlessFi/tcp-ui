@@ -125,8 +125,8 @@ export const formatPositionForUniswap = (position: LiquidityPosition): CombinedL
   fee: position.pool.fee,
   liquidity: BigNumber.from(position.liquidity),
   nonce: position.nonce,
-  feeGrowthInside0LastX128: position.feeGrowthInside0LastX128,
-  feeGrowthInside1LastX128: position.feeGrowthInside1LastX128,
+  feeGrowthInside0LastX128: BigNumber.from(0),//position.feeGrowthInside0LastX128,
+  feeGrowthInside1LastX128: BigNumber.from(0),//position.feeGrowthInside1LastX128,
   operator: position.owner,
   slot0: {
       ...position.pool.slot0,

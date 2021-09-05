@@ -8,10 +8,8 @@ import { ChainID } from '../chainID'
 export interface LiquidityPosition {
   addingLiquidity?: boolean,
   cumulativeLiquidity: number,
-  feeGrowthInside0LastX128: BigNumber,
-  feeGrowthInside1LastX128: BigNumber,
   id: number,
-  lastTimePositionIncreased: number,
+  lastBlockPositionIncreased: number,
   lastTimeRewarded: number,
   liquidity: BigNumber,
   nonce: BigNumber,

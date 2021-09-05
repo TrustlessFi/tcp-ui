@@ -26,25 +26,12 @@ interface IGovernorInterface extends ethers.utils.Interface {
     "calculateCurrentDailyDebtRewardCount()": FunctionFragment;
     "calculateCurrentDailyLiquidityRewardCount()": FunctionFragment;
     "currentPhase()": FunctionFragment;
-<<<<<<< HEAD
-    "distributeLiquidityRewards(address,uint256)": FunctionFragment;
-    "enforcedDecentralization()": FunctionFragment;
-    "execute(address,string,bytes)": FunctionFragment;
-    "executeShutdown()": FunctionFragment;
-    "getIsGenesisPhaseAndRequireAuthIfSo(address,tuple)": FunctionFragment;
-    "getReferencePools()": FunctionFragment;
-    "hue()": FunctionFragment;
-    "huePositionNFT()": FunctionFragment;
-    "isShutdown()": FunctionFragment;
-    "lend()": FunctionFragment;
-=======
     "enforcedDecentralization()": FunctionFragment;
     "execute(address,string,bytes)": FunctionFragment;
     "executeShutdown()": FunctionFragment;
     "hue()": FunctionFragment;
     "huePositionNFT()": FunctionFragment;
     "isShutdown()": FunctionFragment;
->>>>>>> master
     "lendHue()": FunctionFragment;
     "liquidations()": FunctionFragment;
     "market()": FunctionFragment;
@@ -54,19 +41,9 @@ interface IGovernorInterface extends ethers.utils.Interface {
     "prices()": FunctionFragment;
     "protocolLock()": FunctionFragment;
     "rates()": FunctionFragment;
-<<<<<<< HEAD
-    "removeReferencePoolFromProtocol(address)": FunctionFragment;
-    "requireDecreaseDebtAccess(address)": FunctionFragment;
-    "requireHueMintingAccess(address)": FunctionFragment;
-    "requireHueReservesBurnAccess(address)": FunctionFragment;
-    "requireLentHueCountAccess(address)": FunctionFragment;
-    "requirePositionWriteAccess(address)": FunctionFragment;
-    "requireStoredCollateralAccess(address)": FunctionFragment;
-=======
     "requireDebtServicesAccess(address)": FunctionFragment;
     "requireHueReservesBurnAccess(address)": FunctionFragment;
     "requireInitializePoolAccess(address)": FunctionFragment;
->>>>>>> master
     "requireUpdatePositionAccess(address)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
     "rewards()": FunctionFragment;
@@ -101,13 +78,6 @@ interface IGovernorInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "distributeLiquidityRewards",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-=======
->>>>>>> master
     functionFragment: "enforcedDecentralization",
     values?: undefined
   ): string;
@@ -124,22 +94,10 @@ interface IGovernorInterface extends ethers.utils.Interface {
     functionFragment: "huePositionNFT",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
-  encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "huePositionNFT",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "isShutdown",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "lend", values?: undefined): string;
-=======
-    functionFragment: "isShutdown",
-    values?: undefined
-  ): string;
->>>>>>> master
   encodeFunctionData(functionFragment: "lendHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidations",
@@ -173,30 +131,9 @@ interface IGovernorInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(
-<<<<<<< HEAD
-    functionFragment: "requireHueMintingAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireHueReservesBurnAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireLentHueCountAccess",
-=======
     functionFragment: "requireInitializePoolAccess",
->>>>>>> master
     values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "requirePositionWriteAccess",
-    values: [string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "requireStoredCollateralAccess",
-    values: [string]
-  ): string;
-<<<<<<< HEAD
   encodeFunctionData(
     functionFragment: "requireUpdatePositionAccess",
     values: [string]
@@ -205,8 +142,6 @@ interface IGovernorInterface extends ethers.utils.Interface {
     functionFragment: "requireValidAction",
     values: [string, string]
   ): string;
-=======
->>>>>>> master
   encodeFunctionData(functionFragment: "rewards", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "settlement",
@@ -265,13 +200,6 @@ interface IGovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "distributeLiquidityRewards",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-=======
->>>>>>> master
     functionFragment: "enforcedDecentralization",
     data: BytesLike
   ): Result;
@@ -282,26 +210,10 @@ interface IGovernorInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "getIsGenesisPhaseAndRequireAuthIfSo",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getReferencePools",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
-  decodeFunctionResult(
-=======
->>>>>>> master
     functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isShutdown", data: BytesLike): Result;
-<<<<<<< HEAD
-  decodeFunctionResult(functionFragment: "lend", data: BytesLike): Result;
-=======
->>>>>>> master
   decodeFunctionResult(functionFragment: "lendHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidations",
@@ -332,30 +244,9 @@ interface IGovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-<<<<<<< HEAD
-    functionFragment: "requireHueMintingAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireHueReservesBurnAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireLentHueCountAccess",
-=======
     functionFragment: "requireInitializePoolAccess",
->>>>>>> master
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "requirePositionWriteAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "requireStoredCollateralAccess",
-    data: BytesLike
-  ): Result;
-<<<<<<< HEAD
   decodeFunctionResult(
     functionFragment: "requireUpdatePositionAccess",
     data: BytesLike
@@ -364,8 +255,6 @@ interface IGovernorInterface extends ethers.utils.Interface {
     functionFragment: "requireValidAction",
     data: BytesLike
   ): Result;
-=======
->>>>>>> master
   decodeFunctionResult(functionFragment: "rewards", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "settlement", data: BytesLike): Result;
   decodeFunctionResult(
@@ -477,11 +366,8 @@ export class IGovernor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-=======
     currentPhase(overrides?: CallOverrides): Promise<[number]>;
 
->>>>>>> master
     enforcedDecentralization(overrides?: CallOverrides): Promise<[string]>;
 
     execute(
@@ -497,20 +383,10 @@ export class IGovernor extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
     isShutdown(overrides?: CallOverrides): Promise<[boolean]>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<[string]>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<[string]>;
 
     liquidations(overrides?: CallOverrides): Promise<[string]>;
@@ -541,21 +417,7 @@ export class IGovernor extends BaseContract {
 
     rates(overrides?: CallOverrides): Promise<[string]>;
 
-<<<<<<< HEAD
-    removeReferencePoolFromProtocol(
-      pool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    requireHueMintingAccess(
-=======
     requireDebtServicesAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
@@ -565,26 +427,11 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-<<<<<<< HEAD
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -596,8 +443,6 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[void]>;
 
-=======
->>>>>>> master
     rewards(overrides?: CallOverrides): Promise<[string]>;
 
     settlement(overrides?: CallOverrides): Promise<[string]>;
@@ -659,11 +504,8 @@ export class IGovernor extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-<<<<<<< HEAD
-=======
   currentPhase(overrides?: CallOverrides): Promise<number>;
 
->>>>>>> master
   enforcedDecentralization(overrides?: CallOverrides): Promise<string>;
 
   execute(
@@ -679,22 +521,10 @@ export class IGovernor extends BaseContract {
 
   hue(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-  getReferencePools(overrides?: CallOverrides): Promise<string[]>;
-
-  hue(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
   huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
   isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-  lend(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
   lendHue(overrides?: CallOverrides): Promise<string>;
 
   liquidations(overrides?: CallOverrides): Promise<string>;
@@ -725,21 +555,7 @@ export class IGovernor extends BaseContract {
 
   rates(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-  removeReferencePoolFromProtocol(
-    pool: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  requireDecreaseDebtAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  requireHueMintingAccess(
-=======
   requireDebtServicesAccess(
->>>>>>> master
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
@@ -749,26 +565,11 @@ export class IGovernor extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-<<<<<<< HEAD
-  requireLentHueCountAccess(
-=======
   requireInitializePoolAccess(
->>>>>>> master
     caller: string,
     overrides?: CallOverrides
   ): Promise<void>;
 
-  requirePositionWriteAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-  requireStoredCollateralAccess(
-    caller: string,
-    overrides?: CallOverrides
-  ): Promise<void>;
-
-<<<<<<< HEAD
   requireUpdatePositionAccess(
     caller: string,
     overrides?: CallOverrides
@@ -780,8 +581,6 @@ export class IGovernor extends BaseContract {
     overrides?: CallOverrides
   ): Promise<void>;
 
-=======
->>>>>>> master
   rewards(overrides?: CallOverrides): Promise<string>;
 
   settlement(overrides?: CallOverrides): Promise<string>;
@@ -843,11 +642,8 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-=======
     currentPhase(overrides?: CallOverrides): Promise<number>;
 
->>>>>>> master
     enforcedDecentralization(overrides?: CallOverrides): Promise<string>;
 
     execute(
@@ -861,20 +657,10 @@ export class IGovernor extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<string>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
     isShutdown(overrides?: CallOverrides): Promise<boolean>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<string>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<string>;
 
     liquidations(overrides?: CallOverrides): Promise<string>;
@@ -910,40 +696,16 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-<<<<<<< HEAD
-    requireHueMintingAccess(
-=======
-    requireHueReservesBurnAccess(
->>>>>>> master
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-<<<<<<< HEAD
     requireHueReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -955,8 +717,6 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-=======
->>>>>>> master
     rewards(overrides?: CallOverrides): Promise<string>;
 
     settlement(overrides?: CallOverrides): Promise<string>;
@@ -1039,11 +799,8 @@ export class IGovernor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-=======
     currentPhase(overrides?: CallOverrides): Promise<BigNumber>;
 
->>>>>>> master
     enforcedDecentralization(overrides?: CallOverrides): Promise<BigNumber>;
 
     execute(
@@ -1059,22 +816,10 @@ export class IGovernor extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    getReferencePools(overrides?: CallOverrides): Promise<BigNumber>;
-
-    hue(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
     isShutdown(overrides?: CallOverrides): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<BigNumber>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidations(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1110,40 +855,16 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-<<<<<<< HEAD
-    requireHueMintingAccess(
-=======
-    requireHueReservesBurnAccess(
->>>>>>> master
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-<<<<<<< HEAD
     requireHueReservesBurnAccess(
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -1155,8 +876,6 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-=======
->>>>>>> master
     rewards(overrides?: CallOverrides): Promise<BigNumber>;
 
     settlement(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1219,11 +938,8 @@ export class IGovernor extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-=======
     currentPhase(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
->>>>>>> master
     enforcedDecentralization(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1241,20 +957,10 @@ export class IGovernor extends BaseContract {
 
     hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isShutdown(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    lend(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-=======
->>>>>>> master
     lendHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidations(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1285,21 +991,7 @@ export class IGovernor extends BaseContract {
 
     rates(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    removeReferencePoolFromProtocol(
-      pool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    requireDecreaseDebtAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    requireHueMintingAccess(
-=======
     requireDebtServicesAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1309,26 +1001,11 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-<<<<<<< HEAD
-    requireLentHueCountAccess(
-=======
     requireInitializePoolAccess(
->>>>>>> master
       caller: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    requirePositionWriteAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    requireStoredCollateralAccess(
-      caller: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-<<<<<<< HEAD
     requireUpdatePositionAccess(
       caller: string,
       overrides?: CallOverrides
@@ -1340,8 +1017,6 @@ export class IGovernor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-=======
->>>>>>> master
     rewards(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     settlement(overrides?: CallOverrides): Promise<PopulatedTransaction>;
