@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'carbon-components-react';
 import { useHistory } from 'react-router';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+
 import { waitForLiquidityPositions } from '../../slices/waitFor'
 import { formatPositionForUniswap } from '../../utils';
 
@@ -15,7 +16,8 @@ const PositionList = () => {
 
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
 
-  const uniswapFormattedPositions = liquidityPositions && Object.values(liquidityPositions).map(formatPositionForUniswap);
+  console.log('liquidity positions', liquidityPositions);
+  const uniswapFormattedPositions = liquidityPositions && Object.values(liquidityPositions.positions).map(formatPositionForUniswap);
 
   return (
     <AppTile title='Liquidity Positions'>

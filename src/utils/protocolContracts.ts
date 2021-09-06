@@ -36,6 +36,7 @@ import lendHueArtifact from "./artifacts/contracts/core/tokens/LendHue.sol/LendH
 import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
 import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
 import pricesArtifact from "./artifacts/contracts/core/logic/Prices.sol/Prices.json"
+import protocolDataAggregatorArtifact from "./artifacts/contracts/core/auxiliary/ProtocolDataAggregator.sol/ProtocolDataAggregator.json"
 import protocolLockArtifact from "./artifacts/contracts/core/utils/ProtocolLock.sol/ProtocolLock.json"
 import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json"
 import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
@@ -44,6 +45,7 @@ import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
 import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
 import hueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
 import huePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
+import { ProtocolDataAggregator } from "./typechain"
 
 export enum ProtocolContract {
   Accounting = "Accounting",
@@ -56,6 +58,7 @@ export enum ProtocolContract {
   Market = "Market",
   HuePositionNFT = "HuePositionNFT",
   Prices = "Prices",
+  ProtocolDataAggregator = "ProtocolDataAggregator",
   ProtocolLock = "ProtocolLock",
   Rates = "Rates",
   Rewards = "Rewards",
@@ -75,6 +78,7 @@ const artifactLookup = {
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
   [ProtocolContract.Prices]: pricesArtifact,
+  [ProtocolContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [ProtocolContract.ProtocolLock]: protocolLockArtifact,
   [ProtocolContract.Rates]: ratesArtifact,
   [ProtocolContract.Rewards]: rewardsArtifact,
@@ -95,6 +99,7 @@ export type protocolContractsType = {
   [ProtocolContract.Liquidations]?: Liquidations
   [ProtocolContract.Market]?: Market
   [ProtocolContract.Prices]?: Prices
+  [ProtocolContract.ProtocolDataAggregator]?: ProtocolDataAggregator
   [ProtocolContract.ProtocolLock]?: ProtocolLock
   [ProtocolContract.Rates]?: Rates
   [ProtocolContract.Rewards]?: Rewards
@@ -104,6 +109,8 @@ export type protocolContractsType = {
   [ProtocolContract.Hue]?: Hue
   [ProtocolContract.HuePositionNFT]?: HuePositionNFT
 }
+
+export type AnyProtocolContract = protocolContractsType[keyof protocolContractsType];
 
 let protocolContracts: protocolContractsType = {}
 
@@ -130,8 +137,7 @@ const getGovernor = async (chainID: ChainID): Promise<Governor | null> => {
   }
 }
 
-const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha | null> => {
-  const contract = ProtocolContract.TCPGovernorAlpha
+const getRootContract = async (chainID: ChainID, contract: ProtocolContract, contractName: rootContracts): Promise<AnyProtocolContract | null> => {
   let cachedContract = protocolContracts[contract]
 
   if (cachedContract !== undefined) {
@@ -141,13 +147,24 @@ const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha |
     if (provider === null) return null
 
     let result = new ethers.Contract(
-      getAddress(chainID, rootContracts.TcpGovernorAlpha),
+      getAddress(chainID, contractName),
       artifactLookup[contract].abi,
       provider
-    ) as unknown as TCPGovernorAlpha
+    ) as AnyProtocolContract
+    // @ts-ignore
     protocolContracts[contract] = result
     return result
   }
+}
+
+const getProtocolDataAggregator = async (chainID: ChainID): Promise<ProtocolDataAggregator | null> => {
+  const contract = ProtocolContract.ProtocolDataAggregator
+  return await getRootContract(chainID, contract, contract as unknown as rootContracts) as ProtocolDataAggregator
+}
+
+const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha | null> => {
+  const contract = ProtocolContract.TCPGovernorAlpha
+  return await getRootContract(chainID, contract, contract as unknown as rootContracts) as TCPGovernorAlpha
 }
 
 const getCachedContractFromGovernor = async (
@@ -285,6 +302,8 @@ export const getProtocolContract = async (chainID: ChainID, contract: ProtocolCo
       return await getGovernor(chainID)
     case ProtocolContract.TCPGovernorAlpha:
       return await getTcpGovernorAlpha(chainID)
+    case ProtocolContract.ProtocolDataAggregator:
+      return await getProtocolDataAggregator(chainID)
     default:
       return await getCachedContractFromGovernor(chainID, contract)
   }

@@ -1,9 +1,11 @@
 import { BigNumber } from "ethers"
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import { sliceState, initialState } from '../'
 import { fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
 import { ChainID } from '../chainID'
+import { LiquidityPool } from '../pools'
 
 export interface LiquidityPosition {
   addingLiquidity?: boolean,
@@ -23,34 +25,12 @@ export interface LiquidityPosition {
   totalRewards: number,
 };
 
-export interface LiquidityPool {
-  address: string,
-  fee: number,
-  liquidity: number,
-  slot0: SlotInfo,
-  token0Address: string,
-  token0Decimals: number,
-  token0Symbol: string,
-  token1Address: string,
-  token1Decimals: number,
-  token1Symbol: string
-}
 
-export interface SlotInfo {
-  sqrtPriceX96: BigNumber,
-  tick: number,
-  observationIndex: number,
-  observationCardinality: number,
-  observationCardinalityNext: number,
-  feeProtocol: number,
-  unlocked: boolean,
-}
-
-export interface liquidityPositions { [key: number]: LiquidityPosition }
-
-export interface liquidityPoolArgs {
-  chainID: ChainID,
-  poolID: number
+export interface liquidityPositions {
+  creating: boolean,
+  positions: {
+    [key: number]: LiquidityPosition,
+  }
 }
 
 export interface liquidityPositionsArgs {

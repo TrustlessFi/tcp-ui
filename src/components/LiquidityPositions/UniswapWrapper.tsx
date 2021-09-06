@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { ethers } from 'ethers';
 
 import { useAppSelector as selector } from '../../app/hooks';
-import '../uniswap/src/i18n';
+import { LanguageProvider } from '../uniswap/src/i18n';
 import ApplicationUpdater from '../uniswap/src/state/application/updater';
 import MulticallUpdater from '../uniswap/src/state/multicall/updater';
 import TransactionUpdater from '../uniswap/src/state/transactions/updater';
@@ -31,16 +31,15 @@ const Web3Context = ({ children }: UniswapWrapperProps) => {
   const chainId = selector(state => state.chainID);
 
   useEffect(() => {
-
-      if(chainId) {
-        setTimeout(() => {
-          try {
-            web3.activate(injected, undefined, true);
-          } catch (error) {
-            console.error(error);
-          }
-        }, 2000)
-      }
+    if (chainId) {
+      setTimeout(() => {
+        try {
+          web3.activate(injected, undefined, true);
+        } catch (error) {
+          console.error(error);
+        }
+      }, 2000)
+    }
   }, [chainId, web3]);
 
   return <>{children}</>;
@@ -52,12 +51,14 @@ const UniswapWrapper = ({ children }: UniswapWrapperProps) => {
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3Context>
           <Provider store={store}>
-            <ApplicationUpdater />
-            <MulticallUpdater />
-            <TransactionUpdater />
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
+            <LanguageProvider>
+              <ApplicationUpdater />
+              <MulticallUpdater />
+              <TransactionUpdater />
+              <ThemeProvider>
+                {children}
+              </ThemeProvider>
+            </LanguageProvider>
           </Provider>
         </Web3Context>
       </Web3ReactProvider>

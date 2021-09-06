@@ -8,6 +8,7 @@ import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './refer
 import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
 import { balanceInfo, balanceArgs } from './balances'
 import { getHueBalance } from './balances/hueBalance'
+import { getPools, poolsArgs, poolsInfo } from './pools'
 import { getLendHueBalance } from './balances/lendHueBalance'
 import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
@@ -160,5 +161,11 @@ export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalan
 export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
   (state: RootState) => state.liquidityPositions,
   getLiquidityPositions,
+  [FetchNode.ChainID, FetchNode.UserAddress],
+)
+
+export const waitForPools = getWaitFunction<poolsArgs, poolsInfo>(
+  (state: RootState) => state.pools,
+  getPools,
   [FetchNode.ChainID, FetchNode.UserAddress],
 )

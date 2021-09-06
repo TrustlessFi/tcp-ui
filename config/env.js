@@ -92,7 +92,8 @@ function getClientEnvironment(publicUrl) {
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
         REACT_APP_CHAIN_ID: '1337',
         REACT_APP_NETWORK_URL: 'https://localhost:8545',
-        REACT_APP_WALLETCONNECT_BRIDGE_URL: 'https://uniswap.bridge.walletconnect.org'
+        REACT_APP_WALLETCONNECT_BRIDGE_URL: 'https://uniswap.bridge.walletconnect.org',
+        REACT_APP_INFURA_KEY: '4bf032f2d38a4ed6bb975b80d6340847',
       }
     );
   // Stringify all values so we can feed into webpack DefinePlugin

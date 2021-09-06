@@ -369,7 +369,7 @@ module.exports = function (webpackEnv) {
           oneOf: [
             {
               test: /\.svg$/,
-              include: paths.appSrc + '/components/uniswap',
+              include: paths.appSrc + '/components/uniswap/assets/images/*',
               use: ['babel-loader', 'svg-react-loader']
             },
             // TODO: Merge this config once `image/avif` is in the mime-db
@@ -399,7 +399,12 @@ module.exports = function (webpackEnv) {
             {
               test: /\.(js|mjs|jsx|ts|tsx)$/,
               include: paths.appSrc,
-              exclude: paths.appSrc + '/components/uniswap/node_modules',
+              exclude: {
+                or: [
+                  paths.appSrc + '/components/uniswap/node_modules',
+                  paths.appSrc + '/components/uniswap/assets'
+                ],
+              },
               loader: require.resolve('babel-loader'),
               options: {
                 customize: require.resolve(

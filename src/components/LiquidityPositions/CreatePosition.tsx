@@ -1,70 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-/*import { createLiquidityPosition } from '../../actions/LiquidityPositionActions';
-import { LiquidityPositionState } from "../../stores/LiquidityPositionStore";
-import { getProtocolStatus } from "../../actions/ProtocolActions";
-import { ProtocolState } from "../../stores/ProtocolStore";
-import { WalletState } from '../../stores/WalletStore';
-import { getProtocolContract } from '../../blockchain/utils/protocolContracts';
+import { waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
+import { LiquidityPool } from '../../slices/pools'
+import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts';
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 
 import AddLiquidity from '../uniswap/src/pages/AddLiquidity';
 import UniswapWrapper from './UniswapWrapper';
-import { poolToUniswapPool } from '../../blockchain/utils/uniswapUtils';
+import { poolToUniswapPool } from '../../utils/uniswapUtils';
 
-interface CreatePositionProps {
-    liquidityPositions: LiquidityPositionState,
-    protocol: ProtocolState,
-    wallet: WalletState
-}
+const addCollateral = (pool: LiquidityPool) => ({ ...pool, type: 'collateral' });
+const addProtocol = (pool: LiquidityPool) => ({ ...pool, type: 'protocol' });
 
-const addReference = pool => ({ ...pool, type: 'reference' });
-const addCollateral = pool => ({ ...pool, type: 'collateral' });
-const addProtocol = pool => ({ ...pool, type: 'protocol' });
-
-const CreatePosition = ({
-    liquidityPositions,
-    protocol,
-    wallet,
-    ...routeProps
-}: CreatePositionProps & RouteComponentProps) => {
+const CreatePosition = (props: RouteComponentProps) => {
+    const dispatch = useAppDispatch()
+    const chainId = selector(state => state.chainID.chainID);
     const [ rewardsAddress, setRewardsAddress ] = useState('');
 
+    const pools = waitForPools(selector, dispatch)
+    const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
+
     useEffect(() => {
-        if(wallet.chainId) {
-            getProtocolContract('rewards')
-                .then(rewards => setRewardsAddress(rewards.address))
+        if(chainId) {
+            getProtocolContract(chainId, ProtocolContract.Rewards)
+                .then(rewards => rewards && setRewardsAddress(rewards.address))
                 .catch(console.error);
         }
-    }, [wallet.chainId]);
+    }, [chainId]);
 
-    useEffect(() => {
-        if(!wallet.chainId || protocol.pools) {
-            return;
-        }
-
-        getProtocolStatus(['pools']);
-    }, [wallet.chainId, protocol.pools]);
-
-    const pools = protocol.pools && protocol.pools.reference.map(addReference)
-        .concat(addCollateral(protocol.pools.collateral))
-        .concat(addProtocol(protocol.pools.protocol))
-        .map(poolToUniswapPool);
+    const uniswapPools = chainId && pools?.map(pool => pool.token0Symbol === 'WETH' ? addCollateral(pool) : addProtocol(pool))
+        .map(pool => poolToUniswapPool(chainId, pool));
 
     return (
         <div className='create-position-container'>
-            <UniswapWrapper wallet={wallet}>
+            <UniswapWrapper>
                 <AddLiquidity
-                    adding={liquidityPositions.creating}
-                    addLiquidity={createLiquidityPosition}
-                    pools={pools}
+                    adding={liquidityPositions?.creating || false}
+                    addLiquidity={() => {}}
+                    pools={uniswapPools || undefined}
                     spenderAddress={rewardsAddress}
-                    {...routeProps}
+                    {...props}
                 />
             </UniswapWrapper>
         </div>
     );
 };
 
-export default CreatePosition;*/
-export default () => <span />
+export default CreatePosition;

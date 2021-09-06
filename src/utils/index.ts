@@ -2,7 +2,7 @@ import { Token } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish } from "ethers";
 //import { BigNumber as UniswapBigNumber } from "../components/uniswap/node_modules/@ethersproject/bignumber"
 
-import { USDC, USDT } from '../components/uniswap/src/constants';
+import { USDC, USDT } from '../components/uniswap/src/constants/tokens';
 import { LiquidityPosition } from '../slices/liquidityPositions';
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';

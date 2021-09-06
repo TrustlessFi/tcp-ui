@@ -1,20 +1,20 @@
 import { Switch, Route } from "react-router-dom";
 
 // import AddLiquidity from './AddLiquidity';
-// import CreatePosition from './CreatePosition';
+import CreatePosition from './CreatePosition';
 import PositionList from './PositionList';
 // import PositionDetails from './PositionDetails';
 // import RemoveLiquidity from './RemoveLiquidity';
 
 const LiquidityPositions = () => (
     <Switch>
-        {/*<Route
+        <Route
           path='/liquidity/add/:currencyIdA?/:currencyIdB?/:feeAmount?'
           render={routeProps => (
             <CreatePosition {...routeProps} />
           )}
         />
-        <Route
+        {/*<Route
           exact
           strict
           path='/liquidity/increase/:currencyIdA?/:currencyIdB?/:feeAmount?/:positionId?'
