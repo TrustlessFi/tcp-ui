@@ -22,13 +22,13 @@ const addresses: {[key in ChainID]: { [key in rootContracts]: string}} = {
   },
   // TODO remove governor and derive from tcp governoralpha
   1337: {
-    USDC: "0x153900C946e33AED5F1ee79C92E149A262E2B1E9",
+    USDC: "0x5930a362f5f107e2E0628Ca9D2371a4fAcF31BFA",
     USDT: "0x5cB425A6f9563F7679381D28e3a22D8a64c7d1e3",
-    TUSD: "0x77958cEf4823d759F23b57427702cf1Dcd290aF1",
-    WETH: "0x870A7E07DaDF987f17ac08aF1a0015ebc78d2258",
-    ProtocolDataAggregator: "0x4B41f098a2e2d2d88aeC6112583A4C119B07e5f1",
-    TCPGovernorAlpha: "0x940392f0F9053e33eFDa21f31108F3A6d3c3191C",
-    UniswapRouter: "0xfE0cae103cB3aA14eF7fbf1Cee4B3EDeC7301D5B",
+    TUSD: "0x25C042b1Cfde068E58C3FDa8B1B90b860eea2E2d",
+    WETH: "0x10BFF065F1e70f782108005E9B4917C536F7FF51",
+    ProtocolDataAggregator: "0x9A56C1a66C518ced297D154140004adF2F332917",
+    TCPGovernorAlpha: "0x07F49133e93b0766883819C888E7928E947E72fd",
+    UniswapRouter: "0x870a7e07dadf987f17ac08af1a0015ebc78d2258",
   }
 }
 
