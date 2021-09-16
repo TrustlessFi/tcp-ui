@@ -109,7 +109,7 @@ let protocolContracts: protocolContractsType = {}
 
 const getGovernor = async (chainID: ChainID): Promise<Governor | null> => {
   const contract = ProtocolContract.Governor
-  let cachedContract = protocolContracts[contract]
+  const cachedContract = protocolContracts[contract]
 
   if (cachedContract !== undefined) {
     return cachedContract
@@ -132,7 +132,7 @@ const getGovernor = async (chainID: ChainID): Promise<Governor | null> => {
 
 const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha | null> => {
   const contract = ProtocolContract.TCPGovernorAlpha
-  let cachedContract = protocolContracts[contract]
+  const cachedContract = protocolContracts[contract]
 
   if (cachedContract !== undefined) {
     return cachedContract
@@ -140,7 +140,7 @@ const getTcpGovernorAlpha = async (chainID: ChainID): Promise<TCPGovernorAlpha |
     const provider = getProvider()
     if (provider === null) return null
 
-    let result = new ethers.Contract(
+    const result = new ethers.Contract(
       getAddress(chainID, rootContracts.TcpGovernorAlpha),
       artifactLookup[contract].abi,
       provider
@@ -154,7 +154,7 @@ const getCachedContractFromGovernor = async (
   chainID: ChainID,
   contract: ProtocolContract,
 ) => {
-  let cachedContract = protocolContracts[contract]
+  const cachedContract = protocolContracts[contract]
 
   if (cachedContract !== undefined) {
     return cachedContract
