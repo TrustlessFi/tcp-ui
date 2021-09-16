@@ -47,7 +47,6 @@ const CreatePositionPage = () => {
       <NumberInput
         id="tj-input"
         invalidText="Number is not valid"
-        max={100}
         min={0}
         step={1}
         onChange={onNumChange((value: number) => setCollateralCount(value))}
