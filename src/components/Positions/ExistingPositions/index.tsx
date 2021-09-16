@@ -1,19 +1,33 @@
-import React from "react";
-import { DataTableSkeleton } from 'carbon-components-react'
+import { DataTableSkeleton, Button } from 'carbon-components-react'
 import AppTile from '../../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { editorOpened } from '../../../slices/positionsEditor'
-import { waitForPositions, waitForGovernor } from '../../../slices/waitFor'
+import { waitForPositions } from '../../../slices/waitFor'
 import Center from '../../library/Center'
 import SimpleTable from '../../library/SimpleTable'
 
 import { numDisplay } from '../../../utils'
 
-export default () => (
-  <AppTile title="Debt positions">
-    <ExistingPositionsTable />
-  </AppTile>
-)
+
+export default () => {
+
+  const dispatch = useAppDispatch()
+  const createPositionButton =
+    <Button
+      size="small"
+      onClick={() => {console.log("opening"); dispatch(editorOpened({
+        positionID: 0,
+        creating: true,
+      }))}}
+     >
+      Create Position
+    </Button>
+
+  return (<AppTile title="Positions" rightElement={createPositionButton}>
+      <ExistingPositionsTable />
+    </AppTile>
+  )
+}
 
 const ExistingPositionsTable = ({}) => {
   const headers = ['Position ID', 'Debt', 'Collateral']
@@ -37,7 +51,6 @@ const ExistingPositionsTable = ({}) => {
     onClick: () => dispatch(editorOpened({
       positionID: position.id,
       creating: false,
-      isGenesis: false,
     }))
   }))
 
