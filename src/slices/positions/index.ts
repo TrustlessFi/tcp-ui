@@ -60,7 +60,11 @@ export const positionsSlice = createSlice({
 
     builder = getGenericReducerPending(builder, createPosition)
     builder = getGenericReducerRejected(builder, createPosition)
-    builder = getGenericReducerFulfilled(builder, createPosition)
+    builder
+      .addCase(createPosition.fulfilled, (state, action) => {
+        state.loading = false
+        state.data.value = null
+      })
   },
 })
 
