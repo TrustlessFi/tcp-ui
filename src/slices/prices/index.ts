@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { ChainID } from '../chainID'
-import { governorInfo } from '../governor'
 import { liquidationsInfo } from '../liquidations'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 
@@ -26,7 +25,7 @@ export const getPricesInfo = createAsyncThunk(
     const prices = await getProtocolContract(data.chainID, ProtocolContract.Prices) as Prices
     if (prices === null) return null
 
-    let [
+    const [
       ethPrice,
     ] = await Promise.all([
       prices.calculateInstantCollateralPrice(data.liquidationsInfo.twapDuration),

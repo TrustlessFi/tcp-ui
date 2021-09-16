@@ -1,4 +1,7 @@
 import { BigNumber, BigNumberish } from "ethers";
+import {
+  NumberInputOnChangeDefaultVariant,
+} from 'carbon-components-react'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';
 
@@ -22,6 +25,20 @@ export const scale = (_quantity: BigNumberish, decimals = 18): BigNumber => {
   }
   return quantity.mul(10**decimals)
 }
+
+export const numVal = (num: string | number): number => typeof num == 'string' ? parseInt(num) : num
+
+type direction = 'up' | 'down'
+
+export const onNumChange = (numChangeFunc: (val: number) => void) => (
+  _evt: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>,
+  direction: direction | {direction: direction, value: string | number } ,
+  value: number | string ,
+) => {
+  if (typeof direction === 'string') numChangeFunc(numVal(value))
+  else numChangeFunc(numVal(direction.value))
+}
+
 
 export const unscale = (quantity: BigNumber, decimals = 18): number => {
   const digits = quantity.toString().length

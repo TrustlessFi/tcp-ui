@@ -1,31 +1,80 @@
-import React, { useState } from "react";
+import { useState } from "react"
 import {
-  Table,
-  TableHead,
-  TableRow,
-  TableHeader,
-  TableBody,
-  TableCell,
-  DataTableSkeleton,
-  Button
+  Button,
+  NumberInput,
+  NumberInputOnChangeDefaultVariant,
 } from 'carbon-components-react'
-import AppTile from '../../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../../slices/waitFor'
-import { positionsInfo } from '../../../slices/positions'
-import Center from '../../library/Center'
 import SimpleTable from '../../library/SimpleTable'
 import { editorClosed } from '../../../slices/positionsEditor'
-import { numDisplay, roundToXDecimals } from '../../../utils'
+import { roundToXDecimals } from '../../../utils'
+import { onNumChange }  from '../../../utils/'
 
 export default ({}) => {
   const dispatch = useAppDispatch()
   const editorStatus = selector(state => state.positionsEditor.status)
 
+
+  const page = editorStatus.creating
+    ? <CreatePositionPage  />
+    : <UpdatePositionPage id={editorStatus.positionID} />
+
   return (
     <>
-      <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
-      <UpdatePositionPage id={editorStatus.positionID} />
+      <div>
+        <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
+      </div>
+      {page}
+    </>
+  )
+}
+
+const CreatePositionPage = () => {
+  const dispatch = useAppDispatch()
+  const market = waitForMarket(selector, dispatch)
+  if (market === null) throw 'Market is null'
+
+  const [collateralIncrease, setCollateralIncrease] = useState(0)
+  const [debtIncrease, setDebtIncrease] = useState(0)
+
+  const createPosition = () => {
+    console.log({debtIncrease, collateralIncrease})
+
+  }
+
+  return (
+    <>
+      I want to create a position with
+      <NumberInput
+        id="tj-input"
+        invalidText="Number is not valid"
+        max={100}
+        min={0}
+        step={1}
+        onChange={onNumChange((value: number) => setCollateralIncrease(value))}
+        value={0}
+      />
+
+
+      Eth of Collateral and borrow
+      <NumberInput
+        id="tj-input"
+        invalidText="Number is not valid"
+        hideSteppers
+        min={0}
+        step={1}
+        onChange={onNumChange((value: number) => setDebtIncrease(value))}
+        value={0}
+      />
+      Hue.
+
+      Eth is currently 3,100 Hue. If the price of Eth falls below 2712 Hue/Eth I will lose approximately 13% of my Eth to liquidators.
+      <div>
+        <Button onClick={createPosition}>
+          Create Position
+        </Button>
+      </div>
     </>
   )
 }
@@ -33,12 +82,14 @@ export default ({}) => {
 const UpdatePositionPage = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()
 
+  console.log("here 1")
   const positions = waitForPositions(selector, dispatch)
   const governor = waitForGovernor(selector, dispatch)
   const liquidations = waitForLiquidations(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const prices = waitForPrices(selector, dispatch)
+  console.log("here 2")
 
   const [collateralIncrease, setCollateralIncrease] = useState(0)
   const [debtIncrease, setDebtIncrease] = useState(0)
