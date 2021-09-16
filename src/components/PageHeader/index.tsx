@@ -53,14 +53,6 @@ const PageHeader = ({}) => {
             onClick={onClickSideNavExpand}
             isActive={isSideNavExpanded}
           />
-          <div style={{marginLeft: 16}}>
-            <HeaderName href="/" prefix="">
-              <Aperture32 />
-            </HeaderName>
-          </div>
-          <HeaderNavigation aria-label="Main Site Navigation Links">
-            {headerItems}
-          </HeaderNavigation>
           <SideNav
             aria-label="Side navigation"
             expanded={isSideNavExpanded}
@@ -71,21 +63,17 @@ const PageHeader = ({}) => {
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
-          <HeaderGlobalBar>
-            <HeaderGlobalAction aria-label="Account" className="metamask-connect-container">
-              <MetamaskConnectButton />
-            </HeaderGlobalAction>
-            <HeaderGlobalAction aria-label="Txs" onClick={toggleTxsOpen}>
-              <Activity20 />
-            </HeaderGlobalAction>
-          </HeaderGlobalBar>
-          <HeaderPanel aria-label="Recent Transactions" expanded={txsOpen}>
-            <Switcher aria-label="Recent Transactions List">
-              <SwitcherItem aria-label="Transaction Item">
-                <div>No recent transactions.</div>
-              </SwitcherItem>
-            </Switcher>
-          </HeaderPanel>
+          <div style={{marginLeft: 16}}>
+            <HeaderName href="/" prefix="">
+              <Aperture32 />
+            </HeaderName>
+          </div>
+          <HeaderNavigation aria-label="Main Site Navigation Links">
+            {headerItems}
+          </HeaderNavigation>
+          <div style={{marginLeft: 'auto', marginRight: 20}}>
+            <MetamaskConnectButton />
+          </div>
         </Header>
     )} />
   );

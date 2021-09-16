@@ -11,6 +11,15 @@ export interface ChainIDState {
   unknownChainID: number
 }
 
+export const chainIDToName = (chainID: ChainID) => {
+  switch(chainID) {
+    case ChainID.Rinkeby:
+      return 'Rinkeby'
+    case ChainID.Hardhat:
+      return 'Hardhat'
+  }
+}
+
 const initialState: ChainIDState = {
   chainID: null,
   unknownChainID: 0,
