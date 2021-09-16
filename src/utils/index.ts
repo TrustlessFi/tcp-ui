@@ -1,7 +1,4 @@
 import { BigNumber, BigNumberish } from "ethers";
-import {
-  NumberInputOnChangeDefaultVariant,
-} from 'carbon-components-react'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';
 
@@ -36,6 +33,8 @@ export const onNumChange = (numChangeFunc: (val: number) => void) => (
   if (typeof direction === 'string') numChangeFunc(numVal(value))
   else numChangeFunc(numVal(direction.value))
 }
+
+export const abbreviateAddress = (address: string) => address.substr(0, 6) + '...' + address.substr(address.length - 4, 4)
 
 
 export const unscale = (quantity: BigNumber, decimals = 18): number => {

@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import MetaMaskOnboarding from "@metamask/onboarding";
+import { Button, Tag } from 'carbon-components-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { ReactComponent as MetamaskLogo } from "../../img/metamask.svg";
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
 import { chainIDFound } from '../../slices/chainID'
+import { abbreviateAddress } from '../../utils'
+import { chainIDToName, ChainID } from '../../slices/chainID'
 
-const MetamaskConnectButton = () => {
+export default () => {
   const dispatch = useAppDispatch()
 
   const chainChanged = (chainID: number | string) => {
@@ -78,16 +80,28 @@ const MetamaskConnectButton = () => {
     }
   }
 
-  const isConnecting = selector(state => state.wallet.connecting)
   const address = selector(state => state.wallet.address)
-  const connectingStyle = isConnecting ? 'connecting' : (address != null ? 'connected' : 'disconnected')
+  const chainID = selector(state => state.chainID.chainID)
 
-  return (
-    <>
-      <MetamaskLogo onClick={onClick} className='metamask-connect-button' />
-      <div className={`connect-status-indicator ${connectingStyle}`} />
-    </>
-  );
-};
+  const getChainIndicator = (chainID: ChainID | null) => {
+    switch(chainID) {
+      case null:
+        return null
+      case ChainID.Hardhat:
+        return <Tag type="magenta">{chainIDToName(chainID)}</Tag>
+      case ChainID.Rinkeby:
+        return <Tag type="teal">{chainIDToName(chainID)}</Tag>
+    }
+  }
 
-export default MetamaskConnectButton
+  const button =
+    address !== null
+      ? <Button kind="secondary" size="small">
+          {abbreviateAddress(address)}
+        </Button>
+      : <Button size="small" onClick={onClick}>
+          Connect to a Wallet
+        </Button>
+
+  return <>{getChainIndicator(chainID)}{button}</>
+}
