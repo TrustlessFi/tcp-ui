@@ -1,5 +1,5 @@
-import React, { MouseEvent, useState } from 'react';
-import { withRouter, useHistory } from 'react-router';
+import React, { MouseEvent, useState } from 'react'
+import { withRouter, useHistory } from 'react-router'
 import {
   Header,
   HeaderContainer,
@@ -15,21 +15,21 @@ import {
   SwitcherItem,
   SideNavItems,
   HeaderSideNavItems,
-} from 'carbon-components-react';
-import { Activity20, Aperture32 } from '@carbon/icons-react';
+} from 'carbon-components-react'
+import { Activity20, Aperture32 } from '@carbon/icons-react'
 
-import MetamaskConnectButton from './MetamaskConnectButton';
+import Wallet from './Wallet'
 
 const PageHeader = ({}) => {
-  const [ txsOpen, setTxsOpen ] = useState(false);
+  const [ txsOpen, setTxsOpen ] = useState(false)
 
   let history = useHistory()
 
   const toggleTxsOpen = () => setTxsOpen(!txsOpen)
 
   const navigateToRoute = (path: string, e: MouseEvent<Element>) => {
-    history.push(path);
-    e.preventDefault();
+    history.push(path)
+    e.preventDefault()
   }
 
   const pages = [
@@ -42,7 +42,7 @@ const PageHeader = ({}) => {
     <HeaderMenuItem key={index} href={page.link} onClick={navigateToRoute.bind(null, page.link)}>
       {page.display}
     </HeaderMenuItem>
-  ));
+  ))
 
   return (
     <HeaderContainer
@@ -72,11 +72,11 @@ const PageHeader = ({}) => {
             {headerItems}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 20}}>
-            <MetamaskConnectButton />
+            <Wallet />
           </div>
         </Header>
     )} />
-  );
+  )
 }
 
-export default withRouter(PageHeader);
+export default withRouter(PageHeader)

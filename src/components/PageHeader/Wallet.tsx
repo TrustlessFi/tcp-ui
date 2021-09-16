@@ -1,14 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import MetaMaskOnboarding from "@metamask/onboarding";
-import { Button, Tag } from 'carbon-components-react';
+import { Button, Tag, ModalWrapper } from 'carbon-components-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
 import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
 import { chainIDToName, ChainID } from '../../slices/chainID'
+import WalletModal from './WalletModal'
 
 export default () => {
   const dispatch = useAppDispatch()
+
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   const chainChanged = (chainID: number | string) => {
 
@@ -94,14 +97,25 @@ export default () => {
     }
   }
 
+  // onClose={() => setIsWalletModalOpen(false)}
+  const modal =
+    <WalletModal
+      open={isWalletModalOpen}
+      onRequestClose={() => setIsWalletModalOpen(false)}  
+    />
+
   const button =
     address !== null
-      ? <Button kind="secondary" size="small">
+      ? <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
           {abbreviateAddress(address)}
         </Button>
       : <Button size="small" onClick={onClick}>
           Connect to a Wallet
         </Button>
 
-  return <>{getChainIndicator(chainID)}{button}</>
+  return <>
+    {getChainIndicator(chainID)}
+    {button}
+    {modal}
+    </>
 }
