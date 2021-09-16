@@ -17,13 +17,11 @@ export const log = (input: { base: number; val: number }) =>
 
 export const bnf = (val: BigNumberish) => BigNumber.from(val);
 
-export const scale = (_quantity: BigNumberish, decimals = 18): BigNumber => {
-  let quantity = bnf(_quantity)
-  while (decimals > 6) {
-    quantity = quantity.mul(1e6)
-    decimals -= 6
-  }
-  return quantity.mul(10**decimals)
+export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
+
+export const mnt = (quantity: number, decimals = 18): string => {
+  if (decimals < 6) throw 'too few decimals: ' + decimals
+  return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
 
 export const numVal = (num: string | number): number => typeof num == 'string' ? parseInt(num) : num
