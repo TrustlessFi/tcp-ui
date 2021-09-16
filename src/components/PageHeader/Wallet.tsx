@@ -7,6 +7,7 @@ import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
 import { chainIDToName, ChainID } from '../../slices/chainID'
 import WalletModal from './WalletModal'
+import NetworkIndicator from '../library/NetworkIndicator'
 
 export default () => {
   const dispatch = useAppDispatch()
@@ -84,24 +85,11 @@ export default () => {
   }
 
   const address = selector(state => state.wallet.address)
-  const chainID = selector(state => state.chainID.chainID)
 
-  const getChainIndicator = (chainID: ChainID | null) => {
-    switch(chainID) {
-      case null:
-        return null
-      case ChainID.Hardhat:
-        return <Tag type="magenta">{chainIDToName(chainID)}</Tag>
-      case ChainID.Rinkeby:
-        return <Tag type="teal">{chainIDToName(chainID)}</Tag>
-    }
-  }
-
-  // onClose={() => setIsWalletModalOpen(false)}
   const modal =
     <WalletModal
       open={isWalletModalOpen}
-      onRequestClose={() => setIsWalletModalOpen(false)}  
+      onRequestClose={() => setIsWalletModalOpen(false)}
     />
 
   const button =
@@ -114,8 +102,8 @@ export default () => {
         </Button>
 
   return <>
-    {getChainIndicator(chainID)}
+    <NetworkIndicator />
     {button}
-    {modal}
+    {isWalletModalOpen ? modal : null}
     </>
 }
