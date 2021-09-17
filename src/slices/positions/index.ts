@@ -1,15 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, initialState } from '../'
-import { fetchPositions, executeCreatePosition } from './api'
+import { fetchPositions } from './api'
 import { systemDebtInfo } from '../systemDebt'
 import { ChainID } from '../chainID'
 import { marketInfo } from "../market"
 import {
   getGenericReducerBuilder,
-  getGenericReducerPending,
-  getGenericReducerRejected,
-  getGenericReducerFulfilled,
 } from '../';
+import { getGenericWriteReducerBuilder } from '../index';
+import { executeCreatePosition } from './api'
 
 export interface Position {
   collateralCount: number,
@@ -48,7 +47,7 @@ export const getPositions = createAsyncThunk(
 
 export const createPosition = createAsyncThunk(
   'positions/createPosition',
-  async (data: createPositionArgs) => await executeCreatePosition(data),
+  async (data: createPositionArgs, {dispatch}) => await executeCreatePosition(dispatch, data),
 )
 
 export const positionsSlice = createSlice({
@@ -57,14 +56,7 @@ export const positionsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
-
-    builder = getGenericReducerPending(builder, createPosition)
-    builder = getGenericReducerRejected(builder, createPosition)
-    builder
-      .addCase(createPosition.fulfilled, (state, action) => {
-        state.loading = false
-        state.data.value = null
-      })
+    builder = getGenericWriteReducerBuilder(builder, createPosition)
   },
 })
 
