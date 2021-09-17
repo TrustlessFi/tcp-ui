@@ -27,7 +27,6 @@ export const initialState = {
   }
 }
 
-
 export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
   builder: ActionReducerMapBuilder<sliceState<Value>>,
   thunk: AsyncThunk<string, Args, {}>,
