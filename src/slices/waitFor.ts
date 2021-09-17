@@ -1,4 +1,4 @@
-import { AppDispatch, store, RootState } from './../app/store'
+import { AppDispatch, store, RootState } from '../app/store'
 import { AsyncThunkAction } from '@reduxjs/toolkit'
 import { AppSelector } from './../app/hooks'
 import { getGovernorInfo, governorInfo, governorArgs } from './governor'

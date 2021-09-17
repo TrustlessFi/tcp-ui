@@ -48,7 +48,7 @@ export const getPositions = createAsyncThunk(
 
 export const createPosition = createAsyncThunk(
   'positions/createPosition',
-  async (data: createPositionArgs) => await executeCreatePosition(data),
+  async (data: createPositionArgs, {dispatch}) => await executeCreatePosition(dispatch, data),
 )
 
 export const positionsSlice = createSlice({

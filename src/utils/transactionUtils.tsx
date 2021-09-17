@@ -15,6 +15,7 @@ export type TransactionHandler = {
   failure: TransactionFailureCallback,
 }
 
+/*
 export const genExecuteTransaction = async(
   rawTransaction: Promise<ContractTransaction>
 ): Promise<ContractReceipt> => {
@@ -52,3 +53,4 @@ const handleFailure = (rawError: any) => {
 
   console.error(error);
 }
+*/
