@@ -15,9 +15,8 @@ export default ({}) => {
   const dispatch = useAppDispatch()
   const editorStatus = selector(state => state.positionsEditor.status)
 
-
   const page = editorStatus.creating
-    ? <CreatePositionPage  />
+    ? <CreatePositionPage />
     : <UpdatePositionPage id={editorStatus.positionID} />
 
   return (
@@ -79,14 +78,12 @@ const CreatePositionPage = () => {
 const UpdatePositionPage = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()
 
-  console.log("here 1")
   const positions = waitForPositions(selector, dispatch)
   const governor = waitForGovernor(selector, dispatch)
   const liquidations = waitForLiquidations(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const prices = waitForPrices(selector, dispatch)
-  console.log("here 2")
 
   const [collateralIncrease, setCollateralIncrease] = useState(0)
   const [debtIncrease, setDebtIncrease] = useState(0)

@@ -3,6 +3,8 @@ import { getProtocolContract, ProtocolContract } from '../../utils/protocolContr
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
+import { AppDispatch, store, RootState } from '../../app/store'
+import { start, TxType } from '../../slices/tx'
 
 import { Accounting } from '../../utils/typechain/Accounting'
 import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
@@ -11,6 +13,7 @@ import getProvider from '../../utils/getProvider'
 import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
 import { ContractTransaction, ContractReceipt } from 'ethers'
+import { mnt } from '../../utils/index';
 
 export const fetchPositions = async (data: positionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
@@ -71,6 +74,7 @@ export const fetchPositions = async (data: positionsArgs) => {
 }
 
 
+/*
 export const genExecuteTransaction = async(
   rawTransaction: Promise<ContractTransaction>
 ): Promise<ContractReceipt> => {
@@ -91,14 +95,32 @@ export const genExecuteTransaction = async(
     throw e
   }
 }
+*/
 
-export const executeCreatePosition = async (data: createPositionArgs) => {
+export const executeCreatePosition = async (dispatch: AppDispatch, data: createPositionArgs) => {
+  /*
   const market = (await getProtocolContract(data.chainID, ProtocolContract.Market)) as Market
   const signer = getProvider()!.getSigner()
 
-  const transaction = market.connect(signer).createPosition(scale(data.debtCount), UIID, {
+  const tx = market.connect(signer).createPosition(scale(data.debtCount), UIID, {
     gasLimit: 1e10,
     value: scale(data.collateralCount)
   })
-  await genExecuteTransaction(transaction)
+  */
+
+  const description = {
+    mediumName: 'Creating a position with ' + data.collateralCount + ' collateral and ' + data.debtCount + ' debt.',
+    shortName: 'Creating a position',
+    collateral: data.collateralCount + '',
+    debt: data.debtCount + '',
+    ethPrice: data.collateralCount + '',
+    liquidationPrice: data.debtCount + '',
+  }
+
+  dispatch(start({
+    type: TxType.CreatePosition,
+    description,
+    args: [mnt(data.debtCount), UIID],
+    value: mnt(data.collateralCount),
+  }))
 }
