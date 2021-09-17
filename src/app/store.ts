@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
+
 import positionsReducer from '../slices/positions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'

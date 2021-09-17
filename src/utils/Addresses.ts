@@ -1,4 +1,5 @@
 import { ChainID } from '../slices/chainID'
+import { store } from '../app/store'
 
 export enum rootContracts {
   USDC = 'USDC',
@@ -26,4 +27,8 @@ const addresses: {[key in ChainID]: { [key in rootContracts]: string}} = {
   }
 }
 
-export const getAddress = (chainID: ChainID, contract: rootContracts) => addresses[chainID][contract]
+export const getAddress = (contract: rootContracts) => {
+  const chainID = store.getState().chainID.chainID
+  if (chainID === null || ChainID[chainID] === undefined) throw 'unknown chain id'
+  return addresses[chainID][contract]
+}

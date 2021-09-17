@@ -13,9 +13,11 @@ import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
-import { sliceState } from './'
+import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
+import { getGovernorContractArgs, ProtocolContract, getGovernorContract, getGovernorAlphaContract, getContractArgs, getContract } from './contracts'
 
-import { getPricesInfo, pricesInfo, pricesArgs } from './prices/index'
+import { sliceState } from './'
+import { getContractReturnType } from './contracts/index';
 
 enum FetchNode {
   ChainID,
@@ -28,8 +30,10 @@ enum FetchNode {
   SDI,
 }
 
+const isProtocolContract = (s: string | number): s is ProtocolContract => s in ProtocolContract
+
 const getNodeFetch = (
-  fetchNode: FetchNode,
+  fetchNode: FetchNode | ProtocolContract,
   selector: AppSelector,
   dispatch: AppDispatch,
 ) => {
@@ -50,13 +54,21 @@ const getNodeFetch = (
       return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
     case FetchNode.SDI:
       return {sdi: waitForSDI(selector, dispatch)}
+
+    case ProtocolContract.TCPGovernorAlpha:
+      return {[ProtocolContract.TCPGovernorAlpha]: waitForGovernorAlphaContract(selector, dispatch)}
+    case ProtocolContract.Governor:
+      return {[ProtocolContract.Governor]: waitForGovernorContract(selector, dispatch)}
+    default:
+      if (!isProtocolContract(fetchNode)) throw 'Missing fetchNode ' + fetchNode
+      return {[fetchNode]: getContractWaitFunction(fetchNode)(selector, dispatch)}
   }
 }
 
 const getWaitFunction = <Args extends {}, Value>(
   stateSelector: (state: RootState) => sliceState<Value>,
   thunk: (args: Args) => AsyncThunkAction<Value | null, Args, {}>,
-  fetchNodes: FetchNode[],
+  fetchNodes: (FetchNode | ProtocolContract) [],
 ) => (
   selector: AppSelector,
   dispatch: AppDispatch
@@ -84,10 +96,28 @@ const getWaitFunction = <Args extends {}, Value>(
   return state.data.value
 }
 
+export const waitForGovernorAlphaContract = getWaitFunction<getGovernorContractArgs, string>(
+  (state: RootState) => state.contracts[ProtocolContract.Governor],
+  getGovernorAlphaContract,
+  [],
+)
+
+export const waitForGovernorContract = getWaitFunction<getGovernorContractArgs, string>(
+  (state: RootState) => state.contracts[ProtocolContract.Governor],
+  getGovernorContract,
+  [ProtocolContract.TCPGovernorAlpha],
+)
+
+const getContractWaitFunction = (protocolContract: ProtocolContract) => getWaitFunction<getContractArgs, string>(
+  (state: RootState) => state.contracts[protocolContract],
+  getContract,
+  [ProtocolContract.Governor]
+)
+
 export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
   (state: RootState) => state.governor,
   getGovernorInfo,
-  [FetchNode.ChainID],
+  [FetchNode.ChainID, ProtocolContract.Governor],
 )
 
 export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
