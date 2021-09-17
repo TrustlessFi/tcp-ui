@@ -38,7 +38,7 @@ export const getPricesInfo = createAsyncThunk(
 )
 
 export const pricesSlice = createSlice({
-  name: 'governor',
+  name: 'prices',
   initialState: initialState as PricesState,
   reducers: {},
   extraReducers: (builder) => {
