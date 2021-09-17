@@ -6,6 +6,7 @@ import ErrorBoundary from './components/library/ErrorBoundary'
 import LiquidityPositions from './components/LiquidityPositions'
 import { Switch, Route } from "react-router-dom"
 import { BrowserRouter as Router } from "react-router-dom"
+import Timer from './components/utils/Timer'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -21,6 +22,7 @@ function App() {
     <ErrorBoundary>
       <Router>
         <PageHeader />
+        <Timer />
         <div style={{marginTop: 47, padding: 48 }}>
           <Switch>
             <Route exact path={['/', '/positions']}>

@@ -9,6 +9,7 @@ import WalletModal from './WalletModal'
 import NetworkIndicator from '../library/NetworkIndicator'
 import { getSortedUserTxs } from '../utils'
 import { toChecksumAddress } from '../../utils'
+import { TransactionStatus } from '../../slices/transactions/index';
 
 export default () => {
   const dispatch = useAppDispatch()
@@ -87,6 +88,7 @@ export default () => {
   const address = selector(state => state.wallet.address)
   const txs = selector(state => state.transactions)
   const sortedUserTxs = getSortedUserTxs(address, txs)
+  const incompleteUserTxs = sortedUserTxs.filter(tx => tx.status === TransactionStatus.Pending)
 
   const modal =
     <WalletModal
@@ -96,9 +98,9 @@ export default () => {
 
   const button =
     address !== null
-      ? (sortedUserTxs.length > 0
+      ? (incompleteUserTxs.length > 0
           ? <Button size="small" onClick={() => setIsWalletModalOpen(true)}>
-              {sortedUserTxs.length} Pending
+              {incompleteUserTxs.length} Pending
             </Button>
           : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
               {abbreviateAddress(address)}
