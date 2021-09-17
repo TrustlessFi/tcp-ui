@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { executeUpdateTransactions } from './api';
 
 export enum TransactionStatus {
   Pending,
@@ -19,6 +20,17 @@ export interface TransactionInfo extends TransactionArgs {
 
 export type TransactionState = {[key in string]: {[key in string]: TransactionInfo}}
 
+export interface updateTransactionsArgs {
+  currentState: TransactionState
+  userAddress: string
+}
+
+export const updateTransactions = createAsyncThunk(
+  'transactions/updateTransactions',
+  async (args: updateTransactionsArgs, {dispatch}) => await executeUpdateTransactions(args, dispatch),
+)
+
+
 export const transactionsSlice = createSlice({
   name: 'transactions',
   initialState: {} as TransactionState,
@@ -31,9 +43,26 @@ export const transactionsSlice = createSlice({
     clearTransactions: (state, action: PayloadAction<string>) => {
       state[action.payload] = {}
     },
-  }
+    transactionSucceeded: (state, action: PayloadAction<{userAddress: string, hash: string}>) => {
+      state[action.payload.userAddress][action.payload.hash].status = TransactionStatus.Succeeded
+    },
+    transactionFailed: (state, action: PayloadAction<{userAddress: string, hash: string}>) => {
+      state[action.payload.userAddress][action.payload.hash].status = TransactionStatus.Failed
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(updateTransactions.fulfilled, (state, action) => {
+        state = action.payload
+      })
+  },
 })
 
-export const { newTransaction, clearTransactions } = transactionsSlice.actions
+export const {
+  newTransaction,
+  clearTransactions,
+  transactionSucceeded,
+  transactionFailed,
+} = transactionsSlice.actions
 
 export default transactionsSlice.reducer
