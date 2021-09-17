@@ -14,6 +14,7 @@ import { UIID } from '../../constants'
 import { getPositions } from './'
 import { ContractTransaction, ContractReceipt } from 'ethers'
 import { mnt } from '../../utils/index';
+import { newTransaction } from '../transactions'
 
 export const fetchPositions = async (data: positionsArgs) => {
   const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
@@ -82,8 +83,9 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
     gasLimit: 1e10,
     value: scale(args.collateralCount)
   })
+  const hash = tx.hash
 
-  // TODO dispatch action registering this hash
+  dispatch(newTransaction({hash, title: 'Create Position'}))
 
   return tx.hash
 }

@@ -84,6 +84,7 @@ export default () => {
   }
 
   const address = selector(state => state.wallet.address)
+  const transactions = selector(state => state.transactions.data.value)
 
   const modal =
     <WalletModal
@@ -93,9 +94,14 @@ export default () => {
 
   const button =
     address !== null
-      ? <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
-          {abbreviateAddress(address)}
-        </Button>
+      ? (transactions !== null && transactions.length > 0
+          ? <Button size="small" onClick={() => setIsWalletModalOpen(true)}>
+              {transactions.length} Pending
+            </Button>
+          : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
+              {abbreviateAddress(address)}
+            </Button>
+        )
       : <Button size="small" onClick={onClick}>
           Connect to a Wallet
         </Button>
