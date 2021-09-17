@@ -34,16 +34,25 @@ export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
 ): ActionReducerMapBuilder<any> =>  {
   return builder
     .addCase(thunk.pending, (state) => {
-      state.write.writing = true
-      state.write.hash = ''
+      state.write = {
+        writing: true,
+        hash: '',
+        error: null,
+      }
     })
     .addCase(thunk.rejected, (state, action) => {
-      state.write.writing = false
-      state.write.error = action.error
+      state.write = {
+        writing: false,
+        hash: '',
+        error: action.error,
+      }
     })
     .addCase(thunk.fulfilled, (state, action) => {
-      state.write.writing = false
-      state.write.hash = action.payload
+      state.write = {
+        writing: false,
+        hash: action.payload,
+        error: null,
+      }
     })
 }
 

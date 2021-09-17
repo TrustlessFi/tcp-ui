@@ -77,7 +77,7 @@ export default ({
       shortName={'Position Creation'}
       onCancel={onCancel}
       isActive={isActive}
-      stateSelector={(state: RootState) => state.governor}
+      stateSelector={(state: RootState) => state.positions}
     />
   )
 }
