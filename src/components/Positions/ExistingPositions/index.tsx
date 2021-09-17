@@ -8,22 +8,21 @@ import SimpleTable from '../../library/SimpleTable'
 
 import { numDisplay } from '../../../utils'
 
-
 export default () => {
-
   const dispatch = useAppDispatch()
   const createPositionButton =
     <Button
       size="small"
-      onClick={() => {console.log("opening"); dispatch(editorOpened({
+      onClick={() => dispatch(editorOpened({
         positionID: 0,
         creating: true,
-      }))}}
+      }))}
      >
       Create Position
     </Button>
 
-  return (<AppTile title="Positions" rightElement={createPositionButton}>
+  return (
+    <AppTile title="Positions" rightElement={createPositionButton}>
       <ExistingPositionsTable />
     </AppTile>
   )

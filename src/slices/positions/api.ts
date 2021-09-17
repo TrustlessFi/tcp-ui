@@ -4,7 +4,6 @@ import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 import { AppDispatch, store, RootState } from '../../app/store'
-import { start, TxType } from '../../slices/tx'
 
 import { Accounting } from '../../utils/typechain/Accounting'
 import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
@@ -12,6 +11,7 @@ import { createPositionArgs } from './index'
 import getProvider from '../../utils/getProvider'
 import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
+import { getPositions } from './'
 import { ContractTransaction, ContractReceipt } from 'ethers'
 import { mnt } from '../../utils/index';
 
@@ -73,54 +73,31 @@ export const fetchPositions = async (data: positionsArgs) => {
   return positionsMap
 }
 
-
-/*
-export const genExecuteTransaction = async(
-  rawTransaction: Promise<ContractTransaction>
-): Promise<ContractReceipt> => {
-  try {
-    const tx = await rawTransaction
-
-    // showAlert({ content: `Executing ${tx.hash}` })
-
-    const receipt = await tx.wait(1)
-    // if (isDevEnvironment) await sleepS(2)
-
-    // hideAlert()
-    // showAlert({ content: `Transaction complete!` })
-
-    return receipt
-  } catch(e: any) {
-    // handleFailure(e)
-    throw e
-  }
-}
-*/
-
-export const executeCreatePosition = async (dispatch: AppDispatch, data: createPositionArgs) => {
-  /*
-  const market = (await getProtocolContract(data.chainID, ProtocolContract.Market)) as Market
+export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
+  const chainID = args.chainID
+  const market = (await getProtocolContract(chainID, ProtocolContract.Market)) as Market
   const signer = getProvider()!.getSigner()
 
-  const tx = market.connect(signer).createPosition(scale(data.debtCount), UIID, {
+  const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
     gasLimit: 1e10,
-    value: scale(data.collateralCount)
+    value: scale(args.collateralCount)
   })
-  */
 
-  const description = {
-    mediumName: 'Creating a position with ' + data.collateralCount + ' collateral and ' + data.debtCount + ' debt.',
-    shortName: 'Creating a position',
-    collateral: data.collateralCount + '',
-    debt: data.debtCount + '',
-    ethPrice: data.collateralCount + '',
-    liquidationPrice: data.debtCount + '',
-  }
+  // TODO dispatch action registering this hash
 
-  dispatch(start({
-    type: TxType.CreatePosition,
-    description,
-    args: [mnt(data.debtCount), UIID],
-    value: mnt(data.collateralCount),
-  }))
+  return tx.hash
 }
+
+  /*
+  const state = store.getState()
+
+  const userAddress = state.wallet.address
+  const sdi = state.systemDebt.data.value
+  const marketInfo = state.market.data.value
+
+  if (userAddress === null) throw 'User Address null on create position'
+  if (sdi === null) throw 'Sdi null on create position'
+  if (marketInfo === null) throw 'MarketInfo null on create position'
+
+  dispatch(getPositions({chainID, userAddress, sdi, marketInfo}))
+  */

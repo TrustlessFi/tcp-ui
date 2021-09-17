@@ -1,6 +1,5 @@
 import React from 'react'
 import PageHeader from './components/PageHeader'
-import TxConfirmModal from './components/Write/TxConfirmModal'
 import Positions from './components/Positions'
 import Governance from './components/Governance'
 import ErrorBoundary from './components/library/ErrorBoundary'
@@ -22,7 +21,6 @@ function App() {
     <ErrorBoundary>
       <Router>
         <PageHeader />
-        <TxConfirmModal />
         <div style={{marginTop: 47, padding: 48 }}>
           <Switch>
             <Route exact path={['/', '/positions']}>

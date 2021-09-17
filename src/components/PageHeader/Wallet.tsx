@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
 import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
-import { chainIDToName, ChainID } from '../../slices/chainID'
 import WalletModal from './WalletModal'
 import NetworkIndicator from '../library/NetworkIndicator'
 

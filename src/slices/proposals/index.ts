@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { genProposals } from './api'
 import { getGenericReducerBuilder } from '../'
@@ -17,43 +17,43 @@ export enum ProposalStates {
 
 export interface Proposal {
   proposal: {
-    id: number;
-    proposer: string;
-    eta: number;
-    targets: string[];
-    signatures: string[];
-    calldatas: string[];
-    startBlock: number;
-    endBlock: number;
-    forVotes: number;
-    againstVotes: number;
-    canceled: boolean;
-    executed: boolean;
-    state: ProposalStates | undefined;
+    id: number
+    proposer: string
+    eta: number
+    targets: string[]
+    signatures: string[]
+    calldatas: string[]
+    startBlock: number
+    endBlock: number
+    forVotes: number
+    againstVotes: number
+    canceled: boolean
+    executed: boolean
+    state: ProposalStates | undefined
   },
   receipt: {
-    hasVoted: boolean;
-    support: boolean;
-    votes: number;
+    hasVoted: boolean
+    support: boolean
+    votes: number
   },
-  voterAddress?: string;
-  votingPower: number;
-  voting: boolean;
-  voted: boolean;
-};
+  voterAddress?: string
+  votingPower: number
+  voting: boolean
+  voted: boolean
+}
 
-export interface proposalsInfo { [key: number]: Proposal };
+export interface proposalsInfo { [key: number]: Proposal }
 
 export type proposalsArgs = {
   chainID: ChainID,
 }
 
-export interface ProposalsState extends sliceState<proposalsInfo> {};
+export interface ProposalsState extends sliceState<proposalsInfo> {}
 
 export const getProposals = createAsyncThunk(
   'proposals/getProposals',
   async (args: proposalsArgs) => await genProposals(args.chainID),
-);
+)
 
 export const proposalsSlice = createSlice({
   name: 'proposals',
@@ -62,6 +62,6 @@ export const proposalsSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getProposals)
   },
-});
+})
 
-export default proposalsSlice.reducer;
+export default proposalsSlice.reducer
