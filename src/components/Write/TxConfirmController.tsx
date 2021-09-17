@@ -6,27 +6,7 @@ import {
   Modal,
   Button,
 } from 'carbon-components-react'
-import { ContractTransaction } from 'ethers'
 import { sliceState } from '../../slices/index';
-
-enum Stage {
-  AwaitingPreviewApproval,
-  AwaitingConfirmation,
-  TxSubmitted,
-}
-
-const stageToNextStage = (stage: Stage) => {
-  switch(stage) {
-    case Stage.AwaitingPreviewApproval:
-      return Stage.AwaitingConfirmation
-    case Stage.AwaitingConfirmation:
-      return Stage.TxSubmitted
-    case Stage.TxSubmitted:
-      return Stage.TxSubmitted
-
-  }
-
-}
 
 export default <Args extends {}, Value>({
   thunk,
@@ -48,68 +28,82 @@ export default <Args extends {}, Value>({
   stateSelector: (state: RootState) => sliceState<Value>,
 }) => {
   const dispatch = useAppDispatch()
-  const [stage, setStage] = useState(Stage.AwaitingPreviewApproval)
+  const [isPreviewApproved, setIsPreviewApproved] = useState(false)
   const state = selector(stateSelector)
 
-  if (stage === Stage.AwaitingConfirmation && state.write.hash.length > 0) {
-    setStage(Stage.TxSubmitted)
-  }
-
-  if (!isActive) return null
-
   const cancel = () => {
-    setStage(Stage.AwaitingPreviewApproval)
+    setIsPreviewApproved(false)
     onCancel()
   }
 
-  switch(stage) {
-    case Stage.AwaitingPreviewApproval:
-      const onRequestSubmit = () => {
-        dispatch(thunk)
-        setStage(Stage.AwaitingConfirmation)
-      }
+  console.log({hash: state.write.hash, isPreviewApproved})
 
-      return (
-        <Modal
-          open
-          size="sm"
-          onRequestClose={() => cancel()}
-          onRequestSubmit={onRequestSubmit}
-          modalHeading="Confirmation"
-          primaryButtonText={verb}
-          secondaryButtonText="Cancel">
-          {preview}
-        </Modal>
-      )
-    case Stage.AwaitingConfirmation:
-      return (
-        <Modal
-          open
-          passiveModal
-          preventCloseOnClickOutside
-          size="sm"
-          onRequestClose={() => cancel()}
-          modalHeading="Confirmation"
-          primaryButtonText={verb}
-          secondaryButtonText="Cancel">
-          <>{mediumName}</>
-        </Modal>
-      )
-    case Stage.TxSubmitted:
-      return (
-        <Modal
-          open
-          size="sm"
-          onRequestSubmit={cancel}
-          onRequestClose={cancel}
-          modalHeading="Confirmation"
-          primaryButtonText={verb}
-          secondaryButtonText="Cancel">
-          <>
-            <div><p>Transaction submitted</p></div>
-            <div><p>View in Explorer</p></div>
-          </>
-        </Modal>
-      )
+  if (!isActive) {
+    return null
+  } else if (!isPreviewApproved) {
+    const onRequestSubmit = () => {
+      dispatch(thunk)
+      setIsPreviewApproved(true)
+    }
+
+    return (
+      <Modal
+        open
+        preventCloseOnClickOutside
+        size="sm"
+        onRequestClose={() => cancel()}
+        onRequestSubmit={onRequestSubmit}
+        modalHeading="Confirmation"
+        primaryButtonText={verb}
+        secondaryButtonText="Cancel">
+        {preview}
+      </Modal>
+    )
+  } else if (state.write.error !== null) {
+    return (
+      <Modal
+        open
+        passiveModal
+        preventCloseOnClickOutside
+        size="sm"
+        onRequestClose={() => cancel()}
+        modalHeading="Error"
+        primaryButtonText={verb}
+        secondaryButtonText="Cancel">
+        <>{state.write.error.message}</>
+      </Modal>
+    )
+  } else if (state.write.hash.length === 0) {
+    return (
+      <Modal
+        open
+        passiveModal
+        preventCloseOnClickOutside
+        size="sm"
+        onRequestClose={() => cancel()}
+        modalHeading="Confirmation"
+        primaryButtonText={verb}
+        secondaryButtonText="Cancel">
+        <>{mediumName}</>
+      </Modal>
+    )
+  } else {
+    return (
+      <Modal
+        open
+        passiveModal
+        preventCloseOnClickOutside
+        size="sm"
+        onRequestSubmit={cancel}
+        onRequestClose={cancel}
+        modalHeading="Confirmation"
+        primaryButtonText={verb}
+        secondaryButtonText="Cancel">
+        <>
+          <div><p>Transaction submitted</p></div>
+          <div><p>View in Explorer</p></div>
+        </>
+      </Modal>
+    )
   }
 }
