@@ -11,24 +11,24 @@ import {
 } from 'carbon-components-react'
 import { abbreviateAddress } from '../../utils/index';
 import { clearTransactions } from '../../slices/transactions'
+import { getSortedUserTxs } from '../utils/index';
 
 export default () => {
   const dispatch = useAppDispatch()
-  const txs = selector(state => state.transactions.data.value)
+  const userAddress = selector(state => state.wallet.address)
+  const txs = selector(state => state.transactions)
 
-  console.log(1, {txs})
-  if (txs === null || txs.length === 0) return null
-  console.log(2, {txs})
-
+  const sortedUserTxs = getSortedUserTxs(userAddress, txs)
+  if (sortedUserTxs.length === 0) return null
 
   return (
     <>
       <div style={{marginTop: '1rem'}}>
         <h4>Recent Transactions</h4>
       </div>
-      {txs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.title)} icon={Launch16}>{tx.title}</SmallLink>)}
+      {sortedUserTxs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.title)} icon={Launch16}>{tx.title}</SmallLink>)}
       <Center style={{marginTop: '1rem'}}>
-        <SmallLink onClick={() => dispatch(clearTransactions())}>Clear all</SmallLink>
+        <SmallLink onClick={() => dispatch(clearTransactions(userAddress!))}>Clear all</SmallLink>
       </Center>
     </>
   )

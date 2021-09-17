@@ -85,7 +85,7 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
   })
   const hash = tx.hash
 
-  dispatch(newTransaction({hash, title: 'Create Position'}))
+  dispatch(newTransaction({hash, title: 'Create Position', userAddress: await signer.getAddress(), nonce: tx.nonce}))
 
   return tx.hash
 }

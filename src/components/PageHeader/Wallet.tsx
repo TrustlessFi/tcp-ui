@@ -7,6 +7,8 @@ import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
 import WalletModal from './WalletModal'
 import NetworkIndicator from '../library/NetworkIndicator'
+import { getSortedUserTxs } from '../utils'
+import { toChecksumAddress } from '../../utils'
 
 export default () => {
   const dispatch = useAppDispatch()
@@ -50,8 +52,7 @@ export default () => {
   const walletConnected = (accounts: string[]) => {
     // TODO if new account is different than the current account, and the current account isn't null
     // then clear all of the slices that depend on the user data
-    let account = accounts && accounts[0]
-    if (account == null) return
+    const account = toChecksumAddress(accounts && accounts[0])
 
     dispatch(connected(account))
   }
@@ -84,7 +85,8 @@ export default () => {
   }
 
   const address = selector(state => state.wallet.address)
-  const transactions = selector(state => state.transactions.data.value)
+  const txs = selector(state => state.transactions)
+  const sortedUserTxs = getSortedUserTxs(address, txs)
 
   const modal =
     <WalletModal
@@ -94,9 +96,9 @@ export default () => {
 
   const button =
     address !== null
-      ? (transactions !== null && transactions.length > 0
+      ? (sortedUserTxs.length > 0
           ? <Button size="small" onClick={() => setIsWalletModalOpen(true)}>
-              {transactions.length} Pending
+              {sortedUserTxs.length} Pending
             </Button>
           : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
               {abbreviateAddress(address)}
