@@ -1,11 +1,16 @@
-import { SerializedError, AsyncThunk } from '@reduxjs/toolkit';
+import { SerializedError, AsyncThunk, Draft } from '@reduxjs/toolkit';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 export interface sliceState<T> {
   loading: boolean
   data: {
-    error: SerializedError | null,
+    error: SerializedError | null
     value: T | null
+  }
+  write: {
+    writing: boolean
+    hash: string
+    error: SerializedError | null
   }
 }
 
@@ -15,42 +20,47 @@ export const initialState = {
     error: null,
     value: null,
   },
+  write: {
+    writing: false,
+    hash: '',
+    error: null,
+  }
 }
 
 
-export const getGenericReducerPending = (
-  builder: ActionReducerMapBuilder<any>,
-  thunk: AsyncThunk<any, any, {}>,
-): ActionReducerMapBuilder<any> =>
-  builder
-    .addCase(thunk.pending, (state) => { state.loading = true })
+export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
+  builder: ActionReducerMapBuilder<sliceState<Value>>,
+  thunk: AsyncThunk<string, Args, {}>,
+): ActionReducerMapBuilder<any> =>  {
+  return builder
+    .addCase(thunk.pending, (state) => {
+      state.write.writing = true
+      state.write.hash = ''
+    })
+    .addCase(thunk.rejected, (state, action) => {
+      state.write.writing = false
+      state.write.error = action.error
+    })
+    .addCase(thunk.fulfilled, (state, action) => {
+      state.write.writing = false
+      state.write.hash = action.payload
+    })
+}
 
-export const getGenericReducerRejected = (
-  builder: ActionReducerMapBuilder<any>,
-  thunk: AsyncThunk<any, any, {}>,
-): ActionReducerMapBuilder<any> =>
-  builder
+export const getGenericReducerBuilder = <Args extends {}, Value>(
+  builder: ActionReducerMapBuilder<sliceState<Value>>,
+  thunk: AsyncThunk<Draft<Value>, Args, {}>,
+): ActionReducerMapBuilder<any> =>  {
+  return builder
+    .addCase(thunk.pending, (state) => {
+      state.loading = true
+    })
     .addCase(thunk.rejected, (state, action) => {
       state.loading = false
       state.data.error = action.error
     })
-
-export const getGenericReducerFulfilled = (
-  builder: ActionReducerMapBuilder<any>,
-  thunk: AsyncThunk<any, any, {}>,
-): ActionReducerMapBuilder<any> =>
-  builder
     .addCase(thunk.fulfilled, (state, action) => {
       state.loading = false
       state.data.value = action.payload;
     })
-
-export const getGenericReducerBuilder = (
-  builder: ActionReducerMapBuilder<any>,
-  thunk: AsyncThunk<any, any, {}>,
-): ActionReducerMapBuilder<any> =>  {
-  builder = getGenericReducerPending(builder, thunk)
-  builder = getGenericReducerRejected(builder, thunk)
-  builder = getGenericReducerFulfilled(builder, thunk)
-  return builder
 }
