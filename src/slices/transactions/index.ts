@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { executeUpdateTransactions } from './api';
+import { getLocalStorage } from '../../utils/index';
 
 export enum TransactionStatus {
   Pending,
@@ -30,10 +31,11 @@ export const updateTransactions = createAsyncThunk(
   async (args: updateTransactionsArgs, {dispatch}) => await executeUpdateTransactions(args, dispatch),
 )
 
+const name = 'transactions'
 
 export const transactionsSlice = createSlice({
-  name: 'transactions',
-  initialState: {} as TransactionState,
+  name,
+  initialState: getLocalStorage(name, {}) as TransactionState,
   reducers: {
     newTransaction: (state, action: PayloadAction<TransactionArgs>) => {
       const newTx = {...action.payload, status: TransactionStatus.Pending}

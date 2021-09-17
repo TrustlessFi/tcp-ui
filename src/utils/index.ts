@@ -95,3 +95,22 @@ export const uint255Max = '57896044618658097711785492504343953926634992332820282
 
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
+
+
+
+
+
+// ======================= Time ============================
+export const years = (years: number)     => years * days(365)
+export const weeks = (weeks: number)     => weeks * days(7)
+export const days = (days: number)       => days * hours(24)
+export const hours = (hours: number)     => hours * minutes(60)
+export const minutes = (minutes: number) => minutes * seconds(60)
+export const seconds = (seconds: number) => seconds
+
+// ======================= Local Storage ============================
+export const getLocalStorage = (key: string, defaultValue: any = null) => {
+  const val = localStorage.getItem(key)
+  if (val === null) return defaultValue
+  return JSON.parse(val)
+}

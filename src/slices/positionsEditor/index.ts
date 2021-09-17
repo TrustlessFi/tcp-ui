@@ -23,7 +23,6 @@ export const positionsEditorSlice = createSlice({
   initialState,
   reducers: {
     editorOpened: (state, action: PayloadAction<editorStatus>) => {
-      console.log("here 1")
       state.open = true
       state.status = action.payload
     },
