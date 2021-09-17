@@ -1,4 +1,4 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import positionsReducer from '../slices/positions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
@@ -39,8 +39,8 @@ export const store = configureStore({
     lendHueBalance: lendHueBalanceReducer,
     referenceTokenBalances: referenceTokenBalancesReducer,
   },
-});
+})
 
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>

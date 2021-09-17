@@ -5,19 +5,19 @@ import {
 } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../../slices/waitFor'
-import { createPosition } from '../../../slices/positions'
 import SimpleTable from '../../library/SimpleTable'
 import { editorClosed } from '../../../slices/positionsEditor'
 import { roundToXDecimals } from '../../../utils'
-import { onNumChange }  from '../../../utils/'
+import { onNumChange, mnt }  from '../../../utils/'
+import CreatePositionController from '../../Write/CreatePositionController'
+import { UIID } from '../../../constants';
 
 export default ({}) => {
   const dispatch = useAppDispatch()
   const editorStatus = selector(state => state.positionsEditor.status)
 
-
   const page = editorStatus.creating
-    ? <CreatePositionPage  />
+    ? <CreatePositionPage />
     : <UpdatePositionPage id={editorStatus.positionID} />
 
   return (
@@ -34,12 +34,29 @@ const CreatePositionPage = () => {
   const dispatch = useAppDispatch()
   const market = waitForMarket(selector, dispatch)
   const chainID = selector(state => state.chainID.chainID)
+  const userAddress = selector(state => state.wallet.address)
 
   if (market === null) throw 'Market is null'
   if (chainID === null) throw 'ChainID is null'
+  if (userAddress === null) throw 'userAddress is null'
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
+  const [showCreatePosition, setShowCreatePosition] = useState(false)
+
+  const ethPrice = 10
+  const liquidationPrice = 20
+
+  const createPositionController = (
+    <CreatePositionController
+      collateralCount={collateralCount}
+      debtCount={debtCount}
+      ethPrice={ethPrice}
+      liquidationPrice={liquidationPrice}
+      onCancel={() => setShowCreatePosition(false)}
+      isActive={showCreatePosition}
+    />
+  )
 
   return (
     <>
@@ -68,10 +85,11 @@ const CreatePositionPage = () => {
 
       Eth is currently 3,100 Hue. If the price of Eth falls below 2712 Hue/Eth I will lose approximately 13% of my Eth to liquidators.
       <div>
-        <Button onClick={() => dispatch(createPosition({chainID, collateralCount, debtCount }))}>
+        <Button onClick={() => setShowCreatePosition(true)}>
           Create Position
         </Button>
       </div>
+      {createPositionController}
     </>
   )
 }
@@ -79,14 +97,12 @@ const CreatePositionPage = () => {
 const UpdatePositionPage = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()
 
-  console.log("here 1")
   const positions = waitForPositions(selector, dispatch)
   const governor = waitForGovernor(selector, dispatch)
   const liquidations = waitForLiquidations(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const prices = waitForPrices(selector, dispatch)
-  console.log("here 2")
 
   const [collateralIncrease, setCollateralIncrease] = useState(0)
   const [debtIncrease, setDebtIncrease] = useState(0)
