@@ -14,11 +14,12 @@ import RecentTransactions from './RecentTransactions'
 
 export default ({open, onRequestClose}: {open: boolean, onRequestClose: () => void}) => {
   const address = selector(state => state.wallet.address)
+  if (!open) return null
   if (address === null) throw 'Address not found.'
 
   return (
     <Modal
-      open={open}
+      open
       passiveModal
       size="xs"
       onRequestClose={onRequestClose}

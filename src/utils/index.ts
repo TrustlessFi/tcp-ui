@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber, BigNumberish, utils } from 'ethers'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';
 
@@ -36,6 +36,7 @@ export const onNumChange = (numChangeFunc: (val: number) => void) => (
 
 export const abbreviateAddress = (address: string) => address.substr(0, 6) + '...' + address.substr(address.length - 4, 4)
 
+export const toChecksumAddress = (address: string) => utils.getAddress(address)
 
 export const unscale = (quantity: BigNumber, decimals = 18): number => {
   const digits = quantity.toString().length

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialState, sliceState } from '../'
 
 export enum TransactionStatus {
   Pending,
@@ -10,25 +9,27 @@ export enum TransactionStatus {
 export type TransactionArgs = {
   hash: string
   title: string
+  userAddress: string
+  nonce: number
 }
 
 export interface TransactionInfo extends TransactionArgs {
   status: TransactionStatus
 }
 
-export interface TransactionsState extends sliceState<TransactionInfo[]> {}
+export type TransactionState = {[key in string]: {[key in string]: TransactionInfo}}
 
 export const transactionsSlice = createSlice({
   name: 'transactions',
-  initialState: initialState as TransactionsState,
+  initialState: {} as TransactionState,
   reducers: {
     newTransaction: (state, action: PayloadAction<TransactionArgs>) => {
       const newTx = {...action.payload, status: TransactionStatus.Pending}
-      if (state.data.value === null) state.data.value = [newTx]
-      else state.data.value.push(newTx)
+      if (!state.hasOwnProperty(newTx.userAddress)) state[newTx.userAddress] = {}
+      state[newTx.userAddress][newTx.hash] = newTx
     },
-    clearTransactions: (state) => {
-      state.data.value = []
+    clearTransactions: (state, action: PayloadAction<string>) => {
+      state[action.payload] = {}
     },
   }
 })
