@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ethers } from 'ethers';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ethers } from 'ethers'
 
 export interface ProviderData {
   provider: ethers.providers.Web3Provider
@@ -28,8 +28,8 @@ export const walletSlice = createSlice({
     },
   },
   extraReducers: () => {},
-});
+})
 
-export const { connecting, connected, connectionFailed } = walletSlice.actions;
+export const { connecting, connected, connectionFailed } = walletSlice.actions
 
-export default walletSlice.reducer;
+export default walletSlice.reducer

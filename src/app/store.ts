@@ -20,6 +20,8 @@ import hueBalanceReducer from '../slices/balances/hueBalance'
 import lendHueBalanceReducer from '../slices/balances/lendHueBalance'
 import referenceTokenBalancesReducer from '../slices/balances/referenceTokenBalances'
 
+import contractsReducer from '../slices/contracts'
+
 export const store = configureStore({
   reducer: {
     positions: positionsReducer,
@@ -41,6 +43,8 @@ export const store = configureStore({
     hueBalance: hueBalanceReducer,
     lendHueBalance: lendHueBalanceReducer,
     referenceTokenBalances: referenceTokenBalancesReducer,
+
+    contracts: contractsReducer,
   },
 })
 

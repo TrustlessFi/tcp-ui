@@ -1,42 +1,33 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
 import getProvider from '../../utils/getProvider'
 import { Governor, TCPGovernorAlpha } from "../../utils/typechain"
-import ethers from 'ethers'
-import { getGovernorContractArgs, getContractArgs, ProtocolContract, getContractReturnType } from './'
+import { ethers } from 'ethers'
+import { getContractArgs, ProtocolContract, getContractReturnType, getGovernorContractArgs } from './'
+import { assertUnreachable } from '../../utils'
 
-import tcpGovernorAlphaArtifact from '../../utils/artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TCPGovernorAlpha.json'
 import governorArtifact from '../../utils/artifacts/contracts/core/governance/Governor.sol/Governor.json'
 
-export const executeGetGovernorAlpha = async () => ({
-  address: getAddress(rootContracts.TcpGovernorAlpha),
-  contract: ProtocolContract.TCPGovernorAlpha,
-})
-
-export const executeGetGovernor = async (args: getGovernorContractArgs): Promise<getContractReturnType> => {
-  const governorAlpha = new ethers.Contract(
-    args.governorAlpha,
-    tcpGovernorAlphaArtifact.abi,
-    getProvider()!
-  ) as TCPGovernorAlpha
-
-  return { address: await governorAlpha.governor(), contract: ProtocolContract.TCPGovernorAlpha }
-}
+export const executeGetGovernor = async (args: getGovernorContractArgs) => getAddress(args.chainID, rootContracts.Governor)
 
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
+  console.log('executeGetContract', args)
   const governor = new ethers.Contract(
-    args.governor,
+    args.Governor,
     governorArtifact.abi,
     getProvider()!
   ) as Governor
 
-  return {
-    contract: args.contract,
-    address: await getContract(governor, args.contract),
-  }
+  const contractAddress = await getContract(governor, args.contract)
+  console.log({contract: args.contract, contractAddress})
+  return contractAddress
 }
 
 const getContract = async (governor: Governor, contract: ProtocolContract): Promise<string> => {
   switch (contract) {
+    case ProtocolContract.TCPGovernorAlpha:
+      return await governor.governorAlpha()
+    case ProtocolContract.Accounting:
+      return await governor.accounting()
     case ProtocolContract.Accounting:
       return await governor.accounting()
     case ProtocolContract.Auctions:
@@ -67,7 +58,11 @@ const getContract = async (governor: Governor, contract: ProtocolContract): Prom
       return await governor.hue()
     case ProtocolContract.HuePositionNFT:
       return await governor.huePositionNFT()
+    case ProtocolContract.Governor:
+      throw 'Handled in executeGetGovernor'
     default:
-      throw 'unknown contract ' + contract
+      assertUnreachable(contract)
+
+    throw 'Shouldnt get here'
   }
 }
