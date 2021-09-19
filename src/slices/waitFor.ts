@@ -134,7 +134,7 @@ export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
 export const waitForProposals = getWaitFunction<proposalsArgs, proposalsInfo>(
   (state: RootState) => state.proposals,
   getProposals,
-  [ProtocolContract.TCPGovernorAlpha, FetchNode.UserAddress],
+  [ProtocolContract.TcpGovernorAlpha, FetchNode.UserAddress],
 )
 
 export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(

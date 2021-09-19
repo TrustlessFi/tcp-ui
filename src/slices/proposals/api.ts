@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers"
 import getProvider from '../../utils/getProvider'
 import { ChainID } from '../chainID'
-import { TCPGovernorAlpha } from "../../utils/typechain"
+import { TcpGovernorAlpha } from "../../utils/typechain"
 import { unscale, zeroAddress } from "../../utils"
 import { Proposal, ProposalStates, proposalsInfo } from "./"
 import { ProtocolContract } from '../contracts/index';
@@ -84,9 +84,9 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
 })
 
 export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
-  const tcpGovernorAlpha = getContract(args.TCPGovernorAlpha, ProtocolContract.TCPGovernorAlpha) as TCPGovernorAlpha
+  const tcpGovernorAlpha = getContract(args.TcpGovernorAlpha, ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
 
-  const rawProposalData = await (tcpGovernorAlpha as TCPGovernorAlpha).getAllProposals(args.userAddress)
+  const rawProposalData = await (tcpGovernorAlpha as TcpGovernorAlpha).getAllProposals(args.userAddress)
   const haveUserAddress = args.userAddress !== zeroAddress
 
   let _proposals = rawProposalData._proposals

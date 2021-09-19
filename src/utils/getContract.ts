@@ -12,7 +12,7 @@ import {
   Auctions,
   EnforcedDecentralization,
   Governor,
-  TCPGovernorAlpha,
+  TcpGovernorAlpha,
   LendHue,
   Liquidations,
   Market,
@@ -32,7 +32,7 @@ import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.so
 import auctionsArtifact from "./artifacts/contracts/core/logic/Auctions.sol/Auctions.json"
 import enforcedDecentralizationArtifact from "./artifacts/contracts/core/governance/EnforcedDecentralization.sol/EnforcedDecentralization.json"
 import governorArtifact from "./artifacts/contracts/core/governance/Governor.sol/Governor.json"
-import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TCPGovernorAlpha.json"
+import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
 import lendHueArtifact from "./artifacts/contracts/core/tokens/LendHue.sol/LendHue.json"
 import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
 import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
@@ -42,7 +42,7 @@ import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json
 import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
 import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json"
 import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
-import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
+import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
 import hueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
 import huePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
 import { assertUnreachable } from './index';
@@ -52,7 +52,7 @@ const artifactLookup = {
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
   [ProtocolContract.Governor]: governorArtifact,
-  [ProtocolContract.TCPGovernorAlpha]: tcpGovernorAlphaArtifact,
+  [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.LendHue]: lendHueArtifact,
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
@@ -105,8 +105,8 @@ export default (address: string, protocolContract: ProtocolContract) => {
       return contract as Settlement
     case ProtocolContract.Tcp:
       return contract as Tcp
-    case ProtocolContract.TCPGovernorAlpha:
-      return contract as TCPGovernorAlpha
+    case ProtocolContract.TcpGovernorAlpha:
+      return contract as TcpGovernorAlpha
     case ProtocolContract.TcpTimelock:
       return contract as TcpTimelock
     default:
