@@ -10,20 +10,20 @@ export enum ProtocolContract {
   Accounting = "Accounting",
   Auctions = "Auctions",
   EnforcedDecentralization = "EnforcedDecentralization",
+  Hue = "Hue",
+  HuePositionNFT = "HuePositionNFT",
   Governor = "Governor",
-  TCPGovernorAlpha = "TCPGovernorAlpha",
   LendHue = "LendHue",
   Liquidations = "Liquidations",
   Market = "Market",
-  HuePositionNFT = "HuePositionNFT",
   Prices = "Prices",
   ProtocolLock = "ProtocolLock",
   Rates = "Rates",
   Rewards = "Rewards",
   Settlement = "Settlement",
   Tcp = "Tcp",
+  TCPGovernorAlpha = "TCPGovernorAlpha",
   TcpTimelock = "TcpTimelock",
-  Hue = "Hue"
 }
 
 export type getGovernorContractArgs = {
