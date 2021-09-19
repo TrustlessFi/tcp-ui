@@ -59,7 +59,7 @@ import { ProtocolContract } from '../contracts'
   )
 
   export const marketSlice = createSlice({
-    name: 'systemDebt',
+    name: 'market',
     initialState: initialState as MarketState,
     reducers: {},
     extraReducers: (builder) => {
