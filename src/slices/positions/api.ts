@@ -1,7 +1,7 @@
 import { Position } from './'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
-import { positionsInfo, positionsArgs } from './'
+import { positionsInfo, positionsArgs, getPositions } from './'
 import { AppDispatch } from '../../app/store'
 import { waitForTransaction } from '../transactions'
 
@@ -94,17 +94,3 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
 
   return hash
 }
-
-  /*
-  const state = store.getState()
-
-  const userAddress = state.wallet.address
-  const sdi = state.systemDebt.args.value
-  const marketInfo = state.market.args.value
-
-  if (userAddress === null) throw 'User Address null on create position'
-  if (sdi === null) throw 'Sdi null on create position'
-  if (marketInfo === null) throw 'MarketInfo null on create position'
-
-  dispatch(getPositions({chainID, userAddress, sdi, marketInfo}))
-  */
