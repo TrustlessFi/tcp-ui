@@ -30,7 +30,7 @@ const name = 'chainID'
 
 export const chainIDSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, initialState) as ChainIDState,
+  initialState: initialState,
   reducers: {
     chainIDFound: (state, action: PayloadAction<number>) => {
       const chainID = action.payload
