@@ -36,8 +36,6 @@ export default <Args extends {}, Value>({
     onCancel()
   }
 
-  console.log({hash: state.write.hash, isPreviewApproved})
-
   if (!isActive) {
     return null
   } else if (!isPreviewApproved) {

@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
+import getContract from '../../utils/getContract'
 
 import { Rates } from "../../utils/typechain/Rates"
+import { ProtocolContract } from '../contracts/index';
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
@@ -14,7 +15,7 @@ export type ratesInfo = {
 }
 
 export type ratesArgs = {
-  chainID: ChainID
+  Rates: string
 }
 
 export interface RatesState extends sliceState<ratesInfo> {}
@@ -22,10 +23,9 @@ export interface RatesState extends sliceState<ratesInfo> {}
 export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
   async (args: ratesArgs): Promise<null | ratesInfo> => {
-    const rates = await getProtocolContract(args.chainID, ProtocolContract.Rates) as Rates
-    if (rates === null) return null
+    const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
 
-    let [
+    const [
       positiveInterestRate,
       interestRateAbsoluteValue,
       referencePools

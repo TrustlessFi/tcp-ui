@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 import { Governor } from "../../utils/typechain/Governor"
+import { ProtocolContract } from '../contracts/';
+import getContract from '../../utils/getContract'
 
 export type governorArgs = {
   chainID: ChainID
+  Governor: string
 }
 
 export type governorInfo = {
@@ -18,8 +20,9 @@ export interface GovernorState extends sliceState<governorInfo> {}
 export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
   async (args: governorArgs) => {
-    const governor = await getProtocolContract(args.chainID, ProtocolContract.Governor) as Governor
-    if (governor === null) return null
+
+    // TODO type inference so we don't have to have this everywhere
+    const governor = getContract(args.Governor, ProtocolContract.Governor) as Governor
 
     const [
       phase,

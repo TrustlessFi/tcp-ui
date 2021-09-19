@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { getContractWaitFunction } from '../../slices/waitFor'
 import {
   Modal,
   Button,
 } from 'carbon-components-react'
 import { ContractTransaction } from 'ethers'
 import TxConfirmController from './TxConfirmController'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { Market } from '../../utils/typechain'
 import getProvider from '../../utils/getProvider'
 import { mnt } from '../../utils/index';
 import { UIID } from '../../constants';
 import { createPosition } from '../../slices/positions'
 import { RootState } from '../../app/store';
+import { ProtocolContract } from '../../slices/contracts/index';
 
 
 enum Stage {
@@ -48,8 +49,9 @@ export default ({
   onCancel: () => void
   isActive: boolean
 }) => {
-  const chainID = selector(state => state.chainID.chainID)
-  if (chainID === null) throw 'ChainID null'
+  const dispatch = useAppDispatch()
+  const Market = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  if (Market === null) throw 'CreatePositionController: Market null'
 
   const preview = (
     <>
@@ -70,7 +72,7 @@ export default ({
 
   return (
     <TxConfirmController
-      thunk={createPosition({chainID, collateralCount, debtCount})}
+      thunk={createPosition({collateralCount, debtCount, Market})}
       preview={preview}
       verb="Create"
       mediumName={'Creating a position with ' + collateralCount + ' collateral and ' + debtCount + ' debt.'}
