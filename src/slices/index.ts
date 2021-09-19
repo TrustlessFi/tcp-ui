@@ -8,20 +8,20 @@ export interface sliceState<T> {
     value: T | null
   }
   write: {
-    writing: boolean
+    waitingForUser: boolean
     hash: string
     error: SerializedError | null
   }
 }
 
-export const initialState = {
+export const initialState: sliceState<any> = {
   loading: false,
   data: {
     error: null,
     value: null,
   },
   write: {
-    writing: false,
+    waitingForUser: false,
     hash: '',
     error: null,
   }
@@ -34,21 +34,21 @@ export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
   return builder
     .addCase(thunk.pending, (state) => {
       state.write = {
-        writing: true,
+        waitingForUser: true,
         hash: '',
         error: null,
       }
     })
     .addCase(thunk.rejected, (state, action) => {
       state.write = {
-        writing: false,
+        waitingForUser: false,
         hash: '',
         error: action.error,
       }
     })
     .addCase(thunk.fulfilled, (state, action) => {
       state.write = {
-        writing: false,
+        waitingForUser: false,
         hash: action.payload,
         error: null,
       }

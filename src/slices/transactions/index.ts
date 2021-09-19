@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeUpdateTransactions } from './api';
 import { getLocalStorage } from '../../utils'
+import getProvider from '../../utils/getProvider'
 
 export enum TransactionStatus {
   Pending,
   Failed,
   Succeeded,
+  UnexpectedError,
 }
 
 export type TransactionArgs = {
@@ -19,17 +20,26 @@ export interface TransactionInfo extends TransactionArgs {
   status: TransactionStatus
 }
 
-export type TransactionState = {[key in string]: {[key in string]: TransactionInfo}}
+export type TransactionState = {[key in string]: TransactionInfo}
 
 export interface updateTransactionsArgs {
   currentState: TransactionState
   userAddress: string
 }
 
-export const updateTransactions = createAsyncThunk(
-  'transactions/updateTransactions',
-  async (args: updateTransactionsArgs, {dispatch}) => await executeUpdateTransactions(args, dispatch),
-)
+export interface updateTransactionsResponse {
+  success: boolean
+}
+
+export const waitForTransaction = createAsyncThunk(
+  'transactions/waitForTransaction',
+  async (args: TransactionArgs): Promise<TransactionInfo> => {
+    const provider = getProvider()!
+
+    const receipt = await provider.waitForTransaction(args.hash)
+    const status = receipt.status === 1 ? TransactionStatus.Succeeded : TransactionStatus.Failed
+    return {...args, status}
+  })
 
 const name = 'transactions'
 
@@ -37,34 +47,30 @@ export const transactionsSlice = createSlice({
   name,
   initialState: getLocalStorage(name, {}) as TransactionState,
   reducers: {
-    newTransaction: (state, action: PayloadAction<TransactionArgs>) => {
-      const newTx = {...action.payload, status: TransactionStatus.Pending}
-      if (!state.hasOwnProperty(newTx.userAddress)) state[newTx.userAddress] = {}
-      state[newTx.userAddress][newTx.hash] = newTx
-    },
-    clearTransactions: (state, action: PayloadAction<string>) => {
-      state[action.payload] = {}
-    },
-    transactionSucceeded: (state, action: PayloadAction<{userAddress: string, hash: string}>) => {
-      state[action.payload.userAddress][action.payload.hash].status = TransactionStatus.Succeeded
-    },
-    transactionFailed: (state, action: PayloadAction<{userAddress: string, hash: string}>) => {
-      state[action.payload.userAddress][action.payload.hash].status = TransactionStatus.Failed
+    clearUserTransactions: (state, action: PayloadAction<string>) => {
+      const userAddress = action.payload
+      const validTxs = Object.values(state).filter(tx => tx.userAddress !== userAddress)
+      state = {}
+      validTxs.map(tx => state[tx.hash] = tx)
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(updateTransactions.fulfilled, (_state, action) => {
-        _state = action.payload
+      .addCase(waitForTransaction.pending, (state, action) => {
+        state[action.meta.arg.hash] = {
+          ...action.meta.arg,
+          status: TransactionStatus.Pending,
+        }
+      })
+      .addCase(waitForTransaction.rejected, (state, action) => {
+        state[action.meta.arg.hash].status = TransactionStatus.UnexpectedError
+      })
+      .addCase(waitForTransaction.fulfilled, (state, action) => {
+        state[action.meta.arg.hash].status = action.payload.status
       })
   },
 })
 
-export const {
-  newTransaction,
-  clearTransactions,
-  transactionSucceeded,
-  transactionFailed,
-} = transactionsSlice.actions
+export const { clearUserTransactions } = transactionsSlice.actions
 
 export default transactionsSlice.reducer

@@ -1,16 +1,13 @@
-import React, { MouseEvent, useState } from 'react'
-import { withRouter, useHistory } from 'react-router'
 import { Button, Link, Tag, ModalWrapper } from 'carbon-components-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { Copy16, Launch16 } from '@carbon/icons-react';
+import { Launch16 } from '@carbon/icons-react';
 import Center from '../library/Center';
 import SmallLink from '../library/SmallLink'
 import NetworkIndicator from '../library/NetworkIndicator';
 import {
   Modal,
 } from 'carbon-components-react'
-import { abbreviateAddress } from '../../utils/index';
-import { clearTransactions } from '../../slices/transactions'
+import { clearUserTransactions } from '../../slices/transactions'
 import { getSortedUserTxs } from '../utils/index';
 
 export default () => {
@@ -28,7 +25,7 @@ export default () => {
       </div>
       {sortedUserTxs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.title)} icon={Launch16}>{tx.title}</SmallLink>)}
       <Center style={{marginTop: '1rem'}}>
-        <SmallLink onClick={() => dispatch(clearTransactions(userAddress!))}>Clear all</SmallLink>
+        <SmallLink onClick={() => dispatch(clearUserTransactions(userAddress!))}>Clear all</SmallLink>
       </Center>
     </>
   )

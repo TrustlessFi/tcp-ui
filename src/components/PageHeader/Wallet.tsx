@@ -108,8 +108,11 @@ export default () => {
 
   const address = selector(state => state.wallet.address)
   const txs = selector(state => state.transactions)
-  const sortedUserTxs = getSortedUserTxs(address, txs)
-  const incompleteUserTxs = sortedUserTxs.filter(tx => tx.status === TransactionStatus.Pending)
+
+  const countPendingTxs =
+    getSortedUserTxs(address, txs)
+      .filter(tx => tx.status === TransactionStatus.Pending)
+      .length
 
   const modal =
     <WalletModal
@@ -119,9 +122,9 @@ export default () => {
 
   const button =
     address !== null
-      ? (incompleteUserTxs.length > 0
+      ? (countPendingTxs > 0
           ? <Button size="small" onClick={() => setIsWalletModalOpen(true)}>
-              {incompleteUserTxs.length} Pending
+              {countPendingTxs} Pending
             </Button>
           : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
               {abbreviateAddress(address)}
