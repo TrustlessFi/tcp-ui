@@ -45,6 +45,7 @@ import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
 import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
 import hueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
 import huePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
+import { assertUnreachable } from './index';
 
 const artifactLookup = {
   [ProtocolContract.Accounting]: accountingArtifact,
@@ -82,8 +83,10 @@ export default (address: string, protocolContract: ProtocolContract) => {
       return contract as EnforcedDecentralization
     case ProtocolContract.Governor:
       return contract as Governor
-    case ProtocolContract.TCPGovernorAlpha:
-      return contract as TCPGovernorAlpha
+    case ProtocolContract.Hue:
+      return contract as Hue
+    case ProtocolContract.HuePositionNFT:
+      return contract as HuePositionNFT
     case ProtocolContract.LendHue:
       return contract as LendHue
     case ProtocolContract.Liquidations:
@@ -102,11 +105,13 @@ export default (address: string, protocolContract: ProtocolContract) => {
       return contract as Settlement
     case ProtocolContract.Tcp:
       return contract as Tcp
+    case ProtocolContract.TCPGovernorAlpha:
+      return contract as TCPGovernorAlpha
     case ProtocolContract.TcpTimelock:
       return contract as TcpTimelock
-    case ProtocolContract.Hue:
-      return contract as Hue
-    case ProtocolContract.HuePositionNFT:
-      return contract as HuePositionNFT
+    default:
+      assertUnreachable(protocolContract)
+
+    throw 'Should never get here'
   }
 }
