@@ -25,7 +25,6 @@ import { ProtocolContract } from '../contracts'
   export const getMarketInfo = createAsyncThunk(
     'market/getMarketInfo',
     async (args: marketArgs) => {
-      console.log("getMarketInfo", args)
       const market = getContract(args.Market, ProtocolContract.Market) as Market
 
       const [
@@ -55,7 +54,6 @@ import { ProtocolContract } from '../contracts'
         periodLength: periodLength.toNumber(),
         firstPeriod: firstPeriod.toNumber(),
       }
-      console.log({marketInfo})
       return marketInfo
     }
   )

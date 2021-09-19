@@ -15,7 +15,6 @@ import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
 
 export const fetchPositions = async (args: positionsArgs) => {
-  console.log("fetchPositions", args)
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
 
@@ -65,7 +64,6 @@ export const fetchPositions = async (args: positionsArgs) => {
       claimingRewards: false,
       claimedRewards: false,
     } as Position
-    console.log({positionInfo})
     return positionInfo
   }))
 
