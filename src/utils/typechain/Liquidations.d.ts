@@ -22,23 +22,21 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface LiquidationsInterface extends ethers.utils.Interface {
   functions: {
     "currentPeriod()": FunctionFragment;
-    "deployer()": FunctionFragment;
     "discoverUndercollateralizedPositions(uint64[])": FunctionFragment;
     "discoveryIncentive()": FunctionFragment;
     "ensureLiquidationIncentive()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
-    "init(address)": FunctionFragment;
     "liquidate(uint256)": FunctionFragment;
     "liquidationIncentive()": FunctionFragment;
     "maxRewardsRatio()": FunctionFragment;
     "minLiquidationIncentive()": FunctionFragment;
     "periodLength()": FunctionFragment;
     "rewardsLimit()": FunctionFragment;
-    "setDiscoveryIncentive(uint256)": FunctionFragment;
-    "setLiquidationIncentive(uint256)": FunctionFragment;
-    "setMaxRewardsRatio(uint256)": FunctionFragment;
-    "setMinLiquidationIncentive(uint256)": FunctionFragment;
+    "setDiscoveryIncentive(uint64)": FunctionFragment;
+    "setLiquidationIncentive(uint64)": FunctionFragment;
+    "setMaxRewardsRatio(uint64)": FunctionFragment;
+    "setMinLiquidationIncentive(uint64)": FunctionFragment;
     "setTwapDuration(uint32)": FunctionFragment;
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
@@ -50,7 +48,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     functionFragment: "currentPeriod",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "discoverUndercollateralizedPositions",
     values: [BigNumberish[]]
@@ -68,7 +65,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "liquidate",
     values: [BigNumberish]
@@ -128,7 +124,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     functionFragment: "currentPeriod",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "discoverUndercollateralizedPositions",
     data: BytesLike
@@ -146,7 +141,6 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "liquidate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidationIncentive",
@@ -201,23 +195,31 @@ interface LiquidationsInterface extends ethers.utils.Interface {
 
   events: {
     "CoveredUnbackedDebt(uint256,uint256)": EventFragment;
-    "Initialized(address)": EventFragment;
+    "DiscoveryIncentiveUpdated(uint64)": EventFragment;
     "Liquidated(uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated32(string,uint32)": EventFragment;
+    "LiquidationIncentiveUpdated(uint64)": EventFragment;
+    "MaxRewardsRatioUpdated(uint64)": EventFragment;
+    "MinLiquidationIncentiveUpdated(uint64)": EventFragment;
     "Stopped()": EventFragment;
     "UndercollatPositionDiscovered(uint64,uint256,uint256,uint256)": EventFragment;
+    "twapDurationUpdated(uint32)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "CoveredUnbackedDebt"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscoveryIncentiveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Liquidated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated32"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "LiquidationIncentiveUpdated"
+  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxRewardsRatioUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinLiquidationIncentiveUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "UndercollatPositionDiscovered"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "twapDurationUpdated"): EventFragment;
 }
 
 export class Liquidations extends BaseContract {
@@ -268,8 +270,6 @@ export class Liquidations extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { period: BigNumber }>;
 
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
     discoverUndercollateralizedPositions(
       positionIDs: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -284,11 +284,6 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -347,8 +342,6 @@ export class Liquidations extends BaseContract {
 
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-  deployer(overrides?: CallOverrides): Promise<string>;
-
   discoverUndercollateralizedPositions(
     positionIDs: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -363,11 +356,6 @@ export class Liquidations extends BaseContract {
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
-
-  init(
-    _governor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   liquidate(
     baseTokensToRepay: BigNumberish,
@@ -426,8 +414,6 @@ export class Liquidations extends BaseContract {
   callStatic: {
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
-    deployer(overrides?: CallOverrides): Promise<string>;
-
     discoverUndercollateralizedPositions(
       positionIDs: BigNumberish[],
       overrides?: CallOverrides
@@ -440,8 +426,6 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
-
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -505,9 +489,9 @@ export class Liquidations extends BaseContract {
       { price: BigNumber; amountCovered: BigNumber }
     >;
 
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
+    DiscoveryIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
 
     Liquidated(
       baseTokensToRepay?: null,
@@ -517,18 +501,17 @@ export class Liquidations extends BaseContract {
       { baseTokensToRepay: BigNumber; collateralToReceive: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    LiquidationIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
 
-    ParameterUpdated32(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, number], { paramName: string; value: number }>;
+    MaxRewardsRatioUpdated(
+      ratio?: null
+    ): TypedEventFilter<[BigNumber], { ratio: BigNumber }>;
+
+    MinLiquidationIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
 
     Stopped(): TypedEventFilter<[], {}>;
 
@@ -546,12 +529,14 @@ export class Liquidations extends BaseContract {
         price: BigNumber;
       }
     >;
+
+    twapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
   };
 
   estimateGas: {
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
-
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
     discoverUndercollateralizedPositions(
       positionIDs: BigNumberish[],
@@ -567,11 +552,6 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -627,8 +607,6 @@ export class Liquidations extends BaseContract {
   populateTransaction: {
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     discoverUndercollateralizedPositions(
       positionIDs: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -645,11 +623,6 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,

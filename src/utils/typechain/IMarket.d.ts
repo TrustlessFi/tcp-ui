@@ -65,27 +65,33 @@ interface IMarketInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
+    "CollateralizationRequirementUpdated(uint256)": EventFragment;
     "InterestAccrued(uint64,uint64,uint256,uint256,uint256,uint256)": EventFragment;
+    "InterestPortionToLendersUpdated(uint256)": EventFragment;
     "Lend(address,uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
+    "MinPositionSizeUpdated(uint256)": EventFragment;
     "PositionAdjusted(uint64,uint256,uint256,uint256,uint256)": EventFragment;
     "PositionCreated(address,uint64)": EventFragment;
     "PositionUpdated(uint256,uint64,uint256,uint256)": EventFragment;
     "RewardsDistributed(address,bool,uint256)": EventFragment;
+    "TwapDurationUpdated(uint32)": EventFragment;
     "Unlend(address,uint256,uint256)": EventFragment;
   };
 
+  getEvent(
+    nameOrSignatureOrTopic: "CollateralizationRequirementUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "InterestAccrued"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "InterestPortionToLendersUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Lend"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinPositionSizeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionAdjusted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
@@ -222,6 +228,10 @@ export class IMarket extends BaseContract {
   };
 
   filters: {
+    CollateralizationRequirementUpdated(
+      requirement?: null
+    ): TypedEventFilter<[BigNumber], { requirement: BigNumber }>;
+
     InterestAccrued(
       period?: BigNumberish | null,
       periods?: null,
@@ -241,6 +251,10 @@ export class IMarket extends BaseContract {
       }
     >;
 
+    InterestPortionToLendersUpdated(
+      percentage?: null
+    ): TypedEventFilter<[BigNumber], { percentage: BigNumber }>;
+
     Lend(
       account?: string | null,
       hueCount?: null,
@@ -250,26 +264,9 @@ export class IMarket extends BaseContract {
       { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
+    MinPositionSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
 
     PositionAdjusted(
       positionID?: BigNumberish | null,
@@ -319,6 +316,10 @@ export class IMarket extends BaseContract {
       [string, boolean, BigNumber],
       { account: string; isKickback: boolean; tcpRewards: BigNumber }
     >;
+
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
 
     Unlend(
       account?: string | null,

@@ -7,76 +7,91 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "string",
-          "name": "paramName",
-          "type": "string"
-        },
-        {
           "indexed": false,
           "internalType": "uint128",
-          "name": "value",
+          "name": "error",
           "type": "uint128"
         }
       ],
-      "name": "ParameterUpdated128",
+      "name": "AcceptableErrorUpdated",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "paramName",
-          "type": "string"
-        },
         {
           "indexed": false,
-          "internalType": "uint64",
-          "name": "value",
-          "type": "uint64"
+          "internalType": "uint128",
+          "name": "error",
+          "type": "uint128"
         }
       ],
-      "name": "ParameterUpdated64",
+      "name": "ErrorIntervalUpdated",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "string",
-          "name": "paramName",
-          "type": "string"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "addr",
-          "type": "address"
+          "indexed": false,
+          "internalType": "uint128",
+          "name": "step",
+          "type": "uint128"
         }
       ],
-      "name": "ParameterUpdatedAddress",
+      "name": "InterestRateStepUpdated",
       "type": "event"
     },
     {
       "anonymous": false,
       "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "paramName",
-          "type": "string"
-        },
         {
           "indexed": false,
           "internalType": "int128",
-          "name": "value",
+          "name": "max",
           "type": "int128"
         }
       ],
-      "name": "ParameterUpdatedInt128",
+      "name": "MaxRateUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "steps",
+          "type": "uint64"
+        }
+      ],
+      "name": "MaxStepsUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "int128",
+          "name": "min",
+          "type": "int128"
+        }
+      ],
+      "name": "MinRateUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "time",
+          "type": "uint64"
+        }
+      ],
+      "name": "MinTimeBetweenUpdatesUpdated",
       "type": "event"
     },
     {
@@ -108,6 +123,32 @@
         }
       ],
       "name": "RateUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        }
+      ],
+      "name": "ReferencePoolAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "pool",
+          "type": "address"
+        }
+      ],
+      "name": "ReferencePoolRemoved",
       "type": "event"
     },
     {

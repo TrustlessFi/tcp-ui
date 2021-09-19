@@ -29,11 +29,10 @@ interface RatesTestableInterface extends ethers.utils.Interface {
     "contains(address[],address)": FunctionFragment;
     "currentRateData()": FunctionFragment;
     "deployer()": FunctionFragment;
-    "finalizeInitialization(address,address[])": FunctionFragment;
     "getReferencePools()": FunctionFragment;
     "getRewardCount()": FunctionFragment;
     "governor()": FunctionFragment;
-    "init(address)": FunctionFragment;
+    "init(address,address[])": FunctionFragment;
     "interestRateAbsoluteValue()": FunctionFragment;
     "interestRateParameters()": FunctionFragment;
     "median(uint256[])": FunctionFragment;
@@ -104,10 +103,6 @@ interface RatesTestableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "finalizeInitialization",
-    values: [string, string[]]
-  ): string;
-  encodeFunctionData(
     functionFragment: "getReferencePools",
     values?: undefined
   ): string;
@@ -116,7 +111,10 @@ interface RatesTestableInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "init",
+    values: [string, string[]]
+  ): string;
   encodeFunctionData(
     functionFragment: "interestRateAbsoluteValue",
     values?: undefined
@@ -216,10 +214,6 @@ interface RatesTestableInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "finalizeInitialization",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getReferencePools",
     data: BytesLike
   ): Result;
@@ -293,21 +287,31 @@ interface RatesTestableInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "Initialized(address)": EventFragment;
-    "ParameterUpdated128(string,uint128)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
-    "ParameterUpdatedInt128(string,int128)": EventFragment;
+    "AcceptableErrorUpdated(uint128)": EventFragment;
+    "ErrorIntervalUpdated(uint128)": EventFragment;
+    "InterestRateStepUpdated(uint128)": EventFragment;
+    "MaxRateUpdated(int128)": EventFragment;
+    "MaxStepsUpdated(uint64)": EventFragment;
+    "MinRateUpdated(int128)": EventFragment;
+    "MinTimeBetweenUpdatesUpdated(uint64)": EventFragment;
     "RateUpdated(int256,uint256,uint256,uint64)": EventFragment;
+    "ReferencePoolAdded(address)": EventFragment;
+    "ReferencePoolRemoved(address)": EventFragment;
     "Stopped()": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated128"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedInt128"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AcceptableErrorUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ErrorIntervalUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "InterestRateStepUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxRateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxStepsUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinRateUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinTimeBetweenUpdatesUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReferencePoolAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReferencePoolRemoved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
 }
 
@@ -410,12 +414,6 @@ export class RatesTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _referencePools: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     getReferencePools(overrides?: CallOverrides): Promise<[string[]]>;
 
     getRewardCount(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -423,7 +421,8 @@ export class RatesTestable extends BaseContract {
     governor(overrides?: CallOverrides): Promise<[string]>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -574,12 +573,6 @@ export class RatesTestable extends BaseContract {
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  finalizeInitialization(
-    _collateralPool: string,
-    _referencePools: string[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   getReferencePools(overrides?: CallOverrides): Promise<string[]>;
 
   getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -587,7 +580,8 @@ export class RatesTestable extends BaseContract {
   governor(overrides?: CallOverrides): Promise<string>;
 
   init(
-    _governor: string,
+    _collateralPool: string,
+    _referencePools: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -732,19 +726,17 @@ export class RatesTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<string>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _referencePools: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     getReferencePools(overrides?: CallOverrides): Promise<string[]>;
 
     getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
 
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
+    init(
+      _collateralPool: string,
+      _referencePools: string[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     interestRateAbsoluteValue(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -823,38 +815,33 @@ export class RatesTestable extends BaseContract {
   };
 
   filters: {
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
+    AcceptableErrorUpdated(
+      error?: null
+    ): TypedEventFilter<[BigNumber], { error: BigNumber }>;
 
-    ParameterUpdated128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    ErrorIntervalUpdated(
+      error?: null
+    ): TypedEventFilter<[BigNumber], { error: BigNumber }>;
 
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    InterestRateStepUpdated(
+      step?: null
+    ): TypedEventFilter<[BigNumber], { step: BigNumber }>;
 
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      addr?: string | null
-    ): TypedEventFilter<[string, string], { paramName: string; addr: string }>;
+    MaxRateUpdated(
+      max?: null
+    ): TypedEventFilter<[BigNumber], { max: BigNumber }>;
 
-    ParameterUpdatedInt128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxStepsUpdated(
+      steps?: null
+    ): TypedEventFilter<[BigNumber], { steps: BigNumber }>;
+
+    MinRateUpdated(
+      min?: null
+    ): TypedEventFilter<[BigNumber], { min: BigNumber }>;
+
+    MinTimeBetweenUpdatesUpdated(
+      time?: null
+    ): TypedEventFilter<[BigNumber], { time: BigNumber }>;
 
     RateUpdated(
       interestRate?: null,
@@ -870,6 +857,14 @@ export class RatesTestable extends BaseContract {
         nextUpdateTime: BigNumber;
       }
     >;
+
+    ReferencePoolAdded(
+      pool?: null
+    ): TypedEventFilter<[string], { pool: string }>;
+
+    ReferencePoolRemoved(
+      pool?: null
+    ): TypedEventFilter<[string], { pool: string }>;
 
     Stopped(): TypedEventFilter<[], {}>;
   };
@@ -922,12 +917,6 @@ export class RatesTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _referencePools: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     getReferencePools(overrides?: CallOverrides): Promise<BigNumber>;
 
     getRewardCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -935,7 +924,8 @@ export class RatesTestable extends BaseContract {
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1066,12 +1056,6 @@ export class RatesTestable extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _referencePools: string[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     getReferencePools(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getRewardCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1079,7 +1063,8 @@ export class RatesTestable extends BaseContract {
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

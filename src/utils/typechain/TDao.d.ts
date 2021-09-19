@@ -23,7 +23,6 @@ interface TDaoInterface extends ethers.utils.Interface {
   functions: {
     "accrueInflation()": FunctionFragment;
     "addToken(address)": FunctionFragment;
-    "admin()": FunctionFragment;
     "blacklistedAction(bytes4)": FunctionFragment;
     "countUnderlyingProtocolTokens()": FunctionFragment;
     "currentPeriod()": FunctionFragment;
@@ -35,11 +34,12 @@ interface TDaoInterface extends ethers.utils.Interface {
     "getPosition(uint64)": FunctionFragment;
     "getRewards(uint64)": FunctionFragment;
     "getRewardsStatus(uint16)": FunctionFragment;
+    "guardian()": FunctionFragment;
     "idToToken(uint16)": FunctionFragment;
     "incentiveContract()": FunctionFragment;
     "incentiveContractMint(address,uint256)": FunctionFragment;
     "incentivesStartPeriod()": FunctionFragment;
-    "init(address,address,address)": FunctionFragment;
+    "init(address,address,address,address)": FunctionFragment;
     "lastPeriodGlobalInflationUpdated()": FunctionFragment;
     "lockTokens(address,uint256,uint8,address)": FunctionFragment;
     "mintIncentive(address,uint256)": FunctionFragment;
@@ -68,7 +68,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "addToken", values: [string]): string;
-  encodeFunctionData(functionFragment: "admin", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "blacklistedAction",
     values: [BytesLike]
@@ -110,6 +109,7 @@ interface TDaoInterface extends ethers.utils.Interface {
     functionFragment: "getRewardsStatus",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "guardian", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "idToToken",
     values: [BigNumberish]
@@ -128,7 +128,7 @@ interface TDaoInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "init",
-    values: [string, string, string]
+    values: [string, string, string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "lastPeriodGlobalInflationUpdated",
@@ -208,7 +208,6 @@ interface TDaoInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "addToken", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "admin", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "blacklistedAction",
     data: BytesLike
@@ -244,6 +243,7 @@ interface TDaoInterface extends ethers.utils.Interface {
     functionFragment: "getRewardsStatus",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "guardian", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "idToToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "incentiveContract",
@@ -404,8 +404,6 @@ export class TDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    admin(overrides?: CallOverrides): Promise<[string]>;
-
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -479,6 +477,8 @@ export class TDao extends BaseContract {
       ]
     >;
 
+    guardian(overrides?: CallOverrides): Promise<[string]>;
+
     idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
     incentiveContract(overrides?: CallOverrides): Promise<[string]>;
@@ -495,6 +495,7 @@ export class TDao extends BaseContract {
       _tDaoPositionNFT: string,
       _tDaoToken: string,
       _tDaoGovernorAlpha: string,
+      _timelock: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -593,8 +594,6 @@ export class TDao extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  admin(overrides?: CallOverrides): Promise<string>;
-
   blacklistedAction(
     arg0: BytesLike,
     overrides?: CallOverrides
@@ -662,6 +661,8 @@ export class TDao extends BaseContract {
     }
   >;
 
+  guardian(overrides?: CallOverrides): Promise<string>;
+
   idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   incentiveContract(overrides?: CallOverrides): Promise<string>;
@@ -678,6 +679,7 @@ export class TDao extends BaseContract {
     _tDaoPositionNFT: string,
     _tDaoToken: string,
     _tDaoGovernorAlpha: string,
+    _timelock: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -771,8 +773,6 @@ export class TDao extends BaseContract {
 
     addToken(token: string, overrides?: CallOverrides): Promise<void>;
 
-    admin(overrides?: CallOverrides): Promise<string>;
-
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -840,6 +840,8 @@ export class TDao extends BaseContract {
       }
     >;
 
+    guardian(overrides?: CallOverrides): Promise<string>;
+
     idToToken(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     incentiveContract(overrides?: CallOverrides): Promise<string>;
@@ -856,6 +858,7 @@ export class TDao extends BaseContract {
       _tDaoPositionNFT: string,
       _tDaoToken: string,
       _tDaoGovernorAlpha: string,
+      _timelock: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1007,8 +1010,6 @@ export class TDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    admin(overrides?: CallOverrides): Promise<BigNumber>;
-
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -1055,6 +1056,8 @@ export class TDao extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    guardian(overrides?: CallOverrides): Promise<BigNumber>;
+
     idToToken(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1074,6 +1077,7 @@ export class TDao extends BaseContract {
       _tDaoPositionNFT: string,
       _tDaoToken: string,
       _tDaoGovernorAlpha: string,
+      _timelock: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1173,8 +1177,6 @@ export class TDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    admin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     blacklistedAction(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -1221,6 +1223,8 @@ export class TDao extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    guardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     idToToken(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -1242,6 +1246,7 @@ export class TDao extends BaseContract {
       _tDaoPositionNFT: string,
       _tDaoToken: string,
       _tDaoGovernorAlpha: string,
+      _timelock: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

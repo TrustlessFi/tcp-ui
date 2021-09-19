@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface MarketInterface extends ethers.utils.Interface {
   functions: {
+    "accounting()": FunctionFragment;
     "accrueInterest()": FunctionFragment;
     "adjustPosition(uint64,int256,uint256,uint32)": FunctionFragment;
     "claimRewards(uint64,uint32)": FunctionFragment;
@@ -29,11 +30,11 @@ interface MarketInterface extends ethers.utils.Interface {
     "createPosition(uint256,uint32)": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "deployer()": FunctionFragment;
-    "finalizeInitialization()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "huePositionNFT()": FunctionFragment;
-    "init(address)": FunctionFragment;
+    "init()": FunctionFragment;
     "interestPortionToLenders()": FunctionFragment;
     "lastPeriodGlobalInterestAccrued()": FunctionFragment;
     "lend(uint256)": FunctionFragment;
@@ -54,6 +55,10 @@ interface MarketInterface extends ethers.utils.Interface {
     "valueOfLendTokensInHue(uint256)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "accounting",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "accrueInterest",
     values?: undefined
@@ -80,19 +85,16 @@ interface MarketInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "finalizeInitialization",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "firstPeriod",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "huePositionNFT",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
+  encodeFunctionData(functionFragment: "init", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "interestPortionToLenders",
     values?: undefined
@@ -154,6 +156,7 @@ interface MarketInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
 
+  decodeFunctionResult(functionFragment: "accounting", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "accrueInterest",
     data: BytesLike
@@ -180,14 +183,11 @@ interface MarketInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "finalizeInitialization",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "firstPeriod",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "huePositionNFT",
     data: BytesLike
@@ -252,31 +252,35 @@ interface MarketInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "Initialized(address)": EventFragment;
+    "CollateralizationRequirementUpdated(uint256)": EventFragment;
     "InterestAccrued(uint64,uint64,uint256,uint256,uint256,uint256)": EventFragment;
+    "InterestPortionToLendersUpdated(uint256)": EventFragment;
     "Lend(address,uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
+    "MinPositionSizeUpdated(uint256)": EventFragment;
     "PositionAdjusted(uint64,uint256,uint256,uint256,uint256)": EventFragment;
     "PositionCreated(address,uint64)": EventFragment;
     "PositionUpdated(uint256,uint64,uint256,uint256)": EventFragment;
     "RewardsDistributed(address,bool,uint256)": EventFragment;
     "Stopped()": EventFragment;
+    "TwapDurationUpdated(uint32)": EventFragment;
     "Unlend(address,uint256,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "CollateralizationRequirementUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "InterestAccrued"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "InterestPortionToLendersUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Lend"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinPositionSizeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionAdjusted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PositionUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unlend"): EventFragment;
 }
 
@@ -324,6 +328,8 @@ export class Market extends BaseContract {
   interface: MarketInterface;
 
   functions: {
+    accounting(overrides?: CallOverrides): Promise<[string]>;
+
     accrueInterest(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -358,18 +364,15 @@ export class Market extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    finalizeInitialization(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hue(overrides?: CallOverrides): Promise<[string]>;
+
     huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -441,6 +444,8 @@ export class Market extends BaseContract {
     ): Promise<[BigNumber]>;
   };
 
+  accounting(overrides?: CallOverrides): Promise<string>;
+
   accrueInterest(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -471,18 +476,15 @@ export class Market extends BaseContract {
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  finalizeInitialization(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
 
+  hue(overrides?: CallOverrides): Promise<string>;
+
   huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
   init(
-    _governor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -554,6 +556,8 @@ export class Market extends BaseContract {
   ): Promise<BigNumber>;
 
   callStatic: {
+    accounting(overrides?: CallOverrides): Promise<string>;
+
     accrueInterest(overrides?: CallOverrides): Promise<void>;
 
     adjustPosition(
@@ -582,15 +586,15 @@ export class Market extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<string>;
 
-    finalizeInitialization(overrides?: CallOverrides): Promise<void>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
 
+    hue(overrides?: CallOverrides): Promise<string>;
+
     huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
+    init(overrides?: CallOverrides): Promise<void>;
 
     interestPortionToLenders(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -686,9 +690,9 @@ export class Market extends BaseContract {
   };
 
   filters: {
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
+    CollateralizationRequirementUpdated(
+      requirement?: null
+    ): TypedEventFilter<[BigNumber], { requirement: BigNumber }>;
 
     InterestAccrued(
       period?: BigNumberish | null,
@@ -709,6 +713,10 @@ export class Market extends BaseContract {
       }
     >;
 
+    InterestPortionToLendersUpdated(
+      percentage?: null
+    ): TypedEventFilter<[BigNumber], { percentage: BigNumber }>;
+
     Lend(
       account?: string | null,
       hueCount?: null,
@@ -718,26 +726,9 @@ export class Market extends BaseContract {
       { account: string; hueCount: BigNumber; lendTokenCount: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
+    MinPositionSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
 
     PositionAdjusted(
       positionID?: BigNumberish | null,
@@ -790,6 +781,10 @@ export class Market extends BaseContract {
 
     Stopped(): TypedEventFilter<[], {}>;
 
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
+
     Unlend(
       account?: string | null,
       hueCount?: null,
@@ -801,6 +796,8 @@ export class Market extends BaseContract {
   };
 
   estimateGas: {
+    accounting(overrides?: CallOverrides): Promise<BigNumber>;
+
     accrueInterest(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -831,18 +828,15 @@ export class Market extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    finalizeInitialization(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
+
     huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -915,6 +909,8 @@ export class Market extends BaseContract {
   };
 
   populateTransaction: {
+    accounting(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     accrueInterest(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -947,18 +943,15 @@ export class Market extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    finalizeInitialization(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

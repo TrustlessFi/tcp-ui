@@ -41,13 +41,12 @@ interface GovernorInterface extends ethers.utils.Interface {
     "governorAlpha()": FunctionFragment;
     "hue()": FunctionFragment;
     "huePositionNFT()": FunctionFragment;
-    "initialize(address,address,address,address,address,address,address,address,address,address)": FunctionFragment;
+    "init(tuple)": FunctionFragment;
     "isShutdown()": FunctionFragment;
     "lendHue()": FunctionFragment;
     "liquidations()": FunctionFragment;
     "lockTokensForEmergencyShutdown(uint256)": FunctionFragment;
     "market()": FunctionFragment;
-    "mintCapsUnset()": FunctionFragment;
     "mintIncentive(address,uint256)": FunctionFragment;
     "mintTCP(address,uint256)": FunctionFragment;
     "mintVotingRewards(address,uint256)": FunctionFragment;
@@ -64,7 +63,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     "rewards()": FunctionFragment;
     "setBorrowRewardsPortion(uint64)": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
-    "setTokenIncentiveCaps(address[],uint256[])": FunctionFragment;
     "settlement()": FunctionFragment;
     "shutdownTime()": FunctionFragment;
     "tcp()": FunctionFragment;
@@ -154,18 +152,28 @@ interface GovernorInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "initialize",
+    functionFragment: "init",
     values: [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string
+      {
+        accounting: string;
+        auctions: string;
+        enforcedDecentralization: string;
+        governorAlpha: string;
+        hue: string;
+        huePositionNFT: string;
+        lendHue: string;
+        liquidations: string;
+        market: string;
+        prices: string;
+        protocolLock: string;
+        rates: string;
+        rewards: string;
+        settlement: string;
+        tcp: string;
+        timelock: string;
+        tokenIncentiveMinters: string[];
+        caps: BigNumberish[];
+      }
     ]
   ): string;
   encodeFunctionData(
@@ -182,10 +190,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "market", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "mintCapsUnset",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "mintIncentive",
     values: [string, BigNumberish]
@@ -240,10 +244,6 @@ interface GovernorInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setPhaseOneStartTime",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setTokenIncentiveCaps",
-    values: [string[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "settlement",
@@ -365,7 +365,7 @@ interface GovernorInterface extends ethers.utils.Interface {
     functionFragment: "huePositionNFT",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isShutdown", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lendHue", data: BytesLike): Result;
   decodeFunctionResult(
@@ -377,10 +377,6 @@ interface GovernorInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "market", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "mintCapsUnset",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "mintIncentive",
     data: BytesLike
@@ -431,10 +427,6 @@ interface GovernorInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setPhaseOneStartTime",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setTokenIncentiveCaps",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "settlement", data: BytesLike): Result;
@@ -610,17 +602,27 @@ export class Governor extends BaseContract {
 
     huePositionNFT(overrides?: CallOverrides): Promise<[string]>;
 
-    initialize(
-      _auctions: string,
-      _tcp: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      _governorAlpha: string,
+    init(
+      pd: {
+        accounting: string;
+        auctions: string;
+        enforcedDecentralization: string;
+        governorAlpha: string;
+        hue: string;
+        huePositionNFT: string;
+        lendHue: string;
+        liquidations: string;
+        market: string;
+        prices: string;
+        protocolLock: string;
+        rates: string;
+        rewards: string;
+        settlement: string;
+        tcp: string;
+        timelock: string;
+        tokenIncentiveMinters: string[];
+        caps: BigNumberish[];
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -636,8 +638,6 @@ export class Governor extends BaseContract {
     ): Promise<ContractTransaction>;
 
     market(overrides?: CallOverrides): Promise<[string]>;
-
-    mintCapsUnset(overrides?: CallOverrides): Promise<[boolean]>;
 
     mintIncentive(
       to: string,
@@ -709,12 +709,6 @@ export class Governor extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setTokenIncentiveCaps(
-      tokenIncentiveMinters: string[],
-      caps: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -834,17 +828,27 @@ export class Governor extends BaseContract {
 
   huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
-  initialize(
-    _auctions: string,
-    _tcp: string,
-    _liquidations: string,
-    _market: string,
-    _rates: string,
-    _prices: string,
-    _protocolLock: string,
-    _rewards: string,
-    _settlement: string,
-    _governorAlpha: string,
+  init(
+    pd: {
+      accounting: string;
+      auctions: string;
+      enforcedDecentralization: string;
+      governorAlpha: string;
+      hue: string;
+      huePositionNFT: string;
+      lendHue: string;
+      liquidations: string;
+      market: string;
+      prices: string;
+      protocolLock: string;
+      rates: string;
+      rewards: string;
+      settlement: string;
+      tcp: string;
+      timelock: string;
+      tokenIncentiveMinters: string[];
+      caps: BigNumberish[];
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -860,8 +864,6 @@ export class Governor extends BaseContract {
   ): Promise<ContractTransaction>;
 
   market(overrides?: CallOverrides): Promise<string>;
-
-  mintCapsUnset(overrides?: CallOverrides): Promise<boolean>;
 
   mintIncentive(
     to: string,
@@ -933,12 +935,6 @@ export class Governor extends BaseContract {
 
   setPhaseOneStartTime(
     phaseOneStartTime: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setTokenIncentiveCaps(
-    tokenIncentiveMinters: string[],
-    caps: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1054,17 +1050,27 @@ export class Governor extends BaseContract {
 
     huePositionNFT(overrides?: CallOverrides): Promise<string>;
 
-    initialize(
-      _auctions: string,
-      _tcp: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      _governorAlpha: string,
+    init(
+      pd: {
+        accounting: string;
+        auctions: string;
+        enforcedDecentralization: string;
+        governorAlpha: string;
+        hue: string;
+        huePositionNFT: string;
+        lendHue: string;
+        liquidations: string;
+        market: string;
+        prices: string;
+        protocolLock: string;
+        rates: string;
+        rewards: string;
+        settlement: string;
+        tcp: string;
+        timelock: string;
+        tokenIncentiveMinters: string[];
+        caps: BigNumberish[];
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1080,8 +1086,6 @@ export class Governor extends BaseContract {
     ): Promise<void>;
 
     market(overrides?: CallOverrides): Promise<string>;
-
-    mintCapsUnset(overrides?: CallOverrides): Promise<boolean>;
 
     mintIncentive(
       to: string,
@@ -1153,12 +1157,6 @@ export class Governor extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setTokenIncentiveCaps(
-      tokenIncentiveMinters: string[],
-      caps: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1299,17 +1297,27 @@ export class Governor extends BaseContract {
 
     huePositionNFT(overrides?: CallOverrides): Promise<BigNumber>;
 
-    initialize(
-      _auctions: string,
-      _tcp: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      _governorAlpha: string,
+    init(
+      pd: {
+        accounting: string;
+        auctions: string;
+        enforcedDecentralization: string;
+        governorAlpha: string;
+        hue: string;
+        huePositionNFT: string;
+        lendHue: string;
+        liquidations: string;
+        market: string;
+        prices: string;
+        protocolLock: string;
+        rates: string;
+        rewards: string;
+        settlement: string;
+        tcp: string;
+        timelock: string;
+        tokenIncentiveMinters: string[];
+        caps: BigNumberish[];
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1325,8 +1333,6 @@ export class Governor extends BaseContract {
     ): Promise<BigNumber>;
 
     market(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mintCapsUnset(overrides?: CallOverrides): Promise<BigNumber>;
 
     mintIncentive(
       to: string,
@@ -1391,12 +1397,6 @@ export class Governor extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setTokenIncentiveCaps(
-      tokenIncentiveMinters: string[],
-      caps: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1527,17 +1527,27 @@ export class Governor extends BaseContract {
 
     huePositionNFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    initialize(
-      _auctions: string,
-      _tcp: string,
-      _liquidations: string,
-      _market: string,
-      _rates: string,
-      _prices: string,
-      _protocolLock: string,
-      _rewards: string,
-      _settlement: string,
-      _governorAlpha: string,
+    init(
+      pd: {
+        accounting: string;
+        auctions: string;
+        enforcedDecentralization: string;
+        governorAlpha: string;
+        hue: string;
+        huePositionNFT: string;
+        lendHue: string;
+        liquidations: string;
+        market: string;
+        prices: string;
+        protocolLock: string;
+        rates: string;
+        rewards: string;
+        settlement: string;
+        tcp: string;
+        timelock: string;
+        tokenIncentiveMinters: string[];
+        caps: BigNumberish[];
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1553,8 +1563,6 @@ export class Governor extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     market(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    mintCapsUnset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     mintIncentive(
       to: string,
@@ -1619,12 +1627,6 @@ export class Governor extends BaseContract {
 
     setPhaseOneStartTime(
       phaseOneStartTime: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setTokenIncentiveCaps(
-      tokenIncentiveMinters: string[],
-      caps: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -30,13 +30,11 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "deficitAuctionCount()": FunctionFragment;
     "deficitAuctionExists(uint64)": FunctionFragment;
     "deficitAuctionLive(uint64)": FunctionFragment;
-    "deployer()": FunctionFragment;
     "extensionPerBid()": FunctionFragment;
     "getAllAuctions(uint64,bool)": FunctionFragment;
     "governor()": FunctionFragment;
     "hueToBeBought()": FunctionFragment;
     "hueToBeSold()": FunctionFragment;
-    "init(address)": FunctionFragment;
     "latestAuctionCompletionTime()": FunctionFragment;
     "maxAuctionDuration()": FunctionFragment;
     "maxBatchSize()": FunctionFragment;
@@ -70,7 +68,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "surplusAuctionCount()": FunctionFragment;
     "surplusAuctionExists(uint64)": FunctionFragment;
     "surplusAuctionLive(uint64)": FunctionFragment;
-    "tcp()": FunctionFragment;
     "twapDuration()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
   };
@@ -111,7 +108,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "deficitAuctionLive",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "extensionPerBid",
     values?: undefined
@@ -129,7 +125,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "hueToBeSold",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "latestAuctionCompletionTime",
     values?: undefined
@@ -256,7 +251,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "surplusAuctionLive",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "twapDuration",
     values?: undefined
@@ -302,7 +296,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "deficitAuctionLive",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "extensionPerBid",
     data: BytesLike
@@ -320,7 +313,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "hueToBeSold",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "latestAuctionCompletionTime",
     data: BytesLike
@@ -444,7 +436,6 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     functionFragment: "surplusAuctionLive",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "twapDuration",
     data: BytesLike
@@ -458,25 +449,45 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "DeficitAuctionBid(uint64,address,uint256)": EventFragment;
     "DeficitAuctionSettled(uint64,address)": EventFragment;
     "DeficitAuctionStarted(uint64,uint256,uint64)": EventFragment;
-    "Initialized(address)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
+    "ExtensionPerBidUpdated(uint64)": EventFragment;
+    "MaxAuctionDurationUpdated(uint64)": EventFragment;
+    "MaxBatchSizeUpdated(uint64)": EventFragment;
+    "MaxSurplusLotSizeUpdated(uint256)": EventFragment;
+    "MinAuctionDurationUpdated(uint64)": EventFragment;
+    "MinBidDeltaUpdated(uint256)": EventFragment;
+    "MinLotSizeUpdated(uint256)": EventFragment;
+    "ReservesBufferLowerBoundUpdated(uint256)": EventFragment;
+    "ReservesBufferUpperBoundUpdated(uint256)": EventFragment;
     "Stopped()": EventFragment;
     "SurplusAuctionBid(uint64,address,uint256)": EventFragment;
     "SurplusAuctionSettled(uint64,address)": EventFragment;
     "SurplusAuctionStarted(uint64,uint256,uint64)": EventFragment;
+    "TwapDurationUpdated(uint32)": EventFragment;
+    "maxDeficitLotSizeUpdated(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionBid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionSettled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionStarted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ExtensionPerBidUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxAuctionDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxBatchSizeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxSurplusLotSizeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinAuctionDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinBidDeltaUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinLotSizeUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "ReservesBufferLowerBoundUpdated"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "ReservesBufferUpperBoundUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionBid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionSettled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "maxDeficitLotSizeUpdated"): EventFragment;
 }
 
 export class AuctionsTestable extends BaseContract {
@@ -575,8 +586,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
     extensionPerBid(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getAllAuctions(
@@ -612,11 +621,6 @@ export class AuctionsTestable extends BaseContract {
     hueToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     latestAuctionCompletionTime(
       overrides?: CallOverrides
@@ -762,8 +766,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    tcp(overrides?: CallOverrides): Promise<[string]>;
-
     twapDuration(overrides?: CallOverrides): Promise<[number]>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
@@ -821,8 +823,6 @@ export class AuctionsTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  deployer(overrides?: CallOverrides): Promise<string>;
-
   extensionPerBid(overrides?: CallOverrides): Promise<BigNumber>;
 
   getAllAuctions(
@@ -858,11 +858,6 @@ export class AuctionsTestable extends BaseContract {
   hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
   hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
-
-  init(
-    _governor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   latestAuctionCompletionTime(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1006,8 +1001,6 @@ export class AuctionsTestable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  tcp(overrides?: CallOverrides): Promise<string>;
-
   twapDuration(overrides?: CallOverrides): Promise<number>;
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
@@ -1063,8 +1056,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    deployer(overrides?: CallOverrides): Promise<string>;
-
     extensionPerBid(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAllAuctions(
@@ -1100,8 +1091,6 @@ export class AuctionsTestable extends BaseContract {
     hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     latestAuctionCompletionTime(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1240,8 +1229,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    tcp(overrides?: CallOverrides): Promise<string>;
-
     twapDuration(overrides?: CallOverrides): Promise<number>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
@@ -1274,25 +1261,41 @@ export class AuctionsTestable extends BaseContract {
       { auctionID: BigNumber; count: BigNumber; maxEndTime: BigNumber }
     >;
 
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
+    ExtensionPerBidUpdated(
+      extension?: null
+    ): TypedEventFilter<[BigNumber], { extension: BigNumber }>;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxAuctionDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
 
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxBatchSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    MaxSurplusLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    MinAuctionDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
+
+    MinBidDeltaUpdated(
+      delta?: null
+    ): TypedEventFilter<[BigNumber], { delta: BigNumber }>;
+
+    MinLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    ReservesBufferLowerBoundUpdated(
+      bound?: null
+    ): TypedEventFilter<[BigNumber], { bound: BigNumber }>;
+
+    ReservesBufferUpperBoundUpdated(
+      bound?: null
+    ): TypedEventFilter<[BigNumber], { bound: BigNumber }>;
 
     Stopped(): TypedEventFilter<[], {}>;
 
@@ -1321,6 +1324,14 @@ export class AuctionsTestable extends BaseContract {
       [BigNumber, BigNumber, BigNumber],
       { auctionID: BigNumber; count: BigNumber; maxEndTime: BigNumber }
     >;
+
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
+
+    maxDeficitLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
   };
 
   estimateGas: {
@@ -1368,8 +1379,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     extensionPerBid(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAllAuctions(
@@ -1383,11 +1392,6 @@ export class AuctionsTestable extends BaseContract {
     hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
 
     latestAuctionCompletionTime(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1516,8 +1520,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tcp(overrides?: CallOverrides): Promise<BigNumber>;
-
     twapDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
@@ -1570,8 +1572,6 @@ export class AuctionsTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     extensionPerBid(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAllAuctions(
@@ -1585,11 +1585,6 @@ export class AuctionsTestable extends BaseContract {
     hueToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     latestAuctionCompletionTime(
       overrides?: CallOverrides
@@ -1731,8 +1726,6 @@ export class AuctionsTestable extends BaseContract {
       auctionID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     twapDuration(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

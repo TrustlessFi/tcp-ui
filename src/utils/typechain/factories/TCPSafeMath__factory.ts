@@ -4,7 +4,7 @@
 
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
 import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { TCPSafeMath, TCPSafeMathInterface } from "../TCPSafeMath";
+import type { TcpSafeMath, TcpSafeMathInterface } from "../TcpSafeMath";
 
 const _abi = [
   {
@@ -23,38 +23,38 @@ const _abi = [
 ];
 
 const _bytecode =
-  "0x609a610027600b82828239805160001a6073141515601957fe5b30600052607381538281f350fe730000000000000000000000000000000000000000301460806040526004361060365760003560e01c8063c2ee3a0814603c576036565b60006000fd5b60426058565b6040518082815260200191505060405180910390f35b670de0b6b3a76400008156fea2646970667358221220eafb41c3aa8909d69bafa83935012f4270a16c3ebe3b2eec0f8e9519125115a264736f6c63430007060033";
+  "0x609a610027600b82828239805160001a6073141515601957fe5b30600052607381538281f350fe730000000000000000000000000000000000000000301460806040526004361060365760003560e01c8063c2ee3a0814603c576036565b60006000fd5b60426058565b6040518082815260200191505060405180910390f35b670de0b6b3a76400008156fea26469706673582212204e8d0bcb5c2efd27883ff03ad25bd9389e41d970f27078b0fce3764ec54781c064736f6c63430007060033";
 
-export class TCPSafeMath__factory extends ContractFactory {
+export class TcpSafeMath__factory extends ContractFactory {
   constructor(signer?: Signer) {
     super(_abi, _bytecode, signer);
   }
 
   deploy(
     overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<TCPSafeMath> {
-    return super.deploy(overrides || {}) as Promise<TCPSafeMath>;
+  ): Promise<TcpSafeMath> {
+    return super.deploy(overrides || {}) as Promise<TcpSafeMath>;
   }
   getDeployTransaction(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
-  attach(address: string): TCPSafeMath {
-    return super.attach(address) as TCPSafeMath;
+  attach(address: string): TcpSafeMath {
+    return super.attach(address) as TcpSafeMath;
   }
-  connect(signer: Signer): TCPSafeMath__factory {
-    return super.connect(signer) as TCPSafeMath__factory;
+  connect(signer: Signer): TcpSafeMath__factory {
+    return super.connect(signer) as TcpSafeMath__factory;
   }
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
-  static createInterface(): TCPSafeMathInterface {
-    return new utils.Interface(_abi) as TCPSafeMathInterface;
+  static createInterface(): TcpSafeMathInterface {
+    return new utils.Interface(_abi) as TcpSafeMathInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): TCPSafeMath {
-    return new Contract(address, _abi, signerOrProvider) as TCPSafeMath;
+  ): TcpSafeMath {
+    return new Contract(address, _abi, signerOrProvider) as TcpSafeMath;
   }
 }

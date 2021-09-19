@@ -11,13 +11,13 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "account",
+        name: "provider",
         type: "address",
       },
     ],
-    name: "NoConfidenceConfirmed",
+    name: "EthPriceProviderUpdated",
     type: "event",
   },
   {
@@ -25,18 +25,12 @@ const _abi = [
     inputs: [
       {
         indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: true,
         internalType: "address",
-        name: "_address",
+        name: "account",
         type: "address",
       },
     ],
-    name: "ParameterUpdatedAddress",
+    name: "NoConfidenceConfirmed",
     type: "event",
   },
   {

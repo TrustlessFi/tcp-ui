@@ -11,6 +11,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint64",
+        name: "penalty",
+        type: "uint64",
+      },
+    ],
+    name: "LiquidationPenaltyUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "owner",
@@ -142,95 +155,26 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
+        internalType: "uint64",
+        name: "decreasePortion",
+        type: "uint64",
       },
     ],
-    name: "ParameterUpdated",
+    name: "MaxCollateralLiquidityDecreasePerPeriodUpdated",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
+        internalType: "uint128",
+        name: "min",
+        type: "uint128",
       },
     ],
-    name: "ParameterUpdated128",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
-      },
-    ],
-    name: "ParameterUpdated32",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
-      },
-    ],
-    name: "ParameterUpdated64",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "value",
-        type: "address",
-      },
-    ],
-    name: "ParameterUpdatedAddress",
+    name: "MinHueCountPerPositionUpdated",
     type: "event",
   },
   {
@@ -350,6 +294,19 @@ const _abi = [
       },
     ],
     name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "duration",
+        type: "uint64",
+      },
+    ],
+    name: "TwapDurationUpdated",
     type: "event",
   },
   {
