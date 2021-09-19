@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getLocalStorage } from '../../utils/'
 
 export enum ChainID {
   // Mainnet = 1,
@@ -8,7 +9,7 @@ export enum ChainID {
 
 export interface ChainIDState {
   chainID: ChainID | null
-  unknownChainID: number
+  unknownChainID: number | null
 }
 
 export const chainIDToName = (chainID: ChainID) => {
@@ -22,17 +23,24 @@ export const chainIDToName = (chainID: ChainID) => {
 
 const initialState: ChainIDState = {
   chainID: null,
-  unknownChainID: 0,
+  unknownChainID: null,
 }
 
+const name = 'chainID'
+
 export const chainIDSlice = createSlice({
-  name: 'chainID',
-  initialState,
+  name,
+  initialState: getLocalStorage(name, initialState) as ChainIDState,
   reducers: {
     chainIDFound: (state, action: PayloadAction<number>) => {
       const chainID = action.payload
-      if (ChainID[chainID] === undefined) state.unknownChainID = chainID
-      else state.chainID = chainID
+      if (ChainID[chainID] === undefined) {
+        state.unknownChainID = chainID
+        state.chainID = null
+      } else {
+        state.unknownChainID = null
+        state.chainID = chainID
+      }
     },
   }
 })

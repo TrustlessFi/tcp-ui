@@ -33,10 +33,8 @@ const ExistingPositionsTable = ({}) => {
   const dispatch = useAppDispatch()
 
   const positions = waitForPositions(selector, dispatch)
-  console.log({positions})
 
   if (positions === null) {
-    console.log({headers})
     return <DataTableSkeleton headers={headers.map(header => ({key: header}))} rowCount={3} />
   }
 

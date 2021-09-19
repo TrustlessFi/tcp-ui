@@ -42,7 +42,6 @@ export const unscale = (quantity: BigNumber, decimals = 18): number => {
   const digits = quantity.toString().length
   let digitsToRemove = digits - 15
   if (digitsToRemove > decimals) {
-    console.log({quantity: quantity.toString(), decimals, digits})
     throw 'number too large'
   }
   while(digitsToRemove > 9) {
@@ -107,24 +106,17 @@ export const seconds = (seconds: number) => seconds
 export const timeS = () => Math.floor(new Date().getTime() / 1000)
 
 // ======================= Local Storage ============================
-
-// TODO simplify
 export const getLocalStorage = (key: string, defaultValue: any = null) => {
-    console.log("getLocalStorage", {key})
-  const rawValue = localStorage.getItem(key) as string | null
-  if (rawValue === null) {
-    console.log("raw value null")
-    return defaultValue
-  }
+  const rawValue = localStorage.getItem(key)
+
+  if (rawValue === null) return defaultValue
+
   const sliceStateWithExpiration = JSON.parse(rawValue)
 
-  console.log({timeToExpire: sliceStateWithExpiration.expiration - timeS(), expiration: sliceStateWithExpiration.expiration, time: timeS()})
   if (sliceStateWithExpiration.expiration < timeS()) {
     localStorage.removeItem(key)
-    console.log('returning default value')
     return defaultValue
   }
-  console.log("returning: ", {state: sliceStateWithExpiration})
 
   return sliceStateWithExpiration.sliceState
 }

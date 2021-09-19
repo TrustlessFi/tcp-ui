@@ -10,7 +10,6 @@ import governorArtifact from '../../utils/artifacts/contracts/core/governance/Go
 export const executeGetGovernor = async (args: getGovernorContractArgs) => getAddress(args.chainID, rootContracts.Governor)
 
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
-  console.log('executeGetContract', args)
   const governor = new ethers.Contract(
     args.Governor,
     governorArtifact.abi,
@@ -18,7 +17,6 @@ export const executeGetContract = async (args: getContractArgs): Promise<getCont
   ) as Governor
 
   const contractAddress = await getContract(governor, args.contract)
-  console.log({contract: args.contract, contractAddress})
   return contractAddress
 }
 

@@ -1,5 +1,4 @@
 import { ChainID } from '../slices/chainID'
-import { store } from '../app/store'
 
 export enum rootContracts {
   USDC = 'USDC',
