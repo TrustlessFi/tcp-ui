@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { executeUpdateTransactions } from './api';
-import { getLocalStorage } from '../../utils/index';
+import { getLocalStorage } from '../../components/utils/LocalStorage'
 
 export enum TransactionStatus {
   Pending,

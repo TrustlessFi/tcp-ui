@@ -107,8 +107,3 @@ export const minutes = (minutes: number) => minutes * seconds(60)
 export const seconds = (seconds: number) => seconds
 
 // ======================= Local Storage ============================
-export const getLocalStorage = (key: string, defaultValue: any = null) => {
-  const val = localStorage.getItem(key)
-  if (val === null) return defaultValue
-  return JSON.parse(val)
-}
