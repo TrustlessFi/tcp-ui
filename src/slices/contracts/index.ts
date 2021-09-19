@@ -1,9 +1,10 @@
-import { AsyncThunk, Draft } from '@reduxjs/toolkit';
-import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { AsyncThunk, Draft } from '@reduxjs/toolkit'
+import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernor, executeGetContract } from './api';
+import { executeGetGovernor, executeGetContract } from './api'
 import { sliceState, initialState } from '../'
-import { ChainID } from '../chainID/index';
+import { ChainID } from '../chainID/index'
+import { getLocalStorage } from '../../utils'
 
 export enum ProtocolContract {
   Accounting = "Accounting",
@@ -48,10 +49,9 @@ export const getContractThunk = (contract: ProtocolContract) => {
 
 export type getContractReturnType = string // { contract: ProtocolContract, address: string } TODO delete
 
-export type protocolContractsState  = {[key in ProtocolContract]: sliceState<getContractReturnType>}
+export type ProtocolContractsState  = {[key in ProtocolContract]: sliceState<getContractReturnType>}
 
-
-const contractsInitialState: protocolContractsState = {
+const contractsInitialState: ProtocolContractsState = {
   [ProtocolContract.Accounting]: initialState,
   [ProtocolContract.Auctions]:  initialState,
   [ProtocolContract.EnforcedDecentralization]: initialState,
@@ -72,10 +72,10 @@ const contractsInitialState: protocolContractsState = {
 }
 
 export const getContractGenericReducerBuilder = <Args extends {}>(
-  builder: ActionReducerMapBuilder<protocolContractsState>,
+  builder: ActionReducerMapBuilder<ProtocolContractsState>,
   thunk: AsyncThunk<Draft<string>, Args, {}>,
   contract: ProtocolContract
-): ActionReducerMapBuilder<protocolContractsState> =>  {
+): ActionReducerMapBuilder<ProtocolContractsState> =>  {
   return builder
     .addCase(thunk.pending, (state) => {
       state[contract].loading = true
@@ -94,7 +94,7 @@ const name = 'contracts'
 
 export const contractsSlice = createSlice({
   name,
-  initialState: contractsInitialState,
+  initialState: getLocalStorage(name, contractsInitialState) as ProtocolContractsState,
   reducers: {},
   extraReducers: (builder) => {
     for (const contractString in ProtocolContract) {

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { executeUpdateTransactions } from './api';
-import { getLocalStorage } from '../../components/utils/LocalStorage'
+import { getLocalStorage } from '../../utils'
 
 export enum TransactionStatus {
   Pending,
@@ -54,8 +54,8 @@ export const transactionsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(updateTransactions.fulfilled, (state, action) => {
-        state = action.payload
+      .addCase(updateTransactions.fulfilled, (_state, action) => {
+        _state = action.payload
       })
   },
 })

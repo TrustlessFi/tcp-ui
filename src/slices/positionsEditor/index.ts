@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getLocalStorage } from '../../components/utils/LocalStorage'
+import { getLocalStorage } from '../../utils'
 
 interface editorStatus {
   positionID: number,

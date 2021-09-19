@@ -91,8 +91,6 @@ export const numDisplay = (
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967';
 
-
-
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
 
@@ -106,4 +104,27 @@ export const hours = (hours: number)     => hours * minutes(60)
 export const minutes = (minutes: number) => minutes * seconds(60)
 export const seconds = (seconds: number) => seconds
 
+export const timeS = () => Math.floor(new Date().getTime() / 1000)
+
 // ======================= Local Storage ============================
+
+// TODO simplify
+export const getLocalStorage = (key: string, defaultValue: any = null) => {
+    console.log("getLocalStorage", {key})
+  const rawValue = localStorage.getItem(key) as string | null
+  if (rawValue === null) {
+    console.log("raw value null")
+    return defaultValue
+  }
+  const sliceStateWithExpiration = JSON.parse(rawValue)
+
+  console.log({timeToExpire: sliceStateWithExpiration.expiration - timeS(), expiration: sliceStateWithExpiration.expiration, time: timeS()})
+  if (sliceStateWithExpiration.expiration < timeS()) {
+    localStorage.removeItem(key)
+    console.log('returning default value')
+    return defaultValue
+  }
+  console.log("returning: ", {state: sliceStateWithExpiration})
+
+  return sliceStateWithExpiration.sliceState
+}
