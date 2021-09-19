@@ -3,6 +3,7 @@ import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 import { AppDispatch } from '../../app/store'
+import { waitForTransaction } from '../transactions'
 
 import { Accounting } from '../../utils/typechain/Accounting'
 import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
@@ -10,7 +11,6 @@ import { createPositionArgs } from './index'
 import getProvider from '../../utils/getProvider'
 import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
-import { newTransaction } from '../transactions'
 import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
 
@@ -73,8 +73,11 @@ export const fetchPositions = async (args: positionsArgs) => {
 }
 
 export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
+  const provider = getProvider()!
+  const signer = provider.getSigner()
+  const userAddress = await signer.getAddress()
+
   const market = getContract(args.Market, ProtocolContract.Market) as Market
-  const signer = getProvider()!.getSigner()
 
   const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
     gasLimit: 1e10,
@@ -82,9 +85,14 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
   })
   const hash = tx.hash
 
-  dispatch(newTransaction({hash, title: 'Create Position', userAddress: await signer.getAddress(), nonce: tx.nonce}))
+  dispatch(waitForTransaction({
+    hash,
+    title: 'Create Position',
+    userAddress,
+    nonce: tx.nonce
+  }))
 
-  return tx.hash
+  return hash
 }
 
   /*
