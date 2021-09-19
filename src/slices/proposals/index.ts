@@ -45,14 +45,15 @@ export interface Proposal {
 export interface proposalsInfo { [key: number]: Proposal }
 
 export type proposalsArgs = {
-  chainID: ChainID,
+  TCPGovernorAlpha: string
+  userAddress: string
 }
 
 export interface ProposalsState extends sliceState<proposalsInfo> {}
 
 export const getProposals = createAsyncThunk(
   'proposals/getProposals',
-  async (args: proposalsArgs) => await genProposals(args.chainID),
+  async (args: proposalsArgs) => await genProposals(args),
 )
 
 export const proposalsSlice = createSlice({

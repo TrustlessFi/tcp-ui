@@ -96,9 +96,7 @@ export const uint255Max = '57896044618658097711785492504343953926634992332820282
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
 
-
-
-
+export const assertUnreachable = (_x: never): never => { throw 'Didn\'t expect to get here' }
 
 // ======================= Time ============================
 export const years = (years: number)     => years * days(365)

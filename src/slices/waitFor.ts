@@ -6,18 +6,17 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
 import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
-import { balanceInfo, balanceArgs } from './balances'
-import { getHueBalance } from './balances/hueBalance'
-import { getLendHueBalance } from './balances/lendHueBalance'
+import { balanceInfo } from './balances'
+import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
+import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
-import { getGovernorContractArgs, ProtocolContract, getGovernorContract, getGovernorAlphaContract, getContractArgs, getContract } from './contracts'
+import { ProtocolContract, getGovernorContract, getContractArgs, getContractThunk, getContractReturnType, getGovernorContractArgs } from './contracts'
 
 import { sliceState } from './'
-import { getContractReturnType } from './contracts/index';
 
 enum FetchNode {
   ChainID,
@@ -55,8 +54,6 @@ const getNodeFetch = (
     case FetchNode.SDI:
       return {sdi: waitForSDI(selector, dispatch)}
 
-    case ProtocolContract.TCPGovernorAlpha:
-      return {[ProtocolContract.TCPGovernorAlpha]: waitForGovernorAlphaContract(selector, dispatch)}
     case ProtocolContract.Governor:
       return {[ProtocolContract.Governor]: waitForGovernorContract(selector, dispatch)}
     default:
@@ -96,92 +93,88 @@ const getWaitFunction = <Args extends {}, Value>(
   return state.data.value
 }
 
-export const waitForGovernorAlphaContract = getWaitFunction<getGovernorContractArgs, string>(
-  (state: RootState) => state.contracts[ProtocolContract.Governor],
-  getGovernorAlphaContract,
-  [],
-)
-
-export const waitForGovernorContract = getWaitFunction<getGovernorContractArgs, string>(
+/// ============================ Get Contracts Logic =======================================
+export const waitForGovernorContract = getWaitFunction<getGovernorContractArgs, getContractReturnType>(
   (state: RootState) => state.contracts[ProtocolContract.Governor],
   getGovernorContract,
-  [ProtocolContract.TCPGovernorAlpha],
+  [FetchNode.ChainID],
 )
 
-const getContractWaitFunction = (protocolContract: ProtocolContract) => getWaitFunction<getContractArgs, string>(
+export const getContractWaitFunction = (protocolContract: ProtocolContract) => getWaitFunction<getContractArgs, getContractReturnType>(
   (state: RootState) => state.contracts[protocolContract],
-  getContract,
+  getContractThunk(protocolContract),
   [ProtocolContract.Governor]
 )
 
+/// ============================ Get Info Logic =======================================
 export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
   (state: RootState) => state.governor,
   getGovernorInfo,
-  [FetchNode.ChainID, ProtocolContract.Governor],
+  [ProtocolContract.Governor],
 )
 
 export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
   (state: RootState) => state.prices,
   getPricesInfo,
-  [FetchNode.ChainID, FetchNode.LiquidationsInfo],
+  [ProtocolContract.Prices, FetchNode.LiquidationsInfo],
 )
 
 export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
   (state: RootState) => state.market,
   getMarketInfo,
-  [FetchNode.ChainID],
+  [ProtocolContract.Market],
 )
 
 export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
   (state: RootState) => state.positions,
   getPositions,
-  [FetchNode.ChainID, FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo],
+  [FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo, ProtocolContract.Accounting, ProtocolContract.HuePositionNFT],
 )
 
 export const waitForProposals = getWaitFunction<proposalsArgs, proposalsInfo>(
   (state: RootState) => state.proposals,
   getProposals,
-  [FetchNode.ChainID],
+  [ProtocolContract.TCPGovernorAlpha, FetchNode.UserAddress],
 )
 
 export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(
   (state: RootState) => state.liquidations,
   getLiquidationsInfo,
-  [FetchNode.ChainID],
+  [ProtocolContract.Liquidations],
 )
 
 export const waitForRates = getWaitFunction<ratesArgs, ratesInfo>(
   (state: RootState) => state.rates,
   getRatesInfo,
-  [FetchNode.ChainID],
+  [ProtocolContract.Rates],
 )
 
 export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
   (state: RootState) => state.systemDebt,
   getSystemDebtInfo,
-  [FetchNode.ChainID],
+  [ProtocolContract.Accounting],
 )
 
 export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, referenceTokens>(
   (state: RootState) => state.referenceTokens,
   getReferenceTokens,
-  [FetchNode.ChainID, FetchNode.RatesInfo],
+  [ProtocolContract.Hue, FetchNode.RatesInfo],
 )
 
-export const waitForHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
+export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getHueBalance,
-  [FetchNode.ChainID, FetchNode.UserAddress],
+  [ProtocolContract.Hue, FetchNode.UserAddress],
 )
 
-export const waitForLendHueBalance = getWaitFunction<balanceArgs, balanceInfo>(
+export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getLendHueBalance,
-  [FetchNode.ChainID, FetchNode.UserAddress],
+  [ProtocolContract.LendHue, FetchNode.UserAddress, ProtocolContract.Market],
 )
 
 export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalancesArgs, referenceTokenBalances>(
   (state: RootState) => state.referenceTokenBalances,
   getReferenceTokenBalances,
-  [FetchNode.TokenAddresses, FetchNode.ChainID, FetchNode.UserAddress],
+  [FetchNode.TokenAddresses, ProtocolContract.Market, ProtocolContract.Accounting, FetchNode.UserAddress],
 )

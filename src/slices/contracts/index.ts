@@ -1,6 +1,9 @@
+import { AsyncThunk, Draft } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernorAlpha , executeGetGovernor , executeGetContract } from './api';
+import { executeGetGovernor, executeGetContract } from './api';
 import { sliceState, initialState } from '../'
+import { ChainID } from '../chainID/index';
 
 export enum ProtocolContract {
   Accounting = "Accounting",
@@ -22,37 +25,33 @@ export enum ProtocolContract {
   Hue = "Hue"
 }
 
+export type getGovernorContractArgs = {
+  chainID: ChainID
+}
 
 export type getContractArgs = {
-  governor: string
+  Governor: string
   contract: ProtocolContract
 }
-
-export type getGovernorContractArgs = {
-  governorAlpha: string
-}
-
-export const getGovernorAlphaContract = createAsyncThunk(
-  'contracts/getGovernorAlpha',
-  async () => await executeGetGovernorAlpha(),
-)
 
 export const getGovernorContract = createAsyncThunk(
   'contracts/getGovernor',
   async (args: getGovernorContractArgs) => await executeGetGovernor(args),
 )
 
-export const getContract = createAsyncThunk(
-  'contracts/getContract',
-  async (args: getContractArgs) => await executeGetContract(args),
-)
+export const getContractThunk = (contract: ProtocolContract) => {
+  return createAsyncThunk(
+    'contracts/get' + contract,
+    async (args: getContractArgs) => await executeGetContract({ ...args, contract }),
+  )
+}
 
-export type getContractReturnType = { contract: ProtocolContract, address: string }
+export type getContractReturnType = string // { contract: ProtocolContract, address: string } TODO delete
 
-export type protocolContractsType  = {[key in ProtocolContract]: sliceState<string>}
+export type protocolContractsState  = {[key in ProtocolContract]: sliceState<getContractReturnType>}
 
 
-const contractsInitialState: protocolContractsType = {
+const contractsInitialState: protocolContractsState = {
   [ProtocolContract.Accounting]: initialState,
   [ProtocolContract.Auctions]:  initialState,
   [ProtocolContract.EnforcedDecentralization]: initialState,
@@ -72,6 +71,25 @@ const contractsInitialState: protocolContractsType = {
   [ProtocolContract.Hue]: initialState,
 }
 
+export const getContractGenericReducerBuilder = <Args extends {}>(
+  builder: ActionReducerMapBuilder<protocolContractsState>,
+  thunk: AsyncThunk<Draft<string>, Args, {}>,
+  contract: ProtocolContract
+): ActionReducerMapBuilder<protocolContractsState> =>  {
+  return builder
+    .addCase(thunk.pending, (state) => {
+      state[contract].loading = true
+    })
+    .addCase(thunk.rejected, (state, action) => {
+      state[contract].loading = false
+      state[contract].data.error = action.error
+    })
+    .addCase(thunk.fulfilled, (state, action) => {
+      state[contract].loading = false
+      state[contract].data.value = action.payload
+    })
+}
+
 const name = 'contracts'
 
 export const contractsSlice = createSlice({
@@ -79,46 +97,16 @@ export const contractsSlice = createSlice({
   initialState: contractsInitialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
-      .addCase(getGovernorAlphaContract.pending, (state) => {
-        state[ProtocolContract.TCPGovernorAlpha].loading = true
-      })
-      .addCase(getGovernorAlphaContract.rejected, (state, action) => {
-        state[ProtocolContract.TCPGovernorAlpha].loading = false
-        state[ProtocolContract.TCPGovernorAlpha].data.error = action.error
-      })
-      .addCase(getGovernorAlphaContract.fulfilled, (state, action) => {
-        state[action.payload.contract].loading = false
-        state[action.payload.contract].data.value = action.payload.address
-      })
+    for (const contractString in ProtocolContract) {
+      const contract = contractString as ProtocolContract
 
-    builder
-      .addCase(getGovernorAlphaContract.pending, (state) => {
-        state[ProtocolContract.Governor].loading = true
-      })
-      .addCase(getGovernorAlphaContract.rejected, (state, action) => {
-        state[ProtocolContract.Governor].loading = false
-        state[ProtocolContract.Governor].data.error = action.error
-      })
-      .addCase(getGovernorAlphaContract.fulfilled, (state, action) => {
-        state[action.payload.contract].loading = false
-        state[action.payload.contract].data.value = action.payload.address
-      })
-
-    builder
-      .addCase(getContract.pending, (state, action) => {
-        state[action.meta.arg.contract].loading = true
-      })
-      // Can't have error due to
-      .addCase(getGovernorAlphaContract.fulfilled, (state, action) => {
-        state[action.payload.contract].loading = false
-        state[action.payload.contract].data.value = action.payload.address
-      })
-  },
+      if (contract === ProtocolContract.Governor) {
+        builder = getContractGenericReducerBuilder<getGovernorContractArgs>(builder, getGovernorContract, contract)
+      } else {
+        builder = getContractGenericReducerBuilder<getContractArgs>(builder, getContractThunk(contract), contract)
+      }
+    }
+  }
 })
-
-
-
-
 
 export default contractsSlice.reducer

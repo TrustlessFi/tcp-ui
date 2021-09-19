@@ -1,14 +1,13 @@
-  import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-  import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-  import { ChainID } from '../chainID'
-  import { sliceState, initialState, getGenericReducerBuilder } from '../'
-  import { unscale } from '../../utils'
-
-  import { Market } from "../../utils/typechain/Market"
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { sliceState, initialState, getGenericReducerBuilder } from '../'
+import { unscale } from '../../utils'
+import getContract from '../../utils/getContract'
+import { Market } from "../../utils/typechain/Market"
+import { ProtocolContract } from '../contracts'
 
 
   export interface marketArgs {
-    chainID: ChainID,
+    Market: string
   }
 
   export type marketInfo = {
@@ -26,10 +25,10 @@
   export const getMarketInfo = createAsyncThunk(
     'market/getMarketInfo',
     async (args: marketArgs) => {
-      const market = await getProtocolContract(args.chainID, ProtocolContract.Market) as Market
-      if (market === null) return null
+      console.log("getMarketInfo", args)
+      const market = getContract(args.Market, ProtocolContract.Market) as Market
 
-      let [
+      const [
         lastPeriodGlobalInterestAccrued,
         collateralizationRequirement,
         minPositionSize,
@@ -47,7 +46,7 @@
         market.firstPeriod(),
       ])
 
-      return {
+      const marketInfo = {
         lastPeriodGlobalInterestAccrued: lastPeriodGlobalInterestAccrued.toNumber(),
         collateralizationRequirement: unscale(collateralizationRequirement),
         minPositionSize: unscale(minPositionSize),
@@ -56,6 +55,8 @@
         periodLength: periodLength.toNumber(),
         firstPeriod: firstPeriod.toNumber(),
       }
+      console.log({marketInfo})
+      return marketInfo
     }
   )
 

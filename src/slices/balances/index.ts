@@ -2,7 +2,6 @@ import { sliceState } from '../'
 import { ChainID } from '../chainID'
 import { ethers } from 'ethers'
 
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { unscale, uint255Max, bnf } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { Contract } from 'ethers'
@@ -10,6 +9,7 @@ import { Contract } from 'ethers'
 import { ERC20 } from "../../utils/typechain/ERC20"
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { ProtocolContract } from '../contracts'
 
 interface tokenInfo {
   address: string,
@@ -36,70 +36,51 @@ export interface balanceInfo {
 export interface balanceState extends sliceState<balanceInfo> {}
 
 export interface balanceArgs {
-  chainID: ChainID,
+  tokenAddress: string,
   userAddress: string,
 }
 
-export const getTokenBalanceThunk = (
-  _token: {tokenAddress?: string, contract?: ProtocolContract},
-  approvalsList: ProtocolContract[],
-  balancesList: ProtocolContract[],
-) => async (args: balanceArgs): Promise<balanceInfo | null> => await getTokenBalanceImpl(
-  _token,
-  approvalsList,
-  balancesList,
-  args,
-)
-
-export const getTokenBalanceImpl = async (
-  _token: {tokenAddress?: string, contract?: ProtocolContract},
-  approvalsList: ProtocolContract[],
-  balancesList: ProtocolContract[],
-  args: balanceArgs
+export const tokenBalanceThunk = async (
+  args: balanceArgs,
+  approvalsList: {[key in ProtocolContract]?: string},
+  balancesList: {[key in ProtocolContract]?: string},
 ) => {
   const provider = getProvider()
   if (provider === null) return null
-  let token: ERC20 | null = null
-  if (_token.tokenAddress) {
-    token = new ethers.Contract(_token.tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
-  } else if (_token.contract) {
-    token = await getProtocolContract(args.chainID, _token.contract) as unknown as ERC20 | null
+  const token: ERC20 = new ethers.Contract(args.tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
+
+  const approval: approval = {}
+  const balances: balances = {}
+  const tokenInfo = await tokenAddressToTokenInfo(token.address, provider)
+
+  const getApprovalsPromises: Promise<any>[] = []
+  for (const [contract, address] of Object.entries(approvalsList)) {
+    getApprovalsPromises.push(
+      (async () => {
+        const allowance = await token.allowance(args.userAddress, address)
+        approval[contract as ProtocolContract] = {
+          allowance: allowance.toString(),
+          approving: false,
+          approved: allowance.gt(bnf(uint255Max))
+        }
+      })()
+    )
   }
-  if (token === null) return null
 
-  const contractsMap: {[key in ProtocolContract]?: Contract | null} = {}
-
-  const onlyUnique = (value: ProtocolContract, index: number, self: ProtocolContract[]) => self.indexOf(value) === index
-
-  await Promise.all(
-    [...approvalsList, ...balancesList].filter(onlyUnique).map(async contract => {
-      contractsMap[contract] =
-        (await getProtocolContract(args.chainID, contract)) as unknown as Contract | null
-    }
-  ))
-
-  if (Object.values(contractsMap).includes(null)) return null
-
-  let approval: approval = {}
-  let balances: balances = {}
-  const tokenInfo = await tokenAddressToTokenInfo(token.address, provider);
+  const getBalancesPromises: Promise<any>[] = []
+  for (const [contract, address] of Object.entries(balancesList)) {
+    getBalancesPromises.push(
+      (async () => (balances[contract as ProtocolContract] = unscale(await token!.balanceOf(address), tokenInfo.decimals)))()
+    )
+  }
 
   const [
     _,
     __,
     userBalance,
   ] = await Promise.all([
-    Promise.all(balancesList.map(async (balanceContract) => {
-      balances[balanceContract] = unscale(await token!.balanceOf(contractsMap[balanceContract]!.address), tokenInfo.decimals)
-    })),
-    Promise.all(approvalsList.map(async (approvalContract) => {
-      const allowance = await token!.allowance(args.userAddress, contractsMap[approvalContract]!.address)
-      approval[approvalContract] = {
-        allowance: allowance.toString(),
-        approving: false,
-        approved: allowance.gt(bnf(uint255Max))
-      }
-    })),
+    Promise.all(getApprovalsPromises),
+    Promise.all(getBalancesPromises),
     token.balanceOf(args.userAddress),
   ])
 

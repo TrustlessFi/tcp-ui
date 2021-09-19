@@ -1,9 +1,8 @@
 import { Position } from './'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
-import { AppDispatch, store, RootState } from '../../app/store'
+import { AppDispatch } from '../../app/store'
 
 import { Accounting } from '../../utils/typechain/Accounting'
 import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
@@ -11,20 +10,19 @@ import { createPositionArgs } from './index'
 import getProvider from '../../utils/getProvider'
 import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
-import { getPositions } from './'
-import { ContractTransaction, ContractReceipt } from 'ethers'
-import { mnt } from '../../utils/index';
 import { newTransaction } from '../transactions'
+import { ProtocolContract } from '../contracts/index';
+import getContract from '../../utils/getContract'
 
-export const fetchPositions = async (data: positionsArgs) => {
-  const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
-  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.HuePositionNFT) as HuePositionNFT | null
-  if (accounting === null || positionNFT === null) return null
+export const fetchPositions = async (args: positionsArgs) => {
+  console.log("fetchPositions", args)
+  const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
+  const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
 
   // fetch the positions
-  const positionIDs = await positionNFT.positionIDs(data.userAddress)
+  const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const marketLastUpdatePeriod = data.marketInfo.lastPeriodGlobalInterestAccrued
+  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
   const positions = await Promise.all(positionIDs.map(async (positionID) => {
     const position = await accounting.getPosition(positionID)
@@ -32,7 +30,7 @@ export const fetchPositions = async (data: positionsArgs) => {
     let positionDebt = position.debt
 
     // calcuate estimated position debt
-    const debtExchangeRate  = scale(data.sdi.debtExchangeRate)
+    const debtExchangeRate  = scale(args.sdi.debtExchangeRate)
     if (!position.startDebtExchangeRate.eq(0) && !position.startDebtExchangeRate.eq(debtExchangeRate)) {
       positionDebt = positionDebt.mul(debtExchangeRate).div(position.startDebtExchangeRate)
     }
@@ -40,23 +38,23 @@ export const fetchPositions = async (data: positionsArgs) => {
     // calcuate estimated borrow rewards
     let approximateRewards = BigNumber.from(0)
     let lastTimeUpdated = position.lastTimeUpdated.toNumber()
-    let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, data.marketInfo.periodLength, data.marketInfo.firstPeriod)
+    let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
     if (lastPeriodUpdated < marketLastUpdatePeriod)   {
       let avgDebtPerPeriod =
-        scale(data.sdi.cumulativeDebt)
+        scale(args.sdi.cumulativeDebt)
           .sub(position.startCumulativeDebt)
           .div(marketLastUpdatePeriod - lastPeriodUpdated)
 
       if (!avgDebtPerPeriod.eq(0)) {
         approximateRewards =
           position.debt
-            .mul(scale(data.sdi.totalTCPRewards).sub(position.startTCPRewards))
+            .mul(scale(args.sdi.totalTCPRewards).sub(position.startTCPRewards))
             .div(avgDebtPerPeriod)
       }
     }
 
-    return {
+    const positionInfo = {
       collateralCount: unscale(position.collateral),
       debtCount: unscale(positionDebt),
       approximateRewards: Math.round(unscale(approximateRewards)),
@@ -67,6 +65,8 @@ export const fetchPositions = async (data: positionsArgs) => {
       claimingRewards: false,
       claimedRewards: false,
     } as Position
+    console.log({positionInfo})
+    return positionInfo
   }))
 
   const positionsMap: positionsInfo = {}
@@ -75,8 +75,7 @@ export const fetchPositions = async (data: positionsArgs) => {
 }
 
 export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
-  const chainID = args.chainID
-  const market = (await getProtocolContract(chainID, ProtocolContract.Market)) as Market
+  const market = getContract(args.Market, ProtocolContract.Market) as Market
   const signer = getProvider()!.getSigner()
 
   const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
@@ -94,8 +93,8 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
   const state = store.getState()
 
   const userAddress = state.wallet.address
-  const sdi = state.systemDebt.data.value
-  const marketInfo = state.market.data.value
+  const sdi = state.systemDebt.args.value
+  const marketInfo = state.market.args.value
 
   if (userAddress === null) throw 'User Address null on create position'
   if (sdi === null) throw 'Sdi null on create position'
