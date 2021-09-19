@@ -27,10 +27,8 @@ interface LendHueInterface extends ethers.utils.Interface {
     "burnFrom(address,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
-    "deployer()": FunctionFragment;
     "governor()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "init(address)": FunctionFragment;
     "mintTo(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "stopped()": FunctionFragment;
@@ -59,13 +57,11 @@ interface LendHueInterface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "mintTo",
     values: [string, BigNumberish]
@@ -99,13 +95,11 @@ interface LendHueInterface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
@@ -126,13 +120,11 @@ interface LendHueInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "Initialized(address)": EventFragment;
     "Stopped()": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
@@ -209,18 +201,11 @@ export class LendHue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
     governor(overrides?: CallOverrides): Promise<[string]>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -282,18 +267,11 @@ export class LendHue extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  deployer(overrides?: CallOverrides): Promise<string>;
-
   governor(overrides?: CallOverrides): Promise<string>;
 
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  init(
-    _governor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -355,8 +333,6 @@ export class LendHue extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    deployer(overrides?: CallOverrides): Promise<string>;
-
     governor(overrides?: CallOverrides): Promise<string>;
 
     increaseAllowance(
@@ -364,8 +340,6 @@ export class LendHue extends BaseContract {
       addedValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     mintTo(
       dest: string,
@@ -406,10 +380,6 @@ export class LendHue extends BaseContract {
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
     >;
-
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
 
     Stopped(): TypedEventFilter<[], {}>;
 
@@ -452,18 +422,11 @@ export class LendHue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -529,18 +492,11 @@ export class LendHue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

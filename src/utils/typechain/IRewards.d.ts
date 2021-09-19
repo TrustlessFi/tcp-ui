@@ -38,23 +38,23 @@ interface IRewardsInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "stop", data: BytesLike): Result;
 
   events: {
+    "LiquidationPenaltyUpdated(uint64)": EventFragment;
     "LiquidityPositionCreated(address,uint16,uint256,int24,int24,uint128)": EventFragment;
     "LiquidityPositionDecreased(uint256,uint256,uint256)": EventFragment;
     "LiquidityPositionIncreased(uint256,uint128)": EventFragment;
     "LiquidityPositionLiquidated(uint256,address)": EventFragment;
     "LiquidityPositionRemoved(uint256,uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated128(string,uint256)": EventFragment;
-    "ParameterUpdated32(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint256)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
+    "MaxCollateralLiquidityDecreasePerPeriodUpdated(uint64)": EventFragment;
+    "MinHueCountPerPositionUpdated(uint128)": EventFragment;
     "PoolAdded(address,uint16,uint64)": EventFragment;
     "PoolIncentiveUpdated(uint16,uint64)": EventFragment;
     "RewardsAccrued(uint256,uint64)": EventFragment;
     "RewardsClaimed(address,uint256,uint256,uint256)": EventFragment;
     "RewardsDistributed(address,bool,uint256)": EventFragment;
+    "TwapDurationUpdated(uint64)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "LiquidationPenaltyUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionDecreased"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionIncreased"): EventFragment;
@@ -62,16 +62,18 @@ interface IRewardsInterface extends ethers.utils.Interface {
     nameOrSignatureOrTopic: "LiquidityPositionLiquidated"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionRemoved"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated128"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated32"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MaxCollateralLiquidityDecreasePerPeriodUpdated"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinHueCountPerPositionUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolIncentiveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsAccrued"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
 }
 
 export class IRewards extends BaseContract {
@@ -142,6 +144,10 @@ export class IRewards extends BaseContract {
   };
 
   filters: {
+    LiquidationPenaltyUpdated(
+      penalty?: null
+    ): TypedEventFilter<[BigNumber], { penalty: BigNumber }>;
+
     LiquidityPositionCreated(
       owner?: string | null,
       poolID?: BigNumberish | null,
@@ -195,42 +201,13 @@ export class IRewards extends BaseContract {
       { nftID: BigNumber; amount0: BigNumber; amount1: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxCollateralLiquidityDecreasePerPeriodUpdated(
+      decreasePortion?: null
+    ): TypedEventFilter<[BigNumber], { decreasePortion: BigNumber }>;
 
-    ParameterUpdated128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated32(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
+    MinHueCountPerPositionUpdated(
+      min?: null
+    ): TypedEventFilter<[BigNumber], { min: BigNumber }>;
 
     PoolAdded(
       pool?: string | null,
@@ -280,6 +257,10 @@ export class IRewards extends BaseContract {
       [string, boolean, BigNumber],
       { account: string; isKickback: boolean; tcpRewards: BigNumber }
     >;
+
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
   };
 
   estimateGas: {

@@ -30,19 +30,29 @@ interface ILiquidationsInterface extends ethers.utils.Interface {
 
   events: {
     "CoveredUnbackedDebt(uint256,uint256)": EventFragment;
+    "DiscoveryIncentiveUpdated(uint64)": EventFragment;
     "Liquidated(uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated32(string,uint32)": EventFragment;
+    "LiquidationIncentiveUpdated(uint64)": EventFragment;
+    "MaxRewardsRatioUpdated(uint64)": EventFragment;
+    "MinLiquidationIncentiveUpdated(uint64)": EventFragment;
     "UndercollatPositionDiscovered(uint64,uint256,uint256,uint256)": EventFragment;
+    "twapDurationUpdated(uint32)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "CoveredUnbackedDebt"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "DiscoveryIncentiveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Liquidated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated32"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "LiquidationIncentiveUpdated"
+  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxRewardsRatioUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinLiquidationIncentiveUpdated"
+  ): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "UndercollatPositionDiscovered"
   ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "twapDurationUpdated"): EventFragment;
 }
 
 export class ILiquidations extends BaseContract {
@@ -111,6 +121,10 @@ export class ILiquidations extends BaseContract {
       { price: BigNumber; amountCovered: BigNumber }
     >;
 
+    DiscoveryIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
+
     Liquidated(
       baseTokensToRepay?: null,
       collateralToReceive?: null
@@ -119,18 +133,17 @@ export class ILiquidations extends BaseContract {
       { baseTokensToRepay: BigNumber; collateralToReceive: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    LiquidationIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
 
-    ParameterUpdated32(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, number], { paramName: string; value: number }>;
+    MaxRewardsRatioUpdated(
+      ratio?: null
+    ): TypedEventFilter<[BigNumber], { ratio: BigNumber }>;
+
+    MinLiquidationIncentiveUpdated(
+      incentive?: null
+    ): TypedEventFilter<[BigNumber], { incentive: BigNumber }>;
 
     UndercollatPositionDiscovered(
       positionID?: BigNumberish | null,
@@ -146,6 +159,10 @@ export class ILiquidations extends BaseContract {
         price: BigNumber;
       }
     >;
+
+    twapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
   };
 
   estimateGas: {

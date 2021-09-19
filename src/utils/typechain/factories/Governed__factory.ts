@@ -9,35 +9,9 @@ import type { Governed, GovernedInterface } from "../Governed";
 const _abi = [
   {
     anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "governor",
-        type: "address",
-      },
-    ],
-    name: "Initialized",
-    type: "event",
-  },
-  {
-    anonymous: false,
     inputs: [],
     name: "Stopped",
     type: "event",
-  },
-  {
-    inputs: [],
-    name: "deployer",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
   },
   {
     inputs: [],
@@ -50,19 +24,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract IGovernor",
-        name: "_governor",
-        type: "address",
-      },
-    ],
-    name: "init",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {

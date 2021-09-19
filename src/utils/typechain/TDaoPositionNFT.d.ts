@@ -26,7 +26,7 @@ interface TDaoPositionNFTInterface extends ethers.utils.Interface {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
-    "burn(uint256)": FunctionFragment;
+    "burn(uint64)": FunctionFragment;
     "canUpdateDescriptor()": FunctionFragment;
     "descriptor()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
@@ -279,12 +279,7 @@ export class TDaoPositionNFT extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<[string]>;
 
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    "burn(uint64)"(
+    burn(
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -351,7 +346,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setPositionDescriptor(
-      _descriptor: string,
+      newDescriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -404,12 +399,7 @@ export class TDaoPositionNFT extends BaseContract {
 
   baseURI(overrides?: CallOverrides): Promise<string>;
 
-  "burn(uint256)"(
-    tokenId: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  "burn(uint64)"(
+  burn(
     tokenID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -470,7 +460,7 @@ export class TDaoPositionNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setPositionDescriptor(
-    _descriptor: string,
+    newDescriptor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -518,15 +508,7 @@ export class TDaoPositionNFT extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<string>;
 
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "burn(uint64)"(
-      tokenID: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    burn(tokenID: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     canUpdateDescriptor(overrides?: CallOverrides): Promise<boolean>;
 
@@ -584,7 +566,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<void>;
 
     setPositionDescriptor(
-      _descriptor: string,
+      newDescriptor: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -670,12 +652,7 @@ export class TDaoPositionNFT extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    "burn(uint64)"(
+    burn(
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -739,7 +716,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     setPositionDescriptor(
-      _descriptor: string,
+      newDescriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -796,12 +773,7 @@ export class TDaoPositionNFT extends BaseContract {
 
     baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "burn(uint256)"(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "burn(uint64)"(
+    burn(
       tokenID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -870,7 +842,7 @@ export class TDaoPositionNFT extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setPositionDescriptor(
-      _descriptor: string,
+      newDescriptor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

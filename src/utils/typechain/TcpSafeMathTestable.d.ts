@@ -18,7 +18,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TCPSafeMathTestableInterface extends ethers.utils.Interface {
+interface TcpSafeMathTestableInterface extends ethers.utils.Interface {
   functions: {
     "_div(uint256,uint256)": FunctionFragment;
     "_mul(uint256,uint256)": FunctionFragment;
@@ -45,7 +45,7 @@ interface TCPSafeMathTestableInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class TCPSafeMathTestable extends BaseContract {
+export class TcpSafeMathTestable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -86,7 +86,7 @@ export class TCPSafeMathTestable extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: TCPSafeMathTestableInterface;
+  interface: TcpSafeMathTestableInterface;
 
   functions: {
     _div(

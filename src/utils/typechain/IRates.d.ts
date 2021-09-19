@@ -74,18 +74,30 @@ interface IRatesInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "stop", data: BytesLike): Result;
 
   events: {
-    "ParameterUpdated128(string,uint128)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
-    "ParameterUpdatedInt128(string,int128)": EventFragment;
+    "AcceptableErrorUpdated(uint128)": EventFragment;
+    "ErrorIntervalUpdated(uint128)": EventFragment;
+    "InterestRateStepUpdated(uint128)": EventFragment;
+    "MaxRateUpdated(int128)": EventFragment;
+    "MaxStepsUpdated(uint64)": EventFragment;
+    "MinRateUpdated(int128)": EventFragment;
+    "MinTimeBetweenUpdatesUpdated(uint64)": EventFragment;
     "RateUpdated(int256,uint256,uint256,uint64)": EventFragment;
+    "ReferencePoolAdded(address)": EventFragment;
+    "ReferencePoolRemoved(address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated128"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedInt128"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AcceptableErrorUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ErrorIntervalUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "InterestRateStepUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxRateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxStepsUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinRateUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinTimeBetweenUpdatesUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RateUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReferencePoolAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ReferencePoolRemoved"): EventFragment;
 }
 
 export class IRates extends BaseContract {
@@ -197,34 +209,33 @@ export class IRates extends BaseContract {
   };
 
   filters: {
-    ParameterUpdated128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    AcceptableErrorUpdated(
+      error?: null
+    ): TypedEventFilter<[BigNumber], { error: BigNumber }>;
 
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    ErrorIntervalUpdated(
+      error?: null
+    ): TypedEventFilter<[BigNumber], { error: BigNumber }>;
 
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      addr?: string | null
-    ): TypedEventFilter<[string, string], { paramName: string; addr: string }>;
+    InterestRateStepUpdated(
+      step?: null
+    ): TypedEventFilter<[BigNumber], { step: BigNumber }>;
 
-    ParameterUpdatedInt128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxRateUpdated(
+      max?: null
+    ): TypedEventFilter<[BigNumber], { max: BigNumber }>;
+
+    MaxStepsUpdated(
+      steps?: null
+    ): TypedEventFilter<[BigNumber], { steps: BigNumber }>;
+
+    MinRateUpdated(
+      min?: null
+    ): TypedEventFilter<[BigNumber], { min: BigNumber }>;
+
+    MinTimeBetweenUpdatesUpdated(
+      time?: null
+    ): TypedEventFilter<[BigNumber], { time: BigNumber }>;
 
     RateUpdated(
       interestRate?: null,
@@ -240,6 +251,14 @@ export class IRates extends BaseContract {
         nextUpdateTime: BigNumber;
       }
     >;
+
+    ReferencePoolAdded(
+      pool?: null
+    ): TypedEventFilter<[string], { pool: string }>;
+
+    ReferencePoolRemoved(
+      pool?: null
+    ): TypedEventFilter<[string], { pool: string }>;
   };
 
   estimateGas: {

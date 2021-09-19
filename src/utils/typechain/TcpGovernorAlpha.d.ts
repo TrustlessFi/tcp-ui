@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
+interface TcpGovernorAlphaInterface extends ethers.utils.Interface {
   functions: {
     "BALLOT_TYPEHASH()": FunctionFragment;
     "DOMAIN_TYPEHASH()": FunctionFragment;
@@ -252,7 +252,7 @@ interface TCPGovernorAlphaInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "VotingRewardsDistributed"): EventFragment;
 }
 
-export class TCPGovernorAlpha extends BaseContract {
+export class TcpGovernorAlpha extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -293,7 +293,7 @@ export class TCPGovernorAlpha extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: TCPGovernorAlphaInterface;
+  interface: TcpGovernorAlphaInterface;
 
   functions: {
     BALLOT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
