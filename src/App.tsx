@@ -7,7 +7,7 @@ import LiquidityPositions from './components/LiquidityPositions'
 import { Switch, Route } from "react-router-dom"
 import { BrowserRouter as Router } from "react-router-dom"
 import Timer from './components/utils/Timer'
-import LocalStorageManager from './components/utils/LocalStorage/LocalStorageManager'
+import LocalStorageManager from './components/utils/LocalStorageManager'
 
 import './App.css'
 import './styles/night_app.scss'
