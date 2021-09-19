@@ -42,4 +42,4 @@ export const referenceTokensSlice = createSlice({
   },
 });
 
-export default referenceTokensSlice.reducer;
+export default referenceTokensSlice.reducer

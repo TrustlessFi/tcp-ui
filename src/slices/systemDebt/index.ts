@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ChainID } from '../chainID'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
@@ -18,7 +17,7 @@ export type systemDebtArgs = {
   Accounting: string
 }
 
-export interface SystemDebtInfoState extends sliceState<systemDebtInfo> {}
+export interface SystemDebtState extends sliceState<systemDebtInfo> {}
 
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
@@ -36,13 +35,13 @@ export const getSystemDebtInfo = createAsyncThunk(
   }
 )
 
-export const providerSlice = createSlice({
+export const systemDebtSlice = createSlice({
   name: 'systemDebt',
-  initialState: initialState as SystemDebtInfoState,
+  initialState: initialState as SystemDebtState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getSystemDebtInfo)
   },
-});
+})
 
-export default providerSlice.reducer;
+export default systemDebtSlice.reducer
