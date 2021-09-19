@@ -1,10 +1,12 @@
 import { BigNumber } from "ethers"
 import getProvider from '../../utils/getProvider'
 import { ChainID } from '../chainID'
-import { ProtocolContract, getProtocolContract } from '../../utils/protocolContracts'
 import { TCPGovernorAlpha } from "../../utils/typechain"
 import { unscale, zeroAddress } from "../../utils"
 import { Proposal, ProposalStates, proposalsInfo } from "./"
+import { ProtocolContract } from '../contracts/index';
+import getContract from '../../utils/getContract'
+import { proposalsArgs } from './index';
 
 const convertStateIDToState = (stateID: number) => {
   switch(stateID) {
@@ -81,15 +83,11 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   voterAddress: rawProposal.voterAddress,
 })
 
-export const genProposals = async (chainID: ChainID): Promise<proposalsInfo | null> => {
-  const provider = getProvider()
-  if (provider === null) return null
-  const [userAddress, tcpGovernorAlpha] = await Promise.all([
-    provider.getSigner().getAddress(),
-    getProtocolContract(chainID, ProtocolContract.TCPGovernorAlpha),
-  ])
-  const rawProposalData = await (tcpGovernorAlpha as TCPGovernorAlpha).getAllProposals(userAddress)
-  const haveUserAddress = userAddress !== zeroAddress
+export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
+  const tcpGovernorAlpha = getContract(args.TCPGovernorAlpha, ProtocolContract.TCPGovernorAlpha) as TCPGovernorAlpha
+
+  const rawProposalData = await (tcpGovernorAlpha as TCPGovernorAlpha).getAllProposals(args.userAddress)
+  const haveUserAddress = args.userAddress !== zeroAddress
 
   let _proposals = rawProposalData._proposals
   let _states = rawProposalData._proposalStates
@@ -117,7 +115,7 @@ export const genProposals = async (chainID: ChainID): Promise<proposalsInfo | nu
       proposal: _proposals[i],
       state: _states[i],
       receipt: _receipts[i],
-      voterAddress: haveUserAddress ? userAddress : undefined,
+      voterAddress: haveUserAddress ? args.userAddress : undefined,
       votingPower: _votingPower[i],
     }
     proposals.push(rawProposalToProposal(rawProposal))

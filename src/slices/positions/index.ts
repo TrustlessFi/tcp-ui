@@ -30,12 +30,14 @@ export interface positionsArgs {
   userAddress: string,
   sdi: systemDebtInfo,
   marketInfo: marketInfo,
+  Accounting: string,
+  HuePositionNFT: string,
 }
 
 export interface createPositionArgs {
-  chainID: ChainID,
   collateralCount: number,
   debtCount: number,
+  Market: string,
 }
 
 export interface PositionsState extends sliceState<positionsInfo> {}

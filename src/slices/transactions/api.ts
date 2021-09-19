@@ -10,23 +10,15 @@ export const executeUpdateTransactions = async (
   args: updateTransactionsArgs,
   dispatch: AppDispatch,
 ): Promise<TransactionState> => {
-  console.log("inside executeUpdateTransactions")
-  console.log({txBefore: args.currentState})
   const provider = getProvider()
-  console.log("here 1")
   if (provider === null) return args.currentState
 
-  console.log("here 2")
   let txs = getSortedUserTxs(args.userAddress, args.currentState)
-  console.log("here 3")
   if (txs.length === 0) return args.currentState
-  console.log("here 4")
 
   const newState = args.currentState
-  console.log({newState, currentSTate: args.currentState})
 
   await Promise.all(txs.map(async tx => {
-    console.log({status: tx.status, failed: TransactionStatus.Failed, success: TransactionStatus.Succeeded})
     if (tx.status === TransactionStatus.Failed || tx.status === TransactionStatus.Succeeded) return
     const txObject = await provider.getTransaction(tx.hash)
     if (txObject.confirmations > 0) {
@@ -36,7 +28,6 @@ export const executeUpdateTransactions = async (
         : dispatch(transactionFailed({userAddress: args.userAddress, hash: tx.hash }))
     }
   }))
-  console.log({txAfter: newState})
 
   return newState
 }

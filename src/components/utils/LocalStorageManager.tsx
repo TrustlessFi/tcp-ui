@@ -1,36 +1,53 @@
+import { useAppSelector as selector, } from '../../app/hooks'
 import { Slice } from '@reduxjs/toolkit';
-import React, { MouseEvent, useState, useEffect } from 'react'
-import { useAppDispatch, useAppSelector as selector, } from '../../app/hooks'
 import { RootState } from '../../app/store'
-import { getSortedUserTxs } from './index'
-import { TransactionStatus, updateTransactions, transactionsSlice, TransactionState } from '../../slices/transactions'
-import {  } from '../../slices/transactions'
-import { hours } from '../../utils/'
+import { transactionsSlice, TransactionState } from '../../slices/transactions'
+import { positionsEditorSlice, PositionsEditorState } from '../../slices/positionsEditor'
+import { contractsSlice, ProtocolContractsState } from '../../slices/contracts'
+import { minutes, timeS } from '../../utils/'
 
-const localStorage = window.localStorage
+type slicesState = TransactionState | PositionsEditorState | ProtocolContractsState
 
 type persistedSlice = {
   slice: Slice,
-  duration: number,
-  getState: (state: RootState) => TransactionState
+  ttl: number,
+  getState: (state: RootState) => slicesState
 }
 
 type persistedSlices = {
   [key in keyof RootState]?: persistedSlice
 }
 
-const slicesToPersist: persistedSlices = {
+const NO_EXPIRATION = -1
+
+export const slicesToPersist: persistedSlices = {
   [transactionsSlice.name]: {
     slice: transactionsSlice,
-    duration: 0, // TODO add this in
+    ttl: NO_EXPIRATION,
     getState: (state: RootState) => state.transactions
+  },
+  [positionsEditorSlice.name]: {
+    slice: positionsEditorSlice,
+    ttl: minutes(10),
+    getState: (state: RootState) => state.positionsEditor
+  },
+  [contractsSlice.name]: {
+    slice: contractsSlice,
+    ttl: minutes(10),
+    getState: (state: RootState) => state.contracts
   }
 }
 
+type sliceStateWithExpiration = { expiration: number, sliceState: slicesState }
+
 export default () => {
-  for (const [k, v] of Object.entries(slicesToPersist)) {
-    const state = selector(v.getState)
-    localStorage.setItem(k, JSON.stringify(state))
+  for (const [key, slice] of Object.entries(slicesToPersist)) {
+    const sliceState = selector(slice!.getState)
+    const ttl = slice!.ttl
+    const year2120 = 4733539200
+    const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + slice!.ttl
+    const stateWithTimestamp: sliceStateWithExpiration = { expiration, sliceState }
+    localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>
 }

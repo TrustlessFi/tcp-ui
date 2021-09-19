@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getLocalStorage } from '../../utils'
 
 interface editorStatus {
   positionID: number,
@@ -18,9 +19,11 @@ const initialState: PositionsEditorState = {
   },
 }
 
+const name = 'positionsEditor'
+
 export const positionsEditorSlice = createSlice({
-  name: 'positionsEditor',
-  initialState,
+  name,
+  initialState: getLocalStorage(name, initialState) as PositionsEditorState,
   reducers: {
     editorOpened: (state, action: PayloadAction<editorStatus>) => {
       state.open = true
