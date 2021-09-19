@@ -13,11 +13,8 @@ export const getHueBalance = createAsyncThunk(
   'hueBalance/getBalances',
   async (args: hueBalanceArgs) => tokenBalanceThunk(
     { tokenAddress: args.Hue, userAddress: args.userAddress},
-    {
-      [ProtocolContract.Market]: args.Market,
-      [ProtocolContract.Hue]: args.Hue,
-    },
-    {}
+    [{contract: ProtocolContract.Market, address: args.Market}],
+    [{contract: ProtocolContract.Hue, address: args.Hue}],
   ),
 )
 

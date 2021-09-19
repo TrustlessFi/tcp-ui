@@ -42,8 +42,8 @@ export interface balanceArgs {
 
 export const tokenBalanceThunk = async (
   args: balanceArgs,
-  approvalsList: {[key in ProtocolContract]?: string},
-  balancesList: {[key in ProtocolContract]?: string},
+  approvalsList: {contract: ProtocolContract, address: string}[],
+  balancesList: {contract: ProtocolContract, address: string}[],
 ) => {
   const provider = getProvider()
   if (provider === null) return null
@@ -53,34 +53,22 @@ export const tokenBalanceThunk = async (
   const balances: balances = {}
   const tokenInfo = await tokenAddressToTokenInfo(token.address, provider)
 
-  const getApprovalsPromises: Promise<any>[] = []
-  for (const [contract, address] of Object.entries(approvalsList)) {
-    getApprovalsPromises.push(
-      (async () => {
-        const allowance = await token.allowance(args.userAddress, address)
-        approval[contract as ProtocolContract] = {
-          allowance: allowance.toString(),
-          approving: false,
-          approved: allowance.gt(bnf(uint255Max))
-        }
-      })()
-    )
-  }
-
-  const getBalancesPromises: Promise<any>[] = []
-  for (const [contract, address] of Object.entries(balancesList)) {
-    getBalancesPromises.push(
-      (async () => (balances[contract as ProtocolContract] = unscale(await token!.balanceOf(address), tokenInfo.decimals)))()
-    )
-  }
-
   const [
     _,
     __,
     userBalance,
   ] = await Promise.all([
-    Promise.all(getApprovalsPromises),
-    Promise.all(getBalancesPromises),
+    Promise.all(approvalsList.map(async item => {
+      const allowance = await token.allowance(args.userAddress, item.address)
+      approval[item.contract] = {
+        allowance: allowance.toString(),
+        approving: false,
+        approved: allowance.gt(bnf(uint255Max))
+      }
+    })),
+    Promise.all(balancesList.map(async item => {
+      balances[item.contract] = unscale(await token!.balanceOf(item.address), tokenInfo.decimals)
+    })),
     token.balanceOf(args.userAddress),
   ])
 
