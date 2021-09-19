@@ -109,14 +109,20 @@ export const timeS = () => Math.floor(new Date().getTime() / 1000)
 export const getLocalStorage = (key: string, defaultValue: any = null) => {
   const rawValue = localStorage.getItem(key)
 
-  if (rawValue === null) return defaultValue
+  if (rawValue === null) {
+    console.log("returning default value for", key)
+    return defaultValue
+  }
 
   const sliceStateWithExpiration = JSON.parse(rawValue)
 
   if (sliceStateWithExpiration.expiration < timeS()) {
     localStorage.removeItem(key)
+    console.log("returning expire default value for", key)
     return defaultValue
   }
+
+  console.log("returning SAVED value for", key)
 
   return sliceStateWithExpiration.sliceState
 }
