@@ -105,12 +105,17 @@ const UpdatePositionPage = ({id}: { id: number}) => {
   // const [collateralIncrease, setCollateralIncrease] = useState(0)
   // const [debtIncrease, setDebtIncrease] = useState(0)
 
-  if (anyNull([governor, market, liquidations, rates, prices])) {
+ if (
+    governor === null ||
+    market === null ||
+    liquidations === null ||
+    rates === null ||
+    prices === null) {
     return <>loading spinner</>
   }
 
   if (positions === null || !(positions.hasOwnProperty(id))) {
-    throw new Error('Position ' + id + ' not found.')
+    throw 'PositionEditor: Position id not found: ' + id
   }
 
   const position = positions[id]
@@ -121,24 +126,24 @@ const UpdatePositionPage = ({id}: { id: number}) => {
       'Position ID': position.id,
       'Debt': position.debtCount + ' Hue',
       'Collateral': roundToXDecimals(position.collateralCount, 2) + ' Eth',
-      'Current Eth/Hue price': roundToXDecimals(prices!.ethPrice, 2),
+      'Current Eth/Hue price': roundToXDecimals(prices.ethPrice, 2),
     },
   }]
 
   const table1 = <SimpleTable rows={rows} />
 
-  const interestRate = rates!.interestRateAbsoluteValue * (rates!.positiveInterestRate ? 1 : -1)
-  const liquidationIncentive = liquidations!.liquidationIncentive + liquidations!.discoveryIncentive - 1
+  const interestRate = rates.interestRateAbsoluteValue * (rates.positiveInterestRate ? 1 : -1)
+  const liquidationIncentive = liquidations.liquidationIncentive + liquidations.discoveryIncentive - 1
 
-  const liquidationPrice = (market!.collateralizationRequirement / position.collateralCount) * position.debtCount
+  const liquidationPrice = (market.collateralizationRequirement / position.collateralCount) * position.debtCount
 
   const rows2 = [{
     key: position.id,
     data: {
-      'Min Position size': market!.minPositionSize,
+      'Min Position size': market.minPositionSize,
       'Stability fee': (interestRate * 100) + '%',
       'Liquidation Fee': roundToXDecimals(liquidationIncentive * 100, 2) + '%',
-      'Min Collateralization ratio': (market!.collateralizationRequirement * 100) + ' %',
+      'Min Collateralization ratio': (market.collateralizationRequirement * 100) + ' %',
       'Liquidation price': roundToXDecimals(liquidationPrice, 2),
     },
   }]
