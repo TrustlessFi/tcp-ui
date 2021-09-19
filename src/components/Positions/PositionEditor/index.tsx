@@ -2,15 +2,15 @@ import { useState } from "react"
 import {
   Button,
   NumberInput,
+  TextAreaSkeleton,
 } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
 import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../../slices/waitFor'
 import SimpleTable from '../../library/SimpleTable'
 import { editorClosed } from '../../../slices/positionsEditor'
 import { roundToXDecimals } from '../../../utils'
-import { onNumChange, mnt }  from '../../../utils/'
+import { onNumChange }  from '../../../utils/'
 import CreatePositionController from '../../Write/CreatePositionController'
-import { UIID } from '../../../constants';
 
 export default ({}) => {
   const dispatch = useAppDispatch()
@@ -36,13 +36,13 @@ const CreatePositionPage = () => {
   const chainID = selector(state => state.chainID.chainID)
   const userAddress = selector(state => state.wallet.address)
 
-  if (market === null) throw 'Market is null'
-  if (chainID === null) throw 'ChainID is null'
-  if (userAddress === null) throw 'userAddress is null'
-
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
   const [showCreatePosition, setShowCreatePosition] = useState(false)
+
+  if (market === null || chainID === null || userAddress === null) {
+    return <TextAreaSkeleton />
+  }
 
   const ethPrice = 10
   const liquidationPrice = 20
