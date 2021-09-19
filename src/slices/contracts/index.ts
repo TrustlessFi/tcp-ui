@@ -22,7 +22,7 @@ export enum ProtocolContract {
   Rewards = "Rewards",
   Settlement = "Settlement",
   Tcp = "Tcp",
-  TCPGovernorAlpha = "TCPGovernorAlpha",
+  TcpGovernorAlpha = "TcpGovernorAlpha",
   TcpTimelock = "TcpTimelock",
 }
 
@@ -56,7 +56,7 @@ const contractsInitialState: ProtocolContractsState = {
   [ProtocolContract.Auctions]:  initialState,
   [ProtocolContract.EnforcedDecentralization]: initialState,
   [ProtocolContract.Governor]: initialState,
-  [ProtocolContract.TCPGovernorAlpha]: initialState,
+  [ProtocolContract.TcpGovernorAlpha]: initialState,
   [ProtocolContract.LendHue]: initialState,
   [ProtocolContract.Liquidations]: initialState,
   [ProtocolContract.Market]: initialState,

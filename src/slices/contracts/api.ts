@@ -1,6 +1,6 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
 import getProvider from '../../utils/getProvider'
-import { Governor, TCPGovernorAlpha } from "../../utils/typechain"
+import { Governor, TcpGovernorAlpha } from "../../utils/typechain"
 import { ethers } from 'ethers'
 import { getContractArgs, ProtocolContract, getContractReturnType, getGovernorContractArgs } from './'
 import { assertUnreachable } from '../../utils'
@@ -22,7 +22,7 @@ export const executeGetContract = async (args: getContractArgs): Promise<getCont
 
 const getContract = async (governor: Governor, contract: ProtocolContract): Promise<string> => {
   switch (contract) {
-    case ProtocolContract.TCPGovernorAlpha:
+    case ProtocolContract.TcpGovernorAlpha:
       return await governor.governorAlpha()
     case ProtocolContract.Accounting:
       return await governor.accounting()

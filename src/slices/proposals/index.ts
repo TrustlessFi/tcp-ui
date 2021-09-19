@@ -45,7 +45,7 @@ export interface Proposal {
 export interface proposalsInfo { [key: number]: Proposal }
 
 export type proposalsArgs = {
-  TCPGovernorAlpha: string
+  TcpGovernorAlpha: string
   userAddress: string
 }
 
