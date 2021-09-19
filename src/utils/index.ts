@@ -66,6 +66,8 @@ export const timeToPeriod = (time: number, periodLength: number, firstPeriod: nu
 
 export const toInt = (val: number | string) => typeof val === 'number' ? val : parseInt(val)
 
+export const anyNull = (items: (any | null)[]) => items.some(item => item === null)
+
 // ======================= Number Display Utils ============================
 export const roundToXDecimals = (val: number, decimals: number = 0) =>
   Math.round(val * 10 ** decimals) / 10 ** decimals;

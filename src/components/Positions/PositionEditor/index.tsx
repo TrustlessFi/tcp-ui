@@ -9,7 +9,7 @@ import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, w
 import SimpleTable from '../../library/SimpleTable'
 import { editorClosed } from '../../../slices/positionsEditor'
 import { roundToXDecimals } from '../../../utils'
-import { onNumChange }  from '../../../utils/'
+import { onNumChange, anyNull }  from '../../../utils/'
 import CreatePositionController from '../../Write/CreatePositionController'
 
 export default ({}) => {
@@ -32,17 +32,15 @@ export default ({}) => {
 
 const CreatePositionPage = () => {
   const dispatch = useAppDispatch()
+
   const market = waitForMarket(selector, dispatch)
-  const chainID = selector(state => state.chainID.chainID)
   const userAddress = selector(state => state.wallet.address)
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
   const [showCreatePosition, setShowCreatePosition] = useState(false)
 
-  if (market === null || chainID === null || userAddress === null) {
-    return <TextAreaSkeleton />
-  }
+  if (anyNull([market, userAddress])) return <TextAreaSkeleton />
 
   const ethPrice = 10
   const liquidationPrice = 20
@@ -104,15 +102,10 @@ const UpdatePositionPage = ({id}: { id: number}) => {
   const rates = waitForRates(selector, dispatch)
   const prices = waitForPrices(selector, dispatch)
 
-  const [collateralIncrease, setCollateralIncrease] = useState(0)
-  const [debtIncrease, setDebtIncrease] = useState(0)
+  // const [collateralIncrease, setCollateralIncrease] = useState(0)
+  // const [debtIncrease, setDebtIncrease] = useState(0)
 
-  if (
-    governor === null ||
-    market === null ||
-    liquidations === null ||
-    rates === null ||
-    prices === null) {
+  if (anyNull([governor, market, liquidations, rates, prices])) {
     return <>loading spinner</>
   }
 
@@ -128,24 +121,24 @@ const UpdatePositionPage = ({id}: { id: number}) => {
       'Position ID': position.id,
       'Debt': position.debtCount + ' Hue',
       'Collateral': roundToXDecimals(position.collateralCount, 2) + ' Eth',
-      'Current Eth/Hue price': roundToXDecimals(prices.ethPrice, 2),
+      'Current Eth/Hue price': roundToXDecimals(prices!.ethPrice, 2),
     },
   }]
 
   const table1 = <SimpleTable rows={rows} />
 
-  const interestRate = rates.interestRateAbsoluteValue * (rates.positiveInterestRate ? 1 : -1)
-  const liquidationIncentive = liquidations.liquidationIncentive + liquidations.discoveryIncentive - 1
+  const interestRate = rates!.interestRateAbsoluteValue * (rates!.positiveInterestRate ? 1 : -1)
+  const liquidationIncentive = liquidations!.liquidationIncentive + liquidations!.discoveryIncentive - 1
 
-  const liquidationPrice = (market.collateralizationRequirement / position.collateralCount) * position.debtCount
+  const liquidationPrice = (market!.collateralizationRequirement / position.collateralCount) * position.debtCount
 
   const rows2 = [{
     key: position.id,
     data: {
-      'Min Position size': market.minPositionSize,
+      'Min Position size': market!.minPositionSize,
       'Stability fee': (interestRate * 100) + '%',
       'Liquidation Fee': roundToXDecimals(liquidationIncentive * 100, 2) + '%',
-      'Min Collateralization ratio': (market.collateralizationRequirement * 100) + ' %',
+      'Min Collateralization ratio': (market!.collateralizationRequirement * 100) + ' %',
       'Liquidation price': roundToXDecimals(liquidationPrice, 2),
     },
   }]

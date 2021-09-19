@@ -26,7 +26,6 @@ export interface Position {
 export interface positionsInfo { [key: number]: Position }
 
 export interface positionsArgs {
-  chainID: ChainID,
   userAddress: string,
   sdi: systemDebtInfo,
   marketInfo: marketInfo,
