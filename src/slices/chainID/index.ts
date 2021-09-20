@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getLocalStorage } from '../../utils/'
 
 export enum ChainID {
   // Mainnet = 1,

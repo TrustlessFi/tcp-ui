@@ -23,7 +23,7 @@ export default () => {
       <div style={{marginTop: '1rem'}}>
         <h4>Recent Transactions</h4>
       </div>
-      {sortedUserTxs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.title)} icon={Launch16}>{tx.title}</SmallLink>)}
+      {sortedUserTxs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.message)} icon={Launch16}>{tx.message}</SmallLink>)}
       <Center style={{marginTop: '1rem'}}>
         <SmallLink onClick={() => dispatch(clearUserTransactions(userAddress!))}>Clear all</SmallLink>
       </Center>

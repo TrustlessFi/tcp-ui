@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { getLocalStorage } from '../../utils'
 import getProvider from '../../utils/getProvider'
+import { addNotification } from '../notifications'
 
 export enum TransactionStatus {
   Pending,
@@ -11,7 +12,7 @@ export enum TransactionStatus {
 
 export type TransactionArgs = {
   hash: string
-  title: string
+  message: string
   userAddress: string
   nonce: number
 }
@@ -33,12 +34,17 @@ export interface updateTransactionsResponse {
 
 export const waitForTransaction = createAsyncThunk(
   'transactions/waitForTransaction',
-  async (args: TransactionArgs): Promise<TransactionInfo> => {
+  async (args: TransactionArgs, {dispatch}): Promise<TransactionInfo> => {
     const provider = getProvider()!
 
     const receipt = await provider.waitForTransaction(args.hash)
     const status = receipt.status === 1 ? TransactionStatus.Succeeded : TransactionStatus.Failed
-    return {...args, status}
+
+    const result = {...args, status}
+
+    dispatch(addNotification(result))
+
+    return result
   })
 
 const name = 'transactions'

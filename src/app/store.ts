@@ -21,6 +21,7 @@ import lendHueBalanceReducer from '../slices/balances/lendHueBalance'
 import referenceTokenBalancesReducer from '../slices/balances/referenceTokenBalances'
 
 import contractsReducer from '../slices/contracts'
+import notificationsReducer from '../slices/notifications'
 
 export const store = configureStore({
   reducer: {
@@ -45,6 +46,7 @@ export const store = configureStore({
     referenceTokenBalances: referenceTokenBalancesReducer,
 
     contracts: contractsReducer,
+    notifications: notificationsReducer,
   },
 })
 
