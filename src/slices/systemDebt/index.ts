@@ -5,6 +5,7 @@ import getContract from '../../utils/getContract'
 
 import { Accounting } from "../../utils/typechain/Accounting";
 import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
 
 export type systemDebtInfo = {
   debt: number
@@ -35,9 +36,11 @@ export const getSystemDebtInfo = createAsyncThunk(
   }
 )
 
+const name = 'systemDebt'
+
 export const systemDebtSlice = createSlice({
-  name: 'systemDebt',
-  initialState: initialState as SystemDebtState,
+  name,
+  initialState: getLocalStorage(name, initialState) as SystemDebtState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getSystemDebtInfo)
