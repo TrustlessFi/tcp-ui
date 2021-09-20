@@ -1,5 +1,6 @@
-import { Fragment, FunctionFragment, JsonFragment } from '@ethersproject/abi';
-import { Contract, ContractFunction, ContractInterface, utils as ethersUtils, Transaction } from 'ethers'
+import { Web3Provider } from '@ethersproject/providers'
+import { Contract, utils as ethersUtils, ethers } from 'ethers'
+
 import { enforce, first } from '../'
 import getProvider from '../getProvider'
 
@@ -7,13 +8,12 @@ import { TcpMulticallViewOnly } from '../typechain'
 
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
-interface Call {
-  contract: Contract,
+interface RawCall {
   func: string,
-  args: any[],
+  args: any[] | undefined,
 }
 
-interface CallWithEncoding extends Call {
+interface Call extends RawCall {
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
@@ -21,15 +21,25 @@ interface CallWithEncoding extends Call {
 
 const MULTICALL_ADDRESS = '0x153900C946e33AED5F1ee79C92E149A262E2B1E9'
 
-export default async (calls: Call[]) => {
-  const callsWithEncoding: CallWithEncoding[] = []
+class Multicall {
+  contract: Contract
+  calls: Call[] = []
+  result: unknown
+  provider: Web3Provider
 
-  calls.map(call => {
-    const contract = call.contract
-    const func = call.func
-    const args = call.args
+  constructor(contract: Contract, provider?: Web3Provider) {
+    this.contract = contract
+    this.provider = provider === undefined
+      ? getProvider()
+      : provider
+  }
 
-    const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
+  add(calls: string[]) {
+    calls.map(call => this.addCallWithArgs(call, []))
+  }
+
+  addCallWithArgs(func: string, args: any[] = []) {
+    const matchingFunctions = Object.values(this.contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
     enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
     enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
 
@@ -44,34 +54,37 @@ export default async (calls: Call[]) => {
       inputs.length === args.length,
       'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
 
-    callsWithEncoding.push({
-      ...call,
+    this.calls.push({
+      func,
+      args,
       inputs,
       outputs,
-      encoding: contract.interface.encodeFunctionData(func, args)
+      encoding: this.contract.interface.encodeFunctionData(func, args)
     })
-  })
-
-  const provider = getProvider()
-  enforce(provider !== null, 'Multicall: Provider is null')
-  const signer = provider!.getSigner()
-
-  const multicall = new Contract(
-    MULTICALL_ADDRESS,
-    tcpMulticallViewOnlyArtifact.abi,
-    provider!
-  ) as TcpMulticallViewOnly
-
-  const rawResults = await multicall.connect(signer).all(callsWithEncoding.map(call => ({ target: call.contract.address, callData: call.encoding})))
-
-  const abiCoder = new ethersUtils.AbiCoder()
-
-  const results: ethersUtils.Result[] = []
-
-  for(let i = 0; i < rawResults.returnData.length; i++) {
-    const result = abiCoder.decode(callsWithEncoding[i].outputs!, rawResults.returnData[i]);
-    results.push(result)
   }
 
-  return results
+  async execute() {
+    const multicall = new Contract(
+      MULTICALL_ADDRESS,
+      tcpMulticallViewOnlyArtifact.abi,
+      this.provider,
+    ) as TcpMulticallViewOnly
+
+    const rawResults = await multicall.all(this.calls.map(
+      call => ({ target: this.contract.address, callData: call.encoding })
+    ))
+
+    const abiCoder = new ethersUtils.AbiCoder()
+
+    const multicallResult = rawResults.returnData.map((rawResult, index) => {
+      const resultsArray = Object.values(abiCoder.decode(this.calls[index].outputs!, rawResult))
+      return resultsArray.length === 1
+        ? first(resultsArray)
+        : resultsArray
+    })
+    this.result = multicallResult
+    return multicallResult
+  }
 }
+
+export default (contract: Contract, provider?: Web3Provider) => new Multicall(contract, provider)

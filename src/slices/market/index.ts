@@ -6,6 +6,7 @@ import { Market } from "../../utils/typechain/Market"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils/index'
 import Multicall from '../../utils/Multicall'
+import { BigNumber } from 'ethers'
 
 
   export interface marketArgs {
@@ -29,15 +30,16 @@ import Multicall from '../../utils/Multicall'
     async (args: marketArgs) => {
       const market = getContract(args.Market, ProtocolContract.Market) as Market
 
-
-      const multicallResult = await Multicall([{
-        contract: market,
-        func: 'lastPeriodGlobalInterestAccrued',
-        args: [],
-      }])
-
-      console.log({multicallResult})
-      
+      const multicall = Multicall(market)
+      multicall.add([
+        'lastPeriodGlobalInterestAccrued',
+        'collateralizationRequirement',
+        'minPositionSize',
+        'twapDuration',
+        'interestPortionToLenders',
+        'periodLength',
+        'firstPeriod',
+      ])
 
       const [
         lastPeriodGlobalInterestAccrued,
@@ -47,15 +49,16 @@ import Multicall from '../../utils/Multicall'
         interestPortionToLenders,
         periodLength,
         firstPeriod,
-      ] = await Promise.all([
-        market.lastPeriodGlobalInterestAccrued(),
-        market.collateralizationRequirement(),
-        market.minPositionSize(),
-        market.twapDuration(),
-        market.interestPortionToLenders(),
-        market.periodLength(),
-        market.firstPeriod(),
-      ])
+      ] = await multicall.execute() as [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+      ]
+
 
       return {
         lastPeriodGlobalInterestAccrued: lastPeriodGlobalInterestAccrued.toNumber(),
@@ -70,6 +73,7 @@ import Multicall from '../../utils/Multicall'
   )
 
   const name = 'market'
+
   export const marketSlice = createSlice({
     name,
     initialState: getState<marketInfo>(getLocalStorage(name, null)) as MarketState,
