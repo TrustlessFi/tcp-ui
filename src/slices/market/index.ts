@@ -4,7 +4,8 @@ import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 import { Market } from "../../utils/typechain/Market"
 import { ProtocolContract } from '../contracts'
-import { getLocalStorage } from '../../utils/index';
+import { getLocalStorage } from '../../utils/index'
+import Multicall from '../../utils/Multicall'
 
 
   export interface marketArgs {
@@ -27,6 +28,16 @@ import { getLocalStorage } from '../../utils/index';
     'market/getMarketInfo',
     async (args: marketArgs) => {
       const market = getContract(args.Market, ProtocolContract.Market) as Market
+
+
+      const multicallResult = await Multicall([{
+        contract: market,
+        func: 'lastPeriodGlobalInterestAccrued',
+        args: [],
+      }])
+
+      console.log({multicallResult})
+      
 
       const [
         lastPeriodGlobalInterestAccrued,
