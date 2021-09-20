@@ -19,7 +19,12 @@ export default ({}) => {
 
 
   return (
-    <div style={{marginLeft: '24px'}}>
+
+    <div style={{
+      position: 'absolute',
+      right: 16,
+      top: 16
+    }}>
       {orderedNotifications.map(notification =>
         <Notification data={notification} onClose={() => onClose(notification.hash)} />
       )}
@@ -32,7 +37,6 @@ export default ({}) => {
         subtitle={<span>Subtitle text goes here. <a href="#example">Example link</a></span>}
         title="Notification title"
       />
-
     </div>
   )
 }
