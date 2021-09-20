@@ -1,10 +1,13 @@
+import { useDispatch } from 'react-redux'
+import { notificationClosed, addNotification, } from '../../slices/notifications'
 import { Row, Col } from 'react-flexbox-grid'
 import { ReactNode } from 'react'
 import { TransactionStatus } from '../../slices/transactions'
 import { ErrorFilled24, CheckmarkFilled24, UnknownFilled24, Close24 } from '@carbon/icons-react';
+import { getOpacityTransition } from '../utils'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
 const warnColor = (status: TransactionStatus) => {
@@ -46,78 +49,86 @@ const NotificationText = ({large, children}: {large?: boolean, children: ReactNo
   return <p style={{fontSize: large ? 18 : 14, fontFamily}}>{children}</p>
 }
 
-export default (
-  {
-    data,
-    durationSeconds,
-    onClose
-  }: {
-    data: notificationInfo,
-    durationSeconds: number,
-    onClose: () => void
-  }) => {
+const NOTIFICATION_DURATION_SECONDS = 12
+const FADE_OUT_MS = 300
+
+export default ({ data, }: { data: notificationInfo, }) => {
+  const dispatch = useDispatch()
   const iconWidth = 56
   const totalWidth = 400
   const paddingRight = 40
 
   const [ loadingBarWidth, setLoadingBarWidth ] = useState(totalWidth)
+  const [ visible, setVisible ] = useState(true)
+
+  const endTime = data.startTimeMS + (NOTIFICATION_DURATION_SECONDS * 1000)
+
+  const closeCalled = useRef(false)
+
+  const close = () => {
+    if (closeCalled.current) return
+    closeCalled.current = true
+
+    setVisible(false)
+    setTimeout(() => dispatch(notificationClosed(data.hash)), FADE_OUT_MS)
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
       const currentTimeMS = timeMS()
-      if (currentTimeMS > data.startTimeMS + (durationSeconds * 1000)) {
-        onClose()
+      if (currentTimeMS > endTime) {
+        close()
       } else {
         const duration = currentTimeMS - data.startTimeMS
-        const portion = duration / (durationSeconds * 1000)
+        const portion = duration / (NOTIFICATION_DURATION_SECONDS * 1000)
         const width = (1 - portion) * totalWidth
 
         setLoadingBarWidth(width)
       }
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
-
+    }, (NOTIFICATION_DURATION_SECONDS * 1000) / 250)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
+    <div style={{
+      width: totalWidth,
+      opacity: visible ? 1 : 0,
+      backgroundColor: '#161616',
+      marginBottom: 12,
+      padding: '8px',
+      paddingTop: 16,
+      paddingBottom: 16,
+      boxShadow: '0 2px 6px 0 rgb(0 0 0 / 20%)',
+      overflowWrap: 'break-word',
+      position: 'relative',
+      ...getOpacityTransition(0.3)
+    }}>
+      <Col>
+        <Row middle='xs' style={{paddingRight}}>
+          <Col style={{paddingLeft: 16, width: iconWidth}}>
+            <WarningIcon status={data.status} />
+          </Col>
+          <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
+            <NotificationText large>{data.message}{data.message}{data.message}</NotificationText>
+            <NotificationText>{data.hash}{data.hash}</NotificationText>
+          </Col>
+        </Row>
+      </Col>
       <div style={{
-        width: totalWidth,
-        backgroundColor: '#161616',
-        marginBottom: 12,
-        padding: '8px',
-        paddingTop: 16,
-        paddingBottom: 16,
-        boxShadow: '0 2px 6px 0 rgb(0 0 0 / 20%)',
-        overflowWrap: 'break-word',
-        transition: '1s ease',
-        transitionDelay: '0.5s',
-        position: 'relative',
-      }}>
-        <Col>
-          <Row middle='xs' style={{paddingRight}}>
-            <Col style={{paddingLeft: 16, width: iconWidth}}>
-              <WarningIcon status={data.status} />
-            </Col>
-            <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-              <NotificationText large>{data.message}</NotificationText>
-              <NotificationText>{data.hash}</NotificationText>
-            </Col>
-          </Row>
-        </Col>
-        <div style={{
-          width: loadingBarWidth,
-          height: 3,
-          backgroundColor: warnColor(data.status),
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-        }} />
-        <Close24 aria-label="close" onClick={onClose} style={{
-          position: 'absolute',
-          top: 8,
-          right: 8,
-          cursor: 'pointer',
-        }} />
-      </div>
+        width: loadingBarWidth,
+        display: visible ? 'block' : 'none',
+        height: 3,
+        backgroundColor: warnColor(data.status),
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+      }} />
+      <Close24 aria-label="close" onClick={close} style={{
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        cursor: 'pointer',
+      }} />
+    </div>
   )
 }
