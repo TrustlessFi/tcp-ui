@@ -54,11 +54,17 @@ export const createPosition = createAsyncThunk(
 export const positionsSlice = createSlice({
   name: 'positions',
   initialState: initialState as PositionsState,
-  reducers: {},
+  reducers: {
+    clearPositions: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
     builder = getGenericWriteReducerBuilder(builder, createPosition)
   },
 })
+
+export const { clearPositions } = positionsSlice.actions
 
 export default positionsSlice.reducer
