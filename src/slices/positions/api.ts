@@ -87,7 +87,7 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
 
   dispatch(waitForTransaction({
     hash,
-    title: 'Create Position',
+    message: 'Create Position',
     userAddress,
     nonce: tx.nonce
   }))
