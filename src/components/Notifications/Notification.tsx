@@ -21,54 +21,42 @@ const WarningIcon = ({status}: {status: TransactionStatus}) => {
   return <></>
 }
 
-const NotificationText = ({bold, children}: {bold?: boolean, children: ReactNode }) => {
-  const fontSize = '14px'
+const NotificationText = ({large, children}: {large?: boolean, children: ReactNode }) => {
   const fontFamily = '"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif'
-  const fontWeight = 'bolder'
 
-  return bold
-    ? <p style={{fontSize, fontFamily, fontWeight}}>{children}</p>
-    : <p style={{fontSize, fontFamily}}>{children}</p>
-}
-
-const titleText = (status: TransactionStatus) => {
-  switch (status) {
-    case TransactionStatus.Failed:
-      return 'Transaction Failed'
-    case TransactionStatus.Succeeded:
-      return 'Transaction Succeeded'
-    case TransactionStatus.UnexpectedError:
-      return 'Unexpected Error'
-    case TransactionStatus.Pending:
-      throw 'Notification: Pending notification not supported.'
-    default:
-      assertUnreachable(status)
-  }
-  return <></>
+  return <p style={{fontSize: large ? 18 : 14, fontFamily}}>{children}</p>
 }
 
 export default ({data, onClose}: {data: notificationData, onClose: () => void}) => {
+  const iconWidth = 56
+  const totalWidth = 400
+
+
+
   return (
     <div style={{
-      width: '270px',
+      width: totalWidth,
       backgroundColor: '#161616',
-      marginBottom: '24px',
+      marginBottom: 12,
       padding: '8px',
+      paddingTop: 16,
+      paddingBottom: 16,
       boxShadow: '0 2px 6px 0 rgb(0 0 0 / 20%)',
+      overflowWrap: 'break-word',
+      position: 'relative',
     }}>
-      <Row middle='xs'>
-        <Col style={{paddingLeft: 16, paddingRight: 16}} xs={2}>
-          <WarningIcon status={data.status} />
-        </Col>
-        <Col xs={8}>
-          <NotificationText bold>{titleText(data.status)}</NotificationText>
-          <NotificationText>{data.message}</NotificationText>
-          <NotificationText>{data.hash}</NotificationText>
-        </Col>
-        <Col xs={2}>
-          <Close24 aria-label="close" onClick={onClose}/>
-        </Col>
-      </Row>
+      <Col>
+        <Row middle='xs'>
+          <Col style={{paddingLeft: 16, paddingRight: 16, width: iconWidth}}>
+            <WarningIcon status={data.status} />
+          </Col>
+          <Col style={{width: totalWidth - iconWidth}}>
+            <NotificationText large>{data.message}</NotificationText>
+            <NotificationText>{data.hash}</NotificationText>
+          </Col>
+        </Row>
+      </Col>
+      <Close24 aria-label="close" onClick={onClose} style={{position: 'absolute', top: 8, right: 8}} />
     </div>
   )
 }
