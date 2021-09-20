@@ -11,20 +11,19 @@ import Notification from './Notification'
 
 export default ({}) => {
   const dispatch = useDispatch()
-  const notificationMap = selector(state => state.notifications)
-
-  const orderedNotifications = Object.values(notificationMap).sort((a, b) => a.nonce - b.nonce)
-
   const renderedNotifications =
-    orderedNotifications.map(notification => {
-      return (
-        <Notification
-          key={notification.hash}
-          data={notification}
-        />
-      )
-    })
+    Object.values(selector(state => state.notifications))
+      .sort((a, b) => a.nonce - b.nonce)
+      .map(notification => {
+        return (
+          <Notification
+            key={notification.hash}
+            data={notification}
+          />
+        )
+      })
 
+      
   const nonce = useRef(50)
 
   const showNotification = () => {

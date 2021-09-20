@@ -11,6 +11,7 @@ import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
 import { referenceTokensSlice, referenceTokens } from '../../slices/referenceTokens'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
+import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
 type slicesState =
   TransactionState |
@@ -22,6 +23,7 @@ type slicesState =
   ratesInfo |
   referenceTokens |
   systemDebtInfo |
+  NotificationState |
   null
 
 type persistedSlice = {
@@ -84,6 +86,11 @@ export const slicesToPersist: persistedSlices = {
     slice: systemDebtSlice,
     ttl: SHORT_EXPIRATION,
     getState: (state: RootState) => state.systemDebt.data.value
+  },
+  [notificationsSlice.name]: {
+    slice: notificationsSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.notifications
   },
 }
 

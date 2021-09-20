@@ -58,7 +58,13 @@ export default ({ data, }: { data: notificationInfo, }) => {
   const totalWidth = 400
   const paddingRight = 40
 
-  const [ loadingBarWidth, setLoadingBarWidth ] = useState(totalWidth)
+  const calculateLoadingBarWidth = () => {
+    const duration = timeMS() - data.startTimeMS
+    const portion = duration / (NOTIFICATION_DURATION_SECONDS * 1000)
+    return (1 - portion) * totalWidth
+  }
+
+  const [ loadingBarWidth, setLoadingBarWidth ] = useState(calculateLoadingBarWidth())
   const [ visible, setVisible ] = useState(true)
 
   const endTime = data.startTimeMS + (NOTIFICATION_DURATION_SECONDS * 1000)
@@ -68,7 +74,8 @@ export default ({ data, }: { data: notificationInfo, }) => {
   const close = () => {
     if (closeCalled.current) return
     closeCalled.current = true
-
+    
+    clearInterval()
     setVisible(false)
     setTimeout(() => dispatch(notificationClosed(data.hash)), FADE_OUT_MS)
   }
@@ -79,11 +86,7 @@ export default ({ data, }: { data: notificationInfo, }) => {
       if (currentTimeMS > endTime) {
         close()
       } else {
-        const duration = currentTimeMS - data.startTimeMS
-        const portion = duration / (NOTIFICATION_DURATION_SECONDS * 1000)
-        const width = (1 - portion) * totalWidth
-
-        setLoadingBarWidth(width)
+        setLoadingBarWidth(calculateLoadingBarWidth())
       }
     }, (NOTIFICATION_DURATION_SECONDS * 1000) / 250)
     return () => clearInterval(interval)
