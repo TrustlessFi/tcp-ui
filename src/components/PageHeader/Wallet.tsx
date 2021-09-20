@@ -10,13 +10,14 @@ import WalletModal from './WalletModal'
 import NetworkIndicator from '../library/NetworkIndicator'
 import { getSortedUserTxs } from '../utils'
 import { toChecksumAddress } from '../../utils'
-import { TransactionStatus } from '../../slices/transactions/index'
+import { TransactionStatus } from '../../slices/transactions'
+import { clearPositions } from '../../slices/positions'
+
 
 export default () => {
   const dispatch = useAppDispatch()
 
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
-
 
   const chainChanged = (chainID: number | string) => {
 
@@ -46,6 +47,19 @@ export default () => {
     }
   }
 
+  const walletConnected = (accounts: string[]) => {
+    // TODO if new account is different than the current account, and the current account isn't null
+    // then clear all of the slices that depend on the user data
+    const account = accounts && accounts[0]
+
+    console.log("wallet connected", {account})
+
+    if (account != null) {
+      dispatch(connected(toChecksumAddress(account)))
+      dispatch(clearPositions())
+    }
+  }
+
   const connectWallet = async () => {
     dispatch(connecting())
 
@@ -69,14 +83,6 @@ export default () => {
 
         dispatch(connectionFailed())
       })
-  }
-
-  const walletConnected = (accounts: string[]) => {
-    // TODO if new account is different than the current account, and the current account isn't null
-    // then clear all of the slices that depend on the user data
-    const account = accounts && accounts[0]
-
-    if (account != null) dispatch(connected(toChecksumAddress(account)))
   }
 
   useEffect(() => {
