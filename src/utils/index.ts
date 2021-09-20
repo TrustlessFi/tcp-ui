@@ -130,3 +130,5 @@ export const getLocalStorage = (key: string, defaultValue: any = null) => {
 
   return sliceStateWithExpiration.sliceState
 }
+
+export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
