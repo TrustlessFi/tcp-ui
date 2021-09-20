@@ -142,3 +142,8 @@ export const last = <T>(array: Array<T>): T => {
   enforce(array.length > 0, 'Last for empty array')
   return array[array.length - 1]
 }
+
+
+export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
+
+// type PromiseType = PromiseType<typeof promisedOne> // => number

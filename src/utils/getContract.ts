@@ -1,7 +1,7 @@
 // Copyright (c) 2020. All Rights Reserved
 // SPDX-License-Identifier: UNLICENSED
 
-import { ethers } from "ethers"
+import { ethers, Contract } from "ethers"
 
 import getProvider from './getProvider'
 import { ProtocolContract } from '../slices/contracts'
@@ -68,7 +68,7 @@ const artifactLookup = {
 }
 
 export default (address: string, protocolContract: ProtocolContract) => {
-  const contract =  new ethers.Contract(
+  const contract =  new Contract(
     address,
     artifactLookup[protocolContract].abi,
     getProvider()!
