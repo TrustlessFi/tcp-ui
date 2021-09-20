@@ -121,6 +121,8 @@ export type { SafeMath128Testable } from "./SafeMath128Testable";
 export type { SafeMath64Testable } from "./SafeMath64Testable";
 export type { SafeMathTestable } from "./SafeMathTestable";
 export type { StaleMockPriceAggregator } from "./StaleMockPriceAggregator";
+export type { TcpMulticall } from "./TcpMulticall";
+export type { TcpMulticallViewOnly } from "./TcpMulticallViewOnly";
 export type { TcpSafeCastTestable } from "./TcpSafeCastTestable";
 export type { TcpSafeMathTestable } from "./TcpSafeMathTestable";
 export type { TDaoTestable } from "./TDaoTestable";
@@ -332,6 +334,8 @@ export { SafeMath128Testable__factory } from "./factories/SafeMath128Testable__f
 export { SafeMath64Testable__factory } from "./factories/SafeMath64Testable__factory";
 export { SafeMathTestable__factory } from "./factories/SafeMathTestable__factory";
 export { StaleMockPriceAggregator__factory } from "./factories/StaleMockPriceAggregator__factory";
+export { TcpMulticall__factory } from "./factories/TcpMulticall__factory";
+export { TcpMulticallViewOnly__factory } from "./factories/TcpMulticallViewOnly__factory";
 export { TcpSafeCastTestable__factory } from "./factories/TcpSafeCastTestable__factory";
 export { TcpSafeMathTestable__factory } from "./factories/TcpSafeMathTestable__factory";
 export { TDaoTestable__factory } from "./factories/TDaoTestable__factory";
