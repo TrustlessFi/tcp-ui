@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ChainID } from '../chainID'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { governorInfo } from '../governor'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { ratesInfo } from '../rates'
 import { ethers } from 'ethers'
 import getProvider from '../../utils/getProvider'
@@ -37,7 +35,7 @@ export const getReferenceTokens = createAsyncThunk(
 const name = 'referenceTokens'
 export const referenceTokensSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, initialState) as ReferenceTokensState,
+  initialState: getState<referenceTokens>(getLocalStorage(name, null)) as ReferenceTokensState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getReferenceTokens)

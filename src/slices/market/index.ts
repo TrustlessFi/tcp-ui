@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 import { Market } from "../../utils/typechain/Market"
@@ -46,7 +46,7 @@ import { getLocalStorage } from '../../utils/index';
         market.firstPeriod(),
       ])
 
-      const marketInfo = {
+      return {
         lastPeriodGlobalInterestAccrued: lastPeriodGlobalInterestAccrued.toNumber(),
         collateralizationRequirement: unscale(collateralizationRequirement),
         minPositionSize: unscale(minPositionSize),
@@ -55,14 +55,13 @@ import { getLocalStorage } from '../../utils/index';
         periodLength: periodLength.toNumber(),
         firstPeriod: firstPeriod.toNumber(),
       }
-      return marketInfo
     }
   )
 
   const name = 'market'
   export const marketSlice = createSlice({
     name,
-    initialState: getLocalStorage(name, initialState) as MarketState,
+    initialState: getState<marketInfo>(getLocalStorage(name, null)) as MarketState,
     reducers: {},
     extraReducers: (builder) => {
       builder = getGenericReducerBuilder(builder, getMarketInfo)

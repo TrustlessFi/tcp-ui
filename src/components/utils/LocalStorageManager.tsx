@@ -42,6 +42,8 @@ const MEDIUM_EXPIRATION = minutes(5)
 const LONG_EXPIRATION = minutes(30)
 
 export const slicesToPersist: persistedSlices = {
+
+  // Simple slices
   [transactionsSlice.name]: {
     slice: transactionsSlice,
     ttl: NO_EXPIRATION,
@@ -57,20 +59,32 @@ export const slicesToPersist: persistedSlices = {
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.contracts
   },
+  [notificationsSlice.name]: {
+    slice: notificationsSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.notifications
+  },
+
+  // Slices with loadable state
   [liquidationsSlice.name]: {
     slice: liquidationsSlice,
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.liquidations.data.value
   },
-  [marketSlice.name]: {
-    slice: marketSlice,
+  [systemDebtSlice.name]: {
+    slice: systemDebtSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.market.data.value
+    getState: (state: RootState) => state.systemDebt.data.value
   },
   [pricesSlice.name]: {
     slice: pricesSlice,
     ttl: SHORT_EXPIRATION,
     getState: (state: RootState) => state.prices.data.value
+  },
+  [marketSlice.name]: {
+    slice: marketSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.market.data.value
   },
   [ratesSlice.name]: {
     slice: ratesSlice,
@@ -81,16 +95,6 @@ export const slicesToPersist: persistedSlices = {
     slice: referenceTokensSlice,
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.referenceTokens.data.value
-  },
-  [systemDebtSlice.name]: {
-    slice: systemDebtSlice,
-    ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.systemDebt.data.value
-  },
-  [notificationsSlice.name]: {
-    slice: notificationsSlice,
-    ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.notifications
   },
 }
 

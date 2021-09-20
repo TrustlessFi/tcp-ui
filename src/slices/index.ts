@@ -27,6 +27,14 @@ export const initialState: sliceState<any> = {
   }
 }
 
+const getInitialStateCopy = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
+
+export const getState = <T>(value: T | null): sliceState<T> => {
+  let state = getInitialStateCopy<T>()
+  state.data.value = value
+  return state
+}
+
 export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
   builder: ActionReducerMapBuilder<sliceState<Value>>,
   thunk: AsyncThunk<string, Args, {}>,
