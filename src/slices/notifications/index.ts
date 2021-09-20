@@ -5,6 +5,7 @@ import { getLocalStorage } from '../../utils/index';
 
 export type notificationData = {
   status: TransactionStatus,
+  userAddress: string,
   message: string,
   hash: string,
   nonce: number
