@@ -18,12 +18,20 @@ export default () => {
   const sortedUserTxs = getSortedUserTxs(userAddress, txs)
   if (sortedUserTxs.length === 0) return null
 
+  const txLinks = sortedUserTxs.map(tx =>
+    <SmallLink
+      key={tx.hash}
+      onClick={() => console.log("tx clicked" + tx.message)}
+      icon={Launch16}>
+      {tx.message}
+    </SmallLink>)
+
   return (
     <>
       <div style={{marginTop: '1rem'}}>
         <h4>Recent Transactions</h4>
       </div>
-      {sortedUserTxs.map(tx => <SmallLink onClick={() => console.log("tx clicked" + tx.message)} icon={Launch16}>{tx.message}</SmallLink>)}
+      {txLinks}
       <Center style={{marginTop: '1rem'}}>
         <SmallLink onClick={() => dispatch(clearUserTransactions(userAddress!))}>Clear all</SmallLink>
       </Center>
