@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { TransactionStatus } from '../transactions/index';
 import { timeMS } from '../../utils'
+import { getLocalStorage } from '../../utils/index';
 
 export type notificationData = {
   status: TransactionStatus,
@@ -21,7 +22,7 @@ const name = 'notifications'
 
 export const notificationsSlice = createSlice({
   name,
-  initialState: initialState,
+  initialState: getLocalStorage(name, initialState) as NotificationState,
   reducers: {
     addNotification: (state, action: PayloadAction<notificationData>) => {
       const notification = action.payload
