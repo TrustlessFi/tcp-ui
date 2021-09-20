@@ -1,13 +1,11 @@
 import { useDispatch } from 'react-redux'
-import {
-  ToastNotification,
-  ProgressIndicator,
-} from 'carbon-components-react'
-import { TransactionStatus } from '../../slices/transactions'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { ToastNotification } from 'carbon-components-react'
+import { useAppSelector as selector } from '../../app/hooks'
 import { notificationClosed } from '../../slices/notifications'
 
 import Notification from './Notification'
+
+const NOTIFICATION_DURATION_SECONDS = 10
 
 export default ({}) => {
   const dispatch = useDispatch()
@@ -17,16 +15,18 @@ export default ({}) => {
 
   const onClose = (hash: string) => dispatch(notificationClosed(hash))
 
-
   return (
-
     <div style={{
       position: 'absolute',
       right: 16,
       top: 16
     }}>
       {orderedNotifications.map(notification =>
-        <Notification data={notification} onClose={() => onClose(notification.hash)} />
+        <Notification
+          data={notification}
+          durationSeconds={NOTIFICATION_DURATION_SECONDS}
+          onClose={() => onClose(notification.hash)}
+        />
       )}
       <ToastNotification
         lowContrast

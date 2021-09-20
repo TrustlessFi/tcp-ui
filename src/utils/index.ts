@@ -105,7 +105,9 @@ export const hours = (hours: number)     => hours * minutes(60)
 export const minutes = (minutes: number) => minutes * seconds(60)
 export const seconds = (seconds: number) => seconds
 
-export const timeS = () => Math.floor(new Date().getTime() / 1000)
+export const timeMS = () => (new Date().getTime())
+
+export const timeS = () => Math.floor(timeMS() / 1000)
 
 // ======================= Local Storage ============================
 export const getLocalStorage = (key: string, defaultValue: any = null) => {
