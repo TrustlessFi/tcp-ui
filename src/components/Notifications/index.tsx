@@ -1,9 +1,9 @@
 import { useDispatch } from 'react-redux'
 import { useAppSelector as selector } from '../../app/hooks'
-import { notificationClosed, addNotification, } from '../../slices/notifications'
+import { addNotification, } from '../../slices/notifications'
 import { Button } from 'carbon-components-react'
 import { TransactionStatus } from '../../slices/transactions'
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { randomInRange } from '../../utils'
 
 import Notification from './Notification'
@@ -11,9 +11,17 @@ import Notification from './Notification'
 
 export default ({}) => {
   const dispatch = useDispatch()
+
+  const rawNotifications = Object.values(selector(state => state.notifications))
+  const userAddress = selector(state => state.wallet.address)
+  const nonce = useRef(50)
+
+  if (userAddress === null || rawNotifications.length === 0) return null
+
   const renderedNotifications =
-    Object.values(selector(state => state.notifications))
+    Object.values(rawNotifications)
       .sort((a, b) => a.nonce - b.nonce)
+      .filter(notification => notification.userAddress === userAddress)
       .map(notification => {
         return (
           <Notification
@@ -23,16 +31,14 @@ export default ({}) => {
         )
       })
 
-      
-  const nonce = useRef(50)
-
   const showNotification = () => {
     dispatch(addNotification(
       {
         status: TransactionStatus.Failed,
         message: 'Test notification',
         hash: 'hash' + nonce.current,
-        nonce: nonce.current
+        nonce: nonce.current,
+        userAddress: nonce.current > 50 ? '0xaC5e1ccc84169A5Aa4c386EAE98c7CA863FEE6Bf' : '0xa02E38C515Ac3DCDBC18C69303700fa8cb839949',
       }
     ))
     nonce.current = randomInRange(0, 100)
