@@ -4,6 +4,7 @@ import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 import { Market } from "../../utils/typechain/Market"
 import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils/index';
 
 
   export interface marketArgs {
@@ -58,9 +59,10 @@ import { ProtocolContract } from '../contracts'
     }
   )
 
+  const name = 'market'
   export const marketSlice = createSlice({
-    name: 'market',
-    initialState: initialState as MarketState,
+    name,
+    initialState: getLocalStorage(name, initialState) as MarketState,
     reducers: {},
     extraReducers: (builder) => {
       builder = getGenericReducerBuilder(builder, getMarketInfo)

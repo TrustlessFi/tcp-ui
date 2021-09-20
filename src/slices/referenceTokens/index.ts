@@ -12,6 +12,7 @@ import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
 import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
 
 export type referenceTokens = string[]
 
@@ -33,9 +34,10 @@ export const getReferenceTokens = createAsyncThunk(
     }))
 })
 
+const name = 'referenceTokens'
 export const referenceTokensSlice = createSlice({
-  name: 'referenceTokens',
-  initialState: initialState as ReferenceTokensState,
+  name,
+  initialState: getLocalStorage(name, initialState) as ReferenceTokensState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getReferenceTokens)

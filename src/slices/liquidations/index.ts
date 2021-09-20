@@ -6,6 +6,7 @@ import getContract from '../../utils/getContract'
 
 import { Liquidations } from "../../utils/typechain/Liquidations"
 import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -43,9 +44,11 @@ export const getLiquidationsInfo = createAsyncThunk(
   }
 )
 
+const name = 'liquidations'
+
 export const liquidationsSlice = createSlice({
-  name: 'liquidations',
-  initialState: initialState as LiquidationsState,
+  name,
+  initialState: getLocalStorage(name, initialState) as LiquidationsState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getLiquidationsInfo)
