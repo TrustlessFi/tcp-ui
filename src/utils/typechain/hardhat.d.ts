@@ -493,6 +493,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StaleMockPriceAggregator__factory>;
     getContractFactory(
+      name: "TcpMulticall",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpMulticall__factory>;
+    getContractFactory(
+      name: "TcpMulticallViewOnly",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpMulticallViewOnly__factory>;
+    getContractFactory(
       name: "TcpSafeCastTestable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TcpSafeCastTestable__factory>;
