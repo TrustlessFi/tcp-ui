@@ -24,7 +24,6 @@ export default ({type}: {type: TransactionType}) => {
       }
 
       waitForPositions(selector, dispatch)
-
       break
     default:
       assertUnreachable(type)

@@ -114,7 +114,6 @@ export const getLocalStorage = (key: string, defaultValue: any = null) => {
   const rawValue = localStorage.getItem(key)
 
   if (rawValue === null) {
-    console.log("returning default value for", key)
     return defaultValue
   }
 
@@ -122,11 +121,8 @@ export const getLocalStorage = (key: string, defaultValue: any = null) => {
 
   if (sliceStateWithExpiration.expiration < timeS()) {
     localStorage.removeItem(key)
-    console.log("returning expire default value for", key)
     return defaultValue
   }
-
-  console.log("returning SAVED value for", key)
 
   return sliceStateWithExpiration.sliceState
 }
