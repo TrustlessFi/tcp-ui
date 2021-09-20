@@ -18,11 +18,11 @@ const addresses: {[key in ChainID]: { [key in rootContracts]: string}} = {
   },
   // TODO remove governor and derive from tcp governoralpha
   1337: {
-    USDC: '0x5930a362f5f107e2E0628Ca9D2371a4fAcF31BFA',
-    USDT: '0x5cB425A6f9563F7679381D28e3a22D8a64c7d1e3',
-    TUSD: '0x25C042b1Cfde068E58C3FDa8B1B90b860eea2E2d',
-    Governor: '0xa590AEc8427F2468B7fA9c639E31FD0C50F1e1A1',
-    UniswapRouter: '0x870A7E07DaDF987f17ac08aF1a0015ebc78d2258',
+    USDC: '0xE74b281b820c039c215feFF841127216925663EB',
+    USDT: '0xa720e517309af2698deb6eefFFF70ea110Fa3dF1',
+    TUSD: '0x77958cEf4823d759F23b57427702cf1Dcd290aF1',
+    Governor: '0x8A48EC415781EaFc316E9657F367B8Adf7d6393B',
+    UniswapRouter: '0x5f5bCE32f8b8aE0977DE9fb8298B9074602899F5',
   }
 }
 
