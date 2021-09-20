@@ -8,6 +8,9 @@ import { getOpacityTransition } from '../utils'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { useEffect, useState, useRef } from "react";
+import { TransactionType } from '../../slices/transactions/index';
+import FinishAction from './FinishAction'
+import { useAppDispatch } from '../../app/hooks';
 
 
 const warnColor = (status: TransactionStatus) => {
@@ -53,7 +56,8 @@ const NOTIFICATION_DURATION_SECONDS = 12
 const FADE_OUT_MS = 300
 
 export default ({ data, }: { data: notificationInfo, }) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
+
   const iconWidth = 56
   const totalWidth = 400
   const paddingRight = 40
@@ -74,7 +78,7 @@ export default ({ data, }: { data: notificationInfo, }) => {
   const close = () => {
     if (closeCalled.current) return
     closeCalled.current = true
-    
+
     clearInterval()
     setVisible(false)
     setTimeout(() => dispatch(notificationClosed(data.hash)), FADE_OUT_MS)
@@ -132,6 +136,7 @@ export default ({ data, }: { data: notificationInfo, }) => {
         right: 8,
         cursor: 'pointer',
       }} />
+      <FinishAction type={data.type} />
     </div>
   )
 }

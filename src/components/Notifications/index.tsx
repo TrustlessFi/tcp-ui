@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { randomInRange } from '../../utils'
 
 import Notification from './Notification'
+import { TransactionType } from '../../slices/transactions/index';
 
 
 export default ({}) => {
@@ -31,6 +32,7 @@ export default ({}) => {
         )
       })
 
+      // TODO remove
   const showNotification = () => {
     dispatch(addNotification(
       {
@@ -39,6 +41,7 @@ export default ({}) => {
         hash: 'hash' + nonce.current,
         nonce: nonce.current,
         userAddress: nonce.current > 50 ? '0xaC5e1ccc84169A5Aa4c386EAE98c7CA863FEE6Bf' : '0xa02E38C515Ac3DCDBC18C69303700fa8cb839949',
+        type: TransactionType.CreatePosition,
       }
     ))
     nonce.current = randomInRange(0, 100)

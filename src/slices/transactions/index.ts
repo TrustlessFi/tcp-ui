@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { getLocalStorage } from '../../utils'
+import { getLocalStorage, assertUnreachable } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 
@@ -10,11 +10,16 @@ export enum TransactionStatus {
   UnexpectedError,
 }
 
+export enum TransactionType {
+  CreatePosition,
+}
+
 export type TransactionArgs = {
   hash: string
   message: string
   userAddress: string
   nonce: number
+  type: TransactionType
 }
 
 export interface TransactionInfo extends TransactionArgs {

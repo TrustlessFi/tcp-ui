@@ -13,6 +13,7 @@ import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
 import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
+import { TransactionType } from '../transactions/index';
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
@@ -89,7 +90,8 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
     hash,
     message: 'Create Position',
     userAddress,
-    nonce: tx.nonce
+    nonce: tx.nonce,
+    type: TransactionType.CreatePosition,
   }))
 
   return hash
