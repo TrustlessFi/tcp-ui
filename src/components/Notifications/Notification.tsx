@@ -74,48 +74,50 @@ export default (
 
         setLoadingBarWidth(width)
       }
-    }, 50);
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
 
   return (
-    <div style={{
-      width: totalWidth,
-      backgroundColor: '#161616',
-      marginBottom: 12,
-      padding: '8px',
-      paddingTop: 16,
-      paddingBottom: 16,
-      boxShadow: '0 2px 6px 0 rgb(0 0 0 / 20%)',
-      overflowWrap: 'break-word',
-      position: 'relative',
-    }}>
-      <Col>
-        <Row middle='xs' style={{paddingRight}}>
-          <Col style={{paddingLeft: 16, width: iconWidth}}>
-            <WarningIcon status={data.status} />
-          </Col>
-          <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-            <NotificationText large>{data.message}</NotificationText>
-            <NotificationText>{data.hash}</NotificationText>
-          </Col>
-        </Row>
-      </Col>
       <div style={{
-        width: loadingBarWidth,
-        height: 3,
-        backgroundColor: warnColor(data.status),
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-      }} />
-      <Close24 aria-label="close" onClick={onClose} style={{
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        cursor: 'pointer',
-      }} />
-    </div>
+        width: totalWidth,
+        backgroundColor: '#161616',
+        marginBottom: 12,
+        padding: '8px',
+        paddingTop: 16,
+        paddingBottom: 16,
+        boxShadow: '0 2px 6px 0 rgb(0 0 0 / 20%)',
+        overflowWrap: 'break-word',
+        transition: '1s ease',
+        transitionDelay: '0.5s',
+        position: 'relative',
+      }}>
+        <Col>
+          <Row middle='xs' style={{paddingRight}}>
+            <Col style={{paddingLeft: 16, width: iconWidth}}>
+              <WarningIcon status={data.status} />
+            </Col>
+            <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
+              <NotificationText large>{data.message}</NotificationText>
+              <NotificationText>{data.hash}</NotificationText>
+            </Col>
+          </Row>
+        </Col>
+        <div style={{
+          width: loadingBarWidth,
+          height: 3,
+          backgroundColor: warnColor(data.status),
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+        }} />
+        <Close24 aria-label="close" onClick={onClose} style={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          cursor: 'pointer',
+        }} />
+      </div>
   )
 }
