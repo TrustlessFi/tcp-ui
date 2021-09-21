@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-import MetaMaskOnboarding from "@metamask/onboarding";
-import { Button, Tag, ModalWrapper } from 'carbon-components-react';
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { Tag } from 'carbon-components-react';
+import { useAppSelector as selector } from '../../app/hooks'
 import { chainIDToName, ChainID } from '../../slices/chainID'
 
-export default () => {
+const NetworkIndicator = () => {
   const chainID = selector(state => state.chainID.chainID)
 
   switch(chainID) {
@@ -16,3 +14,5 @@ export default () => {
       return <Tag type="gray">Unknown Network</Tag>
   }
 }
+
+export default NetworkIndicator

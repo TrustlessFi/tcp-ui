@@ -5,30 +5,9 @@ import { editorOpened } from '../../../slices/positionsEditor'
 import { waitForPositions } from '../../../slices/waitFor'
 import Center from '../../library/Center'
 import SimpleTable from '../../library/SimpleTable'
-
 import { numDisplay } from '../../../utils'
 
-export default () => {
-  const dispatch = useAppDispatch()
-  const createPositionButton =
-    <Button
-      size="small"
-      onClick={() => dispatch(editorOpened({
-        positionID: 0,
-        creating: true,
-      }))}
-     >
-      Create Position
-    </Button>
-
-  return (
-    <AppTile title="Positions" rightElement={createPositionButton}>
-      <ExistingPositionsTable />
-    </AppTile>
-  )
-}
-
-const ExistingPositionsTable = ({}) => {
+const ExistingPositionsTable = () => {
   const headers = ['Position ID', 'Debt', 'Collateral']
   const dispatch = useAppDispatch()
 
@@ -55,3 +34,25 @@ const ExistingPositionsTable = ({}) => {
 
   return <SimpleTable rows={rows} />
 }
+
+const ExistingPositions = () => {
+  const dispatch = useAppDispatch()
+  const createPositionButton =
+    <Button
+      size="small"
+      onClick={() => dispatch(editorOpened({
+        positionID: 0,
+        creating: true,
+      }))}
+     >
+      Create Position
+    </Button>
+
+  return (
+    <AppTile title="Positions" rightElement={createPositionButton}>
+      <ExistingPositionsTable />
+    </AppTile>
+  )
+}
+
+export default ExistingPositions

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { getLocalStorage, assertUnreachable } from '../../utils'
+import { getLocalStorage } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 
@@ -40,9 +40,8 @@ export interface updateTransactionsResponse {
 export const waitForTransaction = createAsyncThunk(
   'transactions/waitForTransaction',
   async (args: TransactionArgs, {dispatch}): Promise<TransactionInfo> => {
-    const provider = getProvider()!
 
-    const receipt = await provider.waitForTransaction(args.hash)
+    const receipt = await getProvider().waitForTransaction(args.hash)
     const status = receipt.status === 1 ? TransactionStatus.Succeeded : TransactionStatus.Failed
 
     const result = {...args, status}

@@ -17,7 +17,7 @@ export const bnf = (val: BigNumberish) => BigNumber.from(val);
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
 
 export const mnt = (quantity: number, decimals = 18): string => {
-  if (decimals < 6) throw 'too few decimals: ' + decimals
+  if (decimals < 6) throw new Error('too few decimals: ' + decimals)
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
 
@@ -42,7 +42,7 @@ export const unscale = (quantity: BigNumber, decimals = 18): number => {
   const digits = quantity.toString().length
   let digitsToRemove = digits - 15
   if (digitsToRemove > decimals) {
-    throw 'number too large'
+    throw new Error('number too large')
   }
   while(digitsToRemove > 9) {
     quantity = quantity.div(1e9)
@@ -95,7 +95,7 @@ export const uint255Max = '57896044618658097711785492504343953926634992332820282
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
 
-export const assertUnreachable = (_x: never): never => { throw 'Didn\'t expect to get here' }
+export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
 
 export const enforce = (conditional: boolean, errorMessage: string) => {
   if (!conditional) throw errorMessage

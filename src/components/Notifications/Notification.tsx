@@ -1,5 +1,4 @@
-import { useDispatch } from 'react-redux'
-import { notificationClosed, addNotification, } from '../../slices/notifications'
+import { notificationClosed } from '../../slices/notifications'
 import { Row, Col } from 'react-flexbox-grid'
 import { ReactNode } from 'react'
 import { TransactionStatus } from '../../slices/transactions'
@@ -8,7 +7,6 @@ import { getOpacityTransition } from '../utils'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { useEffect, useState, useRef } from "react";
-import { TransactionType } from '../../slices/transactions/index';
 import FinishAction from './FinishAction'
 import { useAppDispatch } from '../../app/hooks';
 
@@ -22,7 +20,7 @@ const warnColor = (status: TransactionStatus) => {
     case TransactionStatus.UnexpectedError:
       return '#fad76e'
     case TransactionStatus.Pending:
-      throw 'Notification: Pending notification not supported.'
+      throw new Error('Notification: Pending notification not supported.')
     default:
       assertUnreachable(status)
   }
@@ -39,7 +37,7 @@ const WarningIcon = ({status}: {status: TransactionStatus}) => {
     case TransactionStatus.UnexpectedError:
       return <UnknownFilled24 aria-label="Success" style={style}  />
     case TransactionStatus.Pending:
-      throw 'Notification: Pending notification not supported.'
+      throw new Error('Notification: Pending notification not supported.')
     default:
       assertUnreachable(status)
   }
@@ -55,7 +53,7 @@ const NotificationText = ({large, children}: {large?: boolean, children: ReactNo
 const NOTIFICATION_DURATION_SECONDS = 12
 const FADE_OUT_MS = 300
 
-export default ({ data, }: { data: notificationInfo, }) => {
+const Notification = ({ data, }: { data: notificationInfo, }) => {
   const dispatch = useAppDispatch()
 
   const iconWidth = 56
@@ -94,7 +92,7 @@ export default ({ data, }: { data: notificationInfo, }) => {
       }
     }, (NOTIFICATION_DURATION_SECONDS * 1000) / 250)
     return () => clearInterval(interval)
-  }, [])
+  })
 
   return (
     <div style={{
@@ -140,3 +138,5 @@ export default ({ data, }: { data: notificationInfo, }) => {
     </div>
   )
 }
+
+export default Notification

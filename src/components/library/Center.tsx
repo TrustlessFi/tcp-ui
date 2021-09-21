@@ -1,6 +1,6 @@
 import { CSSProperties, ReactNode } from 'react';
 
-export default ({ style, children }: { style?: CSSProperties, children: ReactNode }) => (
+const Center = ({ style, children }: { style?: CSSProperties, children: ReactNode }) => (
   <div style={{
     alignContent: 'center',
     alignItems: 'center',
@@ -14,3 +14,5 @@ export default ({ style, children }: { style?: CSSProperties, children: ReactNod
     {children}
   </div>
 )
+
+export default Center

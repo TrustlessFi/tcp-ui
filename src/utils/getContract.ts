@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: UNLICENSED
 
 import { ContractInterface, Contract } from "ethers"
+import { Web3Provider } from '@ethersproject/providers'
 
 import getProvider from './getProvider'
 import { ProtocolContract } from '../slices/contracts'
@@ -67,11 +68,11 @@ const artifactLookup = {
   [ProtocolContract.HuePositionNFT]: huePositionNFTArtifact
 }
 
-export const contract = <T extends Contract>(address: string, abi: ContractInterface): T =>
-  new Contract(address, abi, getProvider()) as T
+export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
+  new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
 
 
-export default (address: string, protocolContract: ProtocolContract) => {
+const getContract = (address: string, protocolContract: ProtocolContract) => {
   const contract =  new Contract(
     address,
     artifactLookup[protocolContract].abi,
@@ -116,6 +117,8 @@ export default (address: string, protocolContract: ProtocolContract) => {
     default:
       assertUnreachable(protocolContract)
 
-    throw 'Should never get here'
+    throw new Error('getContract: Should never get here')
   }
 }
+
+export default getContract

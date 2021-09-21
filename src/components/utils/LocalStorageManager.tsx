@@ -100,7 +100,7 @@ export const slicesToPersist: persistedSlices = {
 
 type sliceStateWithExpiration = { expiration: number, sliceState: slicesState }
 
-export default () => {
+const LocalStorageManager = () => {
   for (const [key, slice] of Object.entries(slicesToPersist)) {
     const sliceState = selector(slice!.getState)
     if (sliceState === null) continue
@@ -112,3 +112,5 @@ export default () => {
   }
   return <></>
 }
+
+export default LocalStorageManager
