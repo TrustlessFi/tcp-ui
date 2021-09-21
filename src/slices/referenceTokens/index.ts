@@ -1,15 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { ratesInfo } from '../rates'
-import { Contract } from 'ethers'
-import getProvider from '../../utils/getProvider'
-import getContract, { contract } from '../../utils/getContract'
+import { contract } from '../../utils/getContract'
 
-import { Hue } from "../../utils/typechain/"
 import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
-import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
 import Multicall from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
@@ -22,6 +18,9 @@ export interface referenceTokenArgs {
   Hue: string
   ratesInfo: ratesInfo
 }
+
+
+// NOTE: CURRENTLY UNUSED
 
 export const getReferenceTokens = createAsyncThunk(
   'referenceTokens/getReferenceTokens', async (args: referenceTokenArgs) => {

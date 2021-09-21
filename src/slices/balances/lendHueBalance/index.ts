@@ -3,7 +3,6 @@ import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk } from '../'
 import { ProtocolContract } from '../../contracts/index'
 
-
 export type lendHueBalanceArgs = {
   LendHue: string
   Market: string

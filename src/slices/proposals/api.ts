@@ -1,6 +1,4 @@
 import { BigNumber } from "ethers"
-import getProvider from '../../utils/getProvider'
-import { ChainID } from '../chainID'
 import { TcpGovernorAlpha } from "../../utils/typechain"
 import { unscale, zeroAddress } from "../../utils"
 import { Proposal, ProposalStates, proposalsInfo } from "./"

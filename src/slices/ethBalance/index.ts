@@ -9,9 +9,7 @@ export interface EthBalanceState extends sliceState<number> {}
 export const getEthBalance = createAsyncThunk(
   'ethBalance/getEthBalance',
   async (userAddress: string) => {
-    const provider = getProvider()
-    if (provider === null) return null
-    return unscale(bnf(await provider.send("eth_getBalance", [userAddress])))
+    return unscale(bnf(await getProvider().send("eth_getBalance", [userAddress])))
   }
 )
 

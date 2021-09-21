@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TransactionStatus , TransactionInfo } from '../transactions/index';
+import { TransactionInfo } from '../transactions/index';
 import { timeMS } from '../../utils'
 import { getLocalStorage } from '../../utils/index';
 

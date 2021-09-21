@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { genProposals } from './api'
 import { getGenericReducerBuilder } from '../'
-import { ChainID } from '../chainID'
 
 export enum ProposalStates {
   Pending = 'Pending',

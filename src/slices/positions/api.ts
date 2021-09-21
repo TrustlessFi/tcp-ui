@@ -1,19 +1,17 @@
 import { Position } from './'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
-import { positionsInfo, positionsArgs, getPositions } from './'
+import { positionsInfo, positionsArgs } from './'
 import { AppDispatch } from '../../app/store'
 import { waitForTransaction } from '../transactions'
-
-import { Accounting } from '../../utils/typechain/Accounting'
-import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
 import { createPositionArgs } from './index'
 import getProvider from '../../utils/getProvider'
-import { Market } from '../../utils/typechain'
 import { UIID } from '../../constants'
 import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
 import { TransactionType } from '../transactions/index';
+
+import { Accounting, HuePositionNFT, Market } from '../../utils/typechain'
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting

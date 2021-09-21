@@ -1,20 +1,16 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
-import getProvider from '../../utils/getProvider'
-import { Governor, TcpGovernorAlpha } from "../../utils/typechain"
-import { ethers } from 'ethers'
+import { Governor } from "../../utils/typechain"
 import { getContractArgs, ProtocolContract, getContractReturnType, getGovernorContractArgs } from './'
+
 import { assertUnreachable } from '../../utils'
 
 import governorArtifact from '../../utils/artifacts/contracts/core/governance/Governor.sol/Governor.json'
+import { contract } from '../../utils/getContract';
 
 export const executeGetGovernor = async (args: getGovernorContractArgs) => getAddress(args.chainID, rootContracts.Governor)
 
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
-  const governor = new ethers.Contract(
-    args.Governor,
-    governorArtifact.abi,
-    getProvider()!
-  ) as Governor
+  const governor = contract<Governor>(args.Governor, governorArtifact.abi)
 
   const contractAddress = await getContract(governor, args.contract)
   return contractAddress

@@ -1,15 +1,10 @@
 import { sliceState } from '../'
-import { ethers } from 'ethers'
-
 import { unscale, uint255Max, bnf } from '../../utils'
-import getProvider from '../../utils/getProvider'
-
 import { ERC20 } from "../../utils/typechain/ERC20"
-
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
 import { contract } from '../../utils/getContract'
-import Multicall, { MCCall } from '../../utils/Multicall/index';
+import Multicall from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall/index'
 
 interface tokenInfo {

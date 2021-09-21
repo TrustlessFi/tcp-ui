@@ -1,13 +1,12 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { fetchPositions } from './api'
 import { systemDebtInfo } from '../systemDebt'
-import { ChainID } from '../chainID'
 import { marketInfo } from "../market"
 import {
   getGenericReducerBuilder,
-} from '../';
-import { getGenericWriteReducerBuilder } from '../index';
+} from '../'
+import { getGenericWriteReducerBuilder } from '../index'
 import { executeCreatePosition } from './api'
 
 export interface Position {
