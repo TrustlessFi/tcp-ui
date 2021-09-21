@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk } from '../'
-import { ProtocolContract } from '../../contracts';
+import { ProtocolContract } from '../../contracts'
 
 export type hueBalanceArgs = {
   Hue: string
@@ -25,6 +25,6 @@ export const hueBalanceSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getHueBalance)
   },
-});
+})
 
-export default hueBalanceSlice.reducer;
+export default hueBalanceSlice.reducer

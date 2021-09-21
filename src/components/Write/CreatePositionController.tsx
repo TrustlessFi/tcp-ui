@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getContractWaitFunction } from '../../slices/waitFor'
-import {
-  Modal,
-  Button,
-} from 'carbon-components-react'
-import { ContractTransaction } from 'ethers'
 import TxConfirmController from './TxConfirmController'
-import { Market } from '../../utils/typechain'
-import getProvider from '../../utils/getProvider'
-import { mnt } from '../../utils/index';
-import { UIID } from '../../constants';
 import { createPosition } from '../../slices/positions'
 import { RootState } from '../../app/store';
 import { ProtocolContract } from '../../slices/contracts/index';

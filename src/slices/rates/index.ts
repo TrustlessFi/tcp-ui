@@ -36,7 +36,6 @@ export const getRatesInfo = createAsyncThunk(
       interestRateAbsoluteValue: result.interestRateAbsoluteValue,
       referencePools: result.getReferencePools,
     }
-
   }
 )
 
