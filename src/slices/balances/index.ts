@@ -1,15 +1,16 @@
 import { sliceState } from '../'
-import { ChainID } from '../chainID'
 import { ethers } from 'ethers'
 
 import { unscale, uint255Max, bnf } from '../../utils'
 import getProvider from '../../utils/getProvider'
-import { Contract } from 'ethers'
 
 import { ERC20 } from "../../utils/typechain/ERC20"
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
+import { contract } from '../../utils/getContract'
+import Multicall, { MCCall } from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall/index'
 
 interface tokenInfo {
   address: string,
@@ -45,14 +46,19 @@ export const tokenBalanceThunk = async (
   approvalsList: {contract: ProtocolContract, address: string}[],
   balancesList: {contract: ProtocolContract, address: string}[],
 ) => {
-  const provider = getProvider()
-  if (provider === null) return null
-  const token: ERC20 = new ethers.Contract(args.tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
+  const token = contract<ERC20>(args.tokenAddress, erc20Artifact.abi)
 
   const approval: approval = {}
   const balances: balances = {}
-  const tokenInfo = await tokenAddressToTokenInfo(token.address, provider)
 
+  const basicInfo = await Multicall(token).execute({
+    name: mc.String,
+    symbol: mc.String,
+    decimals: mc.Number,
+  })
+  const tokenInfo = { ...basicInfo, address: token.address }
+
+  // TODO improve multicall
   const [
     _,
     __,
@@ -73,14 +79,4 @@ export const tokenBalanceThunk = async (
   ])
 
   return { token: tokenInfo, userBalance: unscale(userBalance, tokenInfo.decimals), approval, balances}
-}
-
-const tokenAddressToTokenInfo = async (tokenAddress: string, provider: ethers.providers.Web3Provider) => {
-  const token = new ethers.Contract(tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
-  const [ name, symbol, decimals] = await Promise.all([
-    token.name(),
-    token.symbol(),
-    token.decimals(),
-  ])
-  return { address: tokenAddress, name, symbol, decimals }
 }

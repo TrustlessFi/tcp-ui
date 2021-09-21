@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
-import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
 import { Liquidations } from "../../utils/typechain/Liquidations"
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
+import Multicall from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -22,24 +23,14 @@ export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 export const getLiquidationsInfo = createAsyncThunk(
   'liquidations/getLiquidationsInfo',
 
-  async (args: liquidationsArgs) => {
+  async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
 
-    let [
-      twapDuration,
-      discoveryIncentive,
-      liquidationIncentive,
-    ] = await Promise.all([
-      liquidations.twapDuration(),
-      liquidations.discoveryIncentive(),
-      liquidations.liquidationIncentive(),
-    ])
-
-    return {
-      twapDuration,
-      discoveryIncentive: unscale(discoveryIncentive),
-      liquidationIncentive: unscale(liquidationIncentive),
-    }
+    return Multicall(liquidations).execute({
+      twapDuration: mc.Number,
+      discoveryIncentive: mc.BigNumberUnscale,
+      liquidationIncentive: mc.BigNumberUnscale,
+    })
   }
 )
 
@@ -54,4 +45,4 @@ export const liquidationsSlice = createSlice({
   },
 });
 
-export default liquidationsSlice.reducer;
+export default liquidationsSlice.reducer

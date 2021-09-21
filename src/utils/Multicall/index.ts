@@ -1,6 +1,5 @@
 import { Web3Provider } from '@ethersproject/providers'
-import { FunctionFragment  } from '@ethersproject/abi'
-import { Contract, utils as ethersUtils, BigNumber } from 'ethers'
+import { Contract, utils as ethersUtils, ethers } from 'ethers'
 
 import { enforce, first, unscale } from '../'
 import getProvider from '../getProvider'
@@ -9,33 +8,36 @@ import { TcpMulticallViewOnly } from '../typechain'
 
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
+export const Number = (result: any) => result as number
+export const Boolean = (result: any) => result as boolean
+export const Address = (result: any) => result as string
+export const String = (result: any) => result as string
+export const StringArray = (result: any) => result as string[]
+export const BigNumber = (result: any) => result as ethers.BigNumber[]
+export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
+export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
+export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
+
+type resultConverter =
+  typeof Number |
+  typeof Boolean |
+  typeof Address |
+  typeof String |
+  typeof StringArray |
+  typeof BigNumber |
+  typeof BigNumberToNumber |
+  typeof BigNumberUnscale
+
+export type MCCall = {[key in string]: resultConverter}
+export type MCArgCall = {[key in string]: {converter: resultConverter, args: any[]}}
+
 interface Call {
   func: string,
-  conversion: ResultConversion,
+  converter: resultConverter,
   args: any[] | undefined,
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
-}
-
-export enum ResultConversion {
-  Number,
-  BigNumber,
-  BigNumberToNumber,
-  BigNumberUnscale,
-}
-
-const convertResult = (result: any, conversion: ResultConversion) => {
-  switch(conversion) {
-    case ResultConversion.Number:
-      return result as number
-    case ResultConversion.BigNumber:
-      return result as BigNumber
-    case ResultConversion.BigNumberToNumber:
-      return (result as BigNumber).toNumber()
-    case ResultConversion.BigNumberUnscale:
-      return unscale(result as BigNumber)
-  }
 }
 
 const MULTICALL_ADDRESS = '0x153900C946e33AED5F1ee79C92E149A262E2B1E9'
@@ -43,7 +45,7 @@ const MULTICALL_ADDRESS = '0x153900C946e33AED5F1ee79C92E149A262E2B1E9'
 class Multicall {
   contract: Contract
   calls: Call[] = []
-  result: {[key in string]: ReturnType<typeof convertResult>} = {}
+  result: {[key in string]: ReturnType<resultConverter>} = {}
   provider: Web3Provider
   multicall: TcpMulticallViewOnly
   abiCoder: ethersUtils.AbiCoder
@@ -64,7 +66,7 @@ class Multicall {
     this.abiCoder = new ethersUtils.AbiCoder()
   }
 
-  addCallWithArgs(func: string, conversion: ResultConversion, args: any[] = []) {
+  addCallWithArgs(func: string, converter: resultConverter, args: any[]) {
     const matchingFunctions = Object.values(this.contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
     enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
     enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
@@ -83,15 +85,18 @@ class Multicall {
     this.calls.push({
       func,
       args,
-      conversion,
+      converter,
       inputs,
       outputs,
       encoding: this.contract.interface.encodeFunctionData(func, args)
     })
   }
 
-  async execute<T extends {}>(calls: {[key in string]: ResultConversion}): Promise<T> {
-    for (const [func, conversion] of Object.entries(calls)) this.addCallWithArgs(func, conversion, [])
+
+
+
+  async execute<T extends MCCall, V extends MCArgCall>(calls: T | V) {
+    for (const [func, converter] of Object.entries(calls)) this.addCallWithArgs(func, converter, [])
 
     const rawResults = await this.multicall.all(this.calls.map(
       call => ({ target: this.contract.address, callData: call.encoding })
@@ -100,11 +105,12 @@ class Multicall {
     rawResults.returnData.map((rawResult, index) => {
       const call = this.calls[index]
       const resultsArray = Object.values(this.abiCoder.decode(call.outputs!, rawResult))
+      // TODO as needed: support more than one result
       enforce(resultsArray.length === 1, 'More than one result')
-      this.result[call.func] = convertResult(first(resultsArray), call.conversion)
+      this.result[call.func] = call.converter(first(resultsArray))
     })
 
-    return this.result as unknown as T
+    return this.result as { [K in keyof T]: ReturnType<T[K]> }
   }
 }
 

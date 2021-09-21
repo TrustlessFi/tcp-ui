@@ -23,10 +23,10 @@ export interface SystemDebtState extends sliceState<systemDebtInfo> {}
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
   async (args: systemDebtArgs) => {
-
     const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
 
     const sdi = await accounting.getSystemDebtInfo()
+
     return {
       debt: unscale(sdi.debt),
       totalTCPRewards: unscale(sdi.totalTCPRewards),
