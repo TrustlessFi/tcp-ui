@@ -1,31 +1,22 @@
-import React, { MouseEvent, useState } from 'react'
+import { MouseEvent } from 'react'
 import { withRouter, useHistory } from 'react-router'
 import {
   Header,
   HeaderContainer,
-  HeaderPanel,
   HeaderName,
   HeaderNavigation,
   HeaderMenuButton,
   HeaderMenuItem,
-  HeaderGlobalBar,
-  HeaderGlobalAction,
   SideNav,
-  Switcher,
-  SwitcherItem,
   SideNavItems,
   HeaderSideNavItems,
 } from 'carbon-components-react'
-import { Activity20, Aperture32 } from '@carbon/icons-react'
+import { Aperture32 } from '@carbon/icons-react'
 
 import Wallet from './Wallet'
 
-const PageHeader = ({}) => {
-  const [ txsOpen, setTxsOpen ] = useState(false)
-
-  let history = useHistory()
-
-  const toggleTxsOpen = () => setTxsOpen(!txsOpen)
+const PageHeader = () => {
+  const history = useHistory()
 
   const navigateToRoute = (path: string, e: MouseEvent<Element>) => {
     history.push(path)

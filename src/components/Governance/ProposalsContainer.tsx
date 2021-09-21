@@ -93,7 +93,7 @@ const ProposalsContainer: FunctionComponent = () => {
         defaultSelected={defaultSelected}
         noneSelected={noneSelected}
         proposalsShown={filteredProposals.length}
-        proposalsTotal={proposalsState && Object.values(proposalsState).length || 0}
+        proposalsTotal={(proposalsState && Object.values(proposalsState).length) || 0}
         setAll={setAll}
         setDefault={setDefault}
       />

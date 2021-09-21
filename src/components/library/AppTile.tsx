@@ -10,7 +10,7 @@ interface AppTileProps {
   rightElement?: ReactNode
 }
 
-export default ({className, title, style, children, rightElement}: AppTileProps ) => (
+const AppTile = ({className, title, style, children, rightElement}: AppTileProps ) => (
   <ErrorBoundary>
     <Tile style={{ margin: 2, ...style }} className={className}>
       <span style={{fontSize: 24}}>
@@ -25,3 +25,5 @@ export default ({className, title, style, children, rightElement}: AppTileProps 
     </Tile>
   </ErrorBoundary>
 )
+
+export default AppTile

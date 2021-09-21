@@ -72,7 +72,7 @@ export const fetchPositions = async (args: positionsArgs) => {
 }
 
 export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
-  const provider = getProvider()!
+  const provider = getProvider()
   const signer = provider.getSigner()
   const userAddress = await signer.getAddress()
 

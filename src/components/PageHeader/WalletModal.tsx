@@ -1,7 +1,4 @@
-import React, { MouseEvent, useState } from 'react'
-import { withRouter, useHistory } from 'react-router'
-import { Button, Link, Tag, ModalWrapper } from 'carbon-components-react'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { useAppSelector as selector } from '../../app/hooks'
 import { Copy16, Launch16 } from '@carbon/icons-react'
 import Center from '../library/Center'
 import SmallLink from '../library/SmallLink'
@@ -12,10 +9,10 @@ import {
 import { abbreviateAddress } from '../../utils/index'
 import RecentTransactions from './RecentTransactions'
 
-export default ({open, onRequestClose}: {open: boolean, onRequestClose: () => void}) => {
+const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () => void}) => {
   const address = selector(state => state.wallet.address)
   if (!open) return null
-  if (address === null) throw 'Address not found.'
+  if (address === null) throw new Error('WalletModal: Address not found.')
 
   return (
     <Modal
@@ -42,3 +39,5 @@ export default ({open, onRequestClose}: {open: boolean, onRequestClose: () => vo
     </Modal>
   )
 }
+
+export default WalletModal

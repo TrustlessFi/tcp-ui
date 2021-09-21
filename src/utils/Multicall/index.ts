@@ -1,8 +1,13 @@
+// Copyright (c) 2020. All Rights Reserved
+// SPDX-License-Identifier: UNLICENSED
+
 import { Web3Provider } from '@ethersproject/providers'
 import { Contract, utils as ethersUtils, ethers } from 'ethers'
+import { getAddress, rootContracts } from '../Addresses'
 
 import { enforce, first, unscale } from '../'
-import getProvider from '../getProvider'
+import getProvider, { getChainID } from '../getProvider'
+import { contract as getContract } from '../getContract'
 
 import { TcpMulticallViewOnly } from '../typechain'
 
@@ -40,14 +45,11 @@ interface Call {
   encoding: string
 }
 
-const MULTICALL_ADDRESS = '0x153900C946e33AED5F1ee79C92E149A262E2B1E9'
-
 class Multicall {
   contract: Contract
   calls: Call[] = []
   result: {[key in string]: ReturnType<resultConverter>} = {}
   provider: Web3Provider
-  multicall: TcpMulticallViewOnly
   abiCoder: ethersUtils.AbiCoder
 
   constructor(contract: Contract, provider?: Web3Provider) {
@@ -57,13 +59,15 @@ class Multicall {
       ? getProvider()
       : provider
 
-    this.multicall = new Contract(
-      MULTICALL_ADDRESS,
-      tcpMulticallViewOnlyArtifact.abi,
-      this.provider,
-    ) as TcpMulticallViewOnly
-
     this.abiCoder = new ethersUtils.AbiCoder()
+  }
+
+  async getMulticall() {
+    return getContract<TcpMulticallViewOnly>(
+      getAddress(await getChainID(), rootContracts.TcpMulticall),
+      tcpMulticallViewOnlyArtifact.abi,
+      this.provider
+    )
   }
 
   addCallWithArgs(func: string, converter: resultConverter, args: any[]) {
@@ -98,7 +102,7 @@ class Multicall {
   async execute<T extends MCCall, V extends MCArgCall>(calls: T | V) {
     for (const [func, converter] of Object.entries(calls)) this.addCallWithArgs(func, converter, [])
 
-    const rawResults = await this.multicall.all(this.calls.map(
+    const rawResults = await (await this.getMulticall()).all(this.calls.map(
       call => ({ target: this.contract.address, callData: call.encoding })
     ))
 

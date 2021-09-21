@@ -10,7 +10,7 @@ import Notification from './Notification'
 import { TransactionType } from '../../slices/transactions/index';
 
 
-export default ({}) => {
+const Notifications = () => {
   const dispatch = useDispatch()
 
   const rawNotifications = Object.values(selector(state => state.notifications))
@@ -60,3 +60,5 @@ export default ({}) => {
     </>
   )
 }
+
+export default Notifications

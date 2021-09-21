@@ -57,7 +57,7 @@ const getNodeFetch = (
     case ProtocolContract.Governor:
       return {[ProtocolContract.Governor]: waitForGovernorContract(selector, dispatch)}
     default:
-      if (!isProtocolContract(fetchNode)) throw 'Missing fetchNode ' + fetchNode
+      if (!isProtocolContract(fetchNode)) throw new Error('Missing fetchNode ' + fetchNode)
       return {[fetchNode]: getContractWaitFunction(fetchNode)(selector, dispatch)}
   }
 }

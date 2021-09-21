@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Table,
   TableHead,
@@ -14,7 +13,7 @@ type row = {
   data: { [key in string]: any }
 }
 
-export default ({rows}: {rows: row[]}) => rows.length === 0 ? null : (
+const SimpleTable = ({rows}: {rows: row[]}) => rows.length === 0 ? null : (
   <Table>
     <TableHead>
       <TableRow>
@@ -32,3 +31,5 @@ export default ({rows}: {rows: row[]}) => rows.length === 0 ? null : (
     </TableBody>
   </Table>
 )
+
+export default SimpleTable

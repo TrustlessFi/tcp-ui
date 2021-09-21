@@ -12,24 +12,6 @@ import { roundToXDecimals } from '../../../utils'
 import { onNumChange, anyNull }  from '../../../utils/'
 import CreatePositionController from '../../Write/CreatePositionController'
 
-export default ({}) => {
-  const dispatch = useAppDispatch()
-  const editorStatus = selector(state => state.positionsEditor.status)
-
-  const page = editorStatus.creating
-    ? <CreatePositionPage />
-    : <UpdatePositionPage id={editorStatus.positionID} />
-
-  return (
-    <>
-      <div>
-        <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
-      </div>
-      {page}
-    </>
-  )
-}
-
 const CreatePositionPage = () => {
   const dispatch = useAppDispatch()
 
@@ -115,7 +97,7 @@ const UpdatePositionPage = ({id}: { id: number}) => {
   }
 
   if (positions === null || !(positions.hasOwnProperty(id))) {
-    throw 'PositionEditor: Position id not found: ' + id
+    throw new Error('PositionEditor: Position id not found: ' + id)
   }
 
   const position = positions[id]
@@ -152,3 +134,23 @@ const UpdatePositionPage = ({id}: { id: number}) => {
 
   return <>{table1}{table2}</>
 }
+
+const PositionEditor = () => {
+  const dispatch = useAppDispatch()
+  const editorStatus = selector(state => state.positionsEditor.status)
+
+  const page = editorStatus.creating
+    ? <CreatePositionPage />
+    : <UpdatePositionPage id={editorStatus.positionID} />
+
+  return (
+    <>
+      <div>
+        <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
+      </div>
+      {page}
+    </>
+  )
+}
+
+export default PositionEditor

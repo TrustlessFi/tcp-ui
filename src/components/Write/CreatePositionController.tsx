@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getContractWaitFunction } from '../../slices/waitFor'
 import TxConfirmController from './TxConfirmController'
@@ -6,26 +5,7 @@ import { createPosition } from '../../slices/positions'
 import { RootState } from '../../app/store';
 import { ProtocolContract } from '../../slices/contracts/index';
 
-
-enum Stage {
-  AwaitingPreviewApproval,
-  AwaitingConfirmation,
-  TxSubmitted,
-}
-
-const stageToNextStage = (stage: Stage) => {
-  switch(stage) {
-    case Stage.AwaitingPreviewApproval:
-      return Stage.AwaitingConfirmation
-    case Stage.AwaitingConfirmation:
-      return Stage.TxSubmitted
-    case Stage.TxSubmitted:
-      return Stage.TxSubmitted
-  }
-
-}
-
-export default ({
+const CreatePositionController = ({
   collateralCount,
   debtCount,
   ethPrice,
@@ -42,7 +22,7 @@ export default ({
 }) => {
   const dispatch = useAppDispatch()
   const Market = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
-  if (Market === null) throw 'CreatePositionController: Market null'
+  if (Market === null) throw new Error('CreatePositionController: Market null')
 
   const preview = (
     <>
@@ -74,3 +54,5 @@ export default ({
     />
   )
 }
+
+export default CreatePositionController

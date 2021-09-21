@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import MetaMaskOnboarding from "@metamask/onboarding"
-import { Button, Tag, ModalWrapper } from 'carbon-components-react'
+import { Button } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
@@ -14,7 +14,7 @@ import { TransactionStatus } from '../../slices/transactions'
 import { clearPositions } from '../../slices/positions'
 
 
-export default () => {
+const Wallet = () => {
   const dispatch = useAppDispatch()
 
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
@@ -51,8 +51,6 @@ export default () => {
     // TODO if new account is different than the current account, and the current account isn't null
     // then clear all of the slices that depend on the user data
     const account = accounts && accounts[0]
-
-    console.log("wallet connected", {account})
 
     if (account != null) {
       dispatch(connected(toChecksumAddress(account)))
@@ -101,7 +99,7 @@ export default () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
       ethereum.request({ method: "eth_accounts" }).then(walletConnected)
     }
-  }, [])
+  })
 
   const onClick = () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -146,3 +144,5 @@ export default () => {
     {isWalletModalOpen ? modal : null}
     </>
 }
+
+export default Wallet

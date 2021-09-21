@@ -1,14 +1,13 @@
-import { AsyncThunk, ThunkDispatch, AnyAction, AsyncThunkAction } from '@reduxjs/toolkit';
-import { useEffect, useState } from "react";
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { useState } from "react";
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { RootState } from '../../app/store'
 import {
   Modal,
-  Button,
 } from 'carbon-components-react'
 import { sliceState } from '../../slices/index';
 
-export default <Args extends {}, Value>({
+const TxConfirmController = <Args extends {}, Value>({
   thunk,
   preview,
   verb,
@@ -105,3 +104,5 @@ export default <Args extends {}, Value>({
     )
   }
 }
+
+export default TxConfirmController
