@@ -1,7 +1,7 @@
 // Copyright (c) 2020. All Rights Reserved
 // SPDX-License-Identifier: UNLICENSED
 
-import { ethers, Contract } from "ethers"
+import { ContractInterface, Contract } from "ethers"
 
 import getProvider from './getProvider'
 import { ProtocolContract } from '../slices/contracts'
@@ -67,11 +67,15 @@ const artifactLookup = {
   [ProtocolContract.HuePositionNFT]: huePositionNFTArtifact
 }
 
+export const contract = <T extends Contract>(address: string, abi: ContractInterface): T =>
+  new Contract(address, abi, getProvider()) as T
+
+
 export default (address: string, protocolContract: ProtocolContract) => {
   const contract =  new Contract(
     address,
     artifactLookup[protocolContract].abi,
-    getProvider()!
+    getProvider()
   )
 
   switch (protocolContract) {

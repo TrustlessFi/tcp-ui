@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { ratesInfo } from '../rates'
-import { ethers } from 'ethers'
+import { Contract } from 'ethers'
 import getProvider from '../../utils/getProvider'
-import getContract from '../../utils/getContract'
+import getContract, { contract } from '../../utils/getContract'
 
 import { Hue } from "../../utils/typechain/"
 import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
@@ -11,6 +11,8 @@ import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
+import Multicall from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall'
 
 export type referenceTokens = string[]
 
@@ -23,12 +25,14 @@ export interface referenceTokenArgs {
 
 export const getReferenceTokens = createAsyncThunk(
   'referenceTokens/getReferenceTokens', async (args: referenceTokenArgs) => {
-    const hue = getContract(args.Hue, ProtocolContract.Hue) as Hue
-
     return await Promise.all(args.ratesInfo.referencePools.map(async refPoolAddress => {
-      const refPool = new ethers.Contract(refPoolAddress, poolArtifact.abi, getProvider()!) as unknown as UniswapV3Pool
-      const [token0, token1] = await Promise.all([refPool.token0(), refPool.token1()])
-      return token0 === hue.address ? token1: token0
+
+      const tokens = await Multicall(contract<UniswapV3Pool>(refPoolAddress, poolArtifact.abi)).execute({
+        token0: mc.Address,
+        token1: mc.Address,
+      })
+
+      return tokens.token0 === args.Hue ? tokens.token1: tokens.token0
     }))
 })
 

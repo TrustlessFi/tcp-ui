@@ -21,7 +21,6 @@ export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
   async (args: governorArgs) => {
 
-    // TODO type inference so we don't have to have this everywhere
     const governor = getContract(args.Governor, ProtocolContract.Governor) as Governor
 
     const [
