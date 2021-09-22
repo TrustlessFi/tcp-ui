@@ -13,8 +13,6 @@ import { TcpMulticallViewOnly } from '../typechain'
 
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
-
-
 export const Number = (result: any) => result as number
 export const Boolean = (result: any) => result as boolean
 export const Address = (result: any) => result as string
@@ -35,43 +33,15 @@ type resultConverter =
   typeof BigNumberToNumber |
   typeof BigNumberUnscale
 
-interface Call {
-  id: string,
-  contract: Contract,
-  func: string,
-  args: any[],
-  converter: resultConverter
+interface Call<CallType extends resultConverter> {
+  id: string
+  contract: Contract
+  func: string
+  args: any[]
+  converter: CallType
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
-}
-
-export const getMulticall2 = <Functions extends {[key in string]: {[key in string]: resultConverter}}> (funcs: Functions) => {
-  return Object.fromEntries(
-      Object.entries(funcs)
-        .map(([func, converter]) => [func, converter])) as {[K in keyof Functions]: {[J in keyof Functions[K]]: ReturnType<Functions[K][J]>}}
-}
-
-
-const getCallMetadata = (contract: Contract, func: string, args: any[]) => {
-  const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
-  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
-  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
-
-  const fragment = first(matchingFunctions)
-  const stateMutability = fragment.stateMutability
-  const inputs = fragment.inputs
-  const outputs = fragment.outputs
-
-  enforce(!fragment.payable, 'function ' + func + ' is payable')
-  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
-  enforce(
-    inputs.length === args.length,
-    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
-
-  const encoding = contract.interface.encodeFunctionData(func, args)
-
-  return {inputs, outputs, encoding}
 }
 
 export const getMulticall = <
@@ -95,17 +65,7 @@ export const getMulticall = <
       outputs,
       encoding
     }]
-  }
-  )) as {[K in keyof Functions]: {
-    id: string,
-    contract: Contract,
-    func: string,
-    args: any[],
-    converter: Functions[K]
-    inputs: ethersUtils.ParamType[],
-    outputs?: ethersUtils.ParamType[],
-    encoding: string,
-  }}
+  })) as {[K in keyof Functions]: Call<Functions[K]>}
 }
 
 export const getDuplicateFuncMulticall = <
@@ -142,18 +102,8 @@ export const getDuplicateFuncMulticall = <
   }}
 }
 
-
 export const executeMulticalls = async <
-  Multicalls extends {[key in string]: {[key in string]: {
-    id: string,
-    contract: Contract,
-    func: string,
-    args: any[],
-    converter: resultConverter,
-    inputs: ethersUtils.ParamType[],
-    outputs?: ethersUtils.ParamType[],
-    encoding: string,
-  }}}
+  Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
 >(
   multicalls: Multicalls,
   provider?: Web3Provider,
@@ -196,4 +146,25 @@ export const executeMulticalls = async <
       [FunctionID in keyof Multicalls[Multicall]]: ReturnType<Multicalls[Multicall][FunctionID]['converter']>
     }
   }
+}
+
+const getCallMetadata = (contract: Contract, func: string, args: any[]) => {
+  const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
+  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
+  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
+
+  const fragment = first(matchingFunctions)
+  const stateMutability = fragment.stateMutability
+  const inputs = fragment.inputs
+  const outputs = fragment.outputs
+
+  enforce(!fragment.payable, 'function ' + func + ' is payable')
+  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
+  enforce(
+    inputs.length === args.length,
+    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
+
+  const encoding = contract.interface.encodeFunctionData(func, args)
+
+  return {inputs, outputs, encoding}
 }
