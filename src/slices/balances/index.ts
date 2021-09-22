@@ -4,7 +4,7 @@ import { ERC20 } from "../../utils/typechain/ERC20"
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
 import { contract } from '../../utils/getContract'
-import Multicall from '../../utils/Multicall/index';
+import { Multicall, DuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall/index'
 
 interface tokenInfo {
@@ -46,11 +46,29 @@ export const tokenBalanceThunk = async (
   const approval: approval = {}
   const balances: balances = {}
 
-  const basicInfo = await Multicall(token).execute({
-    name: mc.String,
-    symbol: mc.String,
-    decimals: mc.Number,
+  const { basicInfo, approvals } = await executeMulticalls({
+    basicInfo: new Multicall(
+      token,
+      {
+        name: mc.String,
+        symbol: mc.String,
+        decimals: mc.Number,
+      }
+    ),
+    approvals: new DuplicateFuncMulticall(
+      token,
+      'allowance',
+      mc.String,
+      approvalsList.map(item => ({
+        id: item.address,
+        args: [args.userAddress, item.address],
+      }))
+    ),
   })
+  // const basicInfo = basicInfoMulticall.getResult()
+  // const approvals = approvalsMulticall.getResult()
+
+
   const tokenInfo = { ...basicInfo, address: token.address }
 
   // TODO improve multicall
