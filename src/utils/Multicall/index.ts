@@ -33,111 +33,95 @@ type resultConverter =
   typeof BigNumberToNumber |
   typeof BigNumberUnscale
 
-export type MCCall<T extends resultConverter> = {[key in string]: T}
+interface RawCall {
+  id: string,
+  contract: Contract,
+  func: string,
+  args: any[],
+  converter: resultConverter,
+}
 
-export type MCCallAny = MCCall<resultConverter>
-
-export type MCCallResult = {[key in string]: ReturnType<resultConverter>}
-
-interface Call {
-  contract: Contract
-  id?: string | undefined
-  func: string
-  converter: resultConverter
-  args: any[] | undefined
+interface Call extends RawCall {
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
 }
 
-type ResultType<T extends resultConverter, MCCallType extends MCCall<T>> = { [FunctionName in keyof MCCallType]: ReturnType<MCCallType[FunctionName]> }
-
-abstract class MulticallObject<T extends resultConverter, MCCallType extends MCCall<T>> {
-  contract: Contract
-  parsedCalls: Call[] = []
-  result:  ResultType<T, MCCallType> | undefined
-
-  constructor( contract: Contract ) { this.contract = contract }
-
-  addCallWithArgs(func: string, args: any[], converter: resultConverter, id?: string | undefined) {
-    const matchingFunctions = Object.values(this.contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
-    enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
-    enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
-
-    const fragment = first(matchingFunctions)
-    const stateMutability = fragment.stateMutability
-    const inputs = fragment.inputs
-    const outputs = fragment.outputs
-
-    enforce(!fragment.payable, 'function ' + func + ' is payable')
-    enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
-    enforce(
-      inputs.length === args.length,
-      'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
-
-    this.parsedCalls.push({
-      contract: this.contract,
+export const getMulticall = <FunctionArgs extends {[key in string]: resultConverter}>(
+  contract: Contract,
+  funcs: FunctionArgs,
+  args?: {[key in keyof FunctionArgs]?: any[]}
+): {[key in keyof FunctionArgs]: RawCall} =>
+  Object.fromEntries(Object.entries(funcs).map(([func, converter]) => {
+    return [func, {
+      id: func,
+      contract,
       func,
-      id,
-      args,
+      args: args === undefined ? [] : (args[func] === undefined ? [] : args[func]!),
       converter,
-      inputs,
-      outputs,
-      encoding: this.contract.interface.encodeFunctionData(func, args)
-    })
-  }
+    }]
+  })) as {[key in keyof FunctionArgs]: RawCall}
 
-  parseResult(results: MCCallResult) {
-    const resultsStorage: MCCallResult = {}
-    this.parsedCalls.map(call => {
-      const id = call.id === undefined ? call.func : call.id
-      if (results.hasOwnProperty(id)) resultsStorage[id] = results[id]
-    })
-    this.result = resultsStorage as ResultType<T, MCCallType>
-    return this.result
-  }
+export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]: any[]}>(
+  contract: Contract,
+  func: string,
+  converter: resultConverter,
+  calls: SpecificCalls,
+): {[key in keyof SpecificCalls]: RawCall} =>
+  Object.fromEntries(Object.entries(calls).map(([id, args]) =>
+    [id, {
+      id,
+      contract: contract,
+      func: func,
+      args,
+      converter: converter,
+    }]
+  )) as {[key in keyof SpecificCalls]: RawCall}
 
-  getResult() {
-    return this.result!
+const rawCallToCall = (rawCall: RawCall): Call => {
+  const id = rawCall.id
+  const contract = rawCall.contract
+  const func = rawCall.func
+  const args = rawCall.args
+  const converter = rawCall.converter
+
+  const matchingFunctions = Object.values(rawCall.contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
+  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
+  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
+
+  const fragment = first(matchingFunctions)
+  const stateMutability = fragment.stateMutability
+  const inputs = fragment.inputs
+  const outputs = fragment.outputs
+
+  enforce(!fragment.payable, 'function ' + func + ' is payable')
+  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
+  enforce(
+    inputs.length === args.length,
+    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
+
+  return {
+    id,
+    contract,
+    func,
+    args,
+    converter,
+    inputs,
+    outputs,
+    encoding: contract.interface.encodeFunctionData(func, args)
   }
 }
 
-export class Multicall<T extends resultConverter, CallType extends MCCall<T>> extends MulticallObject<T, CallType>{
-  constructor(
-    contract: Contract,
-    calls: CallType,
-    args: { [K in keyof CallType]?: any[] } = {},
-  ) {
-    super(contract)
-
-    for (const [func, converter] of Object.entries(calls)) {
-      const argList = args[func]
-      this.addCallWithArgs(func, argList === undefined ? [] : argList, converter)
-    }
-  }
-}
-
-export class DuplicateFuncMulticall<T extends resultConverter, CallType extends MCCall<T>> extends MulticallObject<T, CallType>{
-  constructor(
-    contract: Contract,
-    func: string,
-    converter: T,
-    calls: {id: string, args: any[]}[],
-  ) {
-    super(contract)
-
-    calls.map(call => this.addCallWithArgs(func, call.args, converter, call.id))
-  }
-}
+type IndexedObject<TheObject extends {}, Value> = {[key in keyof TheObject]: Value}
 
 export const executeMulticalls = async <
-  ConverterType extends resultConverter,
-  MulticallsType extends {[key in string]: MulticallObject<ConverterType, MCCall<ConverterType>>},
+  Multicalls extends {[key in string]: {[key in string]: RawCall}},
+  K1 extends keyof Multicalls,
+  K2 extends keyof Multicalls[K1],
 >(
-  multicalls: MulticallsType,
+  multicalls: Multicalls,
   provider?: Web3Provider,
 ) => {
-
   const multicallContract = getContract<TcpMulticallViewOnly>(
     getAddress(await getChainID(), rootContracts.TcpMulticall),
     tcpMulticallViewOnlyArtifact.abi,
@@ -145,39 +129,36 @@ export const executeMulticalls = async <
   )
 
   let calls: Call[] = []
-  Object.values(multicalls).map(multicall => calls = calls.concat(multicall.parsedCalls))
+  Object.values(multicalls).map(multicall => calls.concat(Object.values(multicall).map(rawCall => rawCallToCall(rawCall))))
 
   const rawResults = await multicallContract.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
   ))
 
   const abiCoder = new ethersUtils.AbiCoder()
-  const result: MCCallResult = {}
+  const results = Object.fromEntries(
+    rawResults.returnData.map((rawResult, index) => {
+      const call = calls[index]
+      const resultsArray = Object.values(abiCoder.decode(call.outputs!, rawResult))
+      // TODO as needed: support more than one result
+      enforce(resultsArray.length === 1, 'More than one result')
+      return [call.id, call.converter(first(resultsArray))]
+    })
+  )
 
-  rawResults.returnData.map((rawResult, index) => {
-    const call = calls[index]
-    const resultsArray = Object.values(abiCoder.decode(call.outputs!, rawResult))
-    // TODO as needed: support more than one result
-    enforce(resultsArray.length === 1, 'More than one result')
-    const id = call.id === undefined ? call.func : call.id
-    result[id] = call.converter(first(resultsArray))
-  })
-
-  return Object.fromEntries(Object.entries(multicalls).map(([multicallName, multicall]) => [
-    multicallName,
-    multicall.parseResult(result)
-  ])) as {[MulticallName in keyof MulticallsType]: ResultType<ConverterType, MCCall<ConverterType>> }
+  return Object.fromEntries(Object.entries(multicalls).map(([multicallName, multicallData]) =>
+    [
+      multicallName,
+      Object.fromEntries(Object.keys(multicallData).map(id =>
+        [
+          id,
+          results[id]
+        ]
+      ))
+    ]
+  )) as {
+    [Multicall in K1]: {
+      [FunctionID in K2]: ReturnType<Multicalls[K1][K2]['converter']>
+    }
+  }
 }
-
-/*
-export const executeMulticall = async <T extends MCCallAny>(
-  contract: Contract,
-  calls: T,
-  args: { [K in keyof T]?: any[] },
-) => {
-  const multicallExecutor = new MulticallExecutor()
-  const multicall = new Multicall(contract, calls, args)
-  await multicallExecutor.executeMulticalls([multicall])
-  return multicall.getResult()
-}
-*/
