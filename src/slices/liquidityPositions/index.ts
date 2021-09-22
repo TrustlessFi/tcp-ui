@@ -2,7 +2,7 @@ import { BigNumber } from "ethers"
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { sliceState, initialState } from '../'
-import { fetchLiquidityPositions } from './api'
+import { addLiquidityToPosition, fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
 import { ChainID } from '../chainID'
 import { LiquidityPool } from '../pools'
@@ -28,6 +28,7 @@ export interface LiquidityPosition {
 
 export interface liquidityPositions {
   creating: boolean,
+  loading: boolean,
   positions: {
     [key: number]: LiquidityPosition,
   }
@@ -47,16 +48,30 @@ export interface LiquidityPositionsState extends sliceState<liquidityPositions> 
 
 export const getLiquidityPositions = createAsyncThunk(
   'liquidityPositions/getLiquidityPositions',
-  async (data: liquidityPositionsArgs) => await fetchLiquidityPositions(data),
+  async (data: liquidityPositionsArgs) => fetchLiquidityPositions(data),
 )
+
+const addLiquidityToPositionThunk = createAsyncThunk(
+  'liquidityPositions/addLiquidityToPosition',
+  async (params: { positionID: string, liquidityToAdd: number }) => addLiquidityToPosition(params.positionID, params.liquidityToAdd)
+)
+
+export { addLiquidityToPositionThunk as addLiquidityToPosition }
 
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
   initialState: initialState as LiquidityPositionsState,
-  reducers: {},
+  reducers: {
+    loading: (state) => {
+      state.loading = true
+    }
+  },
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getLiquidityPositions)
+    getGenericReducerBuilder(builder, getLiquidityPositions)
+    getGenericReducerBuilder(builder, addLiquidityToPositionThunk)
   },
 })
+
+export const { loading } = liquidityPositionsSlice.actions;
 
 export default liquidityPositionsSlice.reducer

@@ -1,6 +1,6 @@
 import { Switch, Route } from "react-router-dom";
 
-// import AddLiquidity from './AddLiquidity';
+import AddLiquidity from './AddLiquidity';
 import CreatePosition from './CreatePosition';
 import PositionList from './PositionList';
 // import PositionDetails from './PositionDetails';
@@ -14,7 +14,7 @@ const LiquidityPositions = () => (
             <CreatePosition {...routeProps} />
           )}
         />
-        {/*<Route
+        <Route
           exact
           strict
           path='/liquidity/increase/:currencyIdA?/:currencyIdB?/:feeAmount?/:positionId?'
@@ -22,7 +22,7 @@ const LiquidityPositions = () => (
             <AddLiquidity {...routeProps} />
           )}
         />
-        <Route
+        {/*<Route
           path = '/liquidity/remove/:positionId'
           render={routeProps => (
             <RemoveLiquidity {...routeProps} />

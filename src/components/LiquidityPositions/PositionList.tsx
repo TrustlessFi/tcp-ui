@@ -34,7 +34,6 @@ const PositionList = () => {
       <div className='position-list-container'>
         {uniswapFormattedPositions && (
           <UniswapWrapper>
-            {/* @ts-ignore */} 
             <UniswapPositionList positions={uniswapFormattedPositions} />
           </UniswapWrapper>
         )}

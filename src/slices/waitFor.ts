@@ -10,7 +10,7 @@ import { balanceInfo, balanceArgs } from './balances'
 import { getHueBalance } from './balances/hueBalance'
 import { getPools, poolsArgs, poolsInfo } from './pools'
 import { getLendHueBalance } from './balances/lendHueBalance'
-import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
+import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions, loading as loadingLiquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
@@ -158,11 +158,15 @@ export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalan
   [FetchNode.TokenAddresses, FetchNode.ChainID, FetchNode.UserAddress],
 )
 
-export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
-  (state: RootState) => state.liquidityPositions,
-  getLiquidityPositions,
-  [FetchNode.ChainID, FetchNode.UserAddress],
-)
+export const waitForLiquidityPositions = (selector: AppSelector, dispatch: AppDispatch) => {
+  dispatch(loadingLiquidityPositions())
+
+  return getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
+    (state: RootState) => state.liquidityPositions,
+    getLiquidityPositions,
+    [FetchNode.ChainID, FetchNode.UserAddress],
+  )(selector, dispatch)
+}
 
 export const waitForPools = getWaitFunction<poolsArgs, poolsInfo>(
   (state: RootState) => state.pools,

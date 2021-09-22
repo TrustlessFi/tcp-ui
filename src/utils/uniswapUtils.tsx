@@ -1,5 +1,7 @@
+import { BigNumber } from 'ethers';
 import { Token as UniswapToken } from '@uniswap/sdk-core';
-import { Pool as UniswapPool, Position as UniswapPosition } from '@uniswap/v3-sdk';
+import { Pool as UniswapPool } from '@uniswap/v3-sdk';
+import { PositionDetails as UniswapPosition } from '../components/uniswap/src/types/position';
 
 import { ChainID } from '../slices/chainID';
 import { LiquidityPosition } from '../slices/liquidityPositions';
@@ -27,10 +29,24 @@ export const poolToUniswapPool = (chainId: ChainID, pool: LiquidityPool & { type
 }
 
 export const positionToUniswapPosition = (chainId: ChainID, position: LiquidityPosition): UniswapPosition => {
-    return new UniswapPosition({
-        pool: poolToUniswapPool(chainId, position.pool),
-        liquidity: position.liquidity.toString(),
+    return {
+        //pool: poolToUniswapPool(chainId, position.pool),
+        fee: position.pool.fee,
+        feeGrowthInside0LastX128: BigNumber.from(0),
+        feeGrowthInside1LastX128: BigNumber.from(0),
+        liquidity: BigNumber.from(position.liquidity),
+        nonce: position.nonce,
+        operator: position.owner,
+        slot0: {
+            liquidity: position.liquidity.toNumber(),
+            ...position.pool.slot0,
+        },
         tickLower: position.tickLower,
-        tickUpper: position.tickUpper
-    });
+        tickUpper: position.tickUpper,
+        token0: position.pool.token0Address,
+        token1: position.pool.token1Address,
+        tokenId: BigNumber.from(0),
+        tokensOwed0: position.tokensOwed0,
+        tokensOwed1: position.tokensOwed1,
+    };
 };

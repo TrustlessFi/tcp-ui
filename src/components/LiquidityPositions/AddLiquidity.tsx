@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-/*import { addLiquidityToPosition, getLiquidityPosition } from '../../actions/LiquidityPositionActions';
-import { LiquidityPositionState } from "../../stores/LiquidityPositionStore";
-import { WalletState } from '../../stores/WalletStore';
-import { formatPositionForUniswap } from '../../utils/common';
-import { getProtocolContract } from '../../blockchain/utils/protocolContracts';
+import { waitForLiquidityPositions } from '../../slices/waitFor'
+import { addLiquidityToPosition } from '../../slices/liquidityPositions'
+import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts';
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { positionToUniswapPosition } from '../../utils/uniswapUtils';
 
 import UniswapAddLiquidity from '../uniswap/src/pages/AddLiquidity';
 import UniswapWrapper from './UniswapWrapper';
-
-interface AddLiquidityProps {
-    liquidityPositions: LiquidityPositionState,
-    wallet: WalletState
-}
 
 interface MatchParams {
     positionId?: string,
@@ -22,47 +17,39 @@ interface MatchParams {
     feeAmount?: string,
 }
 
-const AddLiquidity = ({
-    liquidityPositions,
-    wallet,
-    ...routeProps
-}: AddLiquidityProps & RouteComponentProps<MatchParams>) => {
+const AddLiquidity = (props: RouteComponentProps<MatchParams>) => {
     const [ rewardsAddress, setRewardsAddress ] = useState('');
+    const dispatch = useAppDispatch()
+    const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
 
-    const positionId = Number(routeProps.match.params.positionId);
+    const positionId = Number(props.match.params.positionId);
+    const chainId = selector(state => state.chainID.chainID);
 
     useEffect(() => {
-        if(wallet.chainId) {
-            getProtocolContract('rewards')
-                .then(rewards => setRewardsAddress(rewards.address))
+        if(chainId) {
+            getProtocolContract(chainId, ProtocolContract.Rewards)
+                .then(rewards => rewards && setRewardsAddress(rewards.address))
                 .catch(console.error);
         }
-    }, [wallet.chainId]);
+    }, [chainId]);
 
-    const position = liquidityPositions.liquidityPositions[positionId];
-    const uniswapFormattedPosition = position && formatPositionForUniswap(position);
-
-    useEffect(() => {
-        if(wallet.chainId && !position && positionId) {
-            getLiquidityPosition(positionId);
-        }
-    }, [position, positionId, wallet]);
+    const position = liquidityPositions?.positions[positionId];
+    const uniswapFormattedPosition = (position && chainId) ? positionToUniswapPosition(chainId, position) : undefined;
 
     return (
         <div className='add-liquidity-container'>
-            <UniswapWrapper wallet={wallet}>
+            <UniswapWrapper>
                 <UniswapAddLiquidity
-                    adding={position?.addingLiquidity}
+                    adding={!!position?.addingLiquidity}
                     addLiquidity={addLiquidityToPosition}
-                    loading={liquidityPositions.loading}
+                    loading={!!liquidityPositions?.loading}
                     position={uniswapFormattedPosition}
                     spenderAddress={rewardsAddress}
-                    {...routeProps}
+                    {...props}
                 />
             </UniswapWrapper>
         </div>
     );
 };
 
-export default AddLiquidity;*/
-export default () => <span />
+export default AddLiquidity;

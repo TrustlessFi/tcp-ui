@@ -5,10 +5,10 @@ import { waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
 import { LiquidityPool } from '../../slices/pools'
 import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { poolToUniswapPool } from '../../utils/uniswapUtils';
 
 import AddLiquidity from '../uniswap/src/pages/AddLiquidity';
 import UniswapWrapper from './UniswapWrapper';
-import { poolToUniswapPool } from '../../utils/uniswapUtils';
 
 const addCollateral = (pool: LiquidityPool) => ({ ...pool, type: 'collateral' });
 const addProtocol = (pool: LiquidityPool) => ({ ...pool, type: 'protocol' });

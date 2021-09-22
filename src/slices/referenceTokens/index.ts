@@ -23,15 +23,15 @@ export interface referenceTokenArgs {
 
 export const getReferenceTokens = createAsyncThunk(
   'referenceTokens/getReferenceTokens', async (args: referenceTokenArgs) => {
-    const zhu = await getProtocolContract(args.chainID, ProtocolContract.Hue) as unknown as ERC20 | null
+    const hue = await getProtocolContract(args.chainID, ProtocolContract.Hue) as unknown as ERC20 | null
 
     const provider = getProvider()
-    if (zhu === null || provider === null) return null
+    if (hue === null || provider === null) return null
 
     return await Promise.all(args.ratesInfo.referencePools.map(async refPoolAddress => {
       const refPool = new ethers.Contract(refPoolAddress, poolArtifact.abi, provider) as unknown as UniswapV3Pool
       const [token0, token1] = await Promise.all([refPool.token0(), refPool.token1()])
-      return token0 === zhu.address ? token1: token0
+      return token0 === hue.address ? token1: token0
     }))
 })
 

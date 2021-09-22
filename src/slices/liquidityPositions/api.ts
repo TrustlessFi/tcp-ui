@@ -54,8 +54,13 @@ export const fetchLiquidityPositions = async (data: liquidityPositionsArgs) => {
       return agg;
   }, {
     creating: false,
+    loading: false,
     positions: {}
   });
 
   return state;
+}
+
+export const addLiquidityToPosition = async (positionID: string, liquidityToAdd: number) => {
+  return {};
 }
