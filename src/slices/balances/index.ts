@@ -4,7 +4,7 @@ import { ERC20 } from "../../utils/typechain/ERC20"
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
 import { contract } from '../../utils/getContract'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
+import { getMulticall, Converter, executeMulticalls, getMulticall2  } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall/index'
 
 interface tokenInfo {
@@ -46,22 +46,40 @@ export const tokenBalanceThunk = async (
   const approval: approval = {}
   const balances: balances = {}
 
+
+    const result = getMulticall2(
+      token,
+      {
+        name: Converter.String,
+        // symbol: mc.String,
+        decimals: Converter.Number,
+      },
+    ),
+
+
+
+  /*
   const result = await executeMulticalls({
   // const { basicInfo } = await executeMulticalls({
     basicInfo: getMulticall(
       token,
       {
-        name: mc.String,
+        name: Converter.String,
         // symbol: mc.String,
-        // decimals: mc.Number,
-      }
+        decimals: Converter.Number,
+      },
+      {}
     ),
+  */
+
+    /*
     approvals: getDuplicateFuncMulticall(
       token,
       'allowance',
       mc.String,
       Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
     ),
+    */
   })
   // const basicInfo = basicInfoMulticall.getResult()
   // const approvals = approvalsMulticall.getResult()
