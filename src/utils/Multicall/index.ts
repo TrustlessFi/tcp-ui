@@ -99,7 +99,7 @@ class Multicall {
 
 
 
-  async execute<T extends MCCall, V extends MCArgCall>(calls: T | V) {
+  async execute<T extends MCCall>(calls: T) {
     for (const [func, converter] of Object.entries(calls)) this.addCallWithArgs(func, converter, [])
 
     const rawResults = await (await this.getMulticall()).all(this.calls.map(
