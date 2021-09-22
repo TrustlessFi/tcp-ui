@@ -13,6 +13,14 @@ import { TcpMulticallViewOnly } from '../typechain'
 
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
+
+export enum Converter {
+  Number,
+  String,
+}
+
+
+
 export const Number = (result: any) => result as number
 export const Boolean = (result: any) => result as boolean
 export const Address = (result: any) => result as string
@@ -33,35 +41,77 @@ type resultConverter =
   typeof BigNumberToNumber |
   typeof BigNumberUnscale
 
-interface RawCall {
+interface RawCall<converter extends Converter> {
   id: string,
   contract: Contract,
   func: string,
   args: any[],
-  converter: resultConverter,
+  converter: converter
 }
 
-interface Call extends RawCall {
+interface Call<converter extends Converter> extends RawCall<converter> {
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
 }
 
-export const getMulticall = <FunctionArgs extends {[key in string]: resultConverter}>(
+
+
+
+export const getMulticall2 = <Functions> (contract: Contract, funcs: Functions) => {
+  return Object.fromEntries(
+      Object.entries(funcs)
+        .map(([func, converter]) => [func, converter])) as {[K in keyof Functions]: typeof Functions[K]}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const getMulticall = <
+  converter extends Converter,
+  Functions extends {[key in string]: converter },
+  Args extends {},
+>(
   contract: Contract,
-  funcs: FunctionArgs,
-  args?: {[key in keyof FunctionArgs]?: any[]}
-): {[key in keyof FunctionArgs]: RawCall} =>
+  funcs: Functions,
+  args: Args | undefined,
+) =>
   Object.fromEntries(Object.entries(funcs).map(([func, converter]) => {
     return [func, {
       id: func,
       contract,
       func,
-      args: args === undefined ? [] : (args[func] === undefined ? [] : args[func]!),
+      args: args === undefined ? [] : (args.hasOwnProperty(func) ? [] : []),
       converter,
     }]
-  })) as {[key in keyof FunctionArgs]: RawCall}
+  })) as { [K in keyof Functions]: RawCall<converter>}
 
+  /*
 export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]: any[]}>(
   contract: Contract,
   func: string,
@@ -77,6 +127,7 @@ export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]
       converter: converter,
     }]
   )) as {[key in keyof SpecificCalls]: RawCall}
+  */
 
 const rawCallToCall = (rawCall: RawCall): Call => {
   const id = rawCall.id
@@ -113,9 +164,7 @@ const rawCallToCall = (rawCall: RawCall): Call => {
 }
 
 export const executeMulticalls = async <
-  K1 extends symbol,
-  K2 extends symbol,
-  Multicalls extends {[key in K1]: {[key in K2]: RawCall}}
+  Multicalls extends {[key in string]: {[key in string]: RawCall}}
 >(
   multicalls: Multicalls,
   provider?: Web3Provider,
@@ -126,7 +175,7 @@ export const executeMulticalls = async <
     provider === undefined ? getProvider() : provider,
   )
 
-  let calls: Call[] = []
+  const calls: Call[] = []
   Object.values(multicalls).map(multicall => calls.concat(Object.values(multicall as {}).map(rawCall => rawCallToCall(rawCall as RawCall))))
 
   const rawResults = await multicallContract.all(calls.map(
