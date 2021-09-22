@@ -112,12 +112,8 @@ const rawCallToCall = (rawCall: RawCall): Call => {
   }
 }
 
-type IndexedObject<TheObject extends {}, Value> = {[key in keyof TheObject]: Value}
-
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: RawCall}},
-  K1 extends keyof Multicalls,
-  K2 extends keyof Multicalls[K1],
 >(
   multicalls: Multicalls,
   provider?: Web3Provider,
@@ -157,8 +153,8 @@ export const executeMulticalls = async <
       ))
     ]
   )) as {
-    [Multicall in K1]: {
-      [FunctionID in K2]: ReturnType<Multicalls[K1][K2]['converter']>
+    [Multicall in keyof Multicalls]: {
+      [FunctionID in keyof Multicalls[Multicall]]: ReturnType<Multicalls[Multicall][FunctionID]['converter']>
     }
   }
 }

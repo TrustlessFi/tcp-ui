@@ -46,7 +46,8 @@ export const tokenBalanceThunk = async (
   const approval: approval = {}
   const balances: balances = {}
 
-  const { basicInfo } = await executeMulticalls({
+  const result = await executeMulticalls({
+  // const { basicInfo } = await executeMulticalls({
     basicInfo: getMulticall(
       token,
       {
@@ -55,14 +56,12 @@ export const tokenBalanceThunk = async (
         // decimals: mc.Number,
       }
     ),
-    /*
     approvals: getDuplicateFuncMulticall(
       token,
       'allowance',
       mc.String,
       Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
     ),
-    */
   })
   // const basicInfo = basicInfoMulticall.getResult()
   // const approvals = approvalsMulticall.getResult()
