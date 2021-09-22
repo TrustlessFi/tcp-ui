@@ -112,8 +112,27 @@ const rawCallToCall = (rawCall: RawCall): Call => {
   }
 }
 
+
+export const aggregateCalls = <FunctionCalls extends {[key in string]: RawCall}>(
+  functionCalls: FunctionCalls,
+  results: {[key in string]: ReturnType<resultConverter>}
+) => {
+  return Object.fromEntries(Object.keys(functionCalls).map(id =>
+    [
+      id,
+      results[id]!
+    ]
+  ))
+}
+
+
+
+
+
 export const executeMulticalls = async <
-  Multicalls extends {[key in string]: {[key in string]: RawCall}},
+  K1 extends symbol,
+  K2 extends symbol,
+  Multicalls extends {[key in K1]: {[key in K2]: RawCall}}
 >(
   multicalls: Multicalls,
   provider?: Web3Provider,
@@ -125,7 +144,7 @@ export const executeMulticalls = async <
   )
 
   let calls: Call[] = []
-  Object.values(multicalls).map(multicall => calls.concat(Object.values(multicall).map(rawCall => rawCallToCall(rawCall))))
+  Object.values(multicalls).map(multicall => calls.concat(Object.values(multicall as {}).map(rawCall => rawCallToCall(rawCall as RawCall))))
 
   const rawResults = await multicallContract.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
@@ -145,10 +164,10 @@ export const executeMulticalls = async <
   return Object.fromEntries(Object.entries(multicalls).map(([multicallName, multicallData]) =>
     [
       multicallName,
-      Object.fromEntries(Object.keys(multicallData).map(id =>
+      Object.fromEntries(Object.keys(multicallData as {}).map(id =>
         [
           id,
-          results[id]
+          results[id]!
         ]
       ))
     ]
