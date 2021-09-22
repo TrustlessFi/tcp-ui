@@ -44,22 +44,21 @@ interface Call<CallType extends resultConverter> {
   encoding: string
 }
 
-export const getMulticall = <
-  Functions extends {[key in string]: resultConverter}
-> (
+export const getMulticall = <Functions extends {[key in string]: resultConverter}> (
   contract: Contract,
   funcs: Functions,
-  args?: {[key in keyof Functions]: any[]},
+  args?: {[key in keyof Functions]?: any[]},
 ) => {
   return Object.fromEntries(Object.entries(funcs).map(([func, converter]) => {
-    const argList = args === undefined ? [] : args.hasOwnProperty(func) ? args[func] : [];
-    const {inputs, outputs, encoding } = getCallMetadata(contract, func, argList)
+    const args0 = args === undefined ? [] : args.hasOwnProperty(func) ? args[func] : [];
+    const args1 = args0 === undefined ? [] : args0
+    const {inputs, outputs, encoding } = getCallMetadata(contract, func, args1)
 
     return [func, {
       id: func,
       contract,
       func,
-      args: argList,
+      args: args1,
       converter,
       inputs,
       outputs,
