@@ -112,23 +112,6 @@ const rawCallToCall = (rawCall: RawCall): Call => {
   }
 }
 
-
-export const aggregateCalls = <FunctionCalls extends {[key in string]: RawCall}>(
-  functionCalls: FunctionCalls,
-  results: {[key in string]: ReturnType<resultConverter>}
-) => {
-  return Object.fromEntries(Object.keys(functionCalls).map(id =>
-    [
-      id,
-      results[id]!
-    ]
-  ))
-}
-
-
-
-
-
 export const executeMulticalls = async <
   K1 extends symbol,
   K2 extends symbol,
