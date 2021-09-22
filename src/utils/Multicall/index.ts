@@ -52,7 +52,29 @@ export const getMulticall2 = <Functions extends {[key in string]: {[key in strin
         .map(([func, converter]) => [func, converter])) as {[K in keyof Functions]: {[J in keyof Functions[K]]: ReturnType<Functions[K][J]>}}
 }
 
-export const getMulticall3 = <
+
+const getCallMetadata = (contract: Contract, func: string, args: any[]) => {
+  const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
+  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
+  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
+
+  const fragment = first(matchingFunctions)
+  const stateMutability = fragment.stateMutability
+  const inputs = fragment.inputs
+  const outputs = fragment.outputs
+
+  enforce(!fragment.payable, 'function ' + func + ' is payable')
+  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
+  enforce(
+    inputs.length === args.length,
+    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
+
+  const encoding = contract.interface.encodeFunctionData(func, args)
+
+  return {inputs, outputs, encoding}
+}
+
+export const getMulticall = <
   Functions extends {[key in string]: resultConverter}
 > (
   contract: Contract,
@@ -84,84 +106,41 @@ export const getMulticall3 = <
     outputs?: ethersUtils.ParamType[],
     encoding: string,
   }}
-
 }
 
-const getCallMetadata = (contract: Contract, func: string, args: any[]) => {
-  const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
-  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
-  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
-
-  const fragment = first(matchingFunctions)
-  const stateMutability = fragment.stateMutability
-  const inputs = fragment.inputs
-  const outputs = fragment.outputs
-
-  enforce(!fragment.payable, 'function ' + func + ' is payable')
-  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
-  enforce(
-    inputs.length === args.length,
-    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
-
-  const encoding = contract.interface.encodeFunctionData(func, args)
-
-  return {inputs, outputs, encoding}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-export const getMulticall = <
-  converter extends Converter,
-  Functions extends {[key in string]: converter },
-  Args extends {},
+export const getDuplicateFuncMulticall = <
+  ConverterType extends resultConverter,
+  SpecificCalls extends {[key in string]: any[]}
 >(
   contract: Contract,
-  funcs: Functions,
-  args: Args | undefined,
-) =>
-  Object.fromEntries(Object.entries(funcs).map(([func, converter]) => {
-    return [func, {
-      id: func,
-      contract,
-      func,
-      args: args === undefined ? [] : (args.hasOwnProperty(func) ? [] : []),
-      converter,
-    }]
-  })) as { [K in keyof Functions]: RawCall<converter>}
-*/
-
-  /*
-export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]: any[]}>(
-  contract: Contract,
   func: string,
-  converter: resultConverter,
+  converter: ConverterType,
   calls: SpecificCalls,
-): {[key in keyof SpecificCalls]: RawCall} =>
-  Object.fromEntries(Object.entries(calls).map(([id, args]) =>
-    [id, {
+) => {
+  return Object.fromEntries(Object.entries(calls).map(([id, args]) => {
+    const {inputs, outputs, encoding } = getCallMetadata(contract, func, args)
+
+    return [id, {
       id,
       contract: contract,
       func: func,
       args,
       converter: converter,
+      inputs,
+      outputs,
+      encoding,
     }]
-  )) as {[key in keyof SpecificCalls]: RawCall}
-  */
+  })) as {[K in keyof SpecificCalls]: {
+    id: string,
+    contract: Contract,
+    func: string,
+    args: any[],
+    converter: ConverterType,
+    inputs: ethersUtils.ParamType[],
+    outputs?: ethersUtils.ParamType[],
+    encoding: string,
+  }}
+}
 
 
 export const executeMulticalls = async <
@@ -170,10 +149,10 @@ export const executeMulticalls = async <
     contract: Contract,
     func: string,
     args: any[],
-    converter: resultConverter
-    inputs: ethersUtils.ParamType[]
-    outputs?: ethersUtils.ParamType[]
-    encoding: string
+    converter: resultConverter,
+    inputs: ethersUtils.ParamType[],
+    outputs?: ethersUtils.ParamType[],
+    encoding: string,
   }}}
 >(
   multicalls: Multicalls,
