@@ -14,12 +14,6 @@ import { TcpMulticallViewOnly } from '../typechain'
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
 
-export enum Converter {
-  Number,
-  String,
-}
-
-
 
 export const Number = (result: any) => result as number
 export const Boolean = (result: any) => result as boolean
@@ -41,27 +35,77 @@ type resultConverter =
   typeof BigNumberToNumber |
   typeof BigNumberUnscale
 
-interface RawCall<converter extends Converter> {
+interface Call {
   id: string,
   contract: Contract,
   func: string,
   args: any[],
-  converter: converter
-}
-
-interface Call<converter extends Converter> extends RawCall<converter> {
+  converter: resultConverter
   inputs: ethersUtils.ParamType[]
   outputs?: ethersUtils.ParamType[]
   encoding: string
 }
 
-
-
-
-export const getMulticall2 = <Functions> (contract: Contract, funcs: Functions) => {
+export const getMulticall2 = <Functions extends {[key in string]: {[key in string]: resultConverter}}> (funcs: Functions) => {
   return Object.fromEntries(
       Object.entries(funcs)
-        .map(([func, converter]) => [func, converter])) as {[K in keyof Functions]: typeof Functions[K]}
+        .map(([func, converter]) => [func, converter])) as {[K in keyof Functions]: {[J in keyof Functions[K]]: ReturnType<Functions[K][J]>}}
+}
+
+export const getMulticall3 = <
+  Functions extends {[key in string]: resultConverter}
+> (
+  contract: Contract,
+  funcs: Functions,
+  args?: {[key in keyof Functions]: any[]},
+) => {
+  return Object.fromEntries(Object.entries(funcs).map(([func, converter]) => {
+    const argList = args === undefined ? [] : args.hasOwnProperty(func) ? args[func] : [];
+    const {inputs, outputs, encoding } = getCallMetadata(contract, func, argList)
+
+    return [func, {
+      id: func,
+      contract,
+      func,
+      args: argList,
+      converter,
+      inputs,
+      outputs,
+      encoding
+    }]
+  }
+  )) as {[K in keyof Functions]: {
+    id: string,
+    contract: Contract,
+    func: string,
+    args: any[],
+    converter: Functions[K]
+    inputs: ethersUtils.ParamType[],
+    outputs?: ethersUtils.ParamType[],
+    encoding: string,
+  }}
+
+}
+
+const getCallMetadata = (contract: Contract, func: string, args: any[]) => {
+  const matchingFunctions = Object.values(contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
+  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
+  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
+
+  const fragment = first(matchingFunctions)
+  const stateMutability = fragment.stateMutability
+  const inputs = fragment.inputs
+  const outputs = fragment.outputs
+
+  enforce(!fragment.payable, 'function ' + func + ' is payable')
+  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
+  enforce(
+    inputs.length === args.length,
+    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
+
+  const encoding = contract.interface.encodeFunctionData(func, args)
+
+  return {inputs, outputs, encoding}
 }
 
 
@@ -80,18 +124,7 @@ export const getMulticall2 = <Functions> (contract: Contract, funcs: Functions) 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
 export const getMulticall = <
   converter extends Converter,
   Functions extends {[key in string]: converter },
@@ -110,6 +143,7 @@ export const getMulticall = <
       converter,
     }]
   })) as { [K in keyof Functions]: RawCall<converter>}
+*/
 
   /*
 export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]: any[]}>(
@@ -129,42 +163,18 @@ export const getDuplicateFuncMulticall = <SpecificCalls extends {[key in string]
   )) as {[key in keyof SpecificCalls]: RawCall}
   */
 
-const rawCallToCall = (rawCall: RawCall): Call => {
-  const id = rawCall.id
-  const contract = rawCall.contract
-  const func = rawCall.func
-  const args = rawCall.args
-  const converter = rawCall.converter
-
-  const matchingFunctions = Object.values(rawCall.contract.interface.functions).filter(interfaceFunction => interfaceFunction.name === func)
-  enforce(matchingFunctions.length >= 1, 'No matching functions found for ' + func)
-  enforce(matchingFunctions.length <= 1, 'Multiple matching functions found for ' + func)
-
-  const fragment = first(matchingFunctions)
-  const stateMutability = fragment.stateMutability
-  const inputs = fragment.inputs
-  const outputs = fragment.outputs
-
-  enforce(!fragment.payable, 'function ' + func + ' is payable')
-  enforce(stateMutability === 'view' || stateMutability === 'pure', 'function ' + func + ' mutates state')
-  enforce(
-    inputs.length === args.length,
-    'Incorrect args sent to function ' + func + ': ' + inputs.length + 'required, ' + args.length + 'given')
-
-  return {
-    id,
-    contract,
-    func,
-    args,
-    converter,
-    inputs,
-    outputs,
-    encoding: contract.interface.encodeFunctionData(func, args)
-  }
-}
 
 export const executeMulticalls = async <
-  Multicalls extends {[key in string]: {[key in string]: RawCall}}
+  Multicalls extends {[key in string]: {[key in string]: {
+    id: string,
+    contract: Contract,
+    func: string,
+    args: any[],
+    converter: resultConverter
+    inputs: ethersUtils.ParamType[]
+    outputs?: ethersUtils.ParamType[]
+    encoding: string
+  }}}
 >(
   multicalls: Multicalls,
   provider?: Web3Provider,
@@ -175,8 +185,7 @@ export const executeMulticalls = async <
     provider === undefined ? getProvider() : provider,
   )
 
-  const calls: Call[] = []
-  Object.values(multicalls).map(multicall => calls.concat(Object.values(multicall as {}).map(rawCall => rawCallToCall(rawCall as RawCall))))
+  const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
 
   const rawResults = await multicallContract.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
@@ -193,10 +202,10 @@ export const executeMulticalls = async <
     })
   )
 
-  return Object.fromEntries(Object.entries(multicalls).map(([multicallName, multicallData]) =>
+  return Object.fromEntries(Object.entries(multicalls).map(([multicallName, functions]) =>
     [
       multicallName,
-      Object.fromEntries(Object.keys(multicallData as {}).map(id =>
+      Object.fromEntries(Object.keys(functions).map(id =>
         [
           id,
           results[id]!
