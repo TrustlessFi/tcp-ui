@@ -11,7 +11,7 @@ import { contract as getContract } from '../getContract'
 
 import { TcpMulticallViewOnly } from '../typechain'
 
-import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
+import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/core/auxiliary/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
 export const Number = (result: any) => result as number
 export const Boolean = (result: any) => result as boolean
