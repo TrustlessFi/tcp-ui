@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "DaoPositionCreator",
-  "sourceName": "contracts/core/auxiliary/DaoPositionCreator.sol",
+  "sourceName": "contracts/core/auxiliary/allocations/abstract/DaoPositionCreator.sol",
   "abi": [
     {
       "anonymous": false,

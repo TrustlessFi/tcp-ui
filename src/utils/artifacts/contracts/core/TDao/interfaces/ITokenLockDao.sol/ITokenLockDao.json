@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "ITokenLockDao",
-  "sourceName": "contracts/core/interfaces/ITokenLockDao.sol",
+  "sourceName": "contracts/core/TDao/interfaces/ITokenLockDao.sol",
   "abi": [
     {
       "inputs": [

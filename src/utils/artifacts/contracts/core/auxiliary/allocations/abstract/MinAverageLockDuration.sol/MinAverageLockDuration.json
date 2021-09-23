@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "MinAverageLockDuration",
-  "sourceName": "contracts/core/auxiliary/MinAverageLockDuration.sol",
+  "sourceName": "contracts/core/auxiliary/allocations/abstract/MinAverageLockDuration.sol",
   "abi": [
     {
       "anonymous": false,
