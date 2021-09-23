@@ -6,7 +6,7 @@ import * as mc from '../../utils/Multicall'
 import { Rates } from "../../utils/typechain/Rates"
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
-import Multicall from '../../utils/Multicall/index';
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
@@ -25,11 +25,16 @@ export const getRatesInfo = createAsyncThunk(
   async (args: ratesArgs): Promise<ratesInfo> => {
     const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
 
-    const result = await Multicall(rates).execute({
-      positiveInterestRate: mc.Boolean,
-      interestRateAbsoluteValue: mc.BigNumberUnscale,
-      getReferencePools: mc.StringArray,
-    })
+
+    const { result } =  (await executeMulticalls({
+      result: getMulticall(rates,
+        {
+          positiveInterestRate: mc.Boolean,
+          interestRateAbsoluteValue: mc.BigNumberUnscale,
+          getReferencePools: mc.StringArray,
+        },
+      ),
+    }))
 
     return {
       positiveInterestRate: result.positiveInterestRate,

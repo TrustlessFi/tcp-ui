@@ -7,7 +7,7 @@ import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
 import { getLocalStorage } from '../../utils/index';
-import Multicall from '../../utils/Multicall/index';
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
 
 export type referenceTokens = string[]
@@ -25,13 +25,13 @@ export interface referenceTokenArgs {
 export const getReferenceTokens = createAsyncThunk(
   'referenceTokens/getReferenceTokens', async (args: referenceTokenArgs) => {
     return await Promise.all(args.ratesInfo.referencePools.map(async refPoolAddress => {
+      const pool = contract<UniswapV3Pool>(refPoolAddress, poolArtifact.abi)
 
-      const tokens = await Multicall(contract<UniswapV3Pool>(refPoolAddress, poolArtifact.abi)).execute({
-        token0: mc.Address,
-        token1: mc.Address,
+      const result = await executeMulticalls({
+        tokens: getMulticall(pool, { token0: mc.Address, token1: mc.Address })
       })
 
-      return tokens.token0 === args.Hue ? tokens.token1: tokens.token0
+      return result.tokens.token0 === args.Hue ? result.tokens.token1: result.tokens.token0
     }))
 })
 
