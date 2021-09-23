@@ -1,5 +1,5 @@
 {
-  "name": "redux_typescript",
+  "name": "tcp-ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
