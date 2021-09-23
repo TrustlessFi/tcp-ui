@@ -43,79 +43,42 @@ export const tokenBalanceThunk = async (
 ) => {
   const token = contract<ERC20>(args.tokenAddress, erc20Artifact.abi)
 
-  const approval: approval = {}
-  const balances: balances = {}
-
-  const basicInfo = getMulticall(
-    token,
-    {
+  const { basicInfo, approvals, balances, userBalance } = await executeMulticalls({
+    basicInfo: getMulticall(token, {
       name: mc.String,
       symbol: mc.String,
       decimals: mc.Number,
-    },
-  )
-
-  const approvals = getDuplicateFuncMulticall(
-    token,
-    'allowance',
-    mc.String,
-    Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
-  )
-
-  const result = await executeMulticalls({
-    basicInfo,
-    approvals,
-  })
-
-
-    /*
-  const result8 = await executeMulticalls({
-  // const { basicInfo } = await executeMulticalls({
-    basicInfo: getMulticall3(
-      token,
-      {
-        name: Converter.String,
-        // symbol: mc.String,
-        decimals: Converter.Number,
-      },
+    }),
+    userBalance: getMulticall(token,
+      { balanceOf: mc.BigNumber },
+      { balanceOf: [args.userAddress] }
     ),
-  })
-    */
-
-    /*
     approvals: getDuplicateFuncMulticall(
       token,
       'allowance',
       mc.String,
-      Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
+      Object.fromEntries(approvalsList.map(item => [item.address, [args.userAddress, item.address]]))
     ),
-    */
+    balances: getDuplicateFuncMulticall(
+      token,
+      'balanceOf',
+      mc.BigNumberToNumber,
+      Object.fromEntries(balancesList.map(item => [item.address, [item.address]]))
+    )
   })
-  // const basicInfo = basicInfoMulticall.getResult()
-  // const approvals = approvalsMulticall.getResult()
 
+  const approval: approval = Object.fromEntries(Object.entries(approvals).map(([destAddress, allowance]) => {
+    return [
+      destAddress,
+      {
+        allowance,
+        approving: false,
+        approved: bnf(allowance).gt(uint255Max)
+      }
+    ]
+  }))
 
   const tokenInfo = { ...basicInfo, address: token.address }
 
-  // TODO improve multicall
-  const [
-    _,
-    __,
-    userBalance,
-  ] = await Promise.all([
-    Promise.all(approvalsList.map(async item => {
-      const allowance = await token.allowance(args.userAddress, item.address)
-      approval[item.contract] = {
-        allowance: allowance.toString(),
-        approving: false,
-        approved: allowance.gt(bnf(uint255Max))
-      }
-    })),
-    Promise.all(balancesList.map(async item => {
-      balances[item.contract] = unscale(await token!.balanceOf(item.address), tokenInfo.decimals)
-    })),
-    token.balanceOf(args.userAddress),
-  ])
-
-  return { token: tokenInfo, userBalance: unscale(userBalance, tokenInfo.decimals), approval, balances}
+  return { token: tokenInfo, userBalance: unscale(userBalance.balanceOf, tokenInfo.decimals), approval, balances}
 }
