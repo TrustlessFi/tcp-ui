@@ -6,6 +6,8 @@ import ErrorBoundary from './components/library/ErrorBoundary'
 import LiquidityPositions from './components/LiquidityPositions'
 import { Switch, Route } from "react-router-dom"
 import { BrowserRouter as Router } from "react-router-dom"
+import LocalStorageManager from './components/utils/LocalStorageManager'
+import Notifications from './components/Notifications'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -35,8 +37,10 @@ function App() {
           </Switch>
         </div>
       </Router>
+      <Notifications />
+      <LocalStorageManager />
     </ErrorBoundary>
   );
 }
 
-export default App;
+export default App

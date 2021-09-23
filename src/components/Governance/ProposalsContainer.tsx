@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { waitForProposals } from '../../slices/waitFor';
 import AppLoading from '../library/AppLoading';
@@ -21,7 +21,7 @@ const defaultSelectedStates = {
 }
 
 const ProposalsContainer: FunctionComponent = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalStates]: boolean}>(defaultSelectedStates);
   const [ defaultSelected, updateDefaultSelected ] = useState<boolean>(true);
   const [ allSelected, updateAllSelected ] = useState<boolean>(false);
@@ -29,7 +29,7 @@ const ProposalsContainer: FunctionComponent = () => {
 
   const proposalsState = waitForProposals(useAppSelector, dispatch);
   const [ filteredProposals, updateFilteredProposals ] = useState<IProposal[]>([]);
-  
+
   useEffect(() => {
     const proposals = proposalsState && Object.values(proposalsState);
     if (proposals && proposals.length) {
@@ -69,7 +69,7 @@ const ProposalsContainer: FunctionComponent = () => {
   const setDefault = (): void => {
     updateSelectedStates(defaultSelectedStates);
   };
-  
+
   if (!proposalsState) {
     return (
       <AppLoading
@@ -93,7 +93,7 @@ const ProposalsContainer: FunctionComponent = () => {
         defaultSelected={defaultSelected}
         noneSelected={noneSelected}
         proposalsShown={filteredProposals.length}
-        proposalsTotal={proposalsState && Object.values(proposalsState).length || 0}
+        proposalsTotal={(proposalsState && Object.values(proposalsState).length) || 0}
         setAll={setAll}
         setDefault={setDefault}
       />
@@ -125,7 +125,7 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
   return (
     <>
       <div> Displaying {proposalsShown} of {proposalsTotal} </div>
-      <div> 
+      <div>
         <AppTag name="Default" color="blue" selected={defaultSelected} onClick={setDefault} />
         <AppTag name="All" color="blue" selected={allSelected} onClick={() => setAll(true)} />
         <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
@@ -142,10 +142,10 @@ const ProposalsList: FunctionComponent<ProposalsListProps> = ({ filteredProposal
   if (filteredProposals && !filteredProposals.length) {
     return null;
   }
-  
+
   return (
     <UnorderedList>
-      {filteredProposals && filteredProposals.map(proposal => 
+      {filteredProposals && filteredProposals.map(proposal =>
       <ListItem key={proposal.proposal.id}>
         <Proposal proposal={proposal} />
       </ListItem>
@@ -153,5 +153,5 @@ const ProposalsList: FunctionComponent<ProposalsListProps> = ({ filteredProposal
     </UnorderedList>
   );
 }
-  
+
 export default ProposalsContainer;

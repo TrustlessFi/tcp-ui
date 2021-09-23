@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainID } from '../chainID'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { unscale } from '../../utils'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
+import getContract from '../../utils/getContract'
 
 import { Liquidations } from "../../utils/typechain/Liquidations"
+import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
+import Multicall from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -13,7 +15,7 @@ export type liquidationsInfo = {
 }
 
 export type liquidationsArgs = {
-  chainID: ChainID,
+  Liquidations: string,
 }
 
 export interface LiquidationsState extends sliceState<liquidationsInfo> {}
@@ -21,35 +23,26 @@ export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 export const getLiquidationsInfo = createAsyncThunk(
   'liquidations/getLiquidationsInfo',
 
-  async (args: liquidationsArgs) => {
-    const liquidations = await getProtocolContract(args.chainID, ProtocolContract.Liquidations) as Liquidations
-    if (liquidations === null) return null
+  async (args: liquidationsArgs): Promise<liquidationsInfo> => {
+    const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
 
-    let [
-      twapDuration,
-      discoveryIncentive,
-      liquidationIncentive,
-    ] = await Promise.all([
-      liquidations.twapDuration(),
-      liquidations.discoveryIncentive(),
-      liquidations.liquidationIncentive(),
-    ])
-
-    return {
-      twapDuration,
-      discoveryIncentive: unscale(discoveryIncentive),
-      liquidationIncentive: unscale(liquidationIncentive),
-    }
+    return Multicall(liquidations).execute({
+      twapDuration: mc.Number,
+      discoveryIncentive: mc.BigNumberUnscale,
+      liquidationIncentive: mc.BigNumberUnscale,
+    })
   }
 )
 
+const name = 'liquidations'
+
 export const liquidationsSlice = createSlice({
-  name: 'liquidations',
-  initialState: initialState as LiquidationsState,
+  name,
+  initialState: getState<liquidationsInfo>(getLocalStorage(name, null)) as LiquidationsState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getLiquidationsInfo)
   },
 });
 
-export default liquidationsSlice.reducer;
+export default liquidationsSlice.reducer

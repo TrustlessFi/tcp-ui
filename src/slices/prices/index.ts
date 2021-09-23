@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { ChainID } from '../chainID'
-import { governorInfo } from '../governor'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { liquidationsInfo } from '../liquidations'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
+import getContract from '../../utils/getContract'
 
 import { Prices } from "../../utils/typechain/Prices"
 import { unscale } from "../../utils"
+import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
 
 
 export type pricesInfo = {
@@ -16,20 +16,19 @@ export type pricesInfo = {
 export interface PricesState extends sliceState<pricesInfo> {}
 
 export interface pricesArgs {
-  chainID: ChainID,
   liquidationsInfo: liquidationsInfo,
+  Prices: string
 }
 
 export const getPricesInfo = createAsyncThunk(
   'prices/getPricesInfo',
-  async (data: pricesArgs) => {
-    const prices = await getProtocolContract(data.chainID, ProtocolContract.Prices) as Prices
-    if (prices === null) return null
+  async (args: pricesArgs) => {
+    const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
 
-    let [
+    const [
       ethPrice,
     ] = await Promise.all([
-      prices.calculateInstantCollateralPrice(data.liquidationsInfo.twapDuration),
+      prices.calculateInstantCollateralPrice(args.liquidationsInfo.twapDuration),
     ])
 
     return {
@@ -38,9 +37,11 @@ export const getPricesInfo = createAsyncThunk(
   }
 )
 
+const name = 'prices'
+
 export const pricesSlice = createSlice({
-  name: 'governor',
-  initialState: initialState as PricesState,
+  name,
+  initialState: getState<pricesInfo>(getLocalStorage(name, null)) as PricesState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPricesInfo)

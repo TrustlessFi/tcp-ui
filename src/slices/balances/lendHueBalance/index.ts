@@ -1,11 +1,21 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ProtocolContract } from '../../../utils/protocolContracts'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
-import { balanceState, getTokenBalanceThunk } from '../'
+import { balanceState, tokenBalanceThunk } from '../'
+import { ProtocolContract } from '../../contracts/index'
+
+export type lendHueBalanceArgs = {
+  LendHue: string
+  Market: string
+  userAddress: string
+}
 
 export const getLendHueBalance = createAsyncThunk(
   'lendHueBalance/getBalances',
-  getTokenBalanceThunk({contract: ProtocolContract.LendHue}, [ProtocolContract.Market], []),
+  async (args: lendHueBalanceArgs) => tokenBalanceThunk(
+    { tokenAddress: args.LendHue, userAddress: args.userAddress},
+    [{contract: ProtocolContract.Market, address: args.Market}],
+    [],
+  ),
 )
 
 export const lendHueBalanceSlice = createSlice({
@@ -15,6 +25,6 @@ export const lendHueBalanceSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getLendHueBalance)
   },
-});
+})
 
-export default lendHueBalanceSlice.reducer;
+export default lendHueBalanceSlice.reducer

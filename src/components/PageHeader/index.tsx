@@ -1,35 +1,26 @@
-import React, { MouseEvent, useState } from 'react';
-import { withRouter, useHistory } from 'react-router';
+import { MouseEvent } from 'react'
+import { withRouter, useHistory } from 'react-router'
 import {
   Header,
   HeaderContainer,
-  HeaderPanel,
   HeaderName,
   HeaderNavigation,
   HeaderMenuButton,
   HeaderMenuItem,
-  HeaderGlobalBar,
-  HeaderGlobalAction,
   SideNav,
-  Switcher,
-  SwitcherItem,
   SideNavItems,
   HeaderSideNavItems,
-} from 'carbon-components-react';
-import { Activity20, Aperture32 } from '@carbon/icons-react';
+} from 'carbon-components-react'
+import { Aperture32 } from '@carbon/icons-react'
 
-import MetamaskConnectButton from './MetamaskConnectButton';
+import Wallet from './Wallet'
 
-const PageHeader = ({}) => {
-  const [ txsOpen, setTxsOpen ] = useState(false);
-
-  let history = useHistory()
-
-  const toggleTxsOpen = () => setTxsOpen(!txsOpen)
+const PageHeader = () => {
+  const history = useHistory()
 
   const navigateToRoute = (path: string, e: MouseEvent<Element>) => {
-    history.push(path);
-    e.preventDefault();
+    history.push(path)
+    e.preventDefault()
   }
 
   const pages = [
@@ -42,7 +33,7 @@ const PageHeader = ({}) => {
     <HeaderMenuItem key={index} href={page.link} onClick={navigateToRoute.bind(null, page.link)}>
       {page.display}
     </HeaderMenuItem>
-  ));
+  ))
 
   return (
     <HeaderContainer
@@ -53,14 +44,6 @@ const PageHeader = ({}) => {
             onClick={onClickSideNavExpand}
             isActive={isSideNavExpanded}
           />
-          <div style={{marginLeft: 16}}>
-            <HeaderName href="/" prefix="">
-              <Aperture32 />
-            </HeaderName>
-          </div>
-          <HeaderNavigation aria-label="Main Site Navigation Links">
-            {headerItems}
-          </HeaderNavigation>
           <SideNav
             aria-label="Side navigation"
             expanded={isSideNavExpanded}
@@ -71,24 +54,20 @@ const PageHeader = ({}) => {
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
-          <HeaderGlobalBar>
-            <HeaderGlobalAction aria-label="Account" className="metamask-connect-container">
-              <MetamaskConnectButton />
-            </HeaderGlobalAction>
-            <HeaderGlobalAction aria-label="Txs" onClick={toggleTxsOpen}>
-              <Activity20 />
-            </HeaderGlobalAction>
-          </HeaderGlobalBar>
-          <HeaderPanel aria-label="Recent Transactions" expanded={txsOpen}>
-            <Switcher aria-label="Recent Transactions List">
-              <SwitcherItem aria-label="Transaction Item">
-                <div>No recent transactions.</div>
-              </SwitcherItem>
-            </Switcher>
-          </HeaderPanel>
+          <div style={{marginLeft: 16}}>
+            <HeaderName href="/" prefix="">
+              <Aperture32 />
+            </HeaderName>
+          </div>
+          <HeaderNavigation aria-label="Main Site Navigation Links">
+            {headerItems}
+          </HeaderNavigation>
+          <div style={{marginLeft: 'auto', marginRight: 20}}>
+            <Wallet />
+          </div>
         </Header>
     )} />
-  );
+  )
 }
 
-export default withRouter(PageHeader);
+export default withRouter(PageHeader)

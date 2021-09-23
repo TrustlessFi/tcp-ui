@@ -1,9 +1,11 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
+
 import positionsReducer from '../slices/positions'
 import poolsReducer from '../slices/pools'
 import liquidityPositionsReducer from '../slices/liquidityPositions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
+import transactionsReducer from '../slices/transactions'
 import walletReducer from '../slices/wallet'
 import systemDebtReducer from '../slices/systemDebt'
 import positionsEditorReducer from '../slices/positionsEditor'
@@ -20,6 +22,9 @@ import hueBalanceReducer from '../slices/balances/hueBalance'
 import lendHueBalanceReducer from '../slices/balances/lendHueBalance'
 import referenceTokenBalancesReducer from '../slices/balances/referenceTokenBalances'
 
+import contractsReducer from '../slices/contracts'
+import notificationsReducer from '../slices/notifications'
+
 export const store = configureStore({
   reducer: {
     positions: positionsReducer,
@@ -27,6 +32,7 @@ export const store = configureStore({
     liquidityPositions: liquidityPositionsReducer,
     proposals: proposalsReducer,
     chainID: chainIDReducer,
+    transactions: transactionsReducer,
     wallet: walletReducer,
     systemDebt: systemDebtReducer,
     positionsEditor: positionsEditorReducer,
@@ -42,9 +48,12 @@ export const store = configureStore({
     hueBalance: hueBalanceReducer,
     lendHueBalance: lendHueBalanceReducer,
     referenceTokenBalances: referenceTokenBalancesReducer,
-  },
-});
 
-export type AppDispatch = typeof store.dispatch;
+    contracts: contractsReducer,
+    notifications: notificationsReducer,
+  },
+})
+
+export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>

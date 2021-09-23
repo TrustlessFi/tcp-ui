@@ -1,13 +1,15 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ProtocolContract } from '../../../utils/protocolContracts'
-import { balanceInfo, getTokenBalanceImpl } from '../'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { balanceInfo, tokenBalanceThunk } from '../'
 import { sliceState, getGenericReducerBuilder, initialState } from '../../'
 import { ChainID } from '../../chainID'
+import { ProtocolContract } from '../../contracts/index'
 
 export interface referenceTokenBalancesArgs {
   tokenAddresses: string[],
   chainID: ChainID,
   userAddress: string,
+  Market: string,
+  Accounting: string,
 }
 
 export type referenceTokenBalances = {[key in string]: balanceInfo}
@@ -20,11 +22,10 @@ export const getReferenceTokenBalances = createAsyncThunk(
     let data: referenceTokenBalances = {}
 
     await Promise.all(args.tokenAddresses.map(async tokenAddress => {
-      const result = await getTokenBalanceImpl(
-        {tokenAddress},
-        [ProtocolContract.Market],
-        [ProtocolContract.Accounting],
-        { chainID: args.chainID, userAddress: args.userAddress },
+      const result = await tokenBalanceThunk(
+        {tokenAddress, userAddress: args.userAddress},
+        [{contract: ProtocolContract.Market, address: args.Market}],
+        [{contract: ProtocolContract.Accounting, address: args.Accounting}],
       )
 
       if (result !== null) data[tokenAddress] = result
@@ -41,6 +42,6 @@ export const referenceTokenBalanceSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getReferenceTokenBalances)
   },
-});
+})
 
-export default referenceTokenBalanceSlice.reducer;
+export default referenceTokenBalanceSlice.reducer

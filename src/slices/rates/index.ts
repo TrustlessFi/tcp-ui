@@ -1,51 +1,49 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainID } from '../chainID'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { unscale } from '../../utils'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
+import getContract from '../../utils/getContract'
+import * as mc from '../../utils/Multicall'
 
 import { Rates } from "../../utils/typechain/Rates"
+import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
+import Multicall from '../../utils/Multicall/index';
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
   interestRateAbsoluteValue: number,
   referencePools: string[]
-
 }
 
 export type ratesArgs = {
-  chainID: ChainID
+  Rates: string
 }
 
 export interface RatesState extends sliceState<ratesInfo> {}
 
 export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
-  async (args: ratesArgs): Promise<null | ratesInfo> => {
-    const rates = await getProtocolContract(args.chainID, ProtocolContract.Rates) as Rates
-    if (rates === null) return null
+  async (args: ratesArgs): Promise<ratesInfo> => {
+    const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
 
-    let [
-      positiveInterestRate,
-      interestRateAbsoluteValue,
-      referencePools
-    ] = await Promise.all([
-      rates.positiveInterestRate(),
-      rates.interestRateAbsoluteValue(),
-      rates.getReferencePools(),
-    ])
+    const result = await Multicall(rates).execute({
+      positiveInterestRate: mc.Boolean,
+      interestRateAbsoluteValue: mc.BigNumberUnscale,
+      getReferencePools: mc.StringArray,
+    })
 
     return {
-      positiveInterestRate,
-      interestRateAbsoluteValue: unscale(interestRateAbsoluteValue),
-      referencePools
+      positiveInterestRate: result.positiveInterestRate,
+      interestRateAbsoluteValue: result.interestRateAbsoluteValue,
+      referencePools: result.getReferencePools,
     }
   }
 )
 
+const name = 'rates'
+
 export const ratesSlice = createSlice({
-  name: 'rates',
-  initialState: initialState as RatesState,
+  name,
+  initialState: getState<ratesInfo>(getLocalStorage(name, null)) as RatesState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getRatesInfo)

@@ -1,10 +1,13 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { fetchPositions } from './api'
-import { getGenericReducerBuilder } from '../'
 import { systemDebtInfo } from '../systemDebt'
-import { ChainID } from '../chainID'
 import { marketInfo } from "../market"
+import {
+  getGenericReducerBuilder,
+} from '../'
+import { getGenericWriteReducerBuilder } from '../index'
+import { executeCreatePosition } from './api'
 
 export interface Position {
   collateralCount: number,
@@ -22,10 +25,17 @@ export interface Position {
 export interface positionsInfo { [key: number]: Position }
 
 export interface positionsArgs {
-  chainID: ChainID,
   userAddress: string,
   sdi: systemDebtInfo,
   marketInfo: marketInfo,
+  Accounting: string,
+  HuePositionNFT: string,
+}
+
+export interface createPositionArgs {
+  collateralCount: number,
+  debtCount: number,
+  Market: string,
 }
 
 export interface PositionsState extends sliceState<positionsInfo> {}
@@ -35,13 +45,25 @@ export const getPositions = createAsyncThunk(
   async (data: positionsArgs) => await fetchPositions(data),
 )
 
+export const createPosition = createAsyncThunk(
+  'positions/createPosition',
+  async (data: createPositionArgs, {dispatch}) => await executeCreatePosition(dispatch, data),
+)
+
 export const positionsSlice = createSlice({
   name: 'positions',
   initialState: initialState as PositionsState,
-  reducers: {},
+  reducers: {
+    clearPositions: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
+    builder = getGenericWriteReducerBuilder(builder, createPosition)
   },
 })
+
+export const { clearPositions } = positionsSlice.actions
 
 export default positionsSlice.reducer

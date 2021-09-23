@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
-import { ChainID } from '../chainID'
-import { sliceState, initialState, getGenericReducerBuilder } from '../'
+import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
+import getContract from '../../utils/getContract'
 
 import { Accounting } from "../../utils/typechain/Accounting";
+import { ProtocolContract } from '../contracts/index';
+import { getLocalStorage } from '../../utils/index';
 
 export type systemDebtInfo = {
   debt: number
@@ -14,18 +15,18 @@ export type systemDebtInfo = {
 }
 
 export type systemDebtArgs = {
-  chainID: ChainID
+  Accounting: string
 }
 
-export interface SystemDebtInfoState extends sliceState<systemDebtInfo> {}
+export interface SystemDebtState extends sliceState<systemDebtInfo> {}
 
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
   async (args: systemDebtArgs) => {
-    const accounting = await getProtocolContract(args.chainID, ProtocolContract.Accounting) as Accounting
-    if (accounting === null) return null
+    const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
 
     const sdi = await accounting.getSystemDebtInfo()
+
     return {
       debt: unscale(sdi.debt),
       totalTCPRewards: unscale(sdi.totalTCPRewards),
@@ -35,13 +36,15 @@ export const getSystemDebtInfo = createAsyncThunk(
   }
 )
 
-export const providerSlice = createSlice({
-  name: 'systemDebt',
-  initialState: initialState as SystemDebtInfoState,
+const name = 'systemDebt'
+
+export const systemDebtSlice = createSlice({
+  name,
+  initialState: getState<systemDebtInfo>(getLocalStorage(name, null)) as SystemDebtState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getSystemDebtInfo)
   },
-});
+})
 
-export default providerSlice.reducer;
+export default systemDebtSlice.reducer

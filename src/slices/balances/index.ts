@@ -1,15 +1,11 @@
 import { sliceState } from '../'
-import { ChainID } from '../chainID'
-import { ethers } from 'ethers'
-
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { unscale, uint255Max, bnf } from '../../utils'
-import getProvider from '../../utils/getProvider'
-import { Contract } from 'ethers'
-
 import { ERC20 } from "../../utils/typechain/ERC20"
-
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { ProtocolContract } from '../contracts'
+import { contract } from '../../utils/getContract'
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall/index'
 
 interface tokenInfo {
   address: string,
@@ -36,82 +32,90 @@ export interface balanceInfo {
 export interface balanceState extends sliceState<balanceInfo> {}
 
 export interface balanceArgs {
-  chainID: ChainID,
+  tokenAddress: string,
   userAddress: string,
 }
 
-export const getTokenBalanceThunk = (
-  _token: {tokenAddress?: string, contract?: ProtocolContract},
-  approvalsList: ProtocolContract[],
-  balancesList: ProtocolContract[],
-) => async (args: balanceArgs): Promise<balanceInfo | null> => await getTokenBalanceImpl(
-  _token,
-  approvalsList,
-  balancesList,
-  args,
-)
-
-export const getTokenBalanceImpl = async (
-  _token: {tokenAddress?: string, contract?: ProtocolContract},
-  approvalsList: ProtocolContract[],
-  balancesList: ProtocolContract[],
-  args: balanceArgs
+export const tokenBalanceThunk = async (
+  args: balanceArgs,
+  approvalsList: {contract: ProtocolContract, address: string}[],
+  balancesList: {contract: ProtocolContract, address: string}[],
 ) => {
-  const provider = getProvider()
-  if (provider === null) return null
-  let token: ERC20 | null = null
-  if (_token.tokenAddress) {
-    token = new ethers.Contract(_token.tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
-  } else if (_token.contract) {
-    token = await getProtocolContract(args.chainID, _token.contract) as unknown as ERC20 | null
-  }
-  if (token === null) return null
+  const token = contract<ERC20>(args.tokenAddress, erc20Artifact.abi)
 
-  const contractsMap: {[key in ProtocolContract]?: Contract | null} = {}
+  const approval: approval = {}
+  const balances: balances = {}
 
-  const onlyUnique = (value: ProtocolContract, index: number, self: ProtocolContract[]) => self.indexOf(value) === index
+  const basicInfo = getMulticall(
+    token,
+    {
+      name: mc.String,
+      symbol: mc.String,
+      decimals: mc.Number,
+    },
+  )
 
-  await Promise.all(
-    [...approvalsList, ...balancesList].filter(onlyUnique).map(async contract => {
-      contractsMap[contract] =
-        (await getProtocolContract(args.chainID, contract)) as unknown as Contract | null
-    }
-  ))
+  const approvals = getDuplicateFuncMulticall(
+    token,
+    'allowance',
+    mc.String,
+    Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
+  )
 
-  if (Object.values(contractsMap).includes(null)) return null
+  const result = await executeMulticalls({
+    basicInfo,
+    approvals,
+  })
 
-  let approval: approval = {}
-  let balances: balances = {}
-  const tokenInfo = await tokenAddressToTokenInfo(token.address, provider);
 
+    /*
+  const result8 = await executeMulticalls({
+  // const { basicInfo } = await executeMulticalls({
+    basicInfo: getMulticall3(
+      token,
+      {
+        name: Converter.String,
+        // symbol: mc.String,
+        decimals: Converter.Number,
+      },
+    ),
+  })
+    */
+
+    /*
+    approvals: getDuplicateFuncMulticall(
+      token,
+      'allowance',
+      mc.String,
+      Object.fromEntries(approvalsList.map(item => [item, [item.address, args.userAddress]]))
+    ),
+    */
+  })
+  // const basicInfo = basicInfoMulticall.getResult()
+  // const approvals = approvalsMulticall.getResult()
+
+
+  const tokenInfo = { ...basicInfo, address: token.address }
+
+  // TODO improve multicall
   const [
     _,
     __,
     userBalance,
   ] = await Promise.all([
-    Promise.all(balancesList.map(async (balanceContract) => {
-      balances[balanceContract] = unscale(await token!.balanceOf(contractsMap[balanceContract]!.address), tokenInfo.decimals)
-    })),
-    Promise.all(approvalsList.map(async (approvalContract) => {
-      const allowance = await token!.allowance(args.userAddress, contractsMap[approvalContract]!.address)
-      approval[approvalContract] = {
+    Promise.all(approvalsList.map(async item => {
+      const allowance = await token.allowance(args.userAddress, item.address)
+      approval[item.contract] = {
         allowance: allowance.toString(),
         approving: false,
         approved: allowance.gt(bnf(uint255Max))
       }
     })),
+    Promise.all(balancesList.map(async item => {
+      balances[item.contract] = unscale(await token!.balanceOf(item.address), tokenInfo.decimals)
+    })),
     token.balanceOf(args.userAddress),
   ])
 
   return { token: tokenInfo, userBalance: unscale(userBalance, tokenInfo.decimals), approval, balances}
-}
-
-const tokenAddressToTokenInfo = async (tokenAddress: string, provider: ethers.providers.Web3Provider) => {
-  const token = new ethers.Contract(tokenAddress, erc20Artifact.abi, provider) as unknown as ERC20
-  const [ name, symbol, decimals] = await Promise.all([
-    token.name(),
-    token.symbol(),
-    token.decimals(),
-  ])
-  return { address: tokenAddress, name, symbol, decimals }
 }

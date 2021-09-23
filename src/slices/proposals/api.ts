@@ -1,59 +1,59 @@
-import { BigNumber } from "ethers";
-import getProvider from '../../utils/getProvider'
-import { ChainID } from '../chainID';
-import { ProtocolContract, getProtocolContract } from '../../utils/protocolContracts';
-import { TCPGovernorAlpha } from "../../utils/typechain";
-import { unscale, zeroAddress } from "../../utils";
-import { Proposal, ProposalStates, proposalsInfo } from "./";
+import { BigNumber } from "ethers"
+import { TcpGovernorAlpha } from "../../utils/typechain"
+import { unscale, zeroAddress } from "../../utils"
+import { Proposal, ProposalStates, proposalsInfo } from "./"
+import { ProtocolContract } from '../contracts/index';
+import getContract from '../../utils/getContract'
+import { proposalsArgs } from './index';
 
 const convertStateIDToState = (stateID: number) => {
   switch(stateID) {
     case 0:
-      return ProposalStates.Pending;
+      return ProposalStates.Pending
     case 1:
-      return ProposalStates.Active;
+      return ProposalStates.Active
     case 2:
-      return ProposalStates.Canceled;
+      return ProposalStates.Canceled
     case 3:
-      return ProposalStates.Defeated;
+      return ProposalStates.Defeated
     case 4:
-      return ProposalStates.Succeeded;
+      return ProposalStates.Succeeded
     case 5:
-      return ProposalStates.Queued;
+      return ProposalStates.Queued
     case 6:
-      return ProposalStates.Expired;
+      return ProposalStates.Expired
     case 7:
-      return ProposalStates.Executed;
+      return ProposalStates.Executed
     default:
-      throw new Error('stateID not recognized');
+      throw new Error('stateID not recognized')
   }
 }
 
 interface RawProposal {
   proposal: {
-    id: number;
-    proposer: string;
-    eta: number;
-    targets: string[];
-    signatures: string[];
-    calldatas: string[];
-    startBlock: number;
-    endBlock: number;
-    forVotes: BigNumber;
-    againstVotes: BigNumber;
-    canceled: boolean;
-    executed: boolean;
+    id: number
+    proposer: string
+    eta: number
+    targets: string[]
+    signatures: string[]
+    calldatas: string[]
+    startBlock: number
+    endBlock: number
+    forVotes: BigNumber
+    againstVotes: BigNumber
+    canceled: boolean
+    executed: boolean
   },
   receipt: {
-    hasVoted: boolean;
-    support: boolean;
-    votes: BigNumber;
+    hasVoted: boolean
+    support: boolean
+    votes: BigNumber
   },
-  state: number;
-  voterAddress?: string;
-  votingPower: number;
+  state: number
+  voterAddress?: string
+  votingPower: number
 }
-  
+
 const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   proposal: {
     id: rawProposal.proposal.id,
@@ -81,22 +81,18 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   voterAddress: rawProposal.voterAddress,
 })
 
-export const genProposals = async (chainID: ChainID): Promise<{proposals: proposalsInfo} | null> => {
-  const provider = getProvider();
-  if (provider === null) return null;
-  const [userAddress, tcpGovernorAlpha] = await Promise.all([
-    provider.getSigner().getAddress(),
-    getProtocolContract(chainID, ProtocolContract.TCPGovernorAlpha),
-  ]);
-  const rawProposalData = await (tcpGovernorAlpha as TCPGovernorAlpha).getAllProposals(userAddress);
-  const haveUserAddress = userAddress !== zeroAddress;
-  
-  let _proposals = rawProposalData._proposals;
-  let _states = rawProposalData._proposalStates;
-  let _receipts = rawProposalData._receipts;
+export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
+  const tcpGovernorAlpha = getContract(args.TcpGovernorAlpha, ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
 
-  let _votingPower = new Array(_proposals.length).fill(0);
-  
+  const rawProposalData = await (tcpGovernorAlpha as TcpGovernorAlpha).getAllProposals(args.userAddress)
+  const haveUserAddress = args.userAddress !== zeroAddress
+
+  let _proposals = rawProposalData._proposals
+  let _states = rawProposalData._proposalStates
+  let _receipts = rawProposalData._receipts
+
+  let _votingPower = new Array(_proposals.length).fill(0)
+
   // This needs to be added once we have CNP, for now copied our old code
 
   /* if (haveUserAddress) {
@@ -109,27 +105,25 @@ export const genProposals = async (chainID: ChainID): Promise<{proposals: propos
       return unscale(votingPower)
     }))
   }
-  */ 
+  */
 
-  const proposals: Array<Proposal> = [];
+  const proposals: Array<Proposal> = []
   for (let i = 0; i < _proposals.length; i++) {
     const rawProposal = {
       proposal: _proposals[i],
       state: _states[i],
       receipt: _receipts[i],
-      voterAddress: haveUserAddress ? userAddress : undefined,
+      voterAddress: haveUserAddress ? args.userAddress : undefined,
       votingPower: _votingPower[i],
     }
-    proposals.push(rawProposalToProposal(rawProposal));
-  }
-  
-  const returnProposals = {} as proposalsInfo;
-  for (let i = 0; i < proposals.length; i++) {
-    const proposal = proposals[i];
-    returnProposals[proposal.proposal.id] = proposal;
+    proposals.push(rawProposalToProposal(rawProposal))
   }
 
-  return {
-    proposals: returnProposals,
+  const returnProposals = {} as proposalsInfo
+  for (let i = 0; i < proposals.length; i++) {
+    const proposal = proposals[i]
+    returnProposals[proposal.proposal.id] = proposal
   }
-};
+
+  return returnProposals
+}

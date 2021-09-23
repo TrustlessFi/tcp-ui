@@ -1,52 +1,58 @@
 import { Position } from './'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
+import { AppDispatch } from '../../app/store'
+import { waitForTransaction } from '../transactions'
+import { createPositionArgs } from './index'
+import getProvider from '../../utils/getProvider'
+import { UIID } from '../../constants'
+import { ProtocolContract } from '../contracts/index';
+import getContract from '../../utils/getContract'
+import { TransactionType } from '../transactions/index';
 
-import { Accounting } from '../../utils/typechain/Accounting'
-import { HuePositionNFT } from '../../utils/typechain/HuePositionNFT'
+import { Accounting, HuePositionNFT, Market } from '../../utils/typechain'
 
-export const fetchPositions = async (data: positionsArgs) => {
-  const accounting = await getProtocolContract(data.chainID, ProtocolContract.Accounting) as Accounting | null
-  const positionNFT = await getProtocolContract(data.chainID, ProtocolContract.HuePositionNFT) as HuePositionNFT | null
-  if (accounting === null || positionNFT === null) return null
+export const fetchPositions = async (args: positionsArgs) => {
+  const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
+  const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
 
   // fetch the positions
-  const positionIDs = await positionNFT.positionIDs(data.userAddress)
+  const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const marketLastUpdatePeriod = data.marketInfo.lastPeriodGlobalInterestAccrued
+  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
   const positions = await Promise.all(positionIDs.map(async (positionID) => {
-    const position = await accounting.getPosition(positionID);
+    const position = await accounting.getPosition(positionID)
 
-    let positionDebt = position.debt;
+    let positionDebt = position.debt
 
     // calcuate estimated position debt
-    if (!position.startDebtExchangeRate.eq(data.sdi.debtExchangeRate) && !position.startDebtExchangeRate.eq(0)) {
-      positionDebt = positionDebt.mul(scale(data.sdi.debtExchangeRate)).div(position.startDebtExchangeRate);
+    const debtExchangeRate  = scale(args.sdi.debtExchangeRate)
+    if (!position.startDebtExchangeRate.eq(0) && !position.startDebtExchangeRate.eq(debtExchangeRate)) {
+      positionDebt = positionDebt.mul(debtExchangeRate).div(position.startDebtExchangeRate)
     }
 
     // calcuate estimated borrow rewards
     let approximateRewards = BigNumber.from(0)
-    let lastTimeUpdated = position.lastTimeUpdated.toNumber()
-    let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, data.marketInfo.periodLength, data.marketInfo.firstPeriod)
+    const lastTimeUpdated = position.lastTimeUpdated.toNumber()
+    const lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
     if (lastPeriodUpdated < marketLastUpdatePeriod)   {
       let avgDebtPerPeriod =
-        scale(data.sdi.cumulativeDebt)
+        scale(args.sdi.cumulativeDebt)
           .sub(position.startCumulativeDebt)
           .div(marketLastUpdatePeriod - lastPeriodUpdated)
 
       if (!avgDebtPerPeriod.eq(0)) {
         approximateRewards =
           position.debt
-            .mul(scale(data.sdi.totalTCPRewards).sub(position.startTCPRewards))
+            .mul(scale(args.sdi.totalTCPRewards).sub(position.startTCPRewards))
             .div(avgDebtPerPeriod)
       }
     }
 
-    return {
+    const positionInfo = {
       collateralCount: unscale(position.collateral),
       debtCount: unscale(positionDebt),
       approximateRewards: Math.round(unscale(approximateRewards)),
@@ -56,10 +62,35 @@ export const fetchPositions = async (data: positionsArgs) => {
       updated: false,
       claimingRewards: false,
       claimedRewards: false,
-    } as Position;
-  }));
+    } as Position
+    return positionInfo
+  }))
 
-  let positionsMap: positionsInfo = {}
+  const positionsMap: positionsInfo = {}
   positions.forEach(position => positionsMap[position.id] = position)
-  return positionsMap;
+  return positionsMap
+}
+
+export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
+  const provider = getProvider()
+  const signer = provider.getSigner()
+  const userAddress = await signer.getAddress()
+
+  const market = getContract(args.Market, ProtocolContract.Market) as Market
+
+  const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
+    gasLimit: 1e10,
+    value: scale(args.collateralCount)
+  })
+  const hash = tx.hash
+
+  dispatch(waitForTransaction({
+    hash,
+    message: 'Create Position',
+    userAddress,
+    nonce: tx.nonce,
+    type: TransactionType.CreatePosition,
+  }))
+
+  return hash
 }

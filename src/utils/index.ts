@@ -1,5 +1,5 @@
 import { Token } from '@uniswap/sdk-core';
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber, BigNumberish, utils } from "ethers";
 //import { BigNumber as UniswapBigNumber } from "../components/uniswap/node_modules/@ethersproject/bignumber"
 
 import { USDC, USDT } from '../components/uniswap/src/constants/tokens';
@@ -19,21 +19,35 @@ export const log = (input: { base: number; val: number }) =>
 
 export const bnf = (val: BigNumberish) => BigNumber.from(val);
 
-export const scale = (_quantity: BigNumberish, decimals = 18): BigNumber => {
-  let quantity = bnf(_quantity)
-  while (decimals > 6) {
-    quantity = quantity.mul(1e6)
-    decimals -= 6
-  }
-  return quantity.mul(10**decimals)
+export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
+
+export const mnt = (quantity: number, decimals = 18): string => {
+  if (decimals < 6) throw new Error('too few decimals: ' + decimals)
+  return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
+
+export const numVal = (num: string | number): number => typeof num == 'string' ? parseInt(num) : num
+
+type direction = 'up' | 'down'
+
+export const onNumChange = (numChangeFunc: (val: number) => void) => (
+  _evt: React.ChangeEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement>,
+  direction: direction | {direction: direction, value: string | number } ,
+  value: number | string ,
+) => {
+  if (typeof direction === 'string') numChangeFunc(numVal(value))
+  else numChangeFunc(numVal(direction.value))
+}
+
+export const abbreviateAddress = (address: string) => address.substr(0, 6) + '...' + address.substr(address.length - 4, 4)
+
+export const toChecksumAddress = (address: string) => utils.getAddress(address)
 
 export const unscale = (quantity: BigNumber, decimals = 18): number => {
   const digits = quantity.toString().length
   let digitsToRemove = digits - 15
   if (digitsToRemove > decimals) {
-    console.log({quantity: quantity.toString(), decimals, digits})
-    throw 'number too large'
+    throw new Error('number too large')
   }
   while(digitsToRemove > 9) {
     quantity = quantity.div(1e9)
@@ -56,6 +70,8 @@ export const timeToPeriod = (time: number, periodLength: number, firstPeriod: nu
 }
 
 export const toInt = (val: number | string) => typeof val === 'number' ? val : parseInt(val)
+
+export const anyNull = (items: (any | null)[]) => items.some(item => item === null)
 
 // ======================= Number Display Utils ============================
 export const roundToXDecimals = (val: number, decimals: number = 0) =>
@@ -81,12 +97,8 @@ export const numDisplay = (
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967';
 
-
-
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
-
-
 
 // ======================= Uniswap Data Formatting ============================
 const symbolToTokenMap: { [key: string]: any } = {
@@ -138,3 +150,55 @@ export const formatPositionForUniswap = (position: LiquidityPosition): CombinedL
   tokensOwed0: position.tokensOwed0,
   tokensOwed1: position.tokensOwed1
 })
+export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
+
+export const enforce = (conditional: boolean, errorMessage: string) => {
+  if (!conditional) throw errorMessage
+}
+
+// ======================= Time ============================
+export const years = (years: number)     => years * days(365)
+export const weeks = (weeks: number)     => weeks * days(7)
+export const days = (days: number)       => days * hours(24)
+export const hours = (hours: number)     => hours * minutes(60)
+export const minutes = (minutes: number) => minutes * seconds(60)
+export const seconds = (seconds: number) => seconds
+
+export const timeMS = () => (new Date().getTime())
+
+export const timeS = () => Math.floor(timeMS() / 1000)
+
+// ======================= Local Storage ============================
+export const getLocalStorage = (key: string, defaultValue: any = null) => {
+  const rawValue = localStorage.getItem(key)
+
+  if (rawValue === null) {
+    return defaultValue
+  }
+
+  const sliceStateWithExpiration = JSON.parse(rawValue)
+
+  if (sliceStateWithExpiration.expiration < timeS()) {
+    localStorage.removeItem(key)
+    return defaultValue
+  }
+
+  return sliceStateWithExpiration.sliceState
+}
+
+export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
+
+export const first = <T>(array: Array<T>): T => {
+  enforce(array.length > 0, 'First for empty array')
+  return array[0]
+}
+
+export const last = <T>(array: Array<T>): T => {
+  enforce(array.length > 0, 'Last for empty array')
+  return array[array.length - 1]
+}
+
+
+export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
+
+// type PromiseType = PromiseType<typeof promisedOne> // => number
