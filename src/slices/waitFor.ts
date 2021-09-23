@@ -78,14 +78,10 @@ const getWaitFunction = <Args extends {}, Value>(
 
   if (Object.values(inputArgs).includes(null)) return null
 
-  console.log({stateSelector, thunk, fetchNodes, inputArgs})
-
   const error = state.data.error
   if (error !== null) {
     console.error(error.message)
     throw state.data.error
-    // throw new Error('message' + error.message + ' stack:' + error.stack)
-    // throw error.message
   }
 
   if (state.data.value === null && !stateSelector(store.getState()).loading) {
