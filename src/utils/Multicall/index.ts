@@ -1,17 +1,9 @@
 // Copyright (c) 2020. All Rights Reserved
 // SPDX-License-Identifier: UNLICENSED
 
-import { Web3Provider } from '@ethersproject/providers'
 import { Contract, utils as ethersUtils, ethers } from 'ethers'
-import { getAddress, rootContracts } from '../Addresses'
-
 import { enforce, first, unscale, PromiseType } from '../'
-import getProvider, { getChainID } from '../getProvider'
-import { contract as getContract } from '../getContract'
-
 import { TcpMulticallViewOnly, Accounting } from '../typechain'
-
-import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/core/auxiliary/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
 export const Number = (result: any) => result as number
 export const Boolean = (result: any) => result as boolean
@@ -114,7 +106,7 @@ export const executeMulticalls = async <
   const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
 
   console.log("before multicall execute")
-  const rawResults = await (tcpMulticall as unknown as TcpMulticallViewOnly).all(calls.map(
+  const rawResults = await tcpMulticall.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
   ))
   console.log("after multicall execute")
