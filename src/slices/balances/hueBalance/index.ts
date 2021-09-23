@@ -6,13 +6,14 @@ import { ProtocolContract } from '../../contracts'
 export type hueBalanceArgs = {
   Hue: string
   Market: string
+  TcpMulticall: string
   userAddress: string
 }
 
 export const getHueBalance = createAsyncThunk(
   'hueBalance/getBalances',
   async (args: hueBalanceArgs) => tokenBalanceThunk(
-    { tokenAddress: args.Hue, userAddress: args.userAddress},
+    { tokenAddress: args.Hue, userAddress: args.userAddress, TcpMulticall: args.TcpMulticall},
     [{contract: ProtocolContract.Market, address: args.Market}],
     [{contract: ProtocolContract.Hue, address: args.Hue}],
   ),

@@ -13,18 +13,19 @@ import { TransactionType } from '../transactions/index';
 import { getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall/index'
 
-import { Accounting, HuePositionNFT, Market } from '../../utils/typechain'
+import { Accounting, HuePositionNFT, Market, TcpMulticallViewOnly } from '../../utils/typechain'
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
+  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
   const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const { positions } = await executeMulticalls({
+  const { positions } = await executeMulticalls(tcpMulticall, {
     positions: getDuplicateFuncMulticall(
       accounting,
       'getPosition',
