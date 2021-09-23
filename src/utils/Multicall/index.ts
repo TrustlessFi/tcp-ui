@@ -89,16 +89,7 @@ export const getDuplicateFuncMulticall = <
       outputs,
       encoding,
     }]
-  })) as {[K in keyof SpecificCalls]: {
-    id: string,
-    contract: Contract,
-    func: string,
-    args: any[],
-    converter: ConverterType,
-    inputs: ethersUtils.ParamType[],
-    outputs?: ethersUtils.ParamType[],
-    encoding: string,
-  }}
+  })) as {[K in keyof SpecificCalls]: Call<ConverterType>}
 }
 
 export const executeMulticalls = async <
