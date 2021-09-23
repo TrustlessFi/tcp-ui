@@ -9,7 +9,6 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
-import { referenceTokensSlice, referenceTokens } from '../../slices/referenceTokens'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
@@ -21,7 +20,6 @@ type slicesState =
   marketInfo |
   pricesInfo |
   ratesInfo |
-  referenceTokens |
   systemDebtInfo |
   NotificationState |
   null
@@ -90,11 +88,6 @@ export const slicesToPersist: persistedSlices = {
     slice: ratesSlice,
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.rates.data.value
-  },
-  [referenceTokensSlice.name]: {
-    slice: referenceTokensSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.referenceTokens.data.value
   },
 }
 

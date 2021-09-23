@@ -4,8 +4,6 @@ import { AppSelector } from '../app/hooks'
 import { getGovernorInfo, governorInfo, governorArgs } from './governor'
 import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
-import { getReferenceTokens, referenceTokens, referenceTokenArgs } from './referenceTokens'
-import { getReferenceTokenBalances, referenceTokenBalances, referenceTokenBalancesArgs } from './balances/referenceTokenBalances'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
@@ -20,13 +18,12 @@ import { sliceState } from './'
 
 enum FetchNode {
   ChainID,
-  TokenAddresses,
-  UserAddress,
-  MarketInfo,
   GovernorInfo,
-  RatesInfo,
   LiquidationsInfo,
+  MarketInfo,
+  RatesInfo,
   SDI,
+  UserAddress,
 }
 
 const isProtocolContract = (s: string | number): s is ProtocolContract => s in ProtocolContract
@@ -39,20 +36,18 @@ const getNodeFetch = (
   switch(fetchNode) {
     case FetchNode.ChainID:
       return {chainID: selector(state => state.chainID.chainID)}
-    case FetchNode.TokenAddresses:
-      return {tokenAddresses: waitForReferenceTokens(selector, dispatch)}
-    case FetchNode.UserAddress:
-      return {userAddress: selector(state => state.wallet.address)}
-    case FetchNode.MarketInfo:
-      return {marketInfo: waitForMarket(selector, dispatch)}
     case FetchNode.GovernorInfo:
       return {governorInfo: waitForGovernor(selector, dispatch)}
-    case FetchNode.RatesInfo:
-      return {ratesInfo: waitForRates(selector, dispatch)}
     case FetchNode.LiquidationsInfo:
       return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
+    case FetchNode.MarketInfo:
+      return {marketInfo: waitForMarket(selector, dispatch)}
+    case FetchNode.RatesInfo:
+      return {ratesInfo: waitForRates(selector, dispatch)}
     case FetchNode.SDI:
       return {sdi: waitForSDI(selector, dispatch)}
+    case FetchNode.UserAddress:
+      return {userAddress: selector(state => state.wallet.address)}
 
     case ProtocolContract.Governor:
       return {[ProtocolContract.Governor]: waitForGovernorContract(selector, dispatch)}
@@ -155,12 +150,6 @@ export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
   [ProtocolContract.Accounting],
 )
 
-export const waitForReferenceTokens = getWaitFunction<referenceTokenArgs, referenceTokens>(
-  (state: RootState) => state.referenceTokens,
-  getReferenceTokens,
-  [ProtocolContract.Hue, FetchNode.RatesInfo],
-)
-
 export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getHueBalance,
@@ -171,10 +160,4 @@ export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balance
   (state: RootState) => state.hueBalance,
   getLendHueBalance,
   [ProtocolContract.LendHue, FetchNode.UserAddress, ProtocolContract.Market],
-)
-
-export const waitForReferenceTokenBalances = getWaitFunction<referenceTokenBalancesArgs, referenceTokenBalances>(
-  (state: RootState) => state.referenceTokenBalances,
-  getReferenceTokenBalances,
-  [FetchNode.TokenAddresses, ProtocolContract.Market, ProtocolContract.Accounting, FetchNode.UserAddress],
 )
