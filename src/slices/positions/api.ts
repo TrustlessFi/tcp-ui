@@ -35,8 +35,8 @@ export const fetchPositions = async (args: positionsArgs) => {
 
     // calcuate estimated borrow rewards
     let approximateRewards = BigNumber.from(0)
-    let lastTimeUpdated = position.lastTimeUpdated.toNumber()
-    let lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
+    const lastTimeUpdated = position.lastTimeUpdated.toNumber()
+    const lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
     if (lastPeriodUpdated < marketLastUpdatePeriod)   {
       let avgDebtPerPeriod =
