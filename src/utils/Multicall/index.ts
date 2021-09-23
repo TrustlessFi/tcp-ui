@@ -92,21 +92,16 @@ export const getDuplicateFuncMulticall = <
   })) as {[K in keyof SpecificCalls]: Call<ConverterType>}
 }
 
-
-/* TODO
-export const executeMulticall = async <
-  Functions extends {[key in string]: resultConverter}
->(
+export const executeMulticall = async <Functions extends {[key in string]: resultConverter}> (
   contract: Contract,
-  functions: Functions,
+  funcs: Functions,
   args?: {[key in keyof Functions]?: any[]},
   provider?: Web3Provider,
 ) => {
-  const multicall = getMulticall(contract, functions, args)
+  const multicall = getMulticall(contract, funcs, args)
 
-  (await executeMulticalls({aMulticall: functions}, provider)).aMulticall
+  return (await executeMulticalls({aMulticall: multicall}, provider)).aMulticall
 }
-*/
 
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
