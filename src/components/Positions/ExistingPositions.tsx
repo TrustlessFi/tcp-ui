@@ -1,11 +1,11 @@
 import { DataTableSkeleton, Button } from 'carbon-components-react'
-import AppTile from '../../library/AppTile'
-import { useAppDispatch, useAppSelector as selector } from '../../../app/hooks'
-import { editorOpened } from '../../../slices/positionsEditor'
-import { waitForPositions } from '../../../slices/waitFor'
-import Center from '../../library/Center'
-import SimpleTable from '../../library/SimpleTable'
-import { numDisplay } from '../../../utils'
+import AppTile from '../library/AppTile'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { editorOpened } from '../../slices/positionsEditor'
+import { waitForPositions } from '../../slices/waitFor'
+import Center from '../library/Center'
+import SimpleTable from '../library/SimpleTable'
+import { numDisplay } from '../../utils'
 
 const ExistingPositionsTable = () => {
   const headers = ['Position ID', 'Debt', 'Collateral']
