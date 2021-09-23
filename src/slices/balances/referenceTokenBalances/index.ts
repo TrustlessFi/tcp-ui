@@ -19,7 +19,7 @@ export interface ReferenceTokenBalancesState extends sliceState<referenceTokenBa
 export const getReferenceTokenBalances = createAsyncThunk(
   'referenceTokenBalances/getReferenceTokenBalances',
   async (args: referenceTokenBalancesArgs) => {
-    let data: referenceTokenBalances = {}
+    const data: referenceTokenBalances = {}
 
     await Promise.all(args.tokenAddresses.map(async tokenAddress => {
       const result = await tokenBalanceThunk(

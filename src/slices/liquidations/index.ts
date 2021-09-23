@@ -5,7 +5,7 @@ import getContract from '../../utils/getContract'
 import { Liquidations } from "../../utils/typechain/Liquidations"
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
-import Multicall from '../../utils/Multicall/index';
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
 
 export type liquidationsInfo = {
@@ -26,11 +26,15 @@ export const getLiquidationsInfo = createAsyncThunk(
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
 
-    return Multicall(liquidations).execute({
-      twapDuration: mc.Number,
-      discoveryIncentive: mc.BigNumberUnscale,
-      liquidationIncentive: mc.BigNumberUnscale,
-    })
+    return (await executeMulticalls({
+      info: getMulticall(liquidations,
+        {
+          twapDuration: mc.Number,
+          discoveryIncentive: mc.BigNumberUnscale,
+          liquidationIncentive: mc.BigNumberUnscale,
+        },
+      ),
+    })).info
   }
 )
 

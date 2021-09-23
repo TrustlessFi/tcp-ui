@@ -18,7 +18,7 @@ export const Boolean = (result: any) => result as boolean
 export const Address = (result: any) => result as string
 export const String = (result: any) => result as string
 export const StringArray = (result: any) => result as string[]
-export const BigNumber = (result: any) => result as ethers.BigNumber[]
+export const BigNumber = (result: any) => result as ethers.BigNumber
 export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
 export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
 export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
@@ -91,6 +91,22 @@ export const getDuplicateFuncMulticall = <
     }]
   })) as {[K in keyof SpecificCalls]: Call<ConverterType>}
 }
+
+
+/* TODO
+export const executeMulticall = async <
+  Functions extends {[key in string]: resultConverter}
+>(
+  contract: Contract,
+  functions: Functions,
+  args?: {[key in keyof Functions]?: any[]},
+  provider?: Web3Provider,
+) => {
+  const multicall = getMulticall(contract, functions, args)
+
+  (await executeMulticalls({aMulticall: functions}, provider)).aMulticall
+}
+*/
 
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
