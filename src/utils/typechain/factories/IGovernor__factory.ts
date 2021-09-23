@@ -498,7 +498,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IAuctions",
+        internalType: "address",
         name: "_auctions",
         type: "address",
       },
@@ -511,7 +511,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract ILiquidations",
+        internalType: "address",
         name: "_liquidations",
         type: "address",
       },
@@ -524,7 +524,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IMarket",
+        internalType: "address",
         name: "_market",
         type: "address",
       },
@@ -537,7 +537,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IPrices",
+        internalType: "address",
         name: "_prices",
         type: "address",
       },
@@ -563,7 +563,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IRates",
+        internalType: "address",
         name: "_rates",
         type: "address",
       },
@@ -576,7 +576,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IRewards",
+        internalType: "address",
         name: "_rewards",
         type: "address",
       },
@@ -589,7 +589,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract ISettlement",
+        internalType: "address",
         name: "_settlement",
         type: "address",
       },

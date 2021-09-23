@@ -80,38 +80,117 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
+        internalType: "uint64",
+        name: "extension",
+        type: "uint64",
       },
     ],
-    name: "ParameterUpdated",
+    name: "ExtensionPerBidUpdated",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
         internalType: "uint64",
-        name: "value",
+        name: "duration",
         type: "uint64",
       },
     ],
-    name: "ParameterUpdated64",
+    name: "MaxAuctionDurationUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "size",
+        type: "uint64",
+      },
+    ],
+    name: "MaxBatchSizeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "size",
+        type: "uint256",
+      },
+    ],
+    name: "MaxSurplusLotSizeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "duration",
+        type: "uint64",
+      },
+    ],
+    name: "MinAuctionDurationUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "delta",
+        type: "uint256",
+      },
+    ],
+    name: "MinBidDeltaUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "size",
+        type: "uint256",
+      },
+    ],
+    name: "MinLotSizeUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "bound",
+        type: "uint256",
+      },
+    ],
+    name: "ReservesBufferLowerBoundUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "bound",
+        type: "uint256",
+      },
+    ],
+    name: "ReservesBufferUpperBoundUpdated",
     type: "event",
   },
   {
@@ -181,6 +260,32 @@ const _abi = [
       },
     ],
     name: "SurplusAuctionStarted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "duration",
+        type: "uint32",
+      },
+    ],
+    name: "TwapDurationUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "size",
+        type: "uint256",
+      },
+    ],
+    name: "maxDeficitLotSizeUpdated",
     type: "event",
   },
   {

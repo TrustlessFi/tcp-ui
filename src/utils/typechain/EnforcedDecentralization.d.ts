@@ -24,9 +24,7 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     "blacklistAction(string)": FunctionFragment;
     "currentPhase()": FunctionFragment;
     "delayPhaseStartTime(uint8)": FunctionFragment;
-    "deployer()": FunctionFragment;
     "governor()": FunctionFragment;
-    "init(address)": FunctionFragment;
     "phaseInfo(uint8)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
@@ -46,9 +44,7 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     functionFragment: "delayPhaseStartTime",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "phaseInfo",
     values: [BigNumberish]
@@ -79,9 +75,7 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     functionFragment: "delayPhaseStartTime",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "phaseInfo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "requireValidAction",
@@ -99,7 +93,6 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
 
   events: {
     "ActionBlacklisted(string)": EventFragment;
-    "Initialized(address)": EventFragment;
     "PhaseOneStartTimeSet(uint64)": EventFragment;
     "PhaseStartDelayed(uint8,uint64,uint8)": EventFragment;
     "Stopped()": EventFragment;
@@ -107,7 +100,6 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "ActionBlacklisted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PhaseOneStartTimeSet"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PhaseStartDelayed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
@@ -170,14 +162,7 @@ export class EnforcedDecentralization extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
     governor(overrides?: CallOverrides): Promise<[string]>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -217,14 +202,7 @@ export class EnforcedDecentralization extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  deployer(overrides?: CallOverrides): Promise<string>;
-
   governor(overrides?: CallOverrides): Promise<string>;
-
-  init(
-    _governor: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   phaseInfo(
     arg0: BigNumberish,
@@ -264,11 +242,7 @@ export class EnforcedDecentralization extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    deployer(overrides?: CallOverrides): Promise<string>;
-
     governor(overrides?: CallOverrides): Promise<string>;
-
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -300,10 +274,6 @@ export class EnforcedDecentralization extends BaseContract {
     ActionBlacklisted(
       signature?: string | null
     ): TypedEventFilter<[string], { signature: string }>;
-
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
 
     PhaseOneStartTimeSet(
       startTime?: null
@@ -342,14 +312,7 @@ export class EnforcedDecentralization extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     governor(overrides?: CallOverrides): Promise<BigNumber>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -385,14 +348,7 @@ export class EnforcedDecentralization extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    init(
-      _governor: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
 
     phaseInfo(
       arg0: BigNumberish,

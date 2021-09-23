@@ -30,11 +30,10 @@ interface RewardsInterface extends ethers.utils.Interface {
     "currentPeriod()": FunctionFragment;
     "decreaseLiquidityPosition(tuple,uint32)": FunctionFragment;
     "deployer()": FunctionFragment;
-    "finalizeInitialization(address,address)": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
     "increaseLiquidityPosition(tuple,uint32)": FunctionFragment;
-    "init(address)": FunctionFragment;
+    "init(address,address)": FunctionFragment;
     "lastPeriodGlobalRewardsAccrued()": FunctionFragment;
     "liquidateOutofRangePositions(address,uint256[])": FunctionFragment;
     "liquidationPenalty()": FunctionFragment;
@@ -111,10 +110,6 @@ interface RewardsInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "finalizeInitialization",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "firstPeriod",
     values?: undefined
   ): string;
@@ -133,7 +128,10 @@ interface RewardsInterface extends ethers.utils.Interface {
       BigNumberish
     ]
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "init",
+    values: [string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "lastPeriodGlobalRewardsAccrued",
     values?: undefined
@@ -244,10 +242,6 @@ interface RewardsInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "finalizeInitialization",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "firstPeriod",
     data: BytesLike
   ): Result;
@@ -333,26 +327,24 @@ interface RewardsInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "Initialized(address)": EventFragment;
+    "LiquidationPenaltyUpdated(uint64)": EventFragment;
     "LiquidityPositionCreated(address,uint16,uint256,int24,int24,uint128)": EventFragment;
     "LiquidityPositionDecreased(uint256,uint256,uint256)": EventFragment;
     "LiquidityPositionIncreased(uint256,uint128)": EventFragment;
     "LiquidityPositionLiquidated(uint256,address)": EventFragment;
     "LiquidityPositionRemoved(uint256,uint256,uint256)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated128(string,uint256)": EventFragment;
-    "ParameterUpdated32(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint256)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
+    "MaxCollateralLiquidityDecreasePerPeriodUpdated(uint64)": EventFragment;
+    "MinHueCountPerPositionUpdated(uint128)": EventFragment;
     "PoolAdded(address,uint16,uint64)": EventFragment;
     "PoolIncentiveUpdated(uint16,uint64)": EventFragment;
     "RewardsAccrued(uint256,uint64)": EventFragment;
     "RewardsClaimed(address,uint256,uint256,uint256)": EventFragment;
     "RewardsDistributed(address,bool,uint256)": EventFragment;
     "Stopped()": EventFragment;
+    "TwapDurationUpdated(uint64)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "LiquidationPenaltyUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionDecreased"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionIncreased"): EventFragment;
@@ -360,17 +352,19 @@ interface RewardsInterface extends ethers.utils.Interface {
     nameOrSignatureOrTopic: "LiquidityPositionLiquidated"
   ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LiquidityPositionRemoved"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated128"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated32"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MaxCollateralLiquidityDecreasePerPeriodUpdated"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "MinHueCountPerPositionUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolAdded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PoolIncentiveUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsAccrued"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsClaimed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RewardsDistributed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
 }
 
 export class Rewards extends BaseContract {
@@ -471,12 +465,6 @@ export class Rewards extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<[string]>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _protocolPool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
@@ -495,7 +483,8 @@ export class Rewards extends BaseContract {
     ): Promise<ContractTransaction>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -640,12 +629,6 @@ export class Rewards extends BaseContract {
 
   deployer(overrides?: CallOverrides): Promise<string>;
 
-  finalizeInitialization(
-    _collateralPool: string,
-    _protocolPool: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
@@ -664,7 +647,8 @@ export class Rewards extends BaseContract {
   ): Promise<ContractTransaction>;
 
   init(
-    _governor: string,
+    _collateralPool: string,
+    _protocolPool: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -809,12 +793,6 @@ export class Rewards extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<string>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _protocolPool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
@@ -832,7 +810,11 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
+    init(
+      _collateralPool: string,
+      _protocolPool: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     lastPeriodGlobalRewardsAccrued(
       overrides?: CallOverrides
@@ -924,9 +906,9 @@ export class Rewards extends BaseContract {
   };
 
   filters: {
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
+    LiquidationPenaltyUpdated(
+      penalty?: null
+    ): TypedEventFilter<[BigNumber], { penalty: BigNumber }>;
 
     LiquidityPositionCreated(
       owner?: string | null,
@@ -981,42 +963,13 @@ export class Rewards extends BaseContract {
       { nftID: BigNumber; amount0: BigNumber; amount1: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxCollateralLiquidityDecreasePerPeriodUpdated(
+      decreasePortion?: null
+    ): TypedEventFilter<[BigNumber], { decreasePortion: BigNumber }>;
 
-    ParameterUpdated128(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated32(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
-
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<[string, string], { paramName: string; value: string }>;
+    MinHueCountPerPositionUpdated(
+      min?: null
+    ): TypedEventFilter<[BigNumber], { min: BigNumber }>;
 
     PoolAdded(
       pool?: string | null,
@@ -1068,6 +1021,10 @@ export class Rewards extends BaseContract {
     >;
 
     Stopped(): TypedEventFilter<[], {}>;
+
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
   };
 
   estimateGas: {
@@ -1123,12 +1080,6 @@ export class Rewards extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _protocolPool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1147,7 +1098,8 @@ export class Rewards extends BaseContract {
     ): Promise<BigNumber>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1289,12 +1241,6 @@ export class Rewards extends BaseContract {
 
     deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    finalizeInitialization(
-      _collateralPool: string,
-      _protocolPool: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -1313,7 +1259,8 @@ export class Rewards extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     init(
-      _governor: string,
+      _collateralPool: string,
+      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

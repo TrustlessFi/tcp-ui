@@ -238,42 +238,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "contract IGovernor",
-        name: "governor_",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "admin_",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "preLaunchAdmin_",
-        type: "address",
-      },
-    ],
-    name: "completeSetup",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "currentAdmin",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [],
     name: "delay",
     outputs: [
@@ -281,6 +245,19 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "deployer",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",
@@ -322,20 +299,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "governor",
-    outputs: [
-      {
-        internalType: "contract IGovernor",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "preLaunchAdmin",
+    name: "getAdmin",
     outputs: [
       {
         internalType: "address",
@@ -344,6 +308,19 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_admin",
+        type: "address",
+      },
+    ],
+    name: "init",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -410,25 +387,6 @@ const _abi = [
     name: "setDelay",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes4",
-        name: "action",
-        type: "bytes4",
-      },
-    ],
-    name: "validUpdate",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "pure",
     type: "function",
   },
 ];

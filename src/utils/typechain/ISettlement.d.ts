@@ -56,8 +56,8 @@ interface ISettlementInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
+    "EthPriceProviderUpdated(address)": EventFragment;
     "NoConfidenceConfirmed(address)": EventFragment;
-    "ParameterUpdatedAddress(string,address)": EventFragment;
     "SettlementCollateralForHue(uint64,address,uint256,uint256)": EventFragment;
     "SettlementInitialized(uint256)": EventFragment;
     "SettlementWithdrawCollateral(uint64,address,uint256)": EventFragment;
@@ -65,8 +65,8 @@ interface ISettlementInterface extends ethers.utils.Interface {
     "UnstakedNoConfidenceTokens(address,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "EthPriceProviderUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NoConfidenceConfirmed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdatedAddress"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SettlementCollateralForHue"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SettlementInitialized"): EventFragment;
   getEvent(
@@ -174,17 +174,13 @@ export class ISettlement extends BaseContract {
   };
 
   filters: {
+    EthPriceProviderUpdated(
+      provider?: null
+    ): TypedEventFilter<[string], { provider: string }>;
+
     NoConfidenceConfirmed(
       account?: string | null
     ): TypedEventFilter<[string], { account: string }>;
-
-    ParameterUpdatedAddress(
-      paramName?: string | null,
-      _address?: string | null
-    ): TypedEventFilter<
-      [string, string],
-      { paramName: string; _address: string }
-    >;
 
     SettlementCollateralForHue(
       positionID?: BigNumberish | null,

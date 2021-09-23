@@ -26,12 +26,12 @@ interface TcpTimelockInterface extends ethers.utils.Interface {
     "MINIMUM_DELAY()": FunctionFragment;
     "admin()": FunctionFragment;
     "cancelTransaction(address,string,bytes,uint256)": FunctionFragment;
-    "completeSetup(address,address,address)": FunctionFragment;
-    "currentAdmin()": FunctionFragment;
     "delay()": FunctionFragment;
+    "deployer()": FunctionFragment;
     "executeTransaction(address,string,bytes,uint256)": FunctionFragment;
-    "governor()": FunctionFragment;
-    "preLaunchAdmin()": FunctionFragment;
+    "getAdmin()": FunctionFragment;
+    "guardian()": FunctionFragment;
+    "init(address)": FunctionFragment;
     "queueTransaction(address,string,bytes,uint256)": FunctionFragment;
     "queuedTransactions(bytes32)": FunctionFragment;
     "setDelay(uint256)": FunctionFragment;
@@ -55,24 +55,15 @@ interface TcpTimelockInterface extends ethers.utils.Interface {
     functionFragment: "cancelTransaction",
     values: [string, string, BytesLike, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "completeSetup",
-    values: [string, string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "currentAdmin",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "delay", values?: undefined): string;
+  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "executeTransaction",
     values: [string, string, BytesLike, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "governor", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "preLaunchAdmin",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "getAdmin", values?: undefined): string;
+  encodeFunctionData(functionFragment: "guardian", values?: undefined): string;
+  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "queueTransaction",
     values: [string, string, BytesLike, BigNumberish]
@@ -107,24 +98,15 @@ interface TcpTimelockInterface extends ethers.utils.Interface {
     functionFragment: "cancelTransaction",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "completeSetup",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "currentAdmin",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "delay", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "executeTransaction",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "preLaunchAdmin",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "getAdmin", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "guardian", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "queueTransaction",
     data: BytesLike
@@ -216,16 +198,9 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    completeSetup(
-      governor_: string,
-      admin_: string,
-      preLaunchAdmin_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    currentAdmin(overrides?: CallOverrides): Promise<[string]>;
-
     delay(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    deployer(overrides?: CallOverrides): Promise<[string]>;
 
     executeTransaction(
       target: string,
@@ -235,9 +210,14 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    governor(overrides?: CallOverrides): Promise<[string]>;
+    getAdmin(overrides?: CallOverrides): Promise<[string]>;
 
-    preLaunchAdmin(overrides?: CallOverrides): Promise<[string]>;
+    guardian(overrides?: CallOverrides): Promise<[string]>;
+
+    init(
+      _admin: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     queueTransaction(
       target: string,
@@ -279,16 +259,9 @@ export class TcpTimelock extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  completeSetup(
-    governor_: string,
-    admin_: string,
-    preLaunchAdmin_: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  currentAdmin(overrides?: CallOverrides): Promise<string>;
-
   delay(overrides?: CallOverrides): Promise<BigNumber>;
+
+  deployer(overrides?: CallOverrides): Promise<string>;
 
   executeTransaction(
     target: string,
@@ -298,9 +271,14 @@ export class TcpTimelock extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  governor(overrides?: CallOverrides): Promise<string>;
+  getAdmin(overrides?: CallOverrides): Promise<string>;
 
-  preLaunchAdmin(overrides?: CallOverrides): Promise<string>;
+  guardian(overrides?: CallOverrides): Promise<string>;
+
+  init(
+    _admin: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   queueTransaction(
     target: string,
@@ -339,16 +317,9 @@ export class TcpTimelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    completeSetup(
-      governor_: string,
-      admin_: string,
-      preLaunchAdmin_: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    currentAdmin(overrides?: CallOverrides): Promise<string>;
-
     delay(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deployer(overrides?: CallOverrides): Promise<string>;
 
     executeTransaction(
       target: string,
@@ -358,9 +329,11 @@ export class TcpTimelock extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    governor(overrides?: CallOverrides): Promise<string>;
+    getAdmin(overrides?: CallOverrides): Promise<string>;
 
-    preLaunchAdmin(overrides?: CallOverrides): Promise<string>;
+    guardian(overrides?: CallOverrides): Promise<string>;
+
+    init(_admin: string, overrides?: CallOverrides): Promise<void>;
 
     queueTransaction(
       target: string,
@@ -462,16 +435,9 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    completeSetup(
-      governor_: string,
-      admin_: string,
-      preLaunchAdmin_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    currentAdmin(overrides?: CallOverrides): Promise<BigNumber>;
-
     delay(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deployer(overrides?: CallOverrides): Promise<BigNumber>;
 
     executeTransaction(
       target: string,
@@ -481,9 +447,14 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    governor(overrides?: CallOverrides): Promise<BigNumber>;
+    getAdmin(overrides?: CallOverrides): Promise<BigNumber>;
 
-    preLaunchAdmin(overrides?: CallOverrides): Promise<BigNumber>;
+    guardian(overrides?: CallOverrides): Promise<BigNumber>;
+
+    init(
+      _admin: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     queueTransaction(
       target: string,
@@ -526,16 +497,9 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    completeSetup(
-      governor_: string,
-      admin_: string,
-      preLaunchAdmin_: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    currentAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     delay(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     executeTransaction(
       target: string,
@@ -545,9 +509,14 @@ export class TcpTimelock extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    preLaunchAdmin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    guardian(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    init(
+      _admin: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     queueTransaction(
       target: string,

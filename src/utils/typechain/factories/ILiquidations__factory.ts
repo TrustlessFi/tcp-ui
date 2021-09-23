@@ -31,6 +31,19 @@ const _abi = [
     inputs: [
       {
         indexed: false,
+        internalType: "uint64",
+        name: "incentive",
+        type: "uint64",
+      },
+    ],
+    name: "DiscoveryIncentiveUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "uint256",
         name: "baseTokensToRepay",
         type: "uint256",
@@ -49,38 +62,39 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
+        internalType: "uint64",
+        name: "incentive",
+        type: "uint64",
       },
     ],
-    name: "ParameterUpdated",
+    name: "LiquidationIncentiveUpdated",
     type: "event",
   },
   {
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
-        internalType: "uint32",
-        name: "value",
-        type: "uint32",
+        internalType: "uint64",
+        name: "ratio",
+        type: "uint64",
       },
     ],
-    name: "ParameterUpdated32",
+    name: "MaxRewardsRatioUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "incentive",
+        type: "uint64",
+      },
+    ],
+    name: "MinLiquidationIncentiveUpdated",
     type: "event",
   },
   {
@@ -112,6 +126,19 @@ const _abi = [
       },
     ],
     name: "UndercollatPositionDiscovered",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "duration",
+        type: "uint32",
+      },
+    ],
+    name: "twapDurationUpdated",
     type: "event",
   },
   {

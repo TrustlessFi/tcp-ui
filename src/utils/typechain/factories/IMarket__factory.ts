@@ -11,6 +11,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "requirement",
+        type: "uint256",
+      },
+    ],
+    name: "CollateralizationRequirementUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "uint64",
         name: "period",
@@ -54,6 +67,19 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "percentage",
+        type: "uint256",
+      },
+    ],
+    name: "InterestPortionToLendersUpdated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "account",
@@ -79,57 +105,13 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
         indexed: false,
         internalType: "uint256",
-        name: "value",
+        name: "size",
         type: "uint256",
       },
     ],
-    name: "ParameterUpdated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "uint64",
-        name: "value",
-        type: "uint64",
-      },
-    ],
-    name: "ParameterUpdated64",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "string",
-        name: "paramName",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "value",
-        type: "address",
-      },
-    ],
-    name: "ParameterUpdatedAddress",
+    name: "MinPositionSizeUpdated",
     type: "event",
   },
   {
@@ -242,6 +224,19 @@ const _abi = [
       },
     ],
     name: "RewardsDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint32",
+        name: "duration",
+        type: "uint32",
+      },
+    ],
+    name: "TwapDurationUpdated",
     type: "event",
   },
   {

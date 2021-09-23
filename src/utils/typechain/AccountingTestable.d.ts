@@ -44,7 +44,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "increaseDebt(uint256)": FunctionFragment;
     "increaseLentHue(uint256)": FunctionFragment;
     "increasePoolLiquidity(address,uint256)": FunctionFragment;
-    "init(address)": FunctionFragment;
+    "init()": FunctionFragment;
     "lentHue()": FunctionFragment;
     "nextUserInterfaceID()": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
@@ -151,7 +151,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     functionFragment: "increasePoolLiquidity",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
+  encodeFunctionData(functionFragment: "init", values?: undefined): string;
   encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "nextUserInterfaceID",
@@ -421,7 +421,6 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
 
   events: {
     "DebtPositionIndexingDisabled()": EventFragment;
-    "Initialized(address)": EventFragment;
     "PoolPositionIndexingDisabled()": EventFragment;
     "Stopped()": EventFragment;
     "UIsApproved(uint32[])": EventFragment;
@@ -431,7 +430,6 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   getEvent(
     nameOrSignatureOrTopic: "DebtPositionIndexingDisabled"
   ): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "PoolPositionIndexingDisabled"
   ): EventFragment;
@@ -749,7 +747,6 @@ export class AccountingTestable extends BaseContract {
     ): Promise<ContractTransaction>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -1081,7 +1078,6 @@ export class AccountingTestable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   init(
-    _governor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1400,7 +1396,7 @@ export class AccountingTestable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
+    init(overrides?: CallOverrides): Promise<void>;
 
     lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1535,10 +1531,6 @@ export class AccountingTestable extends BaseContract {
   filters: {
     DebtPositionIndexingDisabled(): TypedEventFilter<[], {}>;
 
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
-
     PoolPositionIndexingDisabled(): TypedEventFilter<[], {}>;
 
     Stopped(): TypedEventFilter<[], {}>;
@@ -1653,7 +1645,6 @@ export class AccountingTestable extends BaseContract {
     ): Promise<BigNumber>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1892,7 +1883,6 @@ export class AccountingTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

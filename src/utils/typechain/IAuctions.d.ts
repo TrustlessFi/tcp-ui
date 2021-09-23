@@ -41,21 +41,43 @@ interface IAuctionsInterface extends ethers.utils.Interface {
     "DeficitAuctionBid(uint64,address,uint256)": EventFragment;
     "DeficitAuctionSettled(uint64,address)": EventFragment;
     "DeficitAuctionStarted(uint64,uint256,uint64)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
-    "ParameterUpdated64(string,uint64)": EventFragment;
+    "ExtensionPerBidUpdated(uint64)": EventFragment;
+    "MaxAuctionDurationUpdated(uint64)": EventFragment;
+    "MaxBatchSizeUpdated(uint64)": EventFragment;
+    "MaxSurplusLotSizeUpdated(uint256)": EventFragment;
+    "MinAuctionDurationUpdated(uint64)": EventFragment;
+    "MinBidDeltaUpdated(uint256)": EventFragment;
+    "MinLotSizeUpdated(uint256)": EventFragment;
+    "ReservesBufferLowerBoundUpdated(uint256)": EventFragment;
+    "ReservesBufferUpperBoundUpdated(uint256)": EventFragment;
     "SurplusAuctionBid(uint64,address,uint256)": EventFragment;
     "SurplusAuctionSettled(uint64,address)": EventFragment;
     "SurplusAuctionStarted(uint64,uint256,uint64)": EventFragment;
+    "TwapDurationUpdated(uint32)": EventFragment;
+    "maxDeficitLotSizeUpdated(uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionBid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionSettled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "DeficitAuctionStarted"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated64"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ExtensionPerBidUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxAuctionDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxBatchSizeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MaxSurplusLotSizeUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinAuctionDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinBidDeltaUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MinLotSizeUpdated"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "ReservesBufferLowerBoundUpdated"
+  ): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "ReservesBufferUpperBoundUpdated"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionBid"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionSettled"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SurplusAuctionStarted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TwapDurationUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "maxDeficitLotSizeUpdated"): EventFragment;
 }
 
 export class IAuctions extends BaseContract {
@@ -150,21 +172,41 @@ export class IAuctions extends BaseContract {
       { auctionID: BigNumber; count: BigNumber; maxEndTime: BigNumber }
     >;
 
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    ExtensionPerBidUpdated(
+      extension?: null
+    ): TypedEventFilter<[BigNumber], { extension: BigNumber }>;
 
-    ParameterUpdated64(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
-    >;
+    MaxAuctionDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
+
+    MaxBatchSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    MaxSurplusLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    MinAuctionDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[BigNumber], { duration: BigNumber }>;
+
+    MinBidDeltaUpdated(
+      delta?: null
+    ): TypedEventFilter<[BigNumber], { delta: BigNumber }>;
+
+    MinLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
+
+    ReservesBufferLowerBoundUpdated(
+      bound?: null
+    ): TypedEventFilter<[BigNumber], { bound: BigNumber }>;
+
+    ReservesBufferUpperBoundUpdated(
+      bound?: null
+    ): TypedEventFilter<[BigNumber], { bound: BigNumber }>;
 
     SurplusAuctionBid(
       auctionID?: BigNumberish | null,
@@ -191,6 +233,14 @@ export class IAuctions extends BaseContract {
       [BigNumber, BigNumber, BigNumber],
       { auctionID: BigNumber; count: BigNumber; maxEndTime: BigNumber }
     >;
+
+    TwapDurationUpdated(
+      duration?: null
+    ): TypedEventFilter<[number], { duration: number }>;
+
+    maxDeficitLotSizeUpdated(
+      size?: null
+    ): TypedEventFilter<[BigNumber], { size: BigNumber }>;
   };
 
   estimateGas: {

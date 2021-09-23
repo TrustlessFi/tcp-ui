@@ -28,11 +28,9 @@ interface HueInterface extends ethers.utils.Interface {
     "burnReserves(uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
-    "deployer()": FunctionFragment;
     "distributeReserves(address,uint256)": FunctionFragment;
     "governor()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "init(address)": FunctionFragment;
     "mintTo(address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "reserves()": FunctionFragment;
@@ -66,7 +64,6 @@ interface HueInterface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "deployer", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "distributeReserves",
     values: [string, BigNumberish]
@@ -76,7 +73,6 @@ interface HueInterface extends ethers.utils.Interface {
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "init", values: [string]): string;
   encodeFunctionData(
     functionFragment: "mintTo",
     values: [string, BigNumberish]
@@ -115,7 +111,6 @@ interface HueInterface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "deployer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "distributeReserves",
     data: BytesLike
@@ -125,7 +120,6 @@ interface HueInterface extends ethers.utils.Interface {
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mintTo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "reserves", data: BytesLike): Result;
@@ -147,15 +141,11 @@ interface HueInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "Initialized(address)": EventFragment;
-    "ParameterUpdated(string,uint256)": EventFragment;
     "Stopped()": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ParameterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Stopped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
@@ -237,8 +227,6 @@ export class Hue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<[string]>;
-
     distributeReserves(
       dest: string,
       count: BigNumberish,
@@ -250,11 +238,6 @@ export class Hue extends BaseContract {
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -323,8 +306,6 @@ export class Hue extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  deployer(overrides?: CallOverrides): Promise<string>;
-
   distributeReserves(
     dest: string,
     count: BigNumberish,
@@ -336,11 +317,6 @@ export class Hue extends BaseContract {
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  init(
-    _governor: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -406,8 +382,6 @@ export class Hue extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    deployer(overrides?: CallOverrides): Promise<string>;
-
     distributeReserves(
       dest: string,
       count: BigNumberish,
@@ -421,8 +395,6 @@ export class Hue extends BaseContract {
       addedValue: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    init(_governor: string, overrides?: CallOverrides): Promise<void>;
 
     mintTo(
       dest: string,
@@ -464,18 +436,6 @@ export class Hue extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
-    >;
-
-    Initialized(
-      governor?: string | null
-    ): TypedEventFilter<[string], { governor: string }>;
-
-    ParameterUpdated(
-      paramName?: string | null,
-      value?: null
-    ): TypedEventFilter<
-      [string, BigNumber],
-      { paramName: string; value: BigNumber }
     >;
 
     Stopped(): TypedEventFilter<[], {}>;
@@ -524,8 +484,6 @@ export class Hue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    deployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     distributeReserves(
       dest: string,
       count: BigNumberish,
@@ -537,11 +495,6 @@ export class Hue extends BaseContract {
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -614,8 +567,6 @@ export class Hue extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    deployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     distributeReserves(
       dest: string,
       count: BigNumberish,
@@ -627,11 +578,6 @@ export class Hue extends BaseContract {
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    init(
-      _governor: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -116,7 +116,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract ITokenLockDao",
+        internalType: "address",
         name: "_dao",
         type: "address",
       },

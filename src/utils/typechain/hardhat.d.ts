@@ -41,10 +41,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
     getContractFactory(
-      name: "ERC721Burnable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721Burnable__factory>;
-    getContractFactory(
       name: "IERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721__factory>;
@@ -185,9 +181,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Tcp__factory>;
     getContractFactory(
-      name: "TCPGovernorAlpha",
+      name: "TcpGovernorAlpha",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TCPGovernorAlpha__factory>;
+    ): Promise<Contracts.TcpGovernorAlpha__factory>;
     getContractFactory(
       name: "TcpTimelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -208,6 +204,10 @@ declare module "hardhat/types/runtime" {
       name: "IEnforcedDecentralization",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IEnforcedDecentralization__factory>;
+    getContractFactory(
+      name: "IExecutor",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IExecutor__factory>;
     getContractFactory(
       name: "IGovernor",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -381,13 +381,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Governed__factory>;
     getContractFactory(
+      name: "LocksProtocol",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.LocksProtocol__factory>;
+    getContractFactory(
       name: "ProtocolLock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ProtocolLock__factory>;
     getContractFactory(
-      name: "TCPSafeMath",
+      name: "TcpSafeMath",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TCPSafeMath__factory>;
+    ): Promise<Contracts.TcpSafeMath__factory>;
     getContractFactory(
       name: "PeriodTime",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -489,13 +493,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StaleMockPriceAggregator__factory>;
     getContractFactory(
-      name: "TCPSafeCastTestable",
+      name: "TcpMulticall",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TCPSafeCastTestable__factory>;
+    ): Promise<Contracts.TcpMulticall__factory>;
     getContractFactory(
-      name: "TCPSafeMathTestable",
+      name: "TcpMulticallViewOnly",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TCPSafeMathTestable__factory>;
+    ): Promise<Contracts.TcpMulticallViewOnly__factory>;
+    getContractFactory(
+      name: "TcpSafeCastTestable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpSafeCastTestable__factory>;
+    getContractFactory(
+      name: "TcpSafeMathTestable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpSafeMathTestable__factory>;
     getContractFactory(
       name: "TDaoTestable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -813,6 +825,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TickLens__factory>;
     getContractFactory(
+      name: "UniswapInterfaceMulticall",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UniswapInterfaceMulticall__factory>;
+    getContractFactory(
       name: "NFTDescriptor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NFTDescriptor__factory>;
@@ -912,6 +928,10 @@ declare module "hardhat/types/runtime" {
       name: "TickLensTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TickLensTest__factory>;
+    getContractFactory(
+      name: "WeightedOracleTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WeightedOracleTest__factory>;
     getContractFactory(
       name: "V3Migrator",
       signerOrOptions?: ethers.Signer | FactoryOptions

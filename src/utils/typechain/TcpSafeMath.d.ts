@@ -18,7 +18,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface TCPSafeMathInterface extends ethers.utils.Interface {
+interface TcpSafeMathInterface extends ethers.utils.Interface {
   functions: {
     "ONE()": FunctionFragment;
   };
@@ -30,7 +30,7 @@ interface TCPSafeMathInterface extends ethers.utils.Interface {
   events: {};
 }
 
-export class TCPSafeMath extends BaseContract {
+export class TcpSafeMath extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -71,7 +71,7 @@ export class TCPSafeMath extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: TCPSafeMathInterface;
+  interface: TcpSafeMathInterface;
 
   functions: {
     ONE(overrides?: CallOverrides): Promise<[BigNumber]>;
