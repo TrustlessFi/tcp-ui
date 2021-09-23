@@ -5,11 +5,11 @@ import { Web3Provider } from '@ethersproject/providers'
 import { Contract, utils as ethersUtils, ethers } from 'ethers'
 import { getAddress, rootContracts } from '../Addresses'
 
-import { enforce, first, unscale } from '../'
+import { enforce, first, unscale, PromiseType } from '../'
 import getProvider, { getChainID } from '../getProvider'
 import { contract as getContract } from '../getContract'
 
-import { TcpMulticallViewOnly } from '../typechain'
+import { TcpMulticallViewOnly, Accounting } from '../typechain'
 
 import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/core/auxiliary/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json'
 
@@ -22,6 +22,7 @@ export const BigNumber = (result: any) => result as ethers.BigNumber
 export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
 export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
 export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
+export const PositionData = (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>
 
 type resultConverter =
   typeof Number |
@@ -31,7 +32,8 @@ type resultConverter =
   typeof StringArray |
   typeof BigNumber |
   typeof BigNumberToNumber |
-  typeof BigNumberUnscale
+  typeof BigNumberUnscale |
+  typeof PositionData
 
 interface Call<CallType extends resultConverter> {
   id: string
@@ -109,6 +111,8 @@ export const executeMulticalls = async <
   multicalls: Multicalls,
   provider?: Web3Provider,
 ) => {
+  let multikey = ''
+  Object.keys(multicalls).map(key => multikey += key)
   const multicallContract = getContract<TcpMulticallViewOnly>(
     getAddress(await getChainID(), rootContracts.TcpMulticall),
     tcpMulticallViewOnlyArtifact.abi,
@@ -126,8 +130,11 @@ export const executeMulticalls = async <
     rawResults.returnData.map((rawResult, index) => {
       const call = calls[index]
       const resultsArray = Object.values(abiCoder.decode(call.outputs!, rawResult))
+
       // TODO as needed: support more than one result
-      enforce(resultsArray.length === 1, 'More than one result')
+      const countResults = resultsArray.length
+      if (countResults > 1) console.warn('multicall ' + call.id + ' (' + call.func + ') has ' + countResults + ' results')
+
       return [call.id, call.converter(first(resultsArray))]
     })
   )

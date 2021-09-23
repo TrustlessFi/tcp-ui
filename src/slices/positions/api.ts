@@ -10,6 +10,8 @@ import { UIID } from '../../constants'
 import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
 import { TransactionType } from '../transactions/index';
+import { getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
+import * as mc from '../../utils/Multicall/index'
 
 import { Accounting, HuePositionNFT, Market } from '../../utils/typechain'
 
@@ -17,13 +19,22 @@ export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
 
+  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
+
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
+  const { positions } = await executeMulticalls({
+    positions: getDuplicateFuncMulticall(
+      accounting,
+      'getPosition',
+      mc.PositionData,
+      Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
+    ),
+  })
 
-  const positions = await Promise.all(positionIDs.map(async (positionID) => {
-    const position = await accounting.getPosition(positionID)
+  const positionsInfo = positionIDs.map((positionID) => {
+    const position = positions[positionID.toString()]
 
     let positionDebt = position.debt
 
@@ -52,7 +63,7 @@ export const fetchPositions = async (args: positionsArgs) => {
       }
     }
 
-    const positionInfo = {
+    return {
       collateralCount: unscale(position.collateral),
       debtCount: unscale(positionDebt),
       approximateRewards: Math.round(unscale(approximateRewards)),
@@ -63,11 +74,10 @@ export const fetchPositions = async (args: positionsArgs) => {
       claimingRewards: false,
       claimedRewards: false,
     } as Position
-    return positionInfo
-  }))
+  })
 
   const positionsMap: positionsInfo = {}
-  positions.forEach(position => positionsMap[position.id] = position)
+  positionsInfo.forEach(positionInfo => positionsMap[positionInfo.id] = positionInfo)
   return positionsMap
 }
 
