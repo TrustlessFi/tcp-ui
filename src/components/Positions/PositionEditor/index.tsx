@@ -77,22 +77,25 @@ const CreatePositionPage = () => {
 const UpdatePositionPage = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()
 
-  const positions = waitForPositions(selector, dispatch)
   const governor = waitForGovernor(selector, dispatch)
   const liquidations = waitForLiquidations(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
-  const rates = waitForRates(selector, dispatch)
+  const positions = waitForPositions(selector, dispatch)
   const prices = waitForPrices(selector, dispatch)
+  const rates = waitForRates(selector, dispatch)
 
   // const [collateralIncrease, setCollateralIncrease] = useState(0)
   // const [debtIncrease, setDebtIncrease] = useState(0)
 
+  console.log({governor, liquidations, market, positions, prices, rates})
  if (
     governor === null ||
-    market === null ||
     liquidations === null ||
-    rates === null ||
-    prices === null) {
+    market === null ||
+    positions === null ||
+    prices === null ||
+    rates === null
+  ) {
     return <>loading spinner</>
   }
 

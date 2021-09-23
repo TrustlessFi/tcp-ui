@@ -25,7 +25,7 @@ export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
   async (args: ratesArgs): Promise<ratesInfo> => {
     const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
-    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall) as unknown as TcpMulticallViewOnly
+    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
     const result = (await executeMulticall(
       multicall,
