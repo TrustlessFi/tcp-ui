@@ -120,7 +120,7 @@ export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
 export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
   (state: RootState) => state.prices,
   getPricesInfo,
-  [ProtocolContract.Prices, FetchNode.LiquidationsInfo],
+  [ProtocolContract.Prices, FetchNode.LiquidationsInfo, ProtocolContract.TcpMulticall],
 )
 
 export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
