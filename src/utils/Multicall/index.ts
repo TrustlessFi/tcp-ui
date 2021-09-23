@@ -95,35 +95,29 @@ export const getDuplicateFuncMulticall = <
 }
 
 export const executeMulticall = async <Functions extends {[key in string]: resultConverter}> (
+  tcpMulticall: TcpMulticallViewOnly,
   contract: Contract,
   funcs: Functions,
   args?: {[key in keyof Functions]?: any[]},
-  provider?: Web3Provider,
 ) => {
   const multicall = getMulticall(contract, funcs, args)
 
-  return (await executeMulticalls({aMulticall: multicall}, provider)).aMulticall
+  return (await executeMulticalls(tcpMulticall, {aMulticall: multicall})).aMulticall
 }
 
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
 >(
+  tcpMulticall: TcpMulticallViewOnly,
   multicalls: Multicalls,
-  provider?: Web3Provider,
 ) => {
-  let multikey = ''
-  Object.keys(multicalls).map(key => multikey += key)
-  const multicallContract = getContract<TcpMulticallViewOnly>(
-    getAddress(await getChainID(), rootContracts.TcpMulticall),
-    tcpMulticallViewOnlyArtifact.abi,
-    provider === undefined ? getProvider() : provider,
-  )
-
   const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
 
-  const rawResults = await multicallContract.all(calls.map(
+  console.log("before multicall execute")
+  const rawResults = await (tcpMulticall as unknown as TcpMulticallViewOnly).all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
   ))
+  console.log("after multicall execute")
 
   const abiCoder = new ethersUtils.AbiCoder()
   const results = Object.fromEntries(

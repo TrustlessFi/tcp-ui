@@ -1,7 +1,7 @@
 import { AsyncThunk, Draft } from '@reduxjs/toolkit'
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernor, executeGetContract } from './api'
+import { executeGetGovernor, executeGetContract, executeGetTcpMulticall } from './api'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID/index'
 import { getLocalStorage } from '../../utils'
@@ -23,10 +23,11 @@ export enum ProtocolContract {
   Settlement = "Settlement",
   Tcp = "Tcp",
   TcpGovernorAlpha = "TcpGovernorAlpha",
+  TcpMulticall = "TcpMulticall",
   TcpTimelock = "TcpTimelock",
 }
 
-export type getGovernorContractArgs = {
+export type getSingleContractArgs = {
   chainID: ChainID
 }
 
@@ -37,7 +38,12 @@ export type getContractArgs = {
 
 export const getGovernorContract = createAsyncThunk(
   'contracts/getGovernor',
-  async (args: getGovernorContractArgs) => await executeGetGovernor(args),
+  async (args: getSingleContractArgs) => await executeGetGovernor(args),
+)
+
+export const getTcpMulticallContract = createAsyncThunk(
+  'contracts/getTcpMulticall',
+  async (args: getSingleContractArgs) => await executeGetTcpMulticall(args),
 )
 
 export const getContractThunk = (contract: ProtocolContract) => {
@@ -56,19 +62,20 @@ const contractsInitialState: ProtocolContractsState = {
   [ProtocolContract.Auctions]:  initialState,
   [ProtocolContract.EnforcedDecentralization]: initialState,
   [ProtocolContract.Governor]: initialState,
-  [ProtocolContract.TcpGovernorAlpha]: initialState,
+  [ProtocolContract.Hue]: initialState,
+  [ProtocolContract.HuePositionNFT]: initialState,
   [ProtocolContract.LendHue]: initialState,
   [ProtocolContract.Liquidations]: initialState,
   [ProtocolContract.Market]: initialState,
-  [ProtocolContract.HuePositionNFT]: initialState,
   [ProtocolContract.Prices]: initialState,
   [ProtocolContract.ProtocolLock]: initialState,
   [ProtocolContract.Rates]: initialState,
   [ProtocolContract.Rewards]: initialState,
   [ProtocolContract.Settlement]: initialState,
   [ProtocolContract.Tcp]: initialState,
+  [ProtocolContract.TcpGovernorAlpha]: initialState,
+  [ProtocolContract.TcpMulticall]: initialState,
   [ProtocolContract.TcpTimelock]: initialState,
-  [ProtocolContract.Hue]: initialState,
 }
 
 export const getContractGenericReducerBuilder = <Args extends {}>(
@@ -101,7 +108,9 @@ export const contractsSlice = createSlice({
       const contract = contractString as ProtocolContract
 
       if (contract === ProtocolContract.Governor) {
-        builder = getContractGenericReducerBuilder<getGovernorContractArgs>(builder, getGovernorContract, contract)
+        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getGovernorContract, contract)
+      } else if (contract === ProtocolContract.TcpMulticall) {
+        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getTcpMulticallContract, contract)
       } else {
         builder = getContractGenericReducerBuilder<getContractArgs>(builder, getContractThunk(contract), contract)
       }
