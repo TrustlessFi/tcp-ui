@@ -4,7 +4,7 @@ import getContract from '../../utils/getContract'
 import { Market } from "../../utils/typechain/Market"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils/index'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
+import { getMulticall, getDuplicateFuncMulticall, executeMulticall } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
 
 export interface marketArgs {
@@ -28,19 +28,18 @@ export const getMarketInfo = createAsyncThunk(
   async (args: marketArgs): Promise<marketInfo> => {
     const market = getContract(args.Market, ProtocolContract.Market) as Market
 
-    return (await executeMulticalls({
-      basicInfo: getMulticall(market,
-        {
-          lastPeriodGlobalInterestAccrued: mc.BigNumberToNumber,
-          collateralizationRequirement: mc.BigNumberUnscale,
-          minPositionSize: mc.BigNumberUnscale,
-          twapDuration: mc.Number,
-          interestPortionToLenders: mc.BigNumberUnscale,
-          periodLength: mc.BigNumberToNumber,
-          firstPeriod: mc.BigNumberToNumber,
-        },
-      ),
-    })).basicInfo
+    return (await executeMulticall(
+      market,
+      {
+        lastPeriodGlobalInterestAccrued: mc.BigNumberToNumber,
+        collateralizationRequirement: mc.BigNumberUnscale,
+        minPositionSize: mc.BigNumberUnscale,
+        twapDuration: mc.Number,
+        interestPortionToLenders: mc.BigNumberUnscale,
+        periodLength: mc.BigNumberToNumber,
+        firstPeriod: mc.BigNumberToNumber,
+      },
+    ))
   }
 )
 
