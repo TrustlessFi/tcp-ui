@@ -2,15 +2,15 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
-import { ChainID} from '../chainID'
 import { getEthBalance } from '../../utils/Multicall/chainStatus'
 import getContract from '../../utils/getContract';
 import { ProtocolContract } from '../contracts/index';
 
 import { TcpMulticall } from '../../utils/typechain'
 
+export type ethBalance = number
 
-export interface EthBalanceState extends sliceState<number> {}
+export interface EthBalanceState extends sliceState<ethBalance> {}
 
 
 export type ethBalanceArgs = {

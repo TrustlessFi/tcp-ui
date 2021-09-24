@@ -11,7 +11,7 @@ export type hueBalanceArgs = {
 }
 
 export const getHueBalance = createAsyncThunk(
-  'hueBalance/getBalances',
+  'hueBalance/getHueBalance',
   async (args: hueBalanceArgs) => tokenBalanceThunk(
     { tokenAddress: args.Hue, userAddress: args.userAddress, TcpMulticall: args.TcpMulticall},
     [{contract: ProtocolContract.Market, address: args.Market}],

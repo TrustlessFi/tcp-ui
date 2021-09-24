@@ -44,7 +44,7 @@ export const tokenBalanceThunk = async (
   balancesList: {contract: ProtocolContract, address: string}[],
 ) => {
   const token = contract(args.tokenAddress, erc20Artifact.abi)
-  const tcpMulticall = getContract(args.tokenAddress, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
   const { basicInfo, approvals, balances, userBalance } = await executeMulticalls(
     tcpMulticall,
