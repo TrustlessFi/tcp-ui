@@ -37,10 +37,10 @@ const CreatePositionController = ({
   const items = [
     {
       title: 'Collateral',
-      value: collateralCount + ' Eth',
+      value: numDisplay(collateralCount, 2) + ' Eth',
     },{
       title: 'Debt',
-      value: debtCount + ' Hue',
+      value: numDisplay(debtCount, 2) + ' Hue',
     },{
       title: 'Eth Price',
       value: numDisplay(ethPrice, 2) + ' Hue/Eth',
