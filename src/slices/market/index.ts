@@ -4,8 +4,7 @@ import getContract from '../../utils/getContract'
 import { Market, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils/index'
-import { executeMulticall } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall'
+import { executeMulticall, rc } from '../../utils/Multicall/index';
 import { executeLend, executeWithdraw } from './api'
 import { getGenericWriteReducerBuilder } from '../index';
 
@@ -37,13 +36,13 @@ export const getMarketInfo = createAsyncThunk(
       multicall,
       market,
       {
-        lastPeriodGlobalInterestAccrued: mc.BigNumberToNumber,
-        collateralizationRequirement: mc.BigNumberUnscale,
-        minPositionSize: mc.BigNumberUnscale,
-        twapDuration: mc.Number,
-        interestPortionToLenders: mc.BigNumberUnscale,
-        periodLength: mc.BigNumberToNumber,
-        firstPeriod: mc.BigNumberToNumber,
+        lastPeriodGlobalInterestAccrued: rc.BigNumberToNumber,
+        collateralizationRequirement: rc.BigNumberUnscale,
+        minPositionSize: rc.BigNumberUnscale,
+        twapDuration: rc.Number,
+        interestPortionToLenders: rc.BigNumberUnscale,
+        periodLength: rc.BigNumberToNumber,
+        firstPeriod: rc.BigNumberToNumber,
       },
     ))
     console.log("after market execute multicall", {result})

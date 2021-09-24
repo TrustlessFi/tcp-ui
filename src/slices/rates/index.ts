@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
-import * as mc from '../../utils/Multicall'
 
 import { Rates, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
-import { executeMulticall } from '../../utils/Multicall/index';
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
@@ -31,9 +30,9 @@ export const getRatesInfo = createAsyncThunk(
       multicall,
       rates,
       {
-        positiveInterestRate: mc.Boolean,
-        interestRateAbsoluteValue: mc.BigNumberUnscale,
-        getReferencePools: mc.StringArray,
+        positiveInterestRate: rc.Boolean,
+        interestRateAbsoluteValue: rc.BigNumberUnscale,
+        getReferencePools: rc.StringArray,
       },
     ))
 

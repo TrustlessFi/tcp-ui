@@ -8,8 +8,7 @@ import {
 } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts/index'
 import { getLocalStorage } from '../../utils/index'
-import { executeMulticall } from '../../utils/Multicall/index'
-import * as mc from '../../utils/Multicall'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -35,9 +34,9 @@ export const getLiquidationsInfo = createAsyncThunk(
       tcpMulticall,
       liquidations,
       {
-        twapDuration: mc.Number,
-        discoveryIncentive: mc.BigNumberUnscale,
-        liquidationIncentive: mc.BigNumberUnscale,
+        twapDuration: rc.Number,
+        discoveryIncentive: rc.BigNumberUnscale,
+        liquidationIncentive: rc.BigNumberUnscale,
       },
     ))
   }

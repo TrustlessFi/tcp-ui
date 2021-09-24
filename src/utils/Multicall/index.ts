@@ -5,29 +5,22 @@ import { Contract, utils as ethersUtils, ethers } from 'ethers'
 import { enforce, first, unscale, PromiseType } from '../'
 import { TcpMulticallViewOnly, Accounting } from '../typechain'
 
-export const Number = (result: any) => result as number
-export const Boolean = (result: any) => result as boolean
-export const Address = (result: any) => result as string
-export const String = (result: any) => result as string
-export const StringArray = (result: any) => result as string[]
-export const BigNumber = (result: any) => result as ethers.BigNumber
-export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
-export const BigNumberToString = (result: any) => (result as ethers.BigNumber).toString()
-export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
-export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
-export const PositionData = (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>
+export const rc  = {
+  Number: (result: any) => result as number,
+  Boolean: (result: any) => result as boolean,
+  Address: (result: any) => result as string,
+  String: (result: any) => result as string,
+  StringArray: (result: any) => result as string[],
+  BigNumber: (result: any) => result as ethers.BigNumber,
+  BigNumberToNumber: (result: any) => (result as ethers.BigNumber).toNumber(),
+  BigNumberToString: (result: any) => (result as ethers.BigNumber).toString(),
+  BigNumberUnscale: (result: any) => unscale(result as ethers.BigNumber),
+  PositionData: (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,
+}
 
-type resultConverter =
-  typeof Number |
-  typeof Boolean |
-  typeof Address |
-  typeof String |
-  typeof StringArray |
-  typeof BigNumber |
-  typeof BigNumberToNumber |
-  typeof BigNumberToString |
-  typeof BigNumberUnscale |
-  typeof PositionData
+export const rcDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
+
+type resultConverter = (typeof rc)[keyof typeof rc]
 
 interface Call<CallType extends resultConverter> {
   id: string
