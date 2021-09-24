@@ -78,9 +78,17 @@ const CreatePosition = () => {
     <>
       <LargeText>
         I want to create a position with
-        <PositionNumberInput id="collateralInput" action={(value: number) => setCollateralCount(value)} />
+        <PositionNumberInput
+          id="collateralInput"
+          action={(value: number) => setCollateralCount(value)}
+          value={collateralCount}
+        />
         Eth of Collateral and
-        <PositionNumberInput id="debtInput" action={(value: number) => setDebtCount(value)} />
+        <PositionNumberInput
+          id="debtInput"
+          action={(value: number) => setDebtCount(value)}
+          value={debtCount}
+        />
         Hue of debt.
       </LargeText>
 

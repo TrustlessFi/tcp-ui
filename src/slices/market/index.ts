@@ -4,8 +4,9 @@ import getContract from '../../utils/getContract'
 import { Market, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils/index'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticall } from '../../utils/Multicall/index';
+import { executeMulticall } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
+import { executeLend, executeWithdraw } from './api'
 
 export interface marketArgs {
   Market: string
@@ -49,6 +50,23 @@ export const getMarketInfo = createAsyncThunk(
     return result
   }
 )
+
+export interface lendArgs {
+  Market: string,
+  amount: number,
+}
+
+export const lend = createAsyncThunk(
+  'market/lend',
+  async (data: lendArgs, {dispatch}) => await executeLend(dispatch, data),
+)
+
+export const withdraw = createAsyncThunk(
+  'withdraw/lend',
+  async (data: lendArgs, {dispatch}) => await executeWithdraw(dispatch, data),
+)
+
+
 
 const name = 'market'
 
