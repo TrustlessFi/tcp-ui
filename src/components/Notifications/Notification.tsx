@@ -8,7 +8,6 @@ import ExplorerLink from '../utils/ExplorerLink'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { useEffect, useState, useRef } from "react";
-import FinishAction from './FinishAction'
 import { useAppDispatch } from '../../app/hooks';
 
 
@@ -135,7 +134,6 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
         right: 8,
         cursor: 'pointer',
       }} />
-      <FinishAction type={data.type} />
     </div>
   )
 }
