@@ -8,6 +8,18 @@ import {
 } from 'carbon-components-react'
 import { assertUnreachable } from '../../utils'
 
+
+const getEtherscanLink = (txHash: string, chainID: ChainID) => {
+  switch (chainID) {
+    case ChainID.Hardhat:
+      return 'https://etherscan.io/' + txHash
+    case ChainID.Rinkeby:
+      return 'https://rinkeby.etherscan.io/' + txHash
+    default:
+      assertUnreachable(chainID)
+  }
+}
+
 const LargeText = ({
   txHash,
   size,
@@ -25,24 +37,24 @@ const LargeText = ({
 
   const [visited, setVisited] = useState(false)
 
-  const getEtherscanLink = (txHash: string, chainID: ChainID) => {
-    switch (chainID) {
-      case ChainID.Hardhat:
-        return 'https://etherscan.io/' + txHash
-      case ChainID.Rinkeby:
-        return 'https://rinkeby.etherscan.io/' + txHash
-      default:
-        assertUnreachable(chainID)
-    }
-  }
-  const onClick = () => {
+  const etherscanLink = getEtherscanLink(txHash, chainID)
+
+  const onClick = (e: any) => {
+    e.preventDefault()
     setVisited(true)
-    const etherscanLink = getEtherscanLink(txHash, chainID)
     window.open(etherscanLink, '_blank');
   }
 
   return (
-    <Link onClick={onClick} visited={visited} renderIcon={icon} size={size} style={{cursor: 'pointer'}}>
+    <Link
+      onClick={onClick}
+      href={etherscanLink}
+      target='_blank'
+      visited={visited}
+      renderIcon={icon}
+      size={size}
+      style={{cursor: 'pointer'}}
+    >
       {children}
     </Link>
   )
