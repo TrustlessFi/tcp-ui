@@ -6,12 +6,14 @@ import {
   TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
+import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
 import { onNumChange, numDisplay }  from '../../utils/'
 import CreatePositionController from '../Write/CreatePositionController'
 import PositionMetadata from './library/PositionMetadata'
 import PositionNumberInput from './library/PositionNumberInput'
+import ErrorMessage, { reason } from './library/ErrorMessage'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -36,11 +38,41 @@ const CreatePosition = () => {
     userAddress === null
   ) return <TextAreaSkeleton />
 
-  const collateralization = (collateralCount * priceInfo.ethPrice * 100) / debtCount
+  const collateralization = (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
+
   const liquidationPrice = (debtCount * market.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
 
   const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+
+  const failures: {[key in string]: reason} = {
+    noCollateral: {
+      message: 'No collateral.',
+      failing: collateralCount === 0 || isNaN(collateralCount),
+      silent: true,
+    },
+    invalidDebt: {
+      message: 'Invalid debt amount.',
+      failing: isNaN(debtCount),
+      silent: true,
+    },
+    notBigEnough: {
+      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
+      failing: 0 < debtCount &&  debtCount < market.minPositionSize,
+    },
+    undercollateralized: {
+      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      failing: collateralization < market.collateralizationRequirement,
+    },
+    insufficientEth: {
+      message: 'Connected wallet does not have enough Eth.',
+      failing: userEthBalance - collateralCount < 0,
+    }
+  }
+
+  const failureReasons: reason[] = Object.values(failures)
+  const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
   return (
     <>
@@ -57,12 +89,15 @@ const CreatePosition = () => {
           {
             title: 'Min position size',
             value: numDisplay(market.minPositionSize) + ' Hue',
+            failing: failures.notBigEnough.failing,
           },{
             title: 'Collateralization Ratio',
-            value: numDisplay(collateralization, 0) + '%'
+            value: collateralizationDisplay,
+            failing: failures.undercollateralized.failing,
           },{
             title: 'New Eth Balance',
-            value: numDisplay(userEthBalance - collateralCount)
+            value: numDisplay(userEthBalance - collateralCount),
+            failing: failures.insufficientEth.failing,
           },{
             title: 'New Hue Balance',
             value: numDisplay(hueBalance.userBalance + debtCount)
@@ -71,15 +106,16 @@ const CreatePosition = () => {
       </div>
 
       <LargeText>
-        Eth is currently {numDisplay(priceInfo.ethPrice, 0)} Hue.
-        If the price of Eth falls below {liquidationPriceDisplay === '0' ? '-' : liquidationPriceDisplay} Hue
-        I could lose {numDisplay(totalLiquidationIncentive, 0)}% or more of my position value in collateral to liquidators.
+        Eth is currently <Bold>{numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
+        If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
+        I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
       </LargeText>
-      <div style={{marginTop: 32}}>
-        <Button onClick={() => setShowCreatePosition(true)}>
+      <div style={{marginTop: 32, marginBottom: 32}}>
+        <Button onClick={() => setShowCreatePosition(true)} disabled={isFailing}>
           Create Position
         </Button>
       </div>
+      <ErrorMessage reasons={failureReasons} />
       <CreatePositionController
         collateralCount={collateralCount}
         debtCount={debtCount}

@@ -144,6 +144,11 @@ export const getLocalStorage = (key: string, defaultValue: any = null) => {
 
 export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 
+export const firstOrNull = <T>(array: Array<T>): T | null => {
+  if (array.length === 0) return null
+  return array[0]
+}
+
 export const first = <T>(array: Array<T>): T => {
   enforce(array.length > 0, 'First for empty array')
   return array[0]

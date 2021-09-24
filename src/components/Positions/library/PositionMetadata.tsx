@@ -2,17 +2,19 @@ import { Row, Col } from 'react-flexbox-grid'
 import Text from '../../utils/Text'
 
 
-const PositionMetadata = ({items}: { items: {value: string, title: string }[]}) => {
+const PositionMetadata = ({items}: { items: {value: string, title: string, failing?: boolean}[]}) => {
   const border = '2px solid #161616'
+
+  const getColor = (isFailing?: boolean) => isFailing ? '#FA4D56' : '#8D8D8D'
 
   const valuesView = items.map((item, index) => {
     return (
       <Col xs key={"PositionMetadata " + index}>
         <div>
-          <Text monospace size={14} lineHeight="18px" color="#8D8D8D" bold>{item.value}</Text>
+          <Text monospace size={14} lineHeight="18px" color={getColor(item.failing)} bold>{item.value}</Text>
         </div>
         <div>
-          <Text monospace size={14} lineHeight="18px" color="#8D8D8D">{item.title}</Text>
+          <Text monospace size={14} lineHeight="18px" color={getColor(item.failing)}>{item.title}</Text>
         </div>
       </Col>
     )
