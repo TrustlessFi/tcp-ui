@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
-import { getLocalStorage } from '../../utils'
+import { getLocalStorage, assertUnreachable } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
+import { clearPositions } from '../positions'
+import { clearHueBalance } from '../balances/hueBalance'
+import { clearLendHueBalance } from '../balances/lendHueBalance'
 
 export enum TransactionStatus {
   Pending,
@@ -49,6 +52,24 @@ export const waitForTransaction = createAsyncThunk(
     const result = {...args, status}
 
     dispatch(addNotification(result))
+
+    if (status === TransactionStatus.Succeeded) {
+      switch (args.type) {
+        case TransactionType.CreatePosition:
+          dispatch(clearPositions())
+          dispatch(clearHueBalance())
+          break
+
+        case TransactionType.Lend:
+        case TransactionType.Withdraw:
+          dispatch(clearHueBalance())
+          dispatch(clearLendHueBalance())
+          break
+
+        default:
+          assertUnreachable(args.type)
+      }
+    }
 
     return result
   })

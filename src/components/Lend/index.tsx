@@ -44,11 +44,11 @@ const InputPicker = <T extends string, TEnumValue extends string>({
   )
 }
 
-
 const Lend = () => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
+  console.log({hueBalance})
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
 
   const [selectedOption, setSelectedOption] = useState(first(Object.values(LendBorrowOptions)))
@@ -71,9 +71,9 @@ const Lend = () => {
     <>
       <div>
         <LargeText>
-          The current lend APR is {numDisplay(hueBalance.userBalance, 2)} but will vary over time.
-          <div/>
           I have {numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
+          <div />
+          The current lend APR is {numDisplay(hueBalance.userBalance, 2)} but will vary over time.
         </LargeText>
       </div>
       <LargeText>
