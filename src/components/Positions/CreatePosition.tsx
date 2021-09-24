@@ -8,7 +8,7 @@ import {
 import Text from '../utils/Text'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForEthBalance, waitForMarket } from '../../slices/waitFor'
+import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices } from '../../slices/waitFor'
 import { onNumChange, numDisplay }  from '../../utils/'
 import CreatePositionController from '../Write/CreatePositionController'
 
@@ -48,6 +48,7 @@ const CreatePosition = () => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
+  const priceInfo = waitForPrices(selector, dispatch)
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
@@ -57,9 +58,10 @@ const CreatePosition = () => {
   const [showCreatePosition, setShowCreatePosition] = useState(false)
 
   if (
+    hueBalance === null ||
+    priceInfo === null ||
     market === null ||
     userEthBalance === null ||
-    hueBalance === null ||
     userAddress === null
   ) return <TextAreaSkeleton />
 
@@ -119,7 +121,8 @@ const CreatePosition = () => {
       </div>
 
       <LargeText>
-        Eth is currently 3,100 Hue. If the price of Eth falls below 2712 Hue/Eth I could lose 13% of my Eth to liquidators.
+        Eth is currently {numDisplay(priceInfo.ethPrice, 2)} Hue.
+        If the price of Eth falls below 2712 Hue/Eth I could lose 13% of my Eth to liquidators.
       </LargeText>
       <div style={{marginTop: 32}}>
         <Button onClick={() => setShowCreatePosition(true)}>
