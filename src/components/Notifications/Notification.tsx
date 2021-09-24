@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { TransactionStatus } from '../../slices/transactions'
 import { ErrorFilled24, CheckmarkFilled24, UnknownFilled24, Close24 } from '@carbon/icons-react';
 import { getOpacityTransition } from '../utils'
+import ExplorerLink from '../utils/ExplorerLink'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { useEffect, useState, useRef } from "react";
@@ -114,8 +115,8 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
             <WarningIcon status={data.status} />
           </Col>
           <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-            <NotificationText large>{data.message}{data.message}{data.message}</NotificationText>
-            <NotificationText>{data.hash}{data.hash}</NotificationText>
+            <NotificationText large>{data.message}</NotificationText>
+            <ExplorerLink txHash={data.hash}>View on Explorer</ExplorerLink>
           </Col>
         </Row>
       </Col>
