@@ -23,10 +23,16 @@ export const getLendHueBalance = createAsyncThunk(
 export const lendHueBalanceSlice = createSlice({
   name: 'lendHueBalance',
   initialState: initialState as balanceState,
-  reducers: {},
+  reducers: {
+    clearLendHueBalance: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getLendHueBalance)
   },
 })
+
+export const { clearLendHueBalance } = lendHueBalanceSlice.actions
 
 export default lendHueBalanceSlice.reducer

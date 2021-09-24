@@ -1,6 +1,7 @@
 import React from 'react'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
+import Lend from './components/Lend'
 import Governance from './components/Governance'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import LiquidityPositions from './components/LiquidityPositions'
@@ -27,6 +28,9 @@ function App() {
           <Switch>
             <Route exact path={['/', '/positions']}>
               <Positions />
+            </Route>
+            <Route path={'/lend'}>
+              <Lend />
             </Route>
             <Route path={'/liquidity'}>
               <LiquidityPositions />

@@ -25,6 +25,7 @@ const PageHeader = () => {
 
   const pages = [
     {display: 'Positions', link: '/'},
+    {display: 'Lend', link: '/lend'},
     {display: 'Liquidity', link: '/liquidity'},
     {display: 'Governance', link: '/governance'},
   ]

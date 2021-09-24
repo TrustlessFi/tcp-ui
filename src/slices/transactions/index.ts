@@ -12,6 +12,8 @@ export enum TransactionStatus {
 
 export enum TransactionType {
   CreatePosition,
+  Lend,
+  Withdraw,
 }
 
 export type TransactionArgs = {

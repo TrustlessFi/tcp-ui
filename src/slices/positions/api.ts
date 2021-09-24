@@ -90,7 +90,6 @@ export const executeCreatePosition = async (dispatch: AppDispatch, args: createP
   const market = getContract(args.Market, ProtocolContract.Market) as Market
 
   const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
-    gasLimit: 1e10,
     value: scale(args.collateralCount)
   })
   const hash = tx.hash

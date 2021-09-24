@@ -22,10 +22,16 @@ export const getHueBalance = createAsyncThunk(
 export const hueBalanceSlice = createSlice({
   name: 'hueBalance',
   initialState: initialState as balanceState,
-  reducers: {},
+  reducers: {
+    clearHueBalance: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getHueBalance)
   },
 })
+
+export const { clearHueBalance } = hueBalanceSlice.actions
 
 export default hueBalanceSlice.reducer
