@@ -1,10 +1,12 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getContractWaitFunction } from '../../slices/waitFor'
-import TxConfirmController from './TxConfirmController'
+import TxConfirmController from '../Write/TxConfirmController'
 import { createPosition } from '../../slices/positions'
 import { RootState } from '../../app/store';
 import { ProtocolContract } from '../../slices/contracts/index';
 import { numDisplay } from '../../utils/'
+import Text from '../utils/Text'
+import LargeText from '../utils/LargeText'
 
 const CreatePositionController = ({
   collateralCount,
@@ -25,34 +27,44 @@ const CreatePositionController = ({
   const Market = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
   if (Market === null) throw new Error('CreatePositionController: Market null')
 
-  const preview = (
-    <>
-      <div>
-        <h3>Collateral:</h3><p>{collateralCount}</p>
-      </div>
-      <div>
-        <h3>Debt:</h3><p>{debtCount}</p>
-      </div>
-      <div>
-        <h3>Eth Price:</h3><p>{ethPrice}</p>
-      </div>
-      <div>
-        <h3>Liquidation Price:</h3><p>{liquidationPrice}</p>
-      </div>
-    </>
-  )
-
   const mediumName =
     'Creating a position with '
     + numDisplay(collateralCount, 2)
-    + ' collateral and '
+    + ' Eth of collateral and '
     + numDisplay(debtCount, 2)
-    + ' debt.'
+    + ' Hue of debt.'
+
+  const items = [
+    {
+      title: 'Collateral',
+      value: collateralCount + ' Eth',
+    },{
+      title: 'Debt',
+      value: debtCount + ' Hue',
+    },{
+      title: 'Eth Price',
+      value: numDisplay(ethPrice, 2) + ' Hue/Eth',
+    },{
+      title: 'Liquidation Price',
+      value: numDisplay(liquidationPrice, 2) + ' Hue/Eth',
+    }
+  ]
+
+  const preview = items.map(item =>
+    <div>
+      <LargeText>
+        {item.title + ': '}
+      </LargeText>
+      <Text>
+        {item.value}
+      </Text>
+    </div>
+  )
 
   return (
     <TxConfirmController
       thunk={createPosition({collateralCount, debtCount, Market})}
-      preview={preview}
+      preview={<>{preview}</>}
       verb="Create"
       mediumName={mediumName}
       shortName={'Position Creation'}
