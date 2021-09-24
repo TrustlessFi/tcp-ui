@@ -132,7 +132,7 @@ const CreatePosition = () => {
       <CreatePositionController
         collateralCount={collateralCount}
         debtCount={debtCount}
-        ethPrice={ethPrice}
+        ethPrice={priceInfo.ethPrice}
         liquidationPrice={liquidationPrice}
         onCancel={() => setShowCreatePosition(false)}
         isActive={showCreatePosition}
