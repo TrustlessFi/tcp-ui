@@ -20,7 +20,7 @@ declare global {
 
 function App() {
   return (
-    <ErrorBoundary>
+    <div>
       <Router>
         <PageHeader />
         <div style={{marginTop: 47, padding: 48 }}>
@@ -39,7 +39,7 @@ function App() {
       </Router>
       <Notifications />
       <LocalStorageManager />
-    </ErrorBoundary>
+    </div>
   );
 }
 

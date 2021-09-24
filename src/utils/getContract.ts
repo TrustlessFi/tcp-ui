@@ -18,6 +18,7 @@ import {
   Liquidations,
   Market,
   Prices,
+  ProtocolDataAggregator,
   ProtocolLock,
   Tcp,
   Rates,
@@ -38,6 +39,7 @@ import lendHueArtifact from "./artifacts/contracts/core/tokens/LendHue.sol/LendH
 import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
 import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
 import pricesArtifact from "./artifacts/contracts/core/logic/Prices.sol/Prices.json"
+import protocolDataAggregatorArtifact from "./artifacts/contracts/core/auxiliary/ProtocolDataAggregator.sol/ProtocolDataAggregator.json"
 import protocolLockArtifact from "./artifacts/contracts/core/utils/ProtocolLock.sol/ProtocolLock.json"
 import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json"
 import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
@@ -58,6 +60,7 @@ const artifactLookup = {
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
   [ProtocolContract.Prices]: pricesArtifact,
+  [ProtocolContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [ProtocolContract.ProtocolLock]: protocolLockArtifact,
   [ProtocolContract.Rates]: ratesArtifact,
   [ProtocolContract.Rewards]: rewardsArtifact,
@@ -100,6 +103,8 @@ const getContract = (address: string, protocolContract: ProtocolContract) => {
       return contract as Market
     case ProtocolContract.Prices:
       return contract as Prices
+    case ProtocolContract.ProtocolDataAggregator:
+      return contract as ProtocolDataAggregator
     case ProtocolContract.ProtocolLock:
       return contract as ProtocolLock
     case ProtocolContract.Rates:

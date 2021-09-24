@@ -1,5 +1,6 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
 import { Governor } from "../../utils/typechain"
+import { ChainID } from '../chainID'
 import { getContractArgs, ProtocolContract, getContractReturnType, getGovernorContractArgs } from './'
 
 import getProvider from '../../utils/getProvider'
@@ -21,7 +22,7 @@ export const executeGetContract = async (args: getContractArgs): Promise<getCont
   return contractAddress
 }
 
-const getContract = async (governor: Governor, contract: ProtocolContract): Promise<string> => {
+const getContract = async (governor: Governor, contract: ProtocolContract, chainID?: ChainID): Promise<string> => {
   switch (contract) {
     case ProtocolContract.TcpGovernorAlpha:
       return await governor.governorAlpha()
@@ -39,6 +40,8 @@ const getContract = async (governor: Governor, contract: ProtocolContract): Prom
       return await governor.market()
     case ProtocolContract.Prices:
       return await governor.prices()
+    case ProtocolContract.ProtocolDataAggregator:
+      return chainID ? await getAddress(chainID, contract as unknown as rootContracts) : ''
     case ProtocolContract.ProtocolLock:
       return await governor.protocolLock()
     case ProtocolContract.Rates:

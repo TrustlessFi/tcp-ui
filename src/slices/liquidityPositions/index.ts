@@ -35,13 +35,17 @@ export interface liquidityPositions {
 }
 
 export interface liquidityPositionsArgs {
+  Accounting: string,
   chainID: ChainID,
+  Rewards: string,
   userAddress: string
 }
 
 export interface liquidityPositionArgs {
+  Accounting: string,
   chainID: ChainID,
-  positionID: number
+  positionID: number,
+  Rewards: string
 }
 
 export interface LiquidityPositionsState extends sliceState<liquidityPositions> {}

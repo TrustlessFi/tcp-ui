@@ -1,9 +1,10 @@
 import { ethers } from 'ethers'
 
 import { LiquidityPool, poolArgs, poolsArgs } from './'
+import { ProtocolContract } from '../contracts'
 import { unscale } from '../../utils'
 import getProvider from '../../utils/getProvider'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts'
+import getContract from '../../utils/getContract'
 
 import { ERC20 } from '../../utils/typechain/ERC20';
 import { Rewards } from '../../utils/typechain/Rewards'
@@ -18,7 +19,7 @@ interface PoolCache { [key: string]: LiquidityPool }
 const poolCache: PoolCache = {}
 
 export const fetchLiquidityPool = async (data: poolArgs): Promise<LiquidityPool> => {
-    const rewards = await getProtocolContract(data.chainID, ProtocolContract.Rewards) as Rewards;
+    const rewards = await getContract(data.Rewards, ProtocolContract.Rewards) as Rewards;
     const poolAddress = await rewards.poolConfigForPoolID(data.poolID);
     return getPoolInformationForAddress(poolAddress.pool);
 }
@@ -94,9 +95,13 @@ export const getPoolInformationForAddress = async (poolAddress: string): Promise
 };
 
 export const fetchPools = async (data: poolsArgs): Promise<LiquidityPool[]> => {
-    const protocolDataAggregator = await getProtocolContract(data.chainID, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator | null
+    console.log('getting pda', data);
+    const protocolDataAggregator = await getContract(data.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator;
+    console.log('got pda');
 
+    console.log('getting configs');
     const poolConfigs = await protocolDataAggregator?.getIncentivizedPools()
+    console.log('got poolConfigs')
 
     if(!poolConfigs || poolConfigs.length === 0) {
         return []

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
+import { getContractWaitFunction, waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
+import { ProtocolContract } from  '../../slices/contracts';
 import { LiquidityPool } from '../../slices/pools'
-import { getProtocolContract, ProtocolContract } from '../../utils/protocolContracts';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { poolToUniswapPool } from '../../utils/uniswapUtils';
 
@@ -16,18 +16,10 @@ const addProtocol = (pool: LiquidityPool) => ({ ...pool, type: 'protocol' });
 const CreatePosition = (props: RouteComponentProps) => {
     const dispatch = useAppDispatch()
     const chainId = selector(state => state.chainID.chainID);
-    const [ rewardsAddress, setRewardsAddress ] = useState('');
+    const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch);
 
     const pools = waitForPools(selector, dispatch)
     const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
-
-    useEffect(() => {
-        if(chainId) {
-            getProtocolContract(chainId, ProtocolContract.Rewards)
-                .then(rewards => rewards && setRewardsAddress(rewards.address))
-                .catch(console.error);
-        }
-    }, [chainId]);
 
     const uniswapPools = chainId && pools?.map(pool => pool.token0Symbol === 'WETH' ? addCollateral(pool) : addProtocol(pool))
         .map(pool => poolToUniswapPool(chainId, pool));
@@ -39,7 +31,7 @@ const CreatePosition = (props: RouteComponentProps) => {
                     adding={liquidityPositions?.creating || false}
                     addLiquidity={() => {}}
                     pools={uniswapPools || undefined}
-                    spenderAddress={rewardsAddress}
+                    spenderAddress={rewardsAddress || undefined}
                     {...props}
                 />
             </UniswapWrapper>

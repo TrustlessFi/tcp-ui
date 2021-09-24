@@ -30,12 +30,14 @@ export interface LiquidityPool {
 }
 
 export interface poolsArgs {
-    chainID: ChainID
+    chainID: ChainID,
+    ProtocolDataAggregator: string
 }
 
 export interface poolArgs {
     chainID: ChainID,
-    poolID: number
+    poolID: number,
+    Rewards: string
 }
 
 export type poolsInfo = LiquidityPool[]

@@ -514,9 +514,7 @@ export class NFTDescriptorTest__factory extends ContractFactory {
 
     linkedBytecode = linkedBytecode.replace(
       new RegExp("__\\$28ca7891a259b174646586e2ff5520b353\\$__", "g"),
-      linkLibraryAddresses[
-        "contracts/uniswap/uniswap-v3-periphery/contracts/libraries/NFTDescriptor.sol:NFTDescriptor"
-      ]
+      linkLibraryAddresses["__$28ca7891a259b174646586e2ff5520b353$__"]
         .replace(/^0x/, "")
         .toLowerCase()
     );
@@ -554,5 +552,5 @@ export class NFTDescriptorTest__factory extends ContractFactory {
 }
 
 export interface NFTDescriptorTestLibraryAddresses {
-  ["contracts/uniswap/uniswap-v3-periphery/contracts/libraries/NFTDescriptor.sol:NFTDescriptor"]: string;
+  ["__$28ca7891a259b174646586e2ff5520b353$__"]: string;
 }

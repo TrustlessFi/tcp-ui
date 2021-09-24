@@ -187,12 +187,12 @@ export const waitForLiquidityPositions = (selector: AppSelector, dispatch: AppDi
   return getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
     (state: RootState) => state.liquidityPositions,
     getLiquidityPositions,
-    [FetchNode.ChainID, FetchNode.UserAddress],
+    [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards],
   )(selector, dispatch)
 }
 
 export const waitForPools = getWaitFunction<poolsArgs, poolsInfo>(
   (state: RootState) => state.pools,
   getPools,
-  [FetchNode.ChainID, FetchNode.UserAddress],
+  [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator],
 )

@@ -121,6 +121,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPoolInitializer__factory>;
     getContractFactory(
+      name: "DaoPositionCreator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.DaoPositionCreator__factory>;
+    getContractFactory(
+      name: "MinAverageLockDuration",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MinAverageLockDuration__factory>;
+    getContractFactory(
       name: "CommunityAllocation",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CommunityAllocation__factory>;
@@ -129,17 +137,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.CreatorAllocation__factory>;
     getContractFactory(
-      name: "DaoPositionCreator",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.DaoPositionCreator__factory>;
-    getContractFactory(
       name: "GenesisAllocation",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GenesisAllocation__factory>;
-    getContractFactory(
-      name: "MinAverageLockDuration",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MinAverageLockDuration__factory>;
     getContractFactory(
       name: "ProtocolDataAggregator",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -148,6 +148,14 @@ declare module "hardhat/types/runtime" {
       name: "RewardsContract",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardsContract__factory>;
+    getContractFactory(
+      name: "TcpMulticall",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpMulticall__factory>;
+    getContractFactory(
+      name: "TcpMulticallViewOnly",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TcpMulticallViewOnly__factory>;
     getContractFactory(
       name: "EnforcedDecentralization",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -269,10 +277,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ITokenIncentiveMinter__factory>;
     getContractFactory(
-      name: "ITokenLockDao",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ITokenLockDao__factory>;
-    getContractFactory(
       name: "IWETH9",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETH9__factory>;
@@ -320,6 +324,10 @@ declare module "hardhat/types/runtime" {
       name: "ITDaoPositionNFTDescriptor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ITDaoPositionNFTDescriptor__factory>;
+    getContractFactory(
+      name: "ITokenLockDao",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ITokenLockDao__factory>;
     getContractFactory(
       name: "IGovernorAlpha",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -492,14 +500,6 @@ declare module "hardhat/types/runtime" {
       name: "StaleMockPriceAggregator",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StaleMockPriceAggregator__factory>;
-    getContractFactory(
-      name: "TcpMulticall",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TcpMulticall__factory>;
-    getContractFactory(
-      name: "TcpMulticallViewOnly",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TcpMulticallViewOnly__factory>;
     getContractFactory(
       name: "TcpSafeCastTestable",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -892,6 +892,10 @@ declare module "hardhat/types/runtime" {
       name: "PoolTicksCounterTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PoolTicksCounterTest__factory>;
+    getContractFactory(
+      name: "PositionValueTest",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.PositionValueTest__factory>;
     getContractFactory(
       name: "SelfPermitTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
