@@ -1,4 +1,5 @@
 import { BigNumber, BigNumberish, utils } from 'ethers'
+import { SerializedError } from '@reduxjs/toolkit'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
@@ -161,5 +162,22 @@ export const last = <T>(array: Array<T>): T => {
 
 
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
-
 // type PromiseType = PromiseType<typeof promisedOne> // => number
+
+
+export const parseMetamaskError = (rawError: any) => {
+  const error = rawError.data === undefined ? rawError as SerializedError : rawError.data as SerializedError
+
+  switch (error.code === undefined ? 0 : parseInt(error.code)) {
+    case 4001:
+      error.message = 'Transaction Rejected. Please re-submit the transaction and accept it in Metamask.'
+      break
+    case -32603:
+      error.message = 'Transaction failed: ' + error.message
+      break
+    default:
+      error.message = 'Encountered unexpected error: ' + error.message + ' (' + error.code + ')'
+  }
+
+  return error
+}

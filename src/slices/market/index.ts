@@ -7,6 +7,7 @@ import { getLocalStorage } from '../../utils/index'
 import { executeMulticall } from '../../utils/Multicall/index';
 import * as mc from '../../utils/Multicall'
 import { executeLend, executeWithdraw } from './api'
+import { getGenericWriteReducerBuilder } from '../index';
 
 export interface marketArgs {
   Market: string
@@ -76,6 +77,8 @@ export const marketSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getMarketInfo)
+    builder = getGenericWriteReducerBuilder(builder, lend)
+    builder = getGenericWriteReducerBuilder(builder, withdraw)
   },
 })
 

@@ -51,7 +51,7 @@ const LendController = ({
       shortName={'Position Creation'}
       onCancel={onCancel}
       isActive={isActive}
-      stateSelector={(state: RootState) => state.positions}
+      stateSelector={(state: RootState) => state.market}
     />
   )
 }
