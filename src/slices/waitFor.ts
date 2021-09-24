@@ -12,6 +12,7 @@ import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
+import { ethBalance, ethBalanceArgs, fetchEthBalance } from './ethBalance'
 import { ProtocolContract, getGovernorContract, getContractArgs, getContractThunk, getContractReturnType, getTcpMulticallContract, getSingleContractArgs } from './contracts'
 
 import { sliceState } from './'
@@ -162,11 +163,17 @@ export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
 export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getHueBalance,
-  [ProtocolContract.Hue, FetchNode.UserAddress, ProtocolContract.TcpMulticall],
+  [ProtocolContract.Hue, FetchNode.UserAddress, ProtocolContract.TcpMulticall, ProtocolContract.Market],
 )
 
 export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getLendHueBalance,
   [ProtocolContract.LendHue, FetchNode.UserAddress, ProtocolContract.Market, ProtocolContract.TcpMulticall],
+)
+
+export const waitForEthBalance = getWaitFunction<ethBalanceArgs, ethBalance>(
+  (state: RootState) => state.ethBalance,
+  fetchEthBalance,
+  [FetchNode.UserAddress, ProtocolContract.TcpMulticall],
 )

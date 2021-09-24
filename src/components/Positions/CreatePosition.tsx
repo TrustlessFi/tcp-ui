@@ -8,11 +8,8 @@ import {
 import Text from '../utils/Text'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../slices/waitFor'
-import SimpleTable from '../library/SimpleTable'
-import { editorClosed } from '../../slices/positionsEditor'
-import { roundToXDecimals } from '../../utils'
-import { onNumChange, anyNull }  from '../../utils/'
+import { waitForHueBalance, waitForEthBalance, waitForMarket } from '../../slices/waitFor'
+import { onNumChange, numDisplay }  from '../../utils/'
 import CreatePositionController from '../Write/CreatePositionController'
 
 
@@ -20,14 +17,14 @@ import CreatePositionController from '../Write/CreatePositionController'
 const PositionMetadata = ({items}: { items: {value: string, title: string }[]}) => {
   const border = '2px solid #161616'
 
-  const valuesView = items.map(item => {
+  const valuesView = items.map((item, index) => {
     return (
-      <Col xs>
+      <Col xs key={"PositionMetadata " + index}>
         <div>
-          <Text monospace size={12} lineHeight="16px" color="#8D8D8D" bold>{item.value}</Text>
+          <Text monospace size={14} lineHeight="18px" color="#8D8D8D" bold>{item.value}</Text>
         </div>
         <div>
-          <Text monospace size={12} lineHeight="16px" color="#8D8D8D">{item.title}</Text>
+          <Text monospace size={14} lineHeight="18px" color="#8D8D8D">{item.title}</Text>
         </div>
       </Col>
     )
@@ -47,18 +44,24 @@ const PositionMetadata = ({items}: { items: {value: string, title: string }[]}) 
   )
 }
 
-
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
 
+  const hueBalance = waitForHueBalance(selector, dispatch)
+  const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
   const [collateralCount, setCollateralCount] = useState(0)
-  const [debtCount, setDebtCount] = useState(0)
+  const [debtCount, setDebtCount] = useState(0.0)
   const [showCreatePosition, setShowCreatePosition] = useState(false)
 
-  if (anyNull([market, userAddress])) return <TextAreaSkeleton />
+  if (
+    market === null ||
+    userEthBalance === null ||
+    hueBalance === null ||
+    userAddress === null
+  ) return <TextAreaSkeleton />
 
   const ethPrice = 10
   const liquidationPrice = 20
@@ -74,10 +77,9 @@ const CreatePosition = () => {
             invalidText="Number is not valid"
             size="sm"
             min={0}
-            step={1}
             onChange={onNumChange((value: number) => setCollateralCount(value))}
             value={0}
-            style={{marginLeft: 8, marginRight: 8}}
+            style={{marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}}
           />
         </div>
         Eth of Collateral and
@@ -87,11 +89,11 @@ const CreatePosition = () => {
             id="debtInput"
             invalidText="Number is not valid"
             min={0}
-            step={1}
+            step={1e-6}
             size="sm"
             onChange={onNumChange((value: number) => setDebtCount(value))}
             value={0}
-            style={{marginLeft: 8, marginRight: 8}}
+            style={{marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}}
           />
         </div>
 
@@ -102,16 +104,16 @@ const CreatePosition = () => {
         <PositionMetadata  items={[
           {
             title: 'Min position size',
-            value: '2500 Hue'
+            value: numDisplay(market.minPositionSize) + ' Hue',
           },{
             title: 'Collateralization Ratio',
             value: '153%'
           },{
-            title: 'New wallet Eth Balance',
-            value: '12.86'
+            title: 'New Eth Balance',
+            value: numDisplay(userEthBalance - collateralCount)
           },{
-            title: 'New wallet Hue Balance',
-            value: '1800'
+            title: 'New Hue Balance',
+            value: numDisplay(hueBalance.userBalance + debtCount)
           },
         ]} />
       </div>

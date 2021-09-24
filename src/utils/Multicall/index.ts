@@ -75,10 +75,10 @@ export const getDuplicateFuncMulticall = <
 
     return [id, {
       id,
-      contract: contract,
-      func: func,
+      contract,
+      func,
       args,
-      converter: converter,
+      converter,
       inputs,
       outputs,
       encoding,
@@ -103,13 +103,26 @@ export const executeMulticalls = async <
   tcpMulticall: TcpMulticallViewOnly,
   multicalls: Multicalls,
 ) => {
+  try {
+    return executeMulticallsImpl(tcpMulticall, multicalls)
+  } catch (exception) {
+    console.error('Caught Multicall Execution Error:')
+    console.error({exception})
+    throw exception
+  }
+}
+
+const executeMulticallsImpl = async <
+  Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
+>(
+  tcpMulticall: TcpMulticallViewOnly,
+  multicalls: Multicalls,
+) => {
   const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
 
-  console.log("before multicall execute")
   const rawResults = await tcpMulticall.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
   ))
-  console.log("after multicall execute")
 
   const abiCoder = new ethersUtils.AbiCoder()
   const results = Object.fromEntries(
