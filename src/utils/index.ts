@@ -21,7 +21,7 @@ export const mnt = (quantity: number, decimals = 18): string => {
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
 
-export const numVal = (num: string | number): number => typeof num == 'string' ? parseInt(num) : num
+export const numVal = (num: string | number): number => typeof num == 'string' ? parseFloat(num) : num
 
 type direction = 'up' | 'down'
 
