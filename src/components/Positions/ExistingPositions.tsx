@@ -8,10 +8,11 @@ import SimpleTable from '../library/SimpleTable'
 import { numDisplay } from '../../utils'
 
 const ExistingPositionsTable = () => {
-  const headers = ['Position ID', 'Debt', 'Collateral']
   const dispatch = useAppDispatch()
 
   const positions = waitForPositions(selector, dispatch)
+
+  const headers = ['Position ID', 'Debt', 'Collateral']
 
   if (positions === null) {
     return <DataTableSkeleton headers={headers.map(header => ({key: header}))} rowCount={3} />
