@@ -9,7 +9,6 @@ import { numDisplay } from '../../utils'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
-
   const positions = waitForPositions(selector, dispatch)
 
   const headers = ['Position ID', 'Debt', 'Collateral']
