@@ -49,7 +49,6 @@ export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
       }
     })
     .addCase(thunk.rejected, (state, action) => {
-      console.log({rawRejectedError: action.error})
       state.write = {
         waitingForUser: false,
         hash: '',

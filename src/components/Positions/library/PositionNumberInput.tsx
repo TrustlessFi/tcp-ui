@@ -28,7 +28,7 @@ const PositionNumberInput = ({
         step={1e-6}
         size="sm"
         onChange={onNumChange((value: number) => action(value))}
-        value={value}
+        value={isNaN(value) ? "" : value }
         style={{marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}}
       />
     </div>
