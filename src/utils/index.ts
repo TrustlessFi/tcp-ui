@@ -73,6 +73,8 @@ export const roundToXDecimals = (val: number, decimals: number = 0) => {
   const result = (Math.round(val * 10 ** decimals) / 10 ** decimals).toString()
   if (decimals === 0) return result
   else {
+    const decimalPointIndex = result.lastIndexOf('.')
+    if (decimalPointIndex === -1) return result
     const decimalCount = result.substr(result.lastIndexOf('.') + 1).length
     if (decimalCount < decimals) return result + '0'.repeat(decimals - decimalCount)
     else return result
