@@ -95,7 +95,7 @@ export const numDisplay = (
     let logVal = Math.floor(log({ val: Math.abs(val), base: 10 }))
     decimals = Math.min(logVal > -1 ? 0 : Math.abs(logVal), 6) + 2
   }
-  if (isNaN(val)) return "-"
+  if (isNaN(val) || !isFinite(val)) return "-"
   return addCommas(roundToXDecimals(val, decimals))
 }
 
