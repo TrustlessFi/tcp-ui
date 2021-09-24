@@ -50,8 +50,8 @@ const CreatePositionController = ({
     }
   ]
 
-  const preview = items.map(item =>
-    <div>
+  const preview = items.map((item, index) =>
+    <div key={index}>
       <LargeText>
         {item.title + ': '}
       </LargeText>
