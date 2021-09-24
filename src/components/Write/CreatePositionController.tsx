@@ -4,6 +4,7 @@ import TxConfirmController from './TxConfirmController'
 import { createPosition } from '../../slices/positions'
 import { RootState } from '../../app/store';
 import { ProtocolContract } from '../../slices/contracts/index';
+import { numDisplay } from '../../utils/'
 
 const CreatePositionController = ({
   collateralCount,
@@ -41,12 +42,19 @@ const CreatePositionController = ({
     </>
   )
 
+  const mediumName =
+    'Creating a position with '
+    + numDisplay(collateralCount, 2)
+    + ' collateral and '
+    + numDisplay(debtCount, 2)
+    + ' debt.'
+
   return (
     <TxConfirmController
       thunk={createPosition({collateralCount, debtCount, Market})}
       preview={preview}
       verb="Create"
-      mediumName={'Creating a position with ' + collateralCount + ' collateral and ' + debtCount + ' debt.'}
+      mediumName={mediumName}
       shortName={'Position Creation'}
       onCancel={onCancel}
       isActive={isActive}
