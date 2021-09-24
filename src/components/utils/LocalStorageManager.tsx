@@ -91,16 +91,14 @@ export const slicesToPersist: persistedSlices = {
   },
 }
 
-type sliceStateWithExpiration = { expiration: number, sliceState: slicesState }
-
 const LocalStorageManager = () => {
   for (const [key, slice] of Object.entries(slicesToPersist)) {
-    const sliceState = selector(slice!.getState)
+    const sliceState = selector(slice.getState)
     if (sliceState === null) continue
-    const ttl = slice!.ttl
     const year2120 = 4733539200
-    const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + slice!.ttl
-    const stateWithTimestamp: sliceStateWithExpiration = { expiration, sliceState }
+    const ttl = slice.ttl
+    const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + ttl
+    const stateWithTimestamp = { expiration, sliceState }
     localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>
