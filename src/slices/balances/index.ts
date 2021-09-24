@@ -67,7 +67,7 @@ export const tokenBalanceThunk = async (
       balances: getDuplicateFuncMulticall(
         token,
         'balanceOf',
-        mc.BigNumberToNumber,
+        mc.BigNumberUnscale,
         Object.fromEntries(balancesList.map(item => [item.address, [item.address]]))
       )
     }
