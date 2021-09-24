@@ -10,8 +10,7 @@ import { UIID } from '../../constants'
 import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
 import { TransactionType } from '../transactions/index';
-import { getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall/index'
+import { getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
 import { Accounting, HuePositionNFT, Market, TcpMulticallViewOnly } from '../../utils/typechain'
 
@@ -29,7 +28,7 @@ export const fetchPositions = async (args: positionsArgs) => {
     positions: getDuplicateFuncMulticall(
       accounting,
       'getPosition',
-      mc.PositionData,
+      rc.PositionData,
       Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
     ),
   })

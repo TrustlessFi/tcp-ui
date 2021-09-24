@@ -1,12 +1,10 @@
 import { sliceState } from '../'
 import { unscale, uint255Max, bnf } from '../../utils'
-import { ERC20, TcpMulticallViewOnly } from '../../utils/typechain/'
+import { TcpMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import tcpMulticallArtifact from "../../utils/artifacts/contracts/core/auxiliary/TcpMulticall.sol/TcpMulticall.json"
 import { ProtocolContract } from '../contracts'
 import getContract, { contract } from '../../utils/getContract'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall/index'
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall/index';
 
 interface tokenInfo {
   address: string,
@@ -50,24 +48,24 @@ export const tokenBalanceThunk = async (
     tcpMulticall,
     {
       basicInfo: getMulticall(token, {
-        name: mc.String,
-        symbol: mc.String,
-        decimals: mc.Number,
+        name: rc.String,
+        symbol: rc.String,
+        decimals: rc.Number,
       }),
       userBalance: getMulticall(token,
-        { balanceOf: mc.BigNumber },
+        { balanceOf: rc.BigNumber },
         { balanceOf: [args.userAddress] }
       ),
       approvals: getDuplicateFuncMulticall(
         token,
         'allowance',
-        mc.BigNumberToString,
+        rc.BigNumberToString,
         Object.fromEntries(approvalsList.map(item => [item.address, [args.userAddress, item.address]]))
       ),
       balances: getDuplicateFuncMulticall(
         token,
         'balanceOf',
-        mc.BigNumberUnscale,
+        rc.BigNumberUnscale,
         Object.fromEntries(balancesList.map(item => [item.address, [item.address]]))
       )
     }

@@ -2,12 +2,11 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { liquidationsInfo } from '../liquidations'
 import getContract from '../../utils/getContract'
-import * as mc from '../../utils/Multicall'
 
 import { Prices, TcpMulticallViewOnly } from "../../utils/typechain"
 import { ProtocolContract } from '../contracts/index';
 import { getLocalStorage } from '../../utils/index';
-import { executeMulticall } from '../../utils/Multicall/index';
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 
 export type pricesInfo = {
@@ -29,7 +28,7 @@ export const getPricesInfo = createAsyncThunk(
     const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
     const ethPrice = (await executeMulticall(multicall, prices,
-      { calculateInstantCollateralPrice: mc.BigNumberUnscale },
+      { calculateInstantCollateralPrice: rc.BigNumberUnscale },
       { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },
     ))
 
