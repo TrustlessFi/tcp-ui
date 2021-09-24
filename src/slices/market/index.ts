@@ -31,7 +31,6 @@ export const getMarketInfo = createAsyncThunk(
     const market = getContract(args.Market, ProtocolContract.Market) as Market
     const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-    console.log("before market execute multicall")
     const result = (await executeMulticall(
       multicall,
       market,
@@ -45,7 +44,6 @@ export const getMarketInfo = createAsyncThunk(
         firstPeriod: rc.BigNumberToNumber,
       },
     ))
-    console.log("after market execute multicall", {result})
 
     return result
   }

@@ -24,7 +24,6 @@ const UpdatePosition = ({id}: { id: number}) => {
   // const [collateralIncrease, setCollateralIncrease] = useState(0)
   // const [debtIncrease, setDebtIncrease] = useState(0)
 
-  console.log({governor, liquidations, market, positions, prices, rates})
  if (
     governor === null ||
     liquidations === null ||
