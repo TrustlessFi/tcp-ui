@@ -5,48 +5,18 @@ import {
   NumberInput,
   TextAreaSkeleton,
 } from 'carbon-components-react'
-import Text from '../utils/Text'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices } from '../../slices/waitFor'
+import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
 import { onNumChange, numDisplay }  from '../../utils/'
 import CreatePositionController from '../Write/CreatePositionController'
-
-
-
-const PositionMetadata = ({items}: { items: {value: string, title: string }[]}) => {
-  const border = '2px solid #161616'
-
-  const valuesView = items.map((item, index) => {
-    return (
-      <Col xs key={"PositionMetadata " + index}>
-        <div>
-          <Text monospace size={14} lineHeight="18px" color="#8D8D8D" bold>{item.value}</Text>
-        </div>
-        <div>
-          <Text monospace size={14} lineHeight="18px" color="#8D8D8D">{item.title}</Text>
-        </div>
-      </Col>
-    )
-  })
-
-  return (
-    <Row style={{
-      borderTop: border,
-      borderBottom: border,
-      paddingTop: 16,
-      paddingBottom: 12,
-      paddingLeft: 12,
-      paddingRight: 12,
-    }}>
-      {valuesView}
-    </Row>
-  )
-}
+import PositionMetadata from './library/PositionMetadata'
+import PositionNumberInput from './library/PositionNumberInput'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
 
+  const liquidations = waitForLiquidations(selector, dispatch)
   const hueBalance = waitForHueBalance(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
   const userEthBalance = waitForEthBalance(selector, dispatch)
@@ -58,6 +28,7 @@ const CreatePosition = () => {
   const [showCreatePosition, setShowCreatePosition] = useState(false)
 
   if (
+    liquidations === null ||
     hueBalance === null ||
     priceInfo === null ||
     market === null ||
@@ -65,40 +36,19 @@ const CreatePosition = () => {
     userAddress === null
   ) return <TextAreaSkeleton />
 
-  const ethPrice = 10
-  const liquidationPrice = 20
+  const collateralization = (collateralCount * priceInfo.ethPrice * 100) / debtCount
+  const liquidationPrice = (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
+
+  const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
 
   return (
     <>
       <LargeText>
         I want to create a position with
-        <div style={{display: 'inline-block', width: 167}} >
-          <NumberInput
-            hideSteppers
-            id="collateralInput"
-            invalidText="Number is not valid"
-            size="sm"
-            min={0}
-            onChange={onNumChange((value: number) => setCollateralCount(value))}
-            value={0}
-            style={{marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}}
-          />
-        </div>
+        <PositionNumberInput id="collateralInput" action={(value: number) => setCollateralCount(value)} />
         Eth of Collateral and
-        <div style={{display: 'inline-block', width: 167}} >
-          <NumberInput
-            hideSteppers
-            id="debtInput"
-            invalidText="Number is not valid"
-            min={0}
-            step={1e-6}
-            size="sm"
-            onChange={onNumChange((value: number) => setDebtCount(value))}
-            value={0}
-            style={{marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}}
-          />
-        </div>
-
+        <PositionNumberInput id="debtInput" action={(value: number) => setDebtCount(value)} />
         Hue of debt.
       </LargeText>
 
@@ -109,7 +59,7 @@ const CreatePosition = () => {
             value: numDisplay(market.minPositionSize) + ' Hue',
           },{
             title: 'Collateralization Ratio',
-            value: '153%'
+            value: numDisplay(collateralization, 0) + '%'
           },{
             title: 'New Eth Balance',
             value: numDisplay(userEthBalance - collateralCount)
@@ -121,8 +71,9 @@ const CreatePosition = () => {
       </div>
 
       <LargeText>
-        Eth is currently {numDisplay(priceInfo.ethPrice, 2)} Hue.
-        If the price of Eth falls below 2712 Hue/Eth I could lose 13% of my Eth to liquidators.
+        Eth is currently {numDisplay(priceInfo.ethPrice, 0)} Hue.
+        If the price of Eth falls below {liquidationPriceDisplay === '0' ? '-' : liquidationPriceDisplay} Hue
+        I could lose {numDisplay(totalLiquidationIncentive, 0)}% or more of my position value in collateral to liquidators.
       </LargeText>
       <div style={{marginTop: 32}}>
         <Button onClick={() => setShowCreatePosition(true)}>
