@@ -15,7 +15,7 @@ const Positions = () => {
 
   return (
     <>
-      <div>
+      <div style={{marginBottom: 32}}>
         <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
       </div>
       {(positionsEditor.status.creating
