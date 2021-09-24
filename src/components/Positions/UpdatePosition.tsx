@@ -10,7 +10,6 @@ import SimpleTable from '../library/SimpleTable'
 import { editorClosed } from '../../slices/positionsEditor'
 import { roundToXDecimals } from '../../utils'
 import { onNumChange, anyNull }  from '../../utils/'
-import CreatePositionController from '../Write/CreatePositionController'
 
 const UpdatePosition = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()
