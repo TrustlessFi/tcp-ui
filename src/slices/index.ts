@@ -1,5 +1,6 @@
 import { SerializedError, AsyncThunk, Draft } from '@reduxjs/toolkit';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { parseMetamaskError } from '../utils'
 
 export interface sliceState<T> {
   loading: boolean
@@ -48,6 +49,7 @@ export const getGenericWriteReducerBuilder = <Args extends {}, Value>(
       }
     })
     .addCase(thunk.rejected, (state, action) => {
+      console.log({rawRejectedError: action.error})
       state.write = {
         waitingForUser: false,
         hash: '',
