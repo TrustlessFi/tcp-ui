@@ -61,7 +61,7 @@ export const tokenBalanceThunk = async (
       approvals: getDuplicateFuncMulticall(
         token,
         'allowance',
-        mc.String,
+        mc.BigNumberToString,
         Object.fromEntries(approvalsList.map(item => [item.address, [args.userAddress, item.address]]))
       ),
       balances: getDuplicateFuncMulticall(

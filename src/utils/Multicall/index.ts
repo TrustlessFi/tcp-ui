@@ -12,6 +12,7 @@ export const String = (result: any) => result as string
 export const StringArray = (result: any) => result as string[]
 export const BigNumber = (result: any) => result as ethers.BigNumber
 export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
+export const BigNumberToString = (result: any) => (result as ethers.BigNumber).toString()
 export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
 export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
 export const PositionData = (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>
@@ -24,6 +25,7 @@ type resultConverter =
   typeof StringArray |
   typeof BigNumber |
   typeof BigNumberToNumber |
+  typeof BigNumberToString |
   typeof BigNumberUnscale |
   typeof PositionData
 
