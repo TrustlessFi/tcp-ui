@@ -28,7 +28,7 @@ const TxConfirmController = <Args extends {}, Value>({
 }) => {
   const dispatch = useAppDispatch()
   const [isPreviewApproved, setIsPreviewApproved] = useState(false)
-  const state = selector(stateSelector)
+  const dataState = selector(stateSelector)
 
   const cancel = () => {
     setIsPreviewApproved(false)
@@ -56,7 +56,7 @@ const TxConfirmController = <Args extends {}, Value>({
         {preview}
       </Modal>
     )
-  } else if (state.write.error !== null) {
+  } else if (dataState.write.error !== null) {
     return (
       <Modal
         open
@@ -67,10 +67,10 @@ const TxConfirmController = <Args extends {}, Value>({
         modalHeading="Error"
         primaryButtonText={verb}
         secondaryButtonText="Cancel">
-        <>{state.write.error.message}</>
+        <>{dataState.write.error.message}</>
       </Modal>
     )
-  } else if (state.write.hash.length === 0) {
+  } else if (dataState.write.hash.length === 0) {
     return (
       <Modal
         open
