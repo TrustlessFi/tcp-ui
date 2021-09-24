@@ -6,7 +6,6 @@ import { clearLendHueBalance } from '../../slices/balances/lendHueBalance';
 
 import { TransactionType } from '../../slices/transactions/index';
 import { assertUnreachable } from '../../utils/index';
-import { waitForPositions, waitForHueBalance, waitForLendHueBalance } from '../../slices/waitFor';
 
 
 const FinishAction = ({type}: {type: TransactionType}) => {
@@ -20,7 +19,6 @@ const FinishAction = ({type}: {type: TransactionType}) => {
         dispatch(clearPositions())
       }
 
-      waitForPositions(selector, dispatch)
       break
     case TransactionType.Lend:
     case TransactionType.Withdraw:
@@ -29,11 +27,7 @@ const FinishAction = ({type}: {type: TransactionType}) => {
         dispatch(clearHueBalance())
         dispatch(clearLendHueBalance())
       }
-
-      waitForHueBalance(selector, dispatch)
-      waitForLendHueBalance(selector, dispatch)
       break
-
     default:
       assertUnreachable(type)
   }
