@@ -3,6 +3,7 @@ import { TransactionInfo } from '../transactions'
 import { timeMS } from '../../utils'
 import { getLocalStorage } from '../../utils'
 import { TransactionStatus, getTxNonce } from '../transactions'
+import { getTxHash } from '../transactions/index';
 
 export interface notificationInfo extends TransactionInfo {
   startTimeMS: number
@@ -26,7 +27,7 @@ export const notificationsSlice = createSlice({
     },
     notificationClosed: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      if (state.hasOwnProperty(hash)) delete state[hash]
+      return Object.fromEntries(Object.values(state).filter(notif => getTxHash(notif) !== hash).map(notif => [notif.hash, notif]))
     },
   }
 })

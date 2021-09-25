@@ -198,9 +198,7 @@ export const transactionsSlice = createSlice({
   initialState: getLocalStorage(name, {}) as TransactionState,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
-      console.log("INSIDE CLLEAR USER TXS")
-      state = Object.assign({})
-      // state = Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx]))
+      return Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx]))
     },
     transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
       const txInfo = action.payload
