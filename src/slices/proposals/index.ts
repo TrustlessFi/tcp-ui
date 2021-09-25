@@ -4,14 +4,14 @@ import { genProposals } from './api'
 import { getGenericReducerBuilder } from '../'
 
 export enum ProposalState {
-  Pending,
-  Active,
-  Canceled,
-  Defeated,
-  Succeeded,
-  Queued,
-  Expired,
-  Executed,
+  Pending = 'Pending',
+  Active = 'Active',
+  Canceled = 'Canceled',
+  Defeated = 'Defeated',
+  Succeeded = 'Succeeded',
+  Queued = 'Queued',
+  Expired = 'Expired',
+  Executed = 'Executed',
 }
 
 export interface Proposal {
