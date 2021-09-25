@@ -1,18 +1,13 @@
 import { useState } from "react"
-import { Row, Col } from 'react-flexbox-grid'
 import {
   Button,
-  NumberInput,
-  Dropdown,
-  OnChangeData,
   TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
+import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
-import { first } from '../../utils'
 import PositionNumberInput from '../Positions/library/PositionNumberInput';
 import { LendBorrowOptions } from './'
 import InputPicker from './library/InputPicker'
@@ -21,14 +16,16 @@ import PositionMetadata from '../Positions/library/PositionMetadata';
 import ErrorMessage from '../Positions/library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
 import { ProtocolContract } from '../../slices/contracts/index';
-
-
+import { getAPR } from './library'
 
 const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
+  const market = waitForMarket(selector, dispatch)
+  const rates = waitForRates(selector, dispatch)
+  const sdi = waitForSDI(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
 
   const [amount, setAmount] = useState(0)
@@ -36,8 +33,15 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
   if (
     hueBalance === null ||
     lendHueBalance === null ||
+    market === null ||
+    rates === null ||
+    sdi === null ||
     marketContract === null
   ) return <TextAreaSkeleton />
+
+  const apr = getAPR({market, rates, sdi, hueBalance})
+
+  console.log({lendTokenValueInHue: market.valueOfLendTokensInHue})
 
   const onChange = (option: LendBorrowOptions) => {
     if (option !== LendBorrowOptions.Lend) onSelect(option)
@@ -45,7 +49,6 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
 
   const newWalletBalance = hueBalance.userBalance - amount
   const newAccountBalance = lendHueBalance.userBalance + amount
-
 
   const failures: {[key in string]: reason} = {
     noValueEntered: {
@@ -61,7 +64,6 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-
 
   const openLendDialog = () => {
     dispatch(openModal({
@@ -79,7 +81,7 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
         <LargeText>
           I have {numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
           <div />
-          The current lend APR is {numDisplay(hueBalance.userBalance, 2)} but will vary over time.
+          The current lend APR is {numDisplay(apr, 2)}% but will vary over time.
         </LargeText>
       </div>
       <LargeText>
