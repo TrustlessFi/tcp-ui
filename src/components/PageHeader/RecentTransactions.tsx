@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Launch16 } from '@carbon/icons-react';
 import Center from '../library/Center';
 import SmallLink from '../library/SmallLink'
-import { clearUserTransactions, getTxNamePresentTense, getTxHash } from '../../slices/transactions'
+import { getTxNamePresentTense, getTxHash, clearUserTransactions } from '../../slices/transactions'
 import { getSortedUserTxs } from '../utils'
 import { Row, Col } from 'react-flexbox-grid'
 
@@ -10,8 +10,6 @@ const RecentTransactions = () => {
   const dispatch = useAppDispatch()
   const userAddress = selector(state => state.wallet.address)
   const txs = selector(state => state.transactions)
-  console.log({txs})
-  console.log("inside recent transactions!!")
 
   const sortedUserTxs = getSortedUserTxs(userAddress, txs)
   if (sortedUserTxs.length === 0) return null

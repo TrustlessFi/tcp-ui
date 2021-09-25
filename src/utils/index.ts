@@ -192,3 +192,17 @@ export const isTxHash = (hash: string) => {
 }
 
 export const xor = (a: boolean, b: boolean) => ( a || b ) && !( a && b )
+
+
+export const equalArrays = (a: any[], b: any[]) => {
+  if (a.length !== b.length) return false
+  return a.filter((aItem, index) => aItem !== b[index] ).length === 0
+}
+
+export const equalStrings = (a: string, b: string) => {
+  return equalArrays(a.split(''), b.split(''))
+}
+
+export const equalStringsCaseInsensitive = (a: string, b: string) => {
+  return equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
+}
