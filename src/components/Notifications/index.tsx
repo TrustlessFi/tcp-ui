@@ -4,13 +4,13 @@ import { getTxNonce, getTxHash } from '../../slices/transactions'
 import Notification from './Notification'
 
 const Notifications = () => {
-  const rawNotifications = Object.values(selector(state => state.notifications))
+  const allNotifications = Object.values(selector(state => state.notifications))
   const userAddress = selector(state => state.wallet.address)
 
-  if (userAddress === null || rawNotifications.length === 0) return null
+  if (userAddress === null || allNotifications.length === 0) return null
 
   const renderedNotifications =
-    Object.values(rawNotifications)
+    Object.values(allNotifications)
       .sort((a, b) => getTxNonce(a) - getTxNonce(b))
       .filter(notification => notification.userAddress === userAddress)
       .map(notification => {

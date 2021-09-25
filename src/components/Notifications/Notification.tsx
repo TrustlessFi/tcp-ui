@@ -66,10 +66,9 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
 
   const [ loadingBarWidth, setLoadingBarWidth ] = useState(calculateLoadingBarWidth())
   const [ visible, setVisible ] = useState(true)
+  const closeCalled = useRef(false)
 
   const endTime = data.startTimeMS + (NOTIFICATION_DURATION_SECONDS * 1000)
-
-  const closeCalled = useRef(false)
 
   const hash = getTxHash(data)
 
@@ -97,6 +96,11 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
     }, (NOTIFICATION_DURATION_SECONDS * 1000) / 250)
     return () => clearInterval(interval)
   })
+
+  if (timeMS() > endTime + FADE_OUT_MS) {
+    dispatch(notificationClosed(getTxHash(data)))
+    return null
+  }
 
   const title = data.status === TransactionStatus.Failure
     ? getTxNamePastTense(data.type)
