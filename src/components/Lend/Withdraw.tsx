@@ -17,6 +17,7 @@ import { LendBorrowOptions } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../Positions/library/ErrorMessage';
 import PositionMetadata from '../Positions/library/PositionMetadata';
+import ErrorMessage from '../Positions/library/ErrorMessage';
 
 
 
@@ -75,27 +76,30 @@ const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) =
         />
         Hue.
       </LargeText>
-      <PositionMetadata items={[
-        {
-          title: 'Current Wallet Balance',
-          value: numDisplay(hueBalance.userBalance, 2) + ' Hue',
-          failing: false
-        },{
-          title: 'New Wallet Balance',
-          value: numDisplay(hueBalance.userBalance - amount, 2) + ' Hue',
-          failing: failures.notEnoughInWallet.failing,
-        },{
-          title: 'Current Hue Lent',
-          value: numDisplay(lendHueBalance.userBalance, 2),
-        },{
-          title: 'New Hue Lent',
-          value: numDisplay(newAccountBalance, 2)
-        },
-      ]} />
+      <div style={{marginTop: 36}}>
+        <PositionMetadata items={[
+          {
+            title: 'Current Wallet Balance',
+            value: numDisplay(hueBalance.userBalance, 2) + ' Hue',
+            failing: false
+          },{
+            title: 'New Wallet Balance',
+            value: numDisplay(hueBalance.userBalance - amount, 2) + ' Hue',
+            failing: failures.notEnoughInWallet.failing,
+          },{
+            title: 'Current Hue Lent',
+            value: numDisplay(lendHueBalance.userBalance, 2),
+          },{
+            title: 'New Hue Lent',
+            value: numDisplay(newAccountBalance, 2)
+          },
+        ]} />
+      </div>
       <div style={{marginTop: 32, marginBottom: 32}}>
         <Button disabled={isFailing}>
           Withdraw
         </Button>
+        <ErrorMessage reasons={failureReasons} />
       </div>
     </>
   )
