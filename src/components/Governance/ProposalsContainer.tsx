@@ -2,14 +2,14 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { waitForProposals } from '../../slices/waitFor';
 import AppLoading from '../library/AppLoading';
-import { Proposal as IProposal, ProposalStates } from '../../slices/proposals';
+import { Proposal as IProposal, ProposalState } from '../../slices/proposals';
 import Proposal from './Proposal';
 import Center from '../library/Center';
 import { ListItem, UnorderedList } from 'carbon-components-react';
 import { AppTag } from '../library/AppTag';
 import { useDispatch } from 'react-redux';
 
-const defaultSelectedStates = {
+const defaultSelectedStates: {[key in ProposalState]: boolean} = {
   Pending: true,
   Active: true,
   Defeated: false,
@@ -22,7 +22,7 @@ const defaultSelectedStates = {
 
 const ProposalsContainer: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalStates]: boolean}>(defaultSelectedStates);
+  const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalState]: boolean}>(defaultSelectedStates);
   const [ defaultSelected, updateDefaultSelected ] = useState<boolean>(true);
   const [ allSelected, updateAllSelected ] = useState<boolean>(false);
   const [ noneSelected, updateNoneSelected ] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const ProposalsContainer: FunctionComponent = () => {
   useEffect(() => {
     const proposals = proposalsState && Object.values(proposalsState);
     if (proposals && proposals.length) {
-      updateFilteredProposals(proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalStates]));
+      updateFilteredProposals(proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalState]));
     }
   }, [selectedStates, proposalsState]);
 
@@ -59,9 +59,9 @@ const ProposalsContainer: FunctionComponent = () => {
   }, [selectedStates]);
 
   const setAll = (selected: boolean): void => {
-    let newSelectedStates: {[key in ProposalStates]: boolean} = { ...selectedStates };
+    let newSelectedStates: {[key in ProposalState]: boolean} = { ...selectedStates };
     for (const label in selectedStates) {
-      newSelectedStates[label as keyof typeof ProposalStates] = selected;
+      newSelectedStates[label as ProposalState] = selected;
     }
     updateSelectedStates(newSelectedStates);
   };
