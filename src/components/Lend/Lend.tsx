@@ -17,6 +17,7 @@ import ErrorMessage from '../Positions/library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
 import { ProtocolContract } from '../../slices/contracts/index';
 import { getAPR } from './library'
+import ApprovalButton from '../utils/ApprovalButton'
 
 const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
   const dispatch = useAppDispatch()
@@ -81,7 +82,7 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
         <LargeText>
           I have {numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
           <div />
-          The current lend APR is {numDisplay(apr, 2)}% but will vary over time.
+          The current lend APR is {numDisplay(apr, 2)}% but will vary due to market forces over time.
         </LargeText>
       </div>
       <LargeText>
@@ -112,6 +113,11 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
           },
         ]} />
       </div>
+      <ApprovalButton
+        token={ProtocolContract.Hue}
+        protocolContract={ProtocolContract.Market}
+        approvalLabels={{waiting: 'Approve Lend', approving: 'Approving Lend...', approved: 'Lend Approved'}}
+      />
       <div style={{marginTop: 32, marginBottom: 32}}>
         <Button disabled={isFailing} onClick={openLendDialog}>
           Lend

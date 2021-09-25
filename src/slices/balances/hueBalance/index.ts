@@ -2,6 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk } from '../'
 import { ProtocolContract } from '../../contracts'
+import getProvider from '../../../utils/getProvider';
+import getContract from '../../../utils/getContract';
+import { Hue } from '../../../utils/typechain'
+import { uint256Max } from '../../../utils/index';
 
 export type hueBalanceArgs = {
   Hue: string
@@ -9,6 +13,12 @@ export type hueBalanceArgs = {
   Accounting: string
   TcpMulticall: string
   userAddress: string
+}
+
+export type hueApproveArgs = {
+  Hue: string
+  spender: ProtocolContract
+  spenderAddress: string
 }
 
 export const getHueBalance = createAsyncThunk(
@@ -23,6 +33,15 @@ export const getHueBalance = createAsyncThunk(
   ),
 )
 
+export const approveHue = createAsyncThunk(
+  'hueBalance/approveHue',
+  async (args: hueApproveArgs) => {
+    const provider = getProvider()
+    const hue = getContract(args.Hue, ProtocolContract.Hue) as Hue
+    await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+  }
+)
+
 export const hueBalanceSlice = createSlice({
   name: 'hueBalance',
   initialState: initialState as balanceState,
@@ -33,6 +52,28 @@ export const hueBalanceSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getHueBalance)
+
+    return builder
+      .addCase(approveHue.pending, (state, action) => {
+        const spendingContract = action.meta.arg.spender
+        if (state.data.value !== null && state.data.value.approval[spendingContract] !== undefined) {
+          state.data.value.approval[spendingContract]!.approving = true
+        }
+      })
+      .addCase(approveHue.rejected, (state, action) => {
+        const spendingContract = action.meta.arg.spender
+        if (state.data.value !== null && state.data.value.approval[spendingContract] !== undefined) {
+          state.data.value.approval[spendingContract]!.approving = false
+        }
+      })
+      .addCase(approveHue.fulfilled, (state, action) => {
+        const spendingContract = action.meta.arg.spender
+        if (state.data.value !== null && state.data.value.approval[spendingContract] !== undefined) {
+          state.data.value.approval[spendingContract]!.approving = false
+          state.data.value.approval[spendingContract]!.approved = true
+          state.data.value.approval[spendingContract]!.allowance = uint256Max
+        }
+      })
   },
 })
 

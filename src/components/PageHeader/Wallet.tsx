@@ -50,6 +50,9 @@ const Wallet = () => {
   const walletConnected = (accounts: string[]) => {
     // TODO if new account is different than the current account, and the current account isn't null
     // then clear all of the slices that depend on the user data
+
+    // TODO
+    // clear out balances
     const account = accounts && accounts[0]
 
     if (account != null) {

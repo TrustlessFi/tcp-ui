@@ -15,16 +15,18 @@ interface tokenInfo {
 
 type balances = { [key in ProtocolContract]?: number }
 
-type approval = { [key in ProtocolContract]?: {
+export type approval = {
   allowance: string,
   approving: boolean,
   approved: boolean
-}}
+}
+
+type approvals = { [key in ProtocolContract]?: approval}
 
 export interface balanceInfo {
   token: tokenInfo
   userBalance: number
-  approval: approval
+  approval: approvals
   balances: balances
 }
 
@@ -40,7 +42,7 @@ export const tokenBalanceThunk = async (
   args: balanceArgs,
   approvalsList: {contract: ProtocolContract, address: string}[],
   balancesList: {contract: ProtocolContract, address: string}[],
-) => {
+): Promise<balanceInfo> => {
   const token = contract(args.tokenAddress, erc20Artifact.abi)
   const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
@@ -60,7 +62,7 @@ export const tokenBalanceThunk = async (
         token,
         'allowance',
         rc.BigNumberToString,
-        Object.fromEntries(approvalsList.map(item => [item.address, [args.userAddress, item.address]]))
+        Object.fromEntries(approvalsList.map(item => [item.contract, [args.userAddress, item.address]]))
       ),
       balances: getDuplicateFuncMulticall(
         token,
@@ -71,7 +73,7 @@ export const tokenBalanceThunk = async (
     }
   )
 
-  const approval: approval = Object.fromEntries(Object.entries(approvals).map(([destAddress, allowance]) => {
+  const approval: approvals = Object.fromEntries(Object.entries(approvals).map(([destAddress, allowance]) => {
     return [
       destAddress,
       {
