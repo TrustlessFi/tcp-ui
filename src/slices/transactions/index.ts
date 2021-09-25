@@ -125,7 +125,6 @@ export const waitForTransaction = createAsyncThunk(
   async (args: TransactionArgs, {dispatch}): Promise<void> => {
     const provider = getProvider()
     const userAddress = await provider.getSigner().getAddress()
-    const genericTxFailedMessage = 'Transaction failed.'
 
     let tx: ContractTransaction
     try {
@@ -138,7 +137,6 @@ export const waitForTransaction = createAsyncThunk(
         status: TransactionStatus.Failure,
       })
 
-      console.log("about to parse")
       const failureMessages = parseMetamaskError(e)
       dispatch(modalWaitingForCompletion(getTxHash(txInfo)))
       dispatch(modalFailure({ hash: getTxHash(txInfo), messages: failureMessages}))

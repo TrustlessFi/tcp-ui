@@ -168,7 +168,6 @@ const getModalContent = (
 const AppModal = ({}: {}) => {
   const dispatch = useAppDispatch()
   const modalState = selector(state => state.modal)
-  console.log({modalState})
 
   if (modalState.data === null || modalState.stage === ModalStage.Closed) return null
   const modalContent = getModalContent(modalState.stage, modalState.data, modalState.hash, modalState.failureMessages)
