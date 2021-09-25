@@ -6,7 +6,7 @@ import {
   Modal,
 } from 'carbon-components-react'
 import { sliceState } from '../../slices'
-import { modalData, closeModal } from '../../slices/modal'
+import { modalData, closeModal, createPositionModalData, lendModalData } from '../../slices/modal'
 import { TransactionType, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { numDisplay, assertUnreachable } from '../../utils'
 import LargeText from '../utils/LargeText'
@@ -15,9 +15,10 @@ import { ModalState, ModalStage, openModal } from '../../slices/modal/'
 import { waitForTransaction } from '../../slices/transactions'
 import ExplorerLink from '../utils/ExplorerLink'
 
-const ModalPreview = ({data}: {data: NonNullable<modalData>}) => {
+const getModalPreview = (data: NonNullable<modalData>) => {
   switch(data.args.type) {
     case TransactionType.CreatePosition:
+      data = data as createPositionModalData
 
       const items = [
         {
@@ -48,30 +49,37 @@ const ModalPreview = ({data}: {data: NonNullable<modalData>}) => {
 
       return <>{preview}</>
 
-    default:
-      assertUnreachable(data.args.type)
+    case TransactionType.Lend:
+      data = data as lendModalData
+      return (
+        <div>
+          <LargeText>
+            Count:
+          </LargeText>
+          <Text>
+            {data.args.count}
+          </Text>
+        </div>
+      )
   }
-  return <></>
 }
 
 const getVerb = (data: NonNullable<modalData>) => {
   switch(data.args.type) {
     case TransactionType.CreatePosition:
       return 'Create'
-    default:
-      assertUnreachable(data.args.type)
+    case TransactionType.Lend:
+      return 'Lend'
   }
-  return ''
 }
 
 const getShortName = (data: NonNullable<modalData>) => {
   switch(data.args.type) {
     case TransactionType.CreatePosition:
       return 'Creating a Position'
-    default:
-      assertUnreachable(data.args.type)
+    case TransactionType.Lend:
+      return 'Lending'
   }
-  return ''
 }
 
 const getMediumName = (data: NonNullable<modalData>) => {
@@ -82,10 +90,9 @@ const getMediumName = (data: NonNullable<modalData>) => {
         + ' Eth of collateral and '
         + numDisplay(data.args.debtCount, 2)
         + ' Hue of debt.'
-    default:
-      assertUnreachable(data.args.type)
+    case TransactionType.Lend:
+      return 'Lending ' + numDisplay(data.args.count, 2) + ' Hue.'
   }
-  return ''
 }
 
 interface modalProps {
@@ -112,7 +119,7 @@ const getModalContent = (
   switch(stage) {
     case ModalStage.Preview:
       return {
-        content: <ModalPreview data={data} />,
+        content: getModalPreview(data),
         props: {
           modalHeading: getTxNamePresentTense(data.args.type) + 'Transaction Preview',
           primaryButtonText: verb,
@@ -149,8 +156,8 @@ const getModalContent = (
             <div><ExplorerLink txHash={hash!}>View on Explorer</ExplorerLink></div>
           </>
         : <>
-            <div>{getShortName(data)} failed with message:</div>
-            {failureMessages!.map(m => <div>{m}</div>)}
+            <div key={-1}>{getShortName(data)} failed with message:</div>
+            {failureMessages!.map((m, index) => <div key={index}>{m}</div>)}
           </>
       return {
         content,

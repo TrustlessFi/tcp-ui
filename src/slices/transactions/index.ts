@@ -4,6 +4,7 @@ import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
 import { clearHueBalance } from '../balances/hueBalance'
+import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { ethers, ContractTransaction } from 'ethers'
 import { ProtocolContract } from '../contracts/index';
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
@@ -72,8 +73,14 @@ export interface txCreatePositionArgs {
   Market: string,
 }
 
+export interface txLendArgs {
+  type: TransactionType.Lend
+  count: number,
+  Market: string,
+}
+
 export type TransactionArgs =
-  txCreatePositionArgs
+  txCreatePositionArgs | txLendArgs
 
 export type TransactionState = {[key in string]: TransactionInfo}
 
@@ -107,17 +114,18 @@ export const getTxNamePresentTense = (type: TransactionType) => {
 }
 
 const executeTransaction = async (args: TransactionArgs, provider: ethers.providers.Web3Provider) => {
+  const getMarket = () => getContract(args.Market, ProtocolContract.Market) as Market
+
   switch(args.type) {
     case TransactionType.CreatePosition:
-      const market = getContract(args.Market, ProtocolContract.Market) as Market
-      return await market.connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
+      return await getMarket().connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
         value: scale(args.collateralCount)
       })
 
-    default:
-      assertUnreachable(args.type)
+    case TransactionType.Lend:
+      return await getMarket().connect(provider.getSigner()).lend(scale(args.count))
+
   }
-  throw new Error('Shouldnt get here')
 }
 
 export const waitForTransaction = createAsyncThunk(
@@ -140,9 +148,6 @@ export const waitForTransaction = createAsyncThunk(
       const failureMessages = parseMetamaskError(e)
       dispatch(modalWaitingForCompletion(getTxHash(txInfo)))
       dispatch(modalFailure({ hash: getTxHash(txInfo), messages: failureMessages}))
-
-      console.error('TransactionSlice: Metamask tx error:')
-      console.error(e)
       return
     }
 
@@ -176,6 +181,11 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearPositions())
           dispatch(clearHueBalance())
           break
+        case TransactionType.Lend:
+        // case TransactionType.Withdraw:
+          dispatch(clearLendHueBalance())
+          dispatch(clearHueBalance())
+          break
 
           /*
         case TransactionType.Lend:
@@ -185,8 +195,6 @@ export const waitForTransaction = createAsyncThunk(
           break
           */
 
-        default:
-          assertUnreachable(args.type)
       }
     }
   })

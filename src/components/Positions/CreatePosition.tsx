@@ -107,7 +107,6 @@ const CreatePosition = () => {
         />
         Hue of debt.
       </LargeText>
-
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata  items={[
           {
@@ -128,7 +127,6 @@ const CreatePosition = () => {
           },
         ]} />
       </div>
-
       <LargeText>
         Eth is currently <Bold>{numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
         If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue

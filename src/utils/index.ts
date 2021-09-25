@@ -166,20 +166,38 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 
 
 export const parseMetamaskError = (rawError: any): string[] => {
-  rawError = rawError as {code: number, message: string}
-  const rawMessage = rawError.message
-
-  const beginObject = rawMessage.indexOf('{')
-  const serializedObject = rawMessage.substr(beginObject, rawMessage.length - (beginObject + 1))
-
-  const outerError = JSON.parse(serializedObject) as {value: { code: number, data: {code: number, message: string}}}
-  const innerError = outerError.value.data
-  switch(innerError.code) {
-    case 4001:
-      return ['Transaction Rejected by user. Please re-submit the transaction and accept it in Metamask.']
-    default:
-      return [innerError.message, ' (Metamask error code ' + innerError.code + ')']
+  if (rawError.hasOwnProperty('data')) {
+    if (rawError.data.hasOwnProperty('message')) {
+      return [rawError.data.message as string]
+    }
   }
+
+  if (rawError.hasOwnProperty('message')) {
+    if ((rawError.message as string).indexOf('{') === -1) return [rawError.message]
+    const rawMessage = rawError.message as string
+    const begin = rawMessage.indexOf('{')
+    const end = rawMessage.lastIndexOf('}')
+    if (end < begin ) return [rawMessage]
+
+    const jsonString = rawMessage.substr(begin, (end - begin)+ 1)
+    const innerObject = JSON.parse(jsonString)
+    if (innerObject.hasOwnProperty('message')) return [innerObject.message]
+    if (innerObject.hasOwnProperty('value')) {
+      const innerObjectValue = innerObject.value
+      if (innerObjectValue.hasOwnProperty('data')) {
+        const innerObjectValueData = innerObjectValue.data
+        const code = innerObjectValueData.hasOwnProperty('code') ? innerObjectValueData.code as number : null
+        if (code === 4001) return ['Transaction Rejected by user. Please re-submit the transaction and accept it in Metamask.']
+        if (innerObjectValueData.hasOwnProperty('message')) {
+          const returnData = [innerObjectValueData.message]
+          if (code !== null) returnData.push('Metamask error code ' + code + ')')
+          return returnData
+        }
+      }
+    }
+  }
+
+  return ['Unknown metamask error']
 }
 
 const zeroThroughF = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', ]

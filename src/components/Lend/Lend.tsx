@@ -9,14 +9,18 @@ import {
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
-import {  numDisplay }  from '../../utils/'
+import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
+import { openModal } from '../../slices/modal'
+import { numDisplay }  from '../../utils/'
 import { first } from '../../utils'
 import PositionNumberInput from '../Positions/library/PositionNumberInput';
 import { LendBorrowOptions } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../Positions/library/ErrorMessage';
 import PositionMetadata from '../Positions/library/PositionMetadata';
+import ErrorMessage from '../Positions/library/ErrorMessage';
+import { TransactionType } from '../../slices/transactions/index';
+import { ProtocolContract } from '../../slices/contracts/index';
 
 
 
@@ -25,12 +29,14 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
 
   const hueBalance = waitForHueBalance(selector, dispatch)
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
 
   const [amount, setAmount] = useState(0)
 
   if (
     hueBalance === null ||
-    lendHueBalance === null
+    lendHueBalance === null ||
+    marketContract === null
   ) return <TextAreaSkeleton />
 
   const onChange = (option: LendBorrowOptions) => {
@@ -56,6 +62,17 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
+
+  const openLendDialog = () => {
+    dispatch(openModal({
+      args: {
+        type: TransactionType.Lend,
+        count: amount,
+        Market: marketContract,
+      },
+    }))
+  }
+
   return (
     <>
       <div>
@@ -75,26 +92,29 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
         />
         Hue.
       </LargeText>
-      <PositionMetadata items={[
-        {
-          title: 'Current Wallet Balance',
-          value: numDisplay(hueBalance.userBalance, 2) + ' Hue',
-        },{
-          title: 'New Wallet Balance',
-          value: numDisplay(hueBalance.userBalance - amount, 2) + ' Hue',
-          failing: failures.notEnoughInWallet.failing,
-        },{
-          title: 'Current Hue Lent',
-          value: numDisplay(lendHueBalance.userBalance, 2),
-        },{
-          title: 'New Hue Lent',
-          value: numDisplay(newAccountBalance, 2)
-        },
-      ]} />
+      <div style={{marginTop: 36, marginBottom: 30}}>
+        <PositionMetadata items={[
+          {
+            title: 'Current Wallet Balance',
+            value: numDisplay(hueBalance.userBalance, 2) + ' Hue',
+          },{
+            title: 'New Wallet Balance',
+            value: numDisplay(hueBalance.userBalance - amount, 2) + ' Hue',
+            failing: failures.notEnoughInWallet.failing,
+          },{
+            title: 'Current Hue Lent',
+            value: numDisplay(lendHueBalance.userBalance, 2),
+          },{
+            title: 'New Hue Lent',
+            value: numDisplay(newAccountBalance, 2)
+          },
+        ]} />
+      </div>
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button disabled={isFailing}>
+        <Button disabled={isFailing} onClick={openLendDialog}>
           Lend
         </Button>
+        <ErrorMessage reasons={failureReasons} />
       </div>
     </>
   )
