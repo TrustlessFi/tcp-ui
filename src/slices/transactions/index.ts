@@ -160,10 +160,15 @@ export const waitForTransaction = createAsyncThunk(
     const receipt = await provider.waitForTransaction(tx.hash)
     const succeeded = receipt.status === 1
 
-    txInfo = { ...txInfo, status: succeeded ? TransactionStatus.Success : TransactionStatus.Failure }
-
-    dispatch(addNotification(txInfo))
-    dispatch(succeeded ? modalSuccess(tx.hash) : modalFailure({ hash: tx.hash, messages: [] }))
+    if (succeeded) {
+      dispatch(modalSuccess(tx.hash))
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
+      dispatch(transactionSucceeded(tx.hash))
+    } else {
+      dispatch(modalFailure({ hash: tx.hash, messages: []}))
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(transactionFailed(tx.hash))
+    }
 
     if (succeeded) {
       switch (args.type) {
@@ -200,9 +205,26 @@ export const transactionsSlice = createSlice({
       const hash = getTxHash(txInfo)
       state[hash] = txInfo
     },
+    transactionSucceeded: (state, action: PayloadAction<string>) => {
+      const hash = action.payload
+      if (state.hasOwnProperty(hash)) {
+        state[hash].status = TransactionStatus.Success
+      }
+    },
+    transactionFailed: (state, action: PayloadAction<string>) => {
+      const hash = action.payload
+      if (state.hasOwnProperty(hash)) {
+        state[hash].status = TransactionStatus.Failure
+      }
+    },
   },
 })
 
-export const { clearUserTransactions, transactionCreated } = transactionsSlice.actions
+export const {
+  clearUserTransactions,
+  transactionCreated,
+  transactionSucceeded,
+  transactionFailed,
+} = transactionsSlice.actions
 
 export default transactionsSlice.reducer
