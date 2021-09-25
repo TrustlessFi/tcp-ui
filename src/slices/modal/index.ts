@@ -26,7 +26,7 @@ export interface ModalState {
   failureMessages?: string[]
 }
 
-const name = 'positionsEditor'
+const name = 'modal'
 
 export const positionsEditorSlice = createSlice({
   name,

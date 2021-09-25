@@ -3,10 +3,7 @@ import { sliceState, initialState } from '../'
 import { fetchPositions } from './api'
 import { systemDebtInfo } from '../systemDebt'
 import { marketInfo } from "../market"
-import {
-  getGenericReducerBuilder,
-} from '../'
-import { getGenericWriteReducerBuilder } from '..'
+import { getGenericReducerBuilder } from '../'
 
 export interface Position {
   collateralCount: number,
