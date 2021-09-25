@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
 import { chainIDFound } from '../../slices/chainID'
-import { abbreviateAddress } from '../../utils'
+import { abbreviateAddress, equalStrings, equalStringsCaseInsensitive } from '../../utils'
 import WalletModal from './WalletModal'
 import NetworkIndicator from '../library/NetworkIndicator'
 import { getSortedUserTxs } from '../utils'
@@ -53,8 +53,11 @@ const Wallet = () => {
     const account = accounts && accounts[0]
 
     if (account != null) {
-      dispatch(connected(toChecksumAddress(account)))
-      dispatch(clearPositions())
+      const currentAccount = store.getState().wallet.address
+      if (currentAccount === null || !equalStringsCaseInsensitive(currentAccount, account)) {
+        dispatch(connected(toChecksumAddress(account)))
+        dispatch(clearPositions())
+      }
     }
   }
 
