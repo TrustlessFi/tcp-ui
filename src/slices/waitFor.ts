@@ -163,7 +163,7 @@ export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
 export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
   (state: RootState) => state.hueBalance,
   getHueBalance,
-  [ProtocolContract.Hue, FetchNode.UserAddress, ProtocolContract.TcpMulticall, ProtocolContract.Market],
+  [ProtocolContract.Hue, FetchNode.UserAddress, ProtocolContract.TcpMulticall, ProtocolContract.Market, ProtocolContract.Accounting],
 )
 
 export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balanceInfo>(

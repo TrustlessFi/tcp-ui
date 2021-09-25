@@ -3,7 +3,7 @@ import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
 import { Market, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
-import { getLocalStorage } from '../../utils'
+import { getLocalStorage, mnt } from '../../utils'
 import { executeMulticall, rc } from '../../utils/Multicall'
 
 export interface marketArgs {
@@ -19,6 +19,7 @@ export type marketInfo = {
   interestPortionToLenders: number,
   periodLength: number,
   firstPeriod: number,
+  valueOfLendTokensInHue: number,
 }
 
 export interface MarketState extends sliceState<marketInfo> {}
@@ -29,7 +30,7 @@ export const getMarketInfo = createAsyncThunk(
     const market = getContract(args.Market, ProtocolContract.Market) as Market
     const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-    const result = (await executeMulticall(
+    return (await executeMulticall(
       multicall,
       market,
       {
@@ -40,10 +41,12 @@ export const getMarketInfo = createAsyncThunk(
         interestPortionToLenders: rc.BigNumberUnscale,
         periodLength: rc.BigNumberToNumber,
         firstPeriod: rc.BigNumberToNumber,
+        valueOfLendTokensInHue: rc.BigNumberUnscale,
       },
+      {
+        valueOfLendTokensInHue: [mnt(1)]
+      }
     ))
-
-    return result
   }
 )
 
