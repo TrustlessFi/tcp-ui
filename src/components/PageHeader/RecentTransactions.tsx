@@ -17,7 +17,7 @@ const RecentTransactions = () => {
   const txLinks = sortedUserTxs.map(tx =>
     <SmallLink
       key={getTxHash(tx)}
-      onClick={() => console.log("tx clicked" + tx.type)}
+      onClick={() => alert("tx clicked" + tx.type)}
       icon={Launch16}>
       {getTxNamePresentTense(tx.type)}
     </SmallLink>)

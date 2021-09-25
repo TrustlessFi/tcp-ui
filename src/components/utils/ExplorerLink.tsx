@@ -6,10 +6,10 @@ import Text from './Text'
 import {
   Link,
 } from 'carbon-components-react'
-import { assertUnreachable } from '../../utils'
+import { assertUnreachable, xor } from '../../utils'
 
 
-const getEtherscanLink = (txHash: string, chainID: ChainID) => {
+const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
   switch (chainID) {
     case ChainID.Hardhat:
       return 'https://etherscan.io/' + txHash
@@ -20,24 +20,45 @@ const getEtherscanLink = (txHash: string, chainID: ChainID) => {
   }
 }
 
-const LargeText = ({
+const getEtherscanAddressLink = (address: string, chainID: ChainID) => {
+  switch (chainID) {
+    case ChainID.Hardhat:
+      return 'https://etherscan.io/address/' + address
+    case ChainID.Rinkeby:
+      return 'https://rinkeby.etherscan.io/address' + address
+    default:
+      assertUnreachable(chainID)
+  }
+}
+
+const ExplorerLink = ({
   txHash,
+  address,
   size,
   icon,
   children,
 }: {
-  txHash: string,
+  txHash?: string,
+  address?: string,
   size?: 'sm' | 'md' | 'lg',
   icon?: React.ComponentType,
   children: ReactNode
 }) => {
   const chainID = selector(state => state.chainID.chainID)
-
-  if (chainID === null) throw new Error('ExplorerLink: Chain ID Null')
-
   const [visited, setVisited] = useState(false)
 
-  const etherscanLink = getEtherscanLink(txHash, chainID)
+  if (chainID === null) {
+    console.error('ExplorerLink: Chain ID Null')
+    return <></>
+  }
+  if (!xor(txHash !== undefined, address !== undefined)) {
+    console.error('ExplorerLink: Provide only one of address, txhash')
+  }
+
+  const etherscanLink = txHash !== undefined
+    ? getEtherscanTxLink(txHash, chainID)
+    : getEtherscanAddressLink(address!, chainID)
+
 
   const onClick = (e: any) => {
     e.preventDefault()
@@ -60,4 +81,4 @@ const LargeText = ({
   )
 }
 
-export default LargeText
+export default ExplorerLink

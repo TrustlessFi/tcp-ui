@@ -166,15 +166,11 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 
 
 export const parseMetamaskError = (rawError: any): string[] => {
-  console.log("inside parseMetamaskError", {rawError})
   rawError = rawError as {code: number, message: string}
-  console.log("inside parseMetamaskError2", {rawError})
   const rawMessage = rawError.message
-  console.log("inside parseMetamaskError3", {rawMessage})
 
   const beginObject = rawMessage.indexOf('{')
   const serializedObject = rawMessage.substr(beginObject, rawMessage.length - (beginObject + 1))
-  console.log("serializedObject", {serializedObject})
 
   const outerError = JSON.parse(serializedObject) as {value: { code: number, data: {code: number, message: string}}}
   const innerError = outerError.value.data
@@ -194,3 +190,5 @@ export const isTxHash = (hash: string) => {
   if (hash.toLowerCase().substr(2).split('').filter(letter => zeroThroughF.includes(letter)).length != 64) return false
   return true
 }
+
+export const xor = (a: boolean, b: boolean) => ( a || b ) && !( a && b )

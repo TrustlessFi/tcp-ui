@@ -52,7 +52,6 @@ const Lend = () => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
-  console.log({hueBalance})
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
 
   const [selectedOption, setSelectedOption] = useState(first(Object.values(LendBorrowOptions)))

@@ -3,6 +3,7 @@ import { Copy16, Launch16 } from '@carbon/icons-react'
 import Center from '../library/Center'
 import SmallLink from '../library/SmallLink'
 import NetworkIndicator from '../library/NetworkIndicator'
+import ExplorerLink from '../utils/ExplorerLink'
 import {
   Modal,
 } from 'carbon-components-react'
@@ -31,7 +32,7 @@ const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () 
         </Center>
         <Center>
           <SmallLink icon={Copy16} onClick={() => alert('copy address clicked')}>Copy Address</SmallLink>
-          <SmallLink icon={Launch16} onClick={() => alert('View on explorer clicked')}>View on Explorer</SmallLink>
+          <ExplorerLink address={address} icon={Launch16}>View on Explorer</ExplorerLink>
         </Center>
         <hr />
         <RecentTransactions />
