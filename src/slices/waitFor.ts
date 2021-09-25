@@ -167,7 +167,7 @@ export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
 )
 
 export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balanceInfo>(
-  (state: RootState) => state.hueBalance,
+  (state: RootState) => state.lendHueBalance,
   getLendHueBalance,
   [ProtocolContract.LendHue, FetchNode.UserAddress, ProtocolContract.Market, ProtocolContract.TcpMulticall],
 )

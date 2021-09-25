@@ -42,14 +42,16 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
 
   const apr = getAPR({market, rates, sdi, hueBalance})
 
-  console.log({lendTokenValueInHue: market.valueOfLendTokensInHue})
-
   const onChange = (option: LendBorrowOptions) => {
     if (option !== LendBorrowOptions.Lend) onSelect(option)
   }
+  console.log({hueBalance, lendHueBalance})
 
   const newWalletBalance = hueBalance.userBalance - amount
-  const newAccountBalance = lendHueBalance.userBalance + amount
+  const lentHueCount = lendHueBalance.userBalance! * market.valueOfLendTokensInHue
+  const newLentHueCount = lentHueCount + amount
+
+  console.log({hueBalance})
 
   const failures: {[key in string]: reason} = {
     noValueEntered: {
@@ -61,10 +63,15 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
       message: 'Not enough in wallet.',
       failing: newWalletBalance < 0,
     },
+    hueNotApproved: {
+      message: 'Lending is not approved.',
+      failing: hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved,
+    },
   }
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
+  console.log({failures})
 
   const openLendDialog = () => {
     dispatch(openModal({
@@ -106,10 +113,10 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
             failing: failures.notEnoughInWallet.failing,
           },{
             title: 'Current Hue Lent',
-            value: numDisplay(lendHueBalance.userBalance, 2),
+            value: numDisplay(lentHueCount, 2),
           },{
             title: 'New Hue Lent',
-            value: numDisplay(newAccountBalance, 2)
+            value: numDisplay(newLentHueCount, 2)
           },
         ]} />
       </div>
@@ -122,6 +129,8 @@ const Lend = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
         <Button disabled={isFailing} onClick={openLendDialog}>
           Lend
         </Button>
+      </div>
+      <div>
         <ErrorMessage reasons={failureReasons} />
       </div>
     </>
