@@ -3,8 +3,8 @@ import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
 
 import { Rates, TcpMulticallViewOnly } from "../../utils/typechain/"
-import { ProtocolContract } from '../contracts/index';
-import { getLocalStorage } from '../../utils/index';
+import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils'
 import { executeMulticall, rc } from '../../utils/Multicall'
 
 export type ratesInfo = {

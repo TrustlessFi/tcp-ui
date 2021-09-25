@@ -4,7 +4,7 @@ import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import { getEthBalance } from '../../utils/Multicall/chainStatus'
 import getContract from '../../utils/getContract';
-import { ProtocolContract } from '../contracts/index';
+import { ProtocolContract } from '../contracts'
 
 import { TcpMulticall } from '../../utils/typechain'
 

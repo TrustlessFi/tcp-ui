@@ -3,10 +3,8 @@ import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
 import { Market, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
-import { getLocalStorage } from '../../utils/index'
-import { executeMulticall, rc } from '../../utils/Multicall/index';
-import { executeLend, executeWithdraw } from './api'
-import { getGenericWriteReducerBuilder } from '../index';
+import { getLocalStorage } from '../../utils'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export interface marketArgs {
   Market: string
@@ -54,18 +52,6 @@ export interface lendArgs {
   amount: number,
 }
 
-export const lend = createAsyncThunk(
-  'market/lend',
-  async (data: lendArgs, {dispatch}) => await executeLend(dispatch, data),
-)
-
-export const withdraw = createAsyncThunk(
-  'withdraw/lend',
-  async (data: lendArgs, {dispatch}) => await executeWithdraw(dispatch, data),
-)
-
-
-
 const name = 'market'
 
 export const marketSlice = createSlice({
@@ -74,8 +60,6 @@ export const marketSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getMarketInfo)
-    builder = getGenericWriteReducerBuilder(builder, lend)
-    builder = getGenericWriteReducerBuilder(builder, withdraw)
   },
 })
 

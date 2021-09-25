@@ -49,7 +49,7 @@ import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TcpG
 import tcpMulticallArtifact from "./artifacts/contracts/core/auxiliary/TcpMulticall.sol/TcpMulticall.json"
 import tcpMulticallViewOnlyArtifact from "./artifacts/contracts/core/auxiliary/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json"
 import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
-import { assertUnreachable } from './index';
+import { assertUnreachable } from '.'
 
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }

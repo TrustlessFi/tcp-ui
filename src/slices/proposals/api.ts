@@ -2,9 +2,9 @@ import { BigNumber } from "ethers"
 import { TcpGovernorAlpha } from "../../utils/typechain"
 import { unscale, zeroAddress } from "../../utils"
 import { Proposal, ProposalStates, proposalsInfo } from "./"
-import { ProtocolContract } from '../contracts/index';
+import { ProtocolContract } from '../contracts'
 import getContract from '../../utils/getContract'
-import { proposalsArgs } from './index';
+import { proposalsArgs } from '.'
 
 const convertStateIDToState = (stateID: number) => {
   switch(stateID) {

@@ -4,8 +4,8 @@ import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
 import { Accounting } from "../../utils/typechain/Accounting";
-import { ProtocolContract } from '../contracts/index';
-import { getLocalStorage } from '../../utils/index';
+import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils'
 
 export type systemDebtInfo = {
   debt: number

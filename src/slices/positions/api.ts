@@ -2,17 +2,11 @@ import { Position } from './'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
-import { AppDispatch } from '../../app/store'
-import { waitForTransaction } from '../transactions'
-import { createPositionArgs } from './index'
-import getProvider from '../../utils/getProvider'
-import { UIID } from '../../constants'
-import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
-import { TransactionType } from '../transactions/index';
 import { getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
-import { Accounting, HuePositionNFT, Market, TcpMulticallViewOnly } from '../../utils/typechain'
+import { Accounting, HuePositionNFT, TcpMulticallViewOnly } from '../../utils/typechain'
+import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
@@ -79,27 +73,4 @@ export const fetchPositions = async (args: positionsArgs) => {
   const positionsMap: positionsInfo = {}
   positionsInfo.forEach(positionInfo => positionsMap[positionInfo.id] = positionInfo)
   return positionsMap
-}
-
-export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
-  const provider = getProvider()
-  const signer = provider.getSigner()
-  const userAddress = await signer.getAddress()
-
-  const market = getContract(args.Market, ProtocolContract.Market) as Market
-
-  const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
-    value: scale(args.collateralCount)
-  })
-  const hash = tx.hash
-
-  dispatch(waitForTransaction({
-    hash,
-    message: 'Create Position',
-    userAddress,
-    nonce: tx.nonce,
-    type: TransactionType.CreatePosition,
-  }))
-
-  return hash
 }

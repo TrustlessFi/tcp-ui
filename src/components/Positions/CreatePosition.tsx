@@ -8,12 +8,14 @@ import {
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
+import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
+import { openModal } from '../../slices/modal'
 import { onNumChange, numDisplay }  from '../../utils/'
-import CreatePositionController from './CreatePositionController'
 import PositionMetadata from './library/PositionMetadata'
 import PositionNumberInput from './library/PositionNumberInput'
 import ErrorMessage, { reason } from './library/ErrorMessage'
+import { TransactionType } from '../../slices/transactions/index';
+import { ProtocolContract } from '../../slices/contracts/index';
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -23,17 +25,18 @@ const CreatePosition = () => {
   const priceInfo = waitForPrices(selector, dispatch)
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0.0)
-  const [showCreatePosition, setShowCreatePosition] = useState(false)
 
   if (
     liquidations === null ||
     hueBalance === null ||
     priceInfo === null ||
     market === null ||
+    marketContract === null ||
     userEthBalance === null ||
     userAddress === null
   ) return <TextAreaSkeleton />
@@ -73,6 +76,19 @@ const CreatePosition = () => {
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
+
+  const openCreatePositionDialog = () => {
+    dispatch(openModal({
+      args: {
+        type: TransactionType.CreatePosition,
+        collateralCount,
+        debtCount,
+        Market: marketContract,
+      },
+      ethPrice: priceInfo.ethPrice,
+      liquidationPrice,
+    }))
+  }
 
   return (
     <>
@@ -119,19 +135,11 @@ const CreatePosition = () => {
         I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
       </LargeText>
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button onClick={() => setShowCreatePosition(true)} disabled={isFailing}>
+        <Button onClick={openCreatePositionDialog} disabled={isFailing}>
           Create Position
         </Button>
       </div>
       <ErrorMessage reasons={failureReasons} />
-      <CreatePositionController
-        collateralCount={collateralCount}
-        debtCount={debtCount}
-        ethPrice={priceInfo.ethPrice}
-        liquidationPrice={liquidationPrice}
-        onCancel={() => setShowCreatePosition(false)}
-        isActive={showCreatePosition}
-      />
     </>
   )
 }

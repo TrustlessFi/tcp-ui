@@ -8,6 +8,7 @@ import LiquidityPositions from './components/LiquidityPositions'
 import { Switch, Route } from "react-router-dom"
 import { BrowserRouter as Router } from "react-router-dom"
 import LocalStorageManager from './components/utils/LocalStorageManager'
+import AppModal from './components/AppModal'
 import Notifications from './components/Notifications'
 
 import './App.css'
@@ -43,6 +44,7 @@ function App() {
       </Router>
       <Notifications />
       <LocalStorageManager />
+      <AppModal />
     </ErrorBoundary>
   );
 }

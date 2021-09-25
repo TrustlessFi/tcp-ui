@@ -3,7 +3,8 @@ import { Launch16 } from '@carbon/icons-react';
 import Center from '../library/Center';
 import SmallLink from '../library/SmallLink'
 import { clearUserTransactions } from '../../slices/transactions'
-import { getSortedUserTxs } from '../utils/index';
+import { getSortedUserTxs } from '../utils'
+import { getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 
 const RecentTransactions = () => {
   const dispatch = useAppDispatch()
@@ -16,9 +17,9 @@ const RecentTransactions = () => {
   const txLinks = sortedUserTxs.map(tx =>
     <SmallLink
       key={tx.hash}
-      onClick={() => console.log("tx clicked" + tx.message)}
+      onClick={() => console.log("tx clicked" + tx.type)}
       icon={Launch16}>
-      {tx.message}
+      {getTxNamePresentTense(tx.type)}
     </SmallLink>)
 
   return (

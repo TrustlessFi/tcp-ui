@@ -4,14 +4,14 @@ import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
 import { clearHueBalance } from '../balances/hueBalance'
-import { clearLendHueBalance } from '../balances/lendHueBalance'
+import { ethers, ContractTransaction } from 'ethers'
+import { ProtocolContract } from '../contracts/index';
+import { waitingForMetamask, waitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
-export enum TransactionStatus {
-  Pending,
-  Failed,
-  Succeeded,
-  UnexpectedError,
-}
+import { Market } from '../../utils/typechain'
+import getContract from '../../utils/getContract';
+import { scale } from '../../utils/index';
+import { UIID } from '../../constants';
 
 export enum TransactionType {
   CreatePosition,
@@ -19,59 +19,133 @@ export enum TransactionType {
   Withdraw,
 }
 
-export type TransactionArgs = {
+export enum TransactionStatus {
+  Pending,
+  Success,
+  Failure,
+}
+
+export type TransactionInfo = {
   hash: string
-  message: string
   userAddress: string
   nonce: number
   type: TransactionType
-}
-
-export interface TransactionInfo extends TransactionArgs {
   status: TransactionStatus
 }
 
-export type TransactionState = {[key in string]: TransactionInfo}
-
-export interface updateTransactionsArgs {
-  currentState: TransactionState
-  userAddress: string
+export interface txCreatePositionArgs {
+  type: TransactionType.CreatePosition
+  collateralCount: number,
+  debtCount: number,
+  Market: string,
 }
 
-export interface updateTransactionsResponse {
-  success: boolean
+export type TransactionArgs =
+  txCreatePositionArgs
+
+export type TransactionState = {[key in string]: TransactionInfo}
+
+
+export const getTxNamePastTense = (type: TransactionType) => {
+  switch(type) {
+    case TransactionType.CreatePosition:
+      return 'Position Created'
+    case TransactionType.Lend:
+      return 'Hue Lent'
+    case TransactionType.Withdraw:
+      return 'Hue Withdrawn'
+    default:
+      assertUnreachable(type)
+  }
+  return ''
+}
+
+export const getTxNamePresentTense = (type: TransactionType) => {
+  switch(type) {
+    case TransactionType.CreatePosition:
+      return 'Creating Position'
+    case TransactionType.Lend:
+      return 'Lending Hue'
+    case TransactionType.Withdraw:
+      return 'Withdrawing Hue'
+    default:
+      assertUnreachable(type)
+  }
+  return ''
+}
+
+
+
+
+const executeTransaction = async (args: TransactionArgs, provider: ethers.providers.Web3Provider) => {
+  switch(args.type) {
+    case TransactionType.CreatePosition:
+      const market = getContract(args.Market, ProtocolContract.Market) as Market
+      return await market.connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
+        value: scale(args.collateralCount)
+      })
+
+    default:
+      assertUnreachable(args.type)
+  }
+  throw new Error('Shouldnt get here')
 }
 
 export const waitForTransaction = createAsyncThunk(
   'transactions/waitForTransaction',
-  async (args: TransactionArgs, {dispatch}): Promise<TransactionInfo> => {
+  async (args: TransactionArgs, {dispatch}): Promise<void> => {
+    const provider = getProvider()
+    const userAddress = await provider.getSigner().getAddress()
 
-    const receipt = await getProvider().waitForTransaction(args.hash)
-    const status = receipt.status === 1 ? TransactionStatus.Succeeded : TransactionStatus.Failed
+    let tx: ContractTransaction
+    try {
+      dispatch(waitingForMetamask())
+      tx = await executeTransaction(args, provider)
+    } catch (e) {
+      console.error(e)
+      // TODO skip to error and return
+      throw e
+    }
 
-    const result = {...args, status}
+    let txInfo: TransactionInfo = {
+      hash: tx.hash,
+      userAddress,
+      nonce: tx.nonce,
+      type: args.type,
+      status: TransactionStatus.Pending,
+    }
 
-    dispatch(addNotification(result))
+    dispatch(waitingForCompletion(tx.hash))
+    dispatch(transactionCreated(txInfo))
 
-    if (status === TransactionStatus.Succeeded) {
+    const receipt = await provider.waitForTransaction(tx.hash)
+    const succeeded = receipt.status === 1
+
+    // txInfo.status = succeeded ? TransactionStatus.Success : TransactionStatus.Failure
+    txInfo = { ...txInfo, status: succeeded ? TransactionStatus.Success : TransactionStatus.Failure }
+
+    dispatch(addNotification(txInfo))
+    dispatch(succeeded ? modalSuccess(tx.hash) : modalFailure(tx.hash))
+
+    if (succeeded) {
       switch (args.type) {
         case TransactionType.CreatePosition:
           dispatch(clearPositions())
           dispatch(clearHueBalance())
           break
 
+          /*
         case TransactionType.Lend:
         case TransactionType.Withdraw:
           dispatch(clearHueBalance())
           dispatch(clearLendHueBalance())
           break
+          */
 
         default:
           assertUnreachable(args.type)
       }
     }
-
-    return result
   })
 
 const name = 'transactions'
@@ -86,8 +160,13 @@ export const transactionsSlice = createSlice({
       state = {}
       validTxs.map(tx => state[tx.hash] = tx)
     },
+    transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
+      const txInfo = action.payload
+      state[txInfo.hash] = txInfo
+    },
   },
   extraReducers: (builder) => {
+    /*
     builder
       .addCase(waitForTransaction.pending, (state, action) => {
         state[action.meta.arg.hash] = {
@@ -101,9 +180,10 @@ export const transactionsSlice = createSlice({
       .addCase(waitForTransaction.fulfilled, (state, action) => {
         state[action.meta.arg.hash].status = action.payload.status
       })
+    */
   },
 })
 
-export const { clearUserTransactions } = transactionsSlice.actions
+export const { clearUserTransactions, transactionCreated } = transactionsSlice.actions
 
 export default transactionsSlice.reducer
