@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk } from '../'
-import { ProtocolContract } from '../../contracts/index'
+import { ProtocolContract } from '../../contracts'
 
 export type lendHueBalanceArgs = {
   LendHue: string

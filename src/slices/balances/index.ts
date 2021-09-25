@@ -4,7 +4,7 @@ import { TcpMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
 import getContract, { contract } from '../../utils/getContract'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall/index';
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
 interface tokenInfo {
   address: string,

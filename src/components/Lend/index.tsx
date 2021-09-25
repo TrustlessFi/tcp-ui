@@ -8,13 +8,16 @@ import {
   TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
-import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
-import { onNumChange, numDisplay }  from '../../utils/'
-import { first } from '../../utils/index';
+import {  numDisplay }  from '../../utils/'
+import { first } from '../../utils'
 import PositionNumberInput from '../Positions/library/PositionNumberInput';
-import LendController, { LendBorrowOptions } from './LendController'
+
+export enum LendBorrowOptions {
+  Lend = 'Lend',
+  Borrow = 'Withdraw',
+}
 
 const InputPicker = <T extends string, TEnumValue extends string>({
   options,
@@ -43,6 +46,7 @@ const InputPicker = <T extends string, TEnumValue extends string>({
     </div>
   )
 }
+
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -91,12 +95,6 @@ const Lend = () => {
           {selectedOption}
         </Button>
       </div>
-      <LendController
-        option={selectedOption}
-        amount={amount}
-        onCancel={() => setShowBorrowLend(false)}
-        isActive={showBorrowLend}
-      />
     </>
   )
 }

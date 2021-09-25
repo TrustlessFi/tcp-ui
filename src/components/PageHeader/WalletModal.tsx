@@ -6,7 +6,7 @@ import NetworkIndicator from '../library/NetworkIndicator'
 import {
   Modal,
 } from 'carbon-components-react'
-import { abbreviateAddress } from '../../utils/index'
+import { abbreviateAddress } from '../../utils'
 import RecentTransactions from './RecentTransactions'
 
 const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () => void}) => {

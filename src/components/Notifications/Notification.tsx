@@ -7,37 +7,35 @@ import { getOpacityTransition } from '../utils'
 import ExplorerLink from '../utils/ExplorerLink'
 import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
+import { getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch } from '../../app/hooks';
+import { TransactionType } from '../../slices/transactions/index';
 
 
-const warnColor = (status: TransactionStatus) => {
+const statusColor = (status: TransactionStatus) => {
   switch (status) {
-    case TransactionStatus.Failed:
-      return '#da1e28'
-    case TransactionStatus.Succeeded:
-      return '#2f7138'
-    case TransactionStatus.UnexpectedError:
-      return '#fad76e'
     case TransactionStatus.Pending:
       throw new Error('Notification: Pending notification not supported.')
+    case TransactionStatus.Success:
+      return '#2f7138'
+    case TransactionStatus.Failure:
+      return '#da1e28'
     default:
       assertUnreachable(status)
   }
   return ''
 }
 
-const WarningIcon = ({status}: {status: TransactionStatus}) => {
-  const style = {fill: warnColor(status)}
+const NotificationIcon = ({status}: {status: TransactionStatus}) => {
+  const style = {fill: statusColor(status)}
   switch (status) {
-    case TransactionStatus.Failed:
-      return <ErrorFilled24 aria-label="Error" style={style}  />
-    case TransactionStatus.Succeeded:
-      return <CheckmarkFilled24 aria-label="Success" style={style}  />
-    case TransactionStatus.UnexpectedError:
-      return <UnknownFilled24 aria-label="Success" style={style}  />
     case TransactionStatus.Pending:
       throw new Error('Notification: Pending notification not supported.')
+    case TransactionStatus.Success:
+      return <CheckmarkFilled24 aria-label="Success" style={style}  />
+    case TransactionStatus.Failure:
+      return <ErrorFilled24 aria-label="Error" style={style}  />
     default:
       assertUnreachable(status)
   }
@@ -94,6 +92,10 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
     return () => clearInterval(interval)
   })
 
+  const title = data.status === TransactionStatus.Failure
+    ? getTxNamePastTense(data.type)
+    : getTxNamePresentTense(data.type)
+
   return (
     <div style={{
       width: totalWidth,
@@ -111,10 +113,10 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
       <Col>
         <Row middle='xs' style={{paddingRight}}>
           <Col style={{paddingLeft: 16, width: iconWidth}}>
-            <WarningIcon status={data.status} />
+            <NotificationIcon status={data.status} />
           </Col>
           <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-            <NotificationText large>{data.message}</NotificationText>
+            <NotificationText large>{title}</NotificationText>
             <ExplorerLink txHash={data.hash}>View on Explorer</ExplorerLink>
           </Col>
         </Row>
@@ -123,7 +125,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
         width: loadingBarWidth,
         display: visible ? 'block' : 'none',
         height: 3,
-        backgroundColor: warnColor(data.status),
+        backgroundColor: statusColor(data.status),
         position: 'absolute',
         bottom: 0,
         left: 0,

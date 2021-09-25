@@ -7,6 +7,7 @@ import transactionsReducer from '../slices/transactions'
 import walletReducer from '../slices/wallet'
 import systemDebtReducer from '../slices/systemDebt'
 import positionsEditorReducer from '../slices/positionsEditor'
+import modalReducer from '../slices/modal'
 
 import governorReducer from '../slices/governor'
 import liquidationsReducer from '../slices/liquidations'
@@ -30,6 +31,7 @@ export const store = configureStore({
     wallet: walletReducer,
     systemDebt: systemDebtReducer,
     positionsEditor: positionsEditorReducer,
+    modal: modalReducer,
 
     governor: governorReducer,
     liquidations: liquidationsReducer,

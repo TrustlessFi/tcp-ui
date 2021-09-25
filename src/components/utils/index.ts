@@ -1,4 +1,4 @@
-import { TransactionInfo, TransactionState } from '../../slices/transactions/index';
+import { TransactionInfo, TransactionState } from '../../slices/transactions'
 
 export const getSortedUserTxs = (userAddress: string | null, txs: TransactionState | null): TransactionInfo[] => {
   if (userAddress === null) return []
