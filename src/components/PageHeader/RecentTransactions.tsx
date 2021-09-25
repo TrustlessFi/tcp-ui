@@ -4,7 +4,7 @@ import Center from '../library/Center';
 import SmallLink from '../library/SmallLink'
 import { clearUserTransactions } from '../../slices/transactions'
 import { getSortedUserTxs } from '../utils'
-import { getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
+import { getTxNamePastTense, getTxNamePresentTense, getTxHash } from '../../slices/transactions'
 
 const RecentTransactions = () => {
   const dispatch = useAppDispatch()
@@ -16,7 +16,7 @@ const RecentTransactions = () => {
 
   const txLinks = sortedUserTxs.map(tx =>
     <SmallLink
-      key={tx.hash}
+      key={getTxHash(tx)}
       onClick={() => console.log("tx clicked" + tx.type)}
       icon={Launch16}>
       {getTxNamePresentTense(tx.type)}

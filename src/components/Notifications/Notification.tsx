@@ -2,15 +2,15 @@ import { notificationClosed } from '../../slices/notifications'
 import { Row, Col } from 'react-flexbox-grid'
 import { ReactNode } from 'react'
 import { TransactionStatus } from '../../slices/transactions'
-import { ErrorFilled24, CheckmarkFilled24, UnknownFilled24, Close24 } from '@carbon/icons-react';
+import { ErrorFilled24, CheckmarkFilled24, Close24 } from '@carbon/icons-react';
 import { getOpacityTransition } from '../utils'
 import ExplorerLink from '../utils/ExplorerLink'
-import { assertUnreachable, timeMS } from '../../utils'
+import { assertUnreachable, timeMS, isTxHash } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
+import { getTxHash } from '../../slices/transactions'
 import { getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch } from '../../app/hooks';
-import { TransactionType } from '../../slices/transactions/index';
 
 
 const statusColor = (status: TransactionStatus) => {
@@ -71,14 +71,20 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
 
   const closeCalled = useRef(false)
 
+  const hash = getTxHash(data)
+
   const close = () => {
     if (closeCalled.current) return
     closeCalled.current = true
 
     clearInterval()
     setVisible(false)
-    setTimeout(() => dispatch(notificationClosed(data.hash)), FADE_OUT_MS)
+    setTimeout(() => dispatch(notificationClosed(getTxHash(data))), FADE_OUT_MS)
   }
+
+  const explorerLink = isTxHash(hash)
+    ? <ExplorerLink txHash={hash}>View on Explorer</ExplorerLink>
+    : null
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -117,7 +123,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
           </Col>
           <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
             <NotificationText large>{title}</NotificationText>
-            <ExplorerLink txHash={data.hash}>View on Explorer</ExplorerLink>
+            {explorerLink}
           </Col>
         </Row>
       </Col>

@@ -13,6 +13,7 @@ import LargeText from '../utils/LargeText'
 import Text from '../utils/Text'
 import { ModalState, ModalStage, openModal } from '../../slices/modal/'
 import { waitForTransaction } from '../../slices/transactions'
+import ExplorerLink from '../utils/ExplorerLink'
 
 const ModalPreview = ({data}: {data: NonNullable<modalData>}) => {
   switch(data.args.type) {
@@ -101,7 +102,9 @@ interface modalContent {
 
 const getModalContent = (
   stage: Exclude<ModalStage, ModalStage.Closed>,
-  data: NonNullable<modalData>
+  data: NonNullable<modalData>,
+  hash?: string,
+  failureMessages?: string[],
 ): modalContent => {
 
   const verb = getVerb(data)
@@ -140,8 +143,17 @@ const getModalContent = (
         }
       }
     case ModalStage.Failure:
+      const content = failureMessages!.length === 0
+        ? <>
+            Transaction Failed. View on explorer to find out why.
+            <div><ExplorerLink txHash={hash!}>View on Explorer</ExplorerLink></div>
+          </>
+        : <>
+            <div>{getShortName(data)} failed with message:</div>
+            {failureMessages!.map(m => <div>{m}</div>)}
+          </>
       return {
-        content: getShortName(data),
+        content,
         props: {
           modalHeading: 'Transaction Failed',
           passiveModal: true,
@@ -156,9 +168,10 @@ const getModalContent = (
 const AppModal = ({}: {}) => {
   const dispatch = useAppDispatch()
   const modalState = selector(state => state.modal)
+  console.log({modalState})
 
   if (modalState.data === null || modalState.stage === ModalStage.Closed) return null
-  const modalContent = getModalContent(modalState.stage, modalState.data)
+  const modalContent = getModalContent(modalState.stage, modalState.data, modalState.hash, modalState.failureMessages)
   const props = modalContent.props
 
   const onRequestSubmit = () => dispatch(waitForTransaction(modalState.data!.args))

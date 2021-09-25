@@ -23,6 +23,7 @@ export interface ModalState {
   stage: ModalStage
   data: modalData
   hash?: string
+  failureMessages?: string[]
 }
 
 const name = 'positionsEditor'
@@ -41,12 +42,12 @@ export const positionsEditorSlice = createSlice({
         state.data = action.payload
       }
     },
-    waitingForMetamask: (state) => {
+    modalWaitingForMetamask: (state) => {
       if (state.stage === ModalStage.Preview) {
         state.stage = ModalStage.WaitingForMetamaskConfirmation
       }
     },
-    waitingForCompletion: (state, action: PayloadAction<string>) => {
+    modalWaitingForCompletion: (state, action: PayloadAction<string>) => {
       if (state.stage === ModalStage.WaitingForMetamaskConfirmation) {
         state.stage = ModalStage.WaitingForCompletion
         state.hash = action.payload
@@ -57,9 +58,10 @@ export const positionsEditorSlice = createSlice({
         state.stage = ModalStage.Success
       }
     },
-    modalFailure: (state, action: PayloadAction<string>) => {
-      if (state.hash === action.payload && state.stage === ModalStage.WaitingForCompletion) {
+    modalFailure: (state, action: PayloadAction<{ hash: string, messages: string[]}>) => {
+      if (action.payload.hash === state.hash) {
         state.stage = ModalStage.Failure
+        state.failureMessages = action.payload.messages
       }
     },
     closeModal: (state) => {
@@ -72,8 +74,8 @@ export const positionsEditorSlice = createSlice({
 
 export const {
   openModal,
-  waitingForMetamask,
-  waitingForCompletion,
+  modalWaitingForMetamask,
+  modalWaitingForCompletion,
   modalSuccess,
   modalFailure,
   closeModal,

@@ -165,19 +165,32 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 // type PromiseType = PromiseType<typeof promisedOne> // => number
 
 
-export const parseMetamaskError = (rawError: any) => {
-  const error = rawError.data === undefined ? rawError as SerializedError : rawError.data as SerializedError
+export const parseMetamaskError = (rawError: any): string[] => {
+  console.log("inside parseMetamaskError", {rawError})
+  rawError = rawError as {code: number, message: string}
+  console.log("inside parseMetamaskError2", {rawError})
+  const rawMessage = rawError.message
+  console.log("inside parseMetamaskError3", {rawMessage})
 
-  switch (error.code === undefined ? 0 : parseInt(error.code)) {
+  const beginObject = rawMessage.indexOf('{')
+  const serializedObject = rawMessage.substr(beginObject, rawMessage.length - (beginObject + 1))
+  console.log("serializedObject", {serializedObject})
+
+  const outerError = JSON.parse(serializedObject) as {value: { code: number, data: {code: number, message: string}}}
+  const innerError = outerError.value.data
+  switch(innerError.code) {
     case 4001:
-      error.message = 'Transaction Rejected. Please re-submit the transaction and accept it in Metamask.'
-      break
-    case -32603:
-      error.message = 'Transaction failed: ' + error.message
-      break
+      return ['Transaction Rejected by user. Please re-submit the transaction and accept it in Metamask.']
     default:
-      error.message = 'Encountered unexpected error: ' + error.message + ' (' + error.code + ')'
+      return [innerError.message, ' (Metamask error code ' + innerError.code + ')']
   }
+}
 
-  return error
+const zeroThroughF = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', ]
+
+export const isTxHash = (hash: string) => {
+  if (hash.length !== 66) return false
+  if (hash.substr(0, 2) !== '0x' ) return false
+  if (hash.toLowerCase().substr(2).split('').filter(letter => zeroThroughF.includes(letter)).length != 64) return false
+  return true
 }
