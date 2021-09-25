@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers"
 import { TcpGovernorAlpha } from "../../utils/typechain"
 import { unscale, zeroAddress } from "../../utils"
-import { Proposal, ProposalStates, proposalsInfo } from "./"
+import { Proposal, ProposalState, proposalsInfo } from "./"
 import { ProtocolContract } from '../contracts'
 import getContract from '../../utils/getContract'
 import { proposalsArgs } from '.'
@@ -9,21 +9,21 @@ import { proposalsArgs } from '.'
 const convertStateIDToState = (stateID: number) => {
   switch(stateID) {
     case 0:
-      return ProposalStates.Pending
+      return ProposalState.Pending
     case 1:
-      return ProposalStates.Active
+      return ProposalState.Active
     case 2:
-      return ProposalStates.Canceled
+      return ProposalState.Canceled
     case 3:
-      return ProposalStates.Defeated
+      return ProposalState.Defeated
     case 4:
-      return ProposalStates.Succeeded
+      return ProposalState.Succeeded
     case 5:
-      return ProposalStates.Queued
+      return ProposalState.Queued
     case 6:
-      return ProposalStates.Expired
+      return ProposalState.Expired
     case 7:
-      return ProposalStates.Executed
+      return ProposalState.Executed
     default:
       throw new Error('stateID not recognized')
   }
