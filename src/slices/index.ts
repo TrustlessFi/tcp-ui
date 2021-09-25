@@ -1,6 +1,5 @@
 import { SerializedError, AsyncThunk, Draft } from '@reduxjs/toolkit';
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { parseMetamaskError } from '../utils'
 
 export interface sliceState<T> {
   loading: boolean

@@ -6,12 +6,14 @@ import { clearPositions } from '../positions'
 import { clearHueBalance } from '../balances/hueBalance'
 import { ethers, ContractTransaction } from 'ethers'
 import { ProtocolContract } from '../contracts/index';
-import { waitingForMetamask, waitingForCompletion, modalSuccess, modalFailure } from '../modal';
+import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
 import { Market } from '../../utils/typechain'
-import getContract from '../../utils/getContract';
-import { scale } from '../../utils/index';
+import getContract from '../../utils/getContract'
+import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants';
+import { v4 as uid } from 'uuid'
+import { enforce , parseMetamaskError } from '../../utils/index';
 
 export enum TransactionType {
   CreatePosition,
@@ -25,10 +27,40 @@ export enum TransactionStatus {
   Failure,
 }
 
+const getTxInfo = (txInfo: {
+  hash?: string,
+  nonce?: number,
+  userAddress: string,
+  type: TransactionType,
+  status: TransactionStatus
+}): TransactionInfo => ({
+  hash: txInfo.hash === undefined ? { uid: uid() } : { hash: txInfo.hash },
+  nonce: txInfo.nonce === undefined ? { uid: timeMS() } : { nonce: txInfo.nonce },
+  userAddress: txInfo.userAddress,
+  type: txInfo.type,
+  status: txInfo.status,
+})
+
+export const getTxHash = (txInfo: TransactionInfo): string => {
+  if (txInfo.hash.hash !== undefined) return txInfo.hash.hash
+
+  enforce(txInfo.hash.uid !== undefined, 'TransactionSlice: Both hash and uid undefined')
+
+  return txInfo.hash.uid!
+}
+
+export const getTxNonce = (txInfo: TransactionInfo): number => {
+  if (txInfo.nonce.nonce !== undefined) return txInfo.nonce.nonce
+
+  enforce(txInfo.nonce.uid !== undefined, 'TransactionSlice: Both nonce and uid undefined')
+
+  return txInfo.nonce.uid!
+}
+
 export type TransactionInfo = {
-  hash: string
+  hash: { hash ?: string, uid?: string }
+  nonce: { nonce ?: number, uid?: number }
   userAddress: string
-  nonce: number
   type: TransactionType
   status: TransactionStatus
 }
@@ -74,9 +106,6 @@ export const getTxNamePresentTense = (type: TransactionType) => {
   return ''
 }
 
-
-
-
 const executeTransaction = async (args: TransactionArgs, provider: ethers.providers.Web3Provider) => {
   switch(args.type) {
     case TransactionType.CreatePosition:
@@ -96,36 +125,47 @@ export const waitForTransaction = createAsyncThunk(
   async (args: TransactionArgs, {dispatch}): Promise<void> => {
     const provider = getProvider()
     const userAddress = await provider.getSigner().getAddress()
+    const genericTxFailedMessage = 'Transaction failed.'
 
     let tx: ContractTransaction
     try {
-      dispatch(waitingForMetamask())
+      dispatch(modalWaitingForMetamask())
       tx = await executeTransaction(args, provider)
     } catch (e) {
+      const txInfo = getTxInfo({
+        userAddress,
+        type: args.type,
+        status: TransactionStatus.Failure,
+      })
+
+      console.log("about to parse")
+      const failureMessages = parseMetamaskError(e)
+      dispatch(modalWaitingForCompletion(getTxHash(txInfo)))
+      dispatch(modalFailure({ hash: getTxHash(txInfo), messages: failureMessages}))
+
+      console.error('TransactionSlice: Metamask tx error:')
       console.error(e)
-      // TODO skip to error and return
-      throw e
+      return
     }
 
-    let txInfo: TransactionInfo = {
+    let txInfo = getTxInfo({
       hash: tx.hash,
       userAddress,
       nonce: tx.nonce,
       type: args.type,
       status: TransactionStatus.Pending,
-    }
+    })
 
-    dispatch(waitingForCompletion(tx.hash))
+    dispatch(modalWaitingForCompletion(tx.hash))
     dispatch(transactionCreated(txInfo))
 
     const receipt = await provider.waitForTransaction(tx.hash)
     const succeeded = receipt.status === 1
 
-    // txInfo.status = succeeded ? TransactionStatus.Success : TransactionStatus.Failure
     txInfo = { ...txInfo, status: succeeded ? TransactionStatus.Success : TransactionStatus.Failure }
 
     dispatch(addNotification(txInfo))
-    dispatch(succeeded ? modalSuccess(tx.hash) : modalFailure(tx.hash))
+    dispatch(succeeded ? modalSuccess(tx.hash) : modalFailure({ hash: tx.hash, messages: [] }))
 
     if (succeeded) {
       switch (args.type) {
@@ -155,32 +195,13 @@ export const transactionsSlice = createSlice({
   initialState: getLocalStorage(name, {}) as TransactionState,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
-      const userAddress = action.payload
-      const validTxs = Object.values(state).filter(tx => tx.userAddress !== userAddress)
-      state = {}
-      validTxs.map(tx => state[tx.hash] = tx)
+      state = Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx]))
     },
     transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
       const txInfo = action.payload
-      state[txInfo.hash] = txInfo
+      const hash = getTxHash(txInfo)
+      state[hash] = txInfo
     },
-  },
-  extraReducers: (builder) => {
-    /*
-    builder
-      .addCase(waitForTransaction.pending, (state, action) => {
-        state[action.meta.arg.hash] = {
-          ...action.meta.arg,
-          status: TransactionStatus.Pending,
-        }
-      })
-      .addCase(waitForTransaction.rejected, (state, action) => {
-        state[action.meta.arg.hash].status = TransactionStatus.UnexpectedError
-      })
-      .addCase(waitForTransaction.fulfilled, (state, action) => {
-        state[action.meta.arg.hash].status = action.payload.status
-      })
-    */
   },
 })
 
