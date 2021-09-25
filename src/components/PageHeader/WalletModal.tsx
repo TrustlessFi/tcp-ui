@@ -12,8 +12,13 @@ import RecentTransactions from './RecentTransactions'
 
 const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () => void}) => {
   const address = selector(state => state.wallet.address)
+
   if (!open) return null
-  if (address === null) throw new Error('WalletModal: Address not found.')
+  
+  if (address === null) {
+    console.error('WalletModal: Address not found.')
+    return null
+  }
 
   return (
     <Modal
