@@ -9,7 +9,7 @@ import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWai
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../Positions/library/PositionNumberInput'
-import { LendBorrowOptions } from './'
+import { LendBorrowOption } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../Positions/library/ErrorMessage'
 import PositionMetadata from '../Positions/library/PositionMetadata'
@@ -43,7 +43,7 @@ const Lend = () => {
 
   const apr = getAPR({market, rates, sdi, hueBalance})
 
-  const onChange = (option: LendBorrowOptions) => dispatch(selectionMade(option))
+  const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
 
   console.log({hueBalance, lendHueBalance})
 
@@ -94,7 +94,7 @@ const Lend = () => {
       </div>
       <LargeText>
         I want to
-        <InputPicker options={LendBorrowOptions} initialValue={LendBorrowOptions.Lend} onChange={onChange} />
+        <InputPicker options={LendBorrowOption} initialValue={LendBorrowOption.Lend} onChange={onChange} />
         <PositionNumberInput
           id="lendInput"
           action={(value: number) => setAmount(value)}

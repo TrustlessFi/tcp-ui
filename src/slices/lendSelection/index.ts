@@ -1,17 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { getLocalStorage } from '../../utils'
-import { LendBorrowOptions } from '../../components/Lend'
+import { LendBorrowOption } from '../../components/Lend'
 
 export interface LendSelectionState {
-  optionSelected: LendBorrowOptions,
+  optionSelected: LendBorrowOption,
 }
 const name = 'lendSelection'
 
 export const lendSelectionSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, {optionSelected: LendBorrowOptions.Lend}) as LendSelectionState,
+  initialState: getLocalStorage(name, {optionSelected: LendBorrowOption.Lend}) as LendSelectionState,
   reducers: {
-    selectionMade: (state, action: PayloadAction<LendBorrowOptions>) => {
+    selectionMade: (state, action: PayloadAction<LendBorrowOption>) => {
       state.optionSelected = action.payload
     },
   }
