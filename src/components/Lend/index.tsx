@@ -16,7 +16,7 @@ import PositionNumberInput from '../Positions/library/PositionNumberInput';
 import Lend from './Lend'
 import Withdraw from './Withdraw'
 
-export enum LendBorrowOptions {
+export enum LendBorrowOption {
   Lend = 'Lend',
   Withdraw = 'Withdraw',
 }
@@ -24,7 +24,7 @@ export enum LendBorrowOptions {
 const LendOrWithdraw = () => {
   const { optionSelected } = selector(state => state.lendSelection)
 
-  return optionSelected === LendBorrowOptions.Lend
+  return optionSelected === LendBorrowOption.Lend
     ? <Lend />
     : <Withdraw />
 }
