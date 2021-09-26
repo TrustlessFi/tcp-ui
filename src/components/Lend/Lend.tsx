@@ -45,13 +45,9 @@ const Lend = () => {
 
   const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
 
-  console.log({hueBalance, lendHueBalance})
-
   const newWalletBalance = hueBalance.userBalance - amount
   const lentHueCount = lendHueBalance.userBalance! * market.valueOfLendTokensInHue
   const newLentHueCount = lentHueCount + amount
-
-  console.log({hueBalance})
 
   const failures: {[key in string]: reason} = {
     noValueEntered: {
@@ -71,7 +67,6 @@ const Lend = () => {
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-  console.log({failures})
 
   const openLendDialog = () => {
     dispatch(openModal({
