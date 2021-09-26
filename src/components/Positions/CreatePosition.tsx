@@ -12,8 +12,8 @@ import { numDisplay }  from '../../utils/'
 import PositionMetadata from './library/PositionMetadata'
 import PositionNumberInput from './library/PositionNumberInput'
 import ErrorMessage, { reason } from './library/ErrorMessage'
-import { TransactionType } from '../../slices/transactions/index';
-import { ProtocolContract } from '../../slices/contracts/index';
+import { TransactionType } from '../../slices/transactions'
+import { ProtocolContract } from '../../slices/contracts'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()

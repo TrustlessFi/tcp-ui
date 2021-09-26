@@ -4,7 +4,7 @@ import { balanceState, tokenBalanceThunk } from '../'
 import { ProtocolContract } from '../../contracts'
 import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
-import { uint256Max } from '../../../utils/index';
+import { uint256Max } from '../../../utils'
 import { Hue } from '../../../utils/typechain'
 
 export type lendHueBalanceArgs = {

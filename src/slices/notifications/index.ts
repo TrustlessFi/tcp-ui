@@ -3,7 +3,7 @@ import { TransactionInfo } from '../transactions'
 import { timeMS } from '../../utils'
 import { getLocalStorage } from '../../utils'
 import { TransactionStatus, getTxNonce } from '../transactions'
-import { getTxHash } from '../transactions/index';
+import { getTxHash } from '../transactions'
 
 export interface notificationInfo extends TransactionInfo {
   startTimeMS: number

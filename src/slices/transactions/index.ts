@@ -6,7 +6,7 @@ import { clearPositions } from '../positions'
 import { clearHueBalance } from '../balances/hueBalance'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { ethers, ContractTransaction } from 'ethers'
-import { ProtocolContract } from '../contracts/index';
+import { ProtocolContract } from '../contracts'
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
 import { Market } from '../../utils/typechain'
@@ -14,7 +14,7 @@ import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants';
 import { v4 as uid } from 'uuid'
-import { enforce , parseMetamaskError } from '../../utils/index';
+import { enforce , parseMetamaskError } from '../../utils'
 
 export enum TransactionType {
   CreatePosition,
