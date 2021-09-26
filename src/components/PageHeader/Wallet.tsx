@@ -144,11 +144,12 @@ const Wallet = () => {
           Connect to a Wallet
         </Button>
 
-  return <>
-    <NetworkIndicator />
-    {button}
-    {isWalletModalOpen ? modal : null}
+  return (
+    <>
+      {button}
+      {isWalletModalOpen ? modal : null}
     </>
+  )
 }
 
 export default Wallet

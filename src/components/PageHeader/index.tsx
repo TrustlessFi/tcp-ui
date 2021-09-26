@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react'
-import { withRouter, useHistory } from 'react-router'
+import { withRouter, useHistory, useLocation } from 'react-router'
 import {
   Header,
   HeaderContainer,
@@ -16,9 +16,11 @@ import { Tab } from '../../App'
 import logo from '../../img/tcp-logo-white.svg'
 
 import Wallet from './Wallet'
+import NetworkIndicator from '../library/NetworkIndicator';
 
 const PageHeader = () => {
   const history = useHistory()
+  const location = useLocation()
 
   const navigateToRoute = (path: string, e: MouseEvent<Element>) => {
     history.push(path)
@@ -27,8 +29,9 @@ const PageHeader = () => {
 
   const tabs = Object.values(Tab).map((tab, index) => {
     const link = index === 0 ? '/' : '/' + tab.toLowerCase()
+    const isCurrentPage = location.pathname === link
     return (
-      <HeaderMenuItem key={index} href={link} onClick={navigateToRoute.bind(null, link)}>
+      <HeaderMenuItem key={index} href={link} onClick={navigateToRoute.bind(null, link)} isCurrentPage={isCurrentPage}>
         {tab}
       </HeaderMenuItem>
     )
@@ -59,8 +62,11 @@ const PageHeader = () => {
           <HeaderNavigation aria-label="Main Site Navigation Links">
             {tabs}
           </HeaderNavigation>
-          <div style={{marginLeft: 'auto', marginRight: 20}}>
-            <Wallet />
+          <div style={{marginLeft: 'auto', marginRight: 16 }}>
+            <NetworkIndicator />
+            <span style={{marginLeft: 12}}>
+              <Wallet />
+            </span>
           </div>
         </Header>
     )} />
