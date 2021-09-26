@@ -8,7 +8,7 @@ import {
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
+import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
 import { openModal } from '../../slices/modal'
 import { onNumChange, numDisplay }  from '../../utils/'
 import PositionMetadata from './library/PositionMetadata'
@@ -25,6 +25,7 @@ const CreatePosition = () => {
   const priceInfo = waitForPrices(selector, dispatch)
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
+  const rates = waitForRates(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
@@ -36,6 +37,7 @@ const CreatePosition = () => {
     hueBalance === null ||
     priceInfo === null ||
     market === null ||
+    rates === null ||
     marketContract === null ||
     userEthBalance === null ||
     userAddress === null
@@ -48,6 +50,8 @@ const CreatePosition = () => {
   const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
 
   const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+
+  const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
 
   const failures: {[key in string]: reason} = {
     noCollateral: {
@@ -105,7 +109,7 @@ const CreatePosition = () => {
           action={(value: number) => setDebtCount(value)}
           value={debtCount}
         />
-        Hue of debt.
+        Hue of debt with an interest rate of {numDisplay(interestRate, 2)}%.
       </LargeText>
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata  items={[
