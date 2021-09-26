@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend'
@@ -20,6 +20,20 @@ declare global {
   }
 }
 
+export enum Tab {
+  Positions = 'Positions',
+  Lend = 'Lend',
+  Liquidity = 'Liquidity',
+  Governance = 'Governance',
+}
+
+const tabToRender: {[key in Tab]: ReactNode} = {
+  Positions: <Positions />,
+  Lend: <Lend />,
+  Liquidity: <LiquidityPositions />,
+  Governance: <Governance />,
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -27,18 +41,15 @@ function App() {
         <PageHeader />
         <div style={{marginTop: 47, padding: 48 }}>
           <Switch>
-            <Route exact path={['/', '/positions']}>
-              <Positions />
-            </Route>
-            <Route path={'/lend'}>
-              <Lend />
-            </Route>
-            <Route path={'/liquidity'}>
-              <LiquidityPositions />
-            </Route>
-            <Route path={'/governance'}>
-              <Governance />
-            </Route>
+            {Object.values(Tab).map((tab, index) => {
+              const path = '/' + tab.toLowerCase()
+              const paths = index === 0 ? ['/', path] : [path]
+              return (
+                <Route exact={index === 0} path={paths} key={tab}>
+                  {tabToRender[tab]}
+                </Route>
+              )
+            })}
           </Switch>
         </div>
       </Router>

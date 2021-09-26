@@ -12,6 +12,7 @@ import {
   HeaderSideNavItems,
 } from 'carbon-components-react'
 import { Aperture32 } from '@carbon/icons-react'
+import { Tab } from '../../App'
 
 import Wallet from './Wallet'
 
@@ -23,18 +24,14 @@ const PageHeader = () => {
     e.preventDefault()
   }
 
-  const pages = [
-    {display: 'Positions', link: '/'},
-    {display: 'Lend', link: '/lend'},
-    {display: 'Liquidity', link: '/liquidity'},
-    {display: 'Governance', link: '/governance'},
-  ]
-
-  const headerItems = pages.map((page, index) => (
-    <HeaderMenuItem key={index} href={page.link} onClick={navigateToRoute.bind(null, page.link)}>
-      {page.display}
-    </HeaderMenuItem>
-  ))
+  const tabs = Object.values(Tab).map((tab, index) => {
+    const link = index === 0 ? '/' : '/' + tab.toLowerCase()
+    return (
+      <HeaderMenuItem key={index} href={link} onClick={navigateToRoute.bind(null, link)}>
+        {tab}
+      </HeaderMenuItem>
+    )
+  })
 
   return (
     <HeaderContainer
@@ -51,7 +48,7 @@ const PageHeader = () => {
             isPersistent={false}>
             <SideNavItems>
               <HeaderSideNavItems>
-                {headerItems}
+                {tabs}
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
@@ -61,7 +58,7 @@ const PageHeader = () => {
             </HeaderName>
           </div>
           <HeaderNavigation aria-label="Main Site Navigation Links">
-            {headerItems}
+            {tabs}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 20}}>
             <Wallet />
