@@ -45,7 +45,7 @@ function App() {
               const path = '/' + tab.toLowerCase()
               const paths = index === 0 ? ['/', path] : [path]
               return (
-                <Route exact={index === 0} path={paths} key={tab}>
+                <Route exact={index === 0} path={paths} key={index}>
                   {tabToRender[tab]}
                 </Route>
               )
