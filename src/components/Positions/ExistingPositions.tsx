@@ -52,7 +52,7 @@ const ExistingPositions = () => {
         creating: true,
       }))}
      >
-      Create Position
+      New Position
     </Button>
 
   return (
