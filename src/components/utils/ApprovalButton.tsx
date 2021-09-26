@@ -52,7 +52,6 @@ const ApprovalButton = ({
   }
 
   const nullButton = <Button disabled>{approvalLabels.waiting}</Button>
-  console.log({balanceInfo})
   if (
     balanceInfo === null ||
     balanceInfo.approval[protocolContract] === undefined ||

@@ -44,7 +44,6 @@ const Withdraw = () => {
   const apr = getAPR({market, rates, sdi, hueBalance})
 
   const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
-  console.log({hueBalance, lendHueBalance})
 
   const newWalletBalance = hueBalance.userBalance + amount
   const lentHueCount = lendHueBalance.userBalance! * market.valueOfLendTokensInHue
@@ -71,7 +70,6 @@ const Withdraw = () => {
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-  console.log({failures})
 
   const openLendDialog = () => {
     dispatch(openModal({
