@@ -5,8 +5,9 @@ import { Link } from 'carbon-components-react'
 import { xor } from '../../utils'
 import { ProtocolContract } from '../../slices/contracts'
 import { balanceInfo } from '../../slices/balances/index';
-import { waitForHueBalance, waitForLendHueBalance, getContractWaitFunction } from '../../slices/waitFor';
+import { waitForHueBalance, waitForLendHueBalance, getContractWaitFunction } from '../../slices/waitFor'
 import { approveHue, hueApproveArgs } from '../../slices/balances/hueBalance'
+import { approveLendHue, lendHueApproveArgs } from '../../slices/balances/lendHueBalance'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { RootState, AppDispatch } from '../../app/store'
 import { Button } from 'carbon-components-react'
@@ -31,7 +32,7 @@ const ApprovalButton = ({
   const dispatch = useAppDispatch()
 
   let balanceInfo: balanceInfo | null
-  let thunk: AsyncThunk<void, hueApproveArgs, {}> | undefined = undefined
+  let thunk: AsyncThunk<void, hueApproveArgs | lendHueApproveArgs, {}>  | undefined = undefined
   let tokenAddress = getContractWaitFunction(token)(selector, dispatch)
   let contractAddress = getContractWaitFunction(protocolContract)(selector, dispatch)
 
@@ -43,6 +44,7 @@ const ApprovalButton = ({
 
     case ProtocolContract.LendHue:
       balanceInfo = waitForLendHueBalance(selector, dispatch)
+      thunk = approveLendHue
       break
     default:
       throw new Error('ApprovalButton for unknown token ' + token)

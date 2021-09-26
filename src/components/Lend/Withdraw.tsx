@@ -1,46 +1,55 @@
 import { useState } from "react"
-import { Row, Col } from 'react-flexbox-grid'
 import {
   Button,
-  NumberInput,
-  Dropdown,
-  OnChangeData,
   TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForPrices, waitForLiquidations } from '../../slices/waitFor'
-import {  numDisplay }  from '../../utils/'
-import { first } from '../../utils'
+import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
+import { openModal } from '../../slices/modal'
+import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../Positions/library/PositionNumberInput';
 import { LendBorrowOptions } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../Positions/library/ErrorMessage';
 import PositionMetadata from '../Positions/library/PositionMetadata';
 import ErrorMessage from '../Positions/library/ErrorMessage';
-
-
+import { TransactionType } from '../../slices/transactions/index';
+import { ProtocolContract } from '../../slices/contracts/index';
+import { getAPR } from './library'
+import ApprovalButton from '../utils/ApprovalButton'
 
 const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
+  const market = waitForMarket(selector, dispatch)
+  const rates = waitForRates(selector, dispatch)
+  const sdi = waitForSDI(selector, dispatch)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
 
   const [amount, setAmount] = useState(0)
 
   if (
     hueBalance === null ||
-    lendHueBalance === null
+    lendHueBalance === null ||
+    market === null ||
+    rates === null ||
+    sdi === null ||
+    marketContract === null
   ) return <TextAreaSkeleton />
+
+  const apr = getAPR({market, rates, sdi, hueBalance})
 
   const onChange = (option: LendBorrowOptions) => {
     if (option !== LendBorrowOptions.Withdraw) onSelect(option)
   }
+  console.log({hueBalance, lendHueBalance})
 
-  const newWalletBalance = hueBalance.userBalance - amount
-  const newAccountBalance = lendHueBalance.userBalance + amount
-
+  const newWalletBalance = hueBalance.userBalance + amount
+  const lentHueCount = lendHueBalance.userBalance! * market.valueOfLendTokensInHue
+  const newLentHueCount = lentHueCount - amount
 
   const failures: {[key in string]: reason} = {
     noValueEntered: {
@@ -49,56 +58,80 @@ const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) =
       silent: true,
     },
     notEnoughInWallet: {
-      message: 'Not enough in wallet.',
-      failing: newWalletBalance < 0,
+      message: 'Not enough in lent.',
+      failing: newLentHueCount < 0,
+    },
+    hueNotApproved: {
+      message: 'Withdrawal is not approved.',
+      failing: lendHueBalance.approval.Market === undefined || !lendHueBalance.approval.Market.approved,
     },
   }
 
+  const convertHueToLendHue = (amount: number) => amount / market.valueOfLendTokensInHue
+  const convertLendHueToHue = (amount: number) => amount * market.valueOfLendTokensInHue
+
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
+  console.log({failures})
+
+  const openLendDialog = () => {
+    dispatch(openModal({
+      args: {
+        type: TransactionType.Withdraw,
+        count: convertHueToLendHue(amount),
+        Market: marketContract,
+      },
+    }))
+  }
 
   return (
     <>
       <div>
         <LargeText>
-          I have {numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
+          I have {numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
           <div />
-          The current lend APR is {numDisplay(hueBalance.userBalance, 2)} but will vary over time.
+          The current lend APR is {numDisplay(apr, 2)}% but will vary due to market forces over time.
         </LargeText>
       </div>
       <LargeText>
         I want to
-        <InputPicker options={LendBorrowOptions} initialValue={LendBorrowOptions.Withdraw} onChange={onChange} />
+        <InputPicker options={LendBorrowOptions} initialValue={LendBorrowOptions.Lend} onChange={onChange} />
         <PositionNumberInput
-          id="withdrawInput"
+          id="lendInput"
           action={(value: number) => setAmount(value)}
           value={amount}
         />
         Hue.
       </LargeText>
-      <div style={{marginTop: 36}}>
+      <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata items={[
           {
             title: 'Current Wallet Balance',
             value: numDisplay(hueBalance.userBalance, 2) + ' Hue',
-            failing: false
           },{
             title: 'New Wallet Balance',
-            value: numDisplay(hueBalance.userBalance - amount, 2) + ' Hue',
+            value: numDisplay(hueBalance.userBalance + amount, 2) + ' Hue',
             failing: failures.notEnoughInWallet.failing,
           },{
             title: 'Current Hue Lent',
-            value: numDisplay(lendHueBalance.userBalance, 2),
+            value: numDisplay(lentHueCount, 2),
           },{
             title: 'New Hue Lent',
-            value: numDisplay(newAccountBalance, 2)
+            value: numDisplay(newLentHueCount, 2)
           },
         ]} />
       </div>
+      <ApprovalButton
+        token={ProtocolContract.LendHue}
+        protocolContract={ProtocolContract.Market}
+        approvalLabels={{waiting: 'Approve Withdraw', approving: 'Approving Withdraw...', approved: 'Withdraw Approved'}}
+      />
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button disabled={isFailing}>
+        <Button disabled={isFailing} onClick={openLendDialog}>
           Withdraw
         </Button>
+      </div>
+      <div>
         <ErrorMessage reasons={failureReasons} />
       </div>
     </>

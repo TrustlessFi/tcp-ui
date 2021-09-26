@@ -50,6 +50,7 @@ const getModalPreview = (data: NonNullable<modalData>) => {
       return <>{preview}</>
 
     case TransactionType.Lend:
+    case TransactionType.Withdraw:
       data = data as lendModalData
       return (
         <div>
@@ -70,6 +71,8 @@ const getVerb = (data: NonNullable<modalData>) => {
       return 'Create'
     case TransactionType.Lend:
       return 'Lend'
+    case TransactionType.Withdraw:
+      return 'Withdraw'
   }
 }
 
@@ -79,6 +82,8 @@ const getShortName = (data: NonNullable<modalData>) => {
       return 'Creating a Position'
     case TransactionType.Lend:
       return 'Lending'
+    case TransactionType.Withdraw:
+      return 'Withdrawing'
   }
 }
 
@@ -92,6 +97,8 @@ const getMediumName = (data: NonNullable<modalData>) => {
         + ' Hue of debt.'
     case TransactionType.Lend:
       return 'Lending ' + numDisplay(data.args.count, 2) + ' Hue.'
+    case TransactionType.Lend:
+      return 'Withdrawing ' + numDisplay(data.args.count, 2) + ' Hue.'
   }
 }
 
