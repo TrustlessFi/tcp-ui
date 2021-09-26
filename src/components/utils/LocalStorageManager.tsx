@@ -9,6 +9,7 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
+import { lendSelectionSlice, LendSelectionState } from '../../slices/lendSelection'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
@@ -22,6 +23,7 @@ type slicesState =
   ratesInfo |
   systemDebtInfo |
   NotificationState |
+  LendSelectionState |
   null
 
 type persistedSlice = {
@@ -42,25 +44,30 @@ const LONG_EXPIRATION = minutes(30)
 export const slicesToPersist: persistedSlices = {
 
   // Simple slices
-  [transactionsSlice.name]: {
-    slice: transactionsSlice,
-    ttl: NO_EXPIRATION,
-    getState: (state: RootState) => state.transactions
+  [contractsSlice.name]: {
+    slice: contractsSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.contracts
+  },
+  [lendSelectionSlice.name]: {
+    slice: lendSelectionSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.lendSelection
+  },
+  [notificationsSlice.name]: {
+    slice: notificationsSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.notifications
   },
   [positionsEditorSlice.name]: {
     slice: positionsEditorSlice,
     ttl: MEDIUM_EXPIRATION,
     getState: (state: RootState) => state.positionsEditor
   },
-  [contractsSlice.name]: {
-    slice: contractsSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.contracts
-  },
-  [notificationsSlice.name]: {
-    slice: notificationsSlice,
-    ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.notifications
+  [transactionsSlice.name]: {
+    slice: transactionsSlice,
+    ttl: NO_EXPIRATION,
+    getState: (state: RootState) => state.transactions
   },
 
   // Slices with loadable state
