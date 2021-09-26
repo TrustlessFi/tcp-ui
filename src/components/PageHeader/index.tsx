@@ -53,7 +53,7 @@ const PageHeader = () => {
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
-          <HeaderName href="/" prefix="" >
+          <HeaderName href="/" prefix="" className='header_logo'>
             <img src={logo} alt="logo" width={32} height={32} />
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links">
