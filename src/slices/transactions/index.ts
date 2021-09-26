@@ -79,8 +79,14 @@ export interface txLendArgs {
   Market: string,
 }
 
+export interface txWithdrawArgs {
+  type: TransactionType.Withdraw
+  count: number,
+  Market: string,
+}
+
 export type TransactionArgs =
-  txCreatePositionArgs | txLendArgs
+  txCreatePositionArgs | txLendArgs | txWithdrawArgs
 
 export type TransactionState = {[key in string]: TransactionInfo}
 
@@ -125,6 +131,9 @@ const executeTransaction = async (args: TransactionArgs, provider: ethers.provid
     case TransactionType.Lend:
       return await getMarket().connect(provider.getSigner()).lend(scale(args.count))
 
+    case TransactionType.Withdraw:
+      return await getMarket().connect(provider.getSigner()).unlend(scale(args.count))
+
   }
 }
 
@@ -134,10 +143,11 @@ export const waitForTransaction = createAsyncThunk(
     const provider = getProvider()
     const userAddress = await provider.getSigner().getAddress()
 
-    let tx: ContractTransaction
+    let tx: ContractTransaction | undefined
     try {
       dispatch(modalWaitingForMetamask())
       tx = await executeTransaction(args, provider)
+      if (tx === undefined) throw 'Transaction undefined.'
     } catch (e) {
       const txInfo = getTxInfo({
         userAddress,
@@ -182,19 +192,10 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearHueBalance())
           break
         case TransactionType.Lend:
-        // case TransactionType.Withdraw:
-          dispatch(clearLendHueBalance())
-          dispatch(clearHueBalance())
-          break
-
-          /*
-        case TransactionType.Lend:
         case TransactionType.Withdraw:
-          dispatch(clearHueBalance())
           dispatch(clearLendHueBalance())
+          dispatch(clearHueBalance())
           break
-          */
-
       }
     }
   })
