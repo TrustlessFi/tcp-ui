@@ -120,11 +120,11 @@ const CreatePosition = () => {
             value: collateralizationDisplay,
             failing: failures.undercollateralized.failing,
           },{
-            title: 'New Eth Balance',
+            title: 'New Wallet Eth Balance',
             value: numDisplay(userEthBalance - collateralCount),
             failing: failures.insufficientEth.failing,
           },{
-            title: 'New Hue Balance',
+            title: 'New Wallet Hue Balance',
             value: numDisplay(hueBalance.userBalance + debtCount)
           },
         ]} />

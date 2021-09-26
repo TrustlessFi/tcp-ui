@@ -87,6 +87,8 @@ export const addCommas = (val: number | string): string => {
   return val.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
 }
 
+export const zeroIfNaN = (val: number) => isNaN(val) ? 0 : val
+
 export const numDisplay = (
   val: number,
   decimals: number | null = null

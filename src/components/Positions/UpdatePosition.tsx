@@ -16,7 +16,7 @@ import {
 } from 'carbon-components-react'
 import { ProtocolContract } from '../../slices/contracts'
 import { openModal } from '../../slices/modal'
-import { numDisplay } from '../../utils/index';
+import { numDisplay, zeroIfNaN } from '../../utils/index';
 import { reason } from './library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
 import PositionNumberInput from './library/PositionNumberInput';
@@ -24,12 +24,27 @@ import LargeText from '../utils/LargeText';
 import PositionMetadata from './library/PositionMetadata';
 import Bold from '../utils/Bold';
 import ErrorMessage from './library/ErrorMessage';
+import InputPicker from '../Lend/library/InputPicker';
+
+enum CollateralChange {
+  Increase = 'Increase',
+  Decrease = 'Decrease',
+}
+
+enum DebtChange {
+  Payback = 'Payback',
+  Borrow = 'Borrow',
+}
 
 const UpdatePosition = ({ id }: { id: number }) => {
   const dispatch = useAppDispatch()
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
+  const initialCollateralChange = CollateralChange.Increase
+  const initialDebtChange = DebtChange.Borrow
+  const [collateralChange, setCollateralChange] = useState(initialCollateralChange)
+  const [debtChange, setDebtChange] = useState(initialDebtChange)
 
   const liquidations = waitForLiquidations(selector, dispatch)
   const hueBalance = waitForHueBalance(selector, dispatch)
@@ -54,15 +69,23 @@ const UpdatePosition = ({ id }: { id: number }) => {
   ) return <TextAreaSkeleton />
 
   const position = positions[id]
+  const increaseCollateral = collateralChange === CollateralChange.Increase
+  const increaseDebt = debtChange === DebtChange.Borrow
 
   if (position === undefined) {
     throw new Error('PositionEditor: Position id not found: ' + id)
   }
 
-  const collateralization = (collateralCount * priceInfo.ethPrice) / debtCount
+  const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
+  const collateralIncrease = zeroIfNaN(increaseCollateral ? collateralCount : -collateralCount)
+
+  const newDebtCount = position.debtCount + debtIncrease
+  const newCollateralCount = position.collateralCount + collateralIncrease
+
+  const collateralization = (newCollateralCount * priceInfo.ethPrice) / newDebtCount
   const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
 
-  const liquidationPrice = (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPrice = (newDebtCount * market.collateralizationRequirement) / (newCollateralCount)
   const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
 
   const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
@@ -70,19 +93,14 @@ const UpdatePosition = ({ id }: { id: number }) => {
   const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
 
   const failures: {[key in string]: reason} = {
-    noCollateral: {
-      message: 'No collateral.',
-      failing: collateralCount === 0 || isNaN(collateralCount),
-      silent: true,
-    },
-    invalidDebt: {
-      message: 'Invalid debt amount.',
-      failing: isNaN(debtCount),
+    noChange: {
+      message: 'No change.',
+      failing: debtIncrease === 0 && collateralIncrease === 0,
       silent: true,
     },
     notBigEnough: {
       message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
-      failing: 0 < debtCount &&  debtCount < market.minPositionSize,
+      failing: 0 < newDebtCount && newDebtCount < market.minPositionSize,
     },
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
@@ -90,7 +108,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: userEthBalance - collateralCount < 0,
+      failing: userEthBalance - collateralIncrease < 0,
     }
   }
 
@@ -113,20 +131,36 @@ const UpdatePosition = ({ id }: { id: number }) => {
   return (
     <>
       <LargeText>
-        I want to create a position with
+        Position #{id} has {numDisplay(position.collateralCount, 2)} Eth of Collateral
+        and {numDisplay(position.debtCount, 2)} Hue of debt
+        with an interest rate of {numDisplay(interestRate, 2)}%.
+        <div />
+        I want to
+        <InputPicker
+          options={CollateralChange}
+          initialValue={initialCollateralChange}
+          onChange ={(option: CollateralChange) => setCollateralChange(option)}
+        />
+        collateral by
         <PositionNumberInput
           id="collateralInput"
           action={(value: number) => setCollateralCount(value)}
           value={collateralCount}
         />
-        Eth of Collateral and
+        and
+        <InputPicker
+          options={DebtChange}
+          initialValue={initialDebtChange}
+          onChange ={(option: DebtChange) => setDebtChange(option)}
+        />
         <PositionNumberInput
           id="debtInput"
           action={(value: number) => setDebtCount(value)}
           value={debtCount}
         />
-        Hue of debt with an interest rate of {numDisplay(interestRate, 2)}%.
+        Hue.
       </LargeText>
+
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata items={[
           {
@@ -138,12 +172,12 @@ const UpdatePosition = ({ id }: { id: number }) => {
             value: collateralizationDisplay,
             failing: failures.undercollateralized.failing,
           },{
-            title: 'New Eth Balance',
-            value: numDisplay(userEthBalance - collateralCount),
+            title: 'New Wallet Eth Balance',
+            value: numDisplay(userEthBalance - zeroIfNaN(collateralCount)),
             failing: failures.insufficientEth.failing,
           },{
-            title: 'New Hue Balance',
-            value: numDisplay(hueBalance.userBalance + debtCount)
+            title: 'New Wallet Hue Balance',
+            value: numDisplay(hueBalance.userBalance + zeroIfNaN(debtCount))
           },
         ]} />
       </div>
