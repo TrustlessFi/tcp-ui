@@ -13,6 +13,7 @@ import {
 } from 'carbon-components-react'
 import { Aperture32 } from '@carbon/icons-react'
 import { Tab } from '../../App'
+import logo from '../../img/tcp-logo-white.svg'
 
 import Wallet from './Wallet'
 
@@ -52,11 +53,9 @@ const PageHeader = () => {
               </HeaderSideNavItems>
             </SideNavItems>
           </SideNav>
-          <div style={{marginLeft: 16}}>
-            <HeaderName href="/" prefix="">
-              <Aperture32 />
-            </HeaderName>
-          </div>
+          <HeaderName href="/" prefix="" >
+            <img src={logo} alt="logo" width={32} height={32} />
+          </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links">
             {tabs}
           </HeaderNavigation>
