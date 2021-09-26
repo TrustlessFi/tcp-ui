@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from 'react';
 
 const Text = ({
   size,
@@ -6,6 +6,7 @@ const Text = ({
   bold,
   color,
   lineHeight,
+  style,
   children,
 }: {
   size?: number,
@@ -13,9 +14,10 @@ const Text = ({
   bold?: boolean,
   color?: string,
   lineHeight?: string,
+  style?: CSSProperties,
   children: ReactNode
 }) => {
-  const style: React.CSSProperties = {}
+  if (style === undefined) style = {}
   if (size) style.fontSize = size
   if (monospace) style.fontFamily = 'monospace'
   if (bold) style.fontWeight = 'bold'

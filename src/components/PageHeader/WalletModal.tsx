@@ -37,6 +37,7 @@ const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () 
       <div style={{ marginBottom: '1rem' }}>
         <Text>Connected with Metamask</Text>
         <NetworkIndicator style={{marginLeft: '8px' }} />
+        <div />
         <LargeText>{abbreviateAddress(address)}</LargeText>
         <div />
         <CopyToClipboard text={address} onCopy={() => setIsCopied(true)}>
