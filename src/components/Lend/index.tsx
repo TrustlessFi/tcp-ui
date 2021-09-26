@@ -22,11 +22,11 @@ export enum LendBorrowOptions {
 }
 
 const LendOrWithdraw = () => {
-  const [selectedOption, setSelectedOption] = useState(first(Object.values(LendBorrowOptions)))
+  const { optionSelected } = selector(state => state.lendSelection)
 
-  return selectedOption === LendBorrowOptions.Lend
-    ? <Lend onSelect={setSelectedOption} />
-    : <Withdraw onSelect={setSelectedOption} />
+  return optionSelected === LendBorrowOptions.Lend
+    ? <Lend />
+    : <Withdraw />
 }
 
 export default LendOrWithdraw

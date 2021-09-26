@@ -8,18 +8,19 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
-import PositionNumberInput from '../Positions/library/PositionNumberInput';
+import PositionNumberInput from '../Positions/library/PositionNumberInput'
 import { LendBorrowOptions } from './'
 import InputPicker from './library/InputPicker'
-import { reason } from '../Positions/library/ErrorMessage';
-import PositionMetadata from '../Positions/library/PositionMetadata';
-import ErrorMessage from '../Positions/library/ErrorMessage';
-import { TransactionType } from '../../slices/transactions/index';
-import { ProtocolContract } from '../../slices/contracts/index';
+import { reason } from '../Positions/library/ErrorMessage'
+import PositionMetadata from '../Positions/library/PositionMetadata'
+import ErrorMessage from '../Positions/library/ErrorMessage'
+import { TransactionType } from '../../slices/transactions'
+import { ProtocolContract } from '../../slices/contracts'
+import { selectionMade } from '../../slices/lendSelection'
 import { getAPR } from './library'
 import ApprovalButton from '../utils/ApprovalButton'
 
-const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) => {
+const Withdraw = () => {
   const dispatch = useAppDispatch()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
@@ -42,9 +43,7 @@ const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) =
 
   const apr = getAPR({market, rates, sdi, hueBalance})
 
-  const onChange = (option: LendBorrowOptions) => {
-    if (option !== LendBorrowOptions.Withdraw) onSelect(option)
-  }
+  const onChange = (option: LendBorrowOptions) => dispatch(selectionMade(option))
   console.log({hueBalance, lendHueBalance})
 
   const newWalletBalance = hueBalance.userBalance + amount
@@ -90,12 +89,16 @@ const Withdraw = ({onSelect}: {onSelect: (option: LendBorrowOptions) => void}) =
         <LargeText>
           I have {numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
           <div />
-          The current lend APR is {numDisplay(apr, 2)}% but will vary due to market forces over time.
+          The current lend APR is {numDisplay(apr, 2)}% but will vary over time due to market forces.
         </LargeText>
       </div>
       <LargeText>
         I want to
-        <InputPicker options={LendBorrowOptions} initialValue={LendBorrowOptions.Lend} onChange={onChange} />
+        <InputPicker
+          options={LendBorrowOptions}
+          initialValue={LendBorrowOptions.Withdraw}
+          onChange={onChange}
+        />
         <PositionNumberInput
           id="lendInput"
           action={(value: number) => setAmount(value)}
