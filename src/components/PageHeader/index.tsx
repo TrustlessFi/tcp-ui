@@ -11,7 +11,6 @@ import {
   SideNavItems,
   HeaderSideNavItems,
 } from 'carbon-components-react'
-import { Aperture32 } from '@carbon/icons-react'
 import { Tab } from '../../App'
 import logo from '../../img/tcp-logo-white.svg'
 
@@ -57,7 +56,8 @@ const PageHeader = () => {
             </SideNavItems>
           </SideNav>
           <HeaderName href="/" prefix="" className='header_logo'>
-            <img src={logo} alt="logo" width={32} height={32} />
+            <img src={logo} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
+            Trustless Currency Protocol
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links">
             {tabs}
