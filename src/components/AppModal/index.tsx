@@ -1,17 +1,14 @@
-import { AsyncThunkAction } from '@reduxjs/toolkit';
-import { useState, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { RootState, AppDispatch } from '../../app/store'
 import {
   Modal,
 } from 'carbon-components-react'
-import { sliceState } from '../../slices'
 import { modalData, closeModal, createPositionModalData, lendModalData } from '../../slices/modal'
 import { TransactionType, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { numDisplay, assertUnreachable } from '../../utils'
 import LargeText from '../utils/LargeText'
 import Text from '../utils/Text'
-import { ModalState, ModalStage, openModal } from '../../slices/modal/'
+import { ModalStage } from '../../slices/modal/'
 import { waitForTransaction } from '../../slices/transactions'
 import ExplorerLink from '../utils/ExplorerLink'
 

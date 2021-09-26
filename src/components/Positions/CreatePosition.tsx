@@ -1,8 +1,6 @@
 import { useState } from "react"
-import { Row, Col } from 'react-flexbox-grid'
 import {
   Button,
-  NumberInput,
   TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
@@ -10,7 +8,7 @@ import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
 import { openModal } from '../../slices/modal'
-import { onNumChange, numDisplay }  from '../../utils/'
+import { numDisplay }  from '../../utils/'
 import PositionMetadata from './library/PositionMetadata'
 import PositionNumberInput from './library/PositionNumberInput'
 import ErrorMessage, { reason } from './library/ErrorMessage'
