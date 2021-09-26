@@ -1,15 +1,7 @@
-import { useState } from "react"
-import {
-  Button,
-  NumberInput,
-  TextAreaSkeleton,
-} from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../slices/waitFor'
 import SimpleTable from '../library/SimpleTable'
-import { editorClosed } from '../../slices/positionsEditor'
 import { roundToXDecimals } from '../../utils'
-import { onNumChange, anyNull }  from '../../utils/'
 
 const UpdatePosition = ({id}: { id: number}) => {
   const dispatch = useAppDispatch()

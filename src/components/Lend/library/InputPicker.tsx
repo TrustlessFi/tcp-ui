@@ -1,9 +1,6 @@
 import {
-  Button,
-  NumberInput,
   Dropdown,
   OnChangeData,
-  TextAreaSkeleton,
 } from 'carbon-components-react'
 
 const InputPicker = <T extends string, TEnumValue extends string>({

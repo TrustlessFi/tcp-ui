@@ -1,12 +1,7 @@
-import { useState } from "react"
-import { Row, Col } from 'react-flexbox-grid'
 import {
-  Button,
   NumberInput,
-  TextAreaSkeleton,
 } from 'carbon-components-react'
-import LargeText from '../../utils/LargeText'
-import { onNumChange, numDisplay }  from '../../../utils/'
+import { onNumChange }  from '../../../utils/'
 
 const PositionNumberInput = ({
   id,

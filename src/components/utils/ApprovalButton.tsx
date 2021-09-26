@@ -1,18 +1,11 @@
-import { AsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { useState } from "react"
-import { ReactNode } from "react";
-import { Link } from 'carbon-components-react'
-import { xor } from '../../utils'
+import { AsyncThunk } from '@reduxjs/toolkit'
 import { ProtocolContract } from '../../slices/contracts'
 import { balanceInfo } from '../../slices/balances/index';
 import { waitForHueBalance, waitForLendHueBalance, getContractWaitFunction } from '../../slices/waitFor'
 import { approveHue, hueApproveArgs } from '../../slices/balances/hueBalance'
 import { approveLendHue, lendHueApproveArgs } from '../../slices/balances/lendHueBalance'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { RootState, AppDispatch } from '../../app/store'
 import { Button } from 'carbon-components-react'
-
-import { Market } from '../../utils/typechain'
 
 type approvalLabels = {
   waiting: string,
