@@ -1,7 +1,7 @@
-import { ratesInfo } from '../../../slices/rates/index';
-import { marketInfo } from '../../../slices/market/index';
-import { systemDebtInfo } from '../../../slices/systemDebt/index';
-import { balanceInfo } from '../../../slices/balances/index';
+import { ratesInfo } from '../../../slices/rates'
+import { marketInfo } from '../../../slices/market'
+import { systemDebtInfo } from '../../../slices/systemDebt'
+import { balanceInfo } from '../../../slices/balances'
 
 
 export const getAPR = (args: {market: marketInfo, rates: ratesInfo, sdi: systemDebtInfo, hueBalance: balanceInfo}) => {

@@ -6,8 +6,8 @@ import { contract } from '../../utils/getContract'
 import { UniswapV3Pool } from "../../utils/typechain/UniswapV3Pool"
 
 import poolArtifact from '../../utils/artifacts/contracts/uniswap/uniswap-v3-core/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
-import { getLocalStorage } from '../../utils/index';
-import { executeMulticall } from '../../utils/Multicall/index';
+import { getLocalStorage } from '../../utils'
+import { executeMulticall } from '../../utils/Multicall'
 import * as mc from '../../utils/Multicall'
 
 export type referenceTokens = string[]

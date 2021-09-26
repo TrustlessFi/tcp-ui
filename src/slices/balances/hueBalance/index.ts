@@ -5,7 +5,7 @@ import { ProtocolContract } from '../../contracts'
 import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
 import { Hue } from '../../../utils/typechain'
-import { uint256Max } from '../../../utils/index';
+import { uint256Max } from '../../../utils'
 
 export type hueBalanceArgs = {
   Hue: string

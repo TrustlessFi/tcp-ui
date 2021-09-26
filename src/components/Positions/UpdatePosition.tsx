@@ -1,69 +1,165 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPositions, waitForGovernor, waitForLiquidations, waitForRates, waitForPrices, waitForMarket } from '../../slices/waitFor'
-import SimpleTable from '../library/SimpleTable'
-import { roundToXDecimals } from '../../utils'
+import { useState } from "react"
+import {
+  waitForLiquidations,
+  waitForRates,
+  waitForPrices,
+  waitForMarket,
+  waitForHueBalance,
+  waitForEthBalance,
+  getContractWaitFunction,
+  waitForPositions
+} from '../../slices/waitFor'
+import {
+  TextAreaSkeleton,
+  Button,
+} from 'carbon-components-react'
+import { ProtocolContract } from '../../slices/contracts'
+import { openModal } from '../../slices/modal'
+import { numDisplay } from '../../utils/index';
+import { reason } from './library/ErrorMessage';
+import { TransactionType } from '../../slices/transactions/index';
+import PositionNumberInput from './library/PositionNumberInput';
+import LargeText from '../utils/LargeText';
+import PositionMetadata from './library/PositionMetadata';
+import Bold from '../utils/Bold';
+import ErrorMessage from './library/ErrorMessage';
 
-const UpdatePosition = ({id}: { id: number}) => {
+const UpdatePosition = ({ id }: { id: number }) => {
   const dispatch = useAppDispatch()
 
-  const governor = waitForGovernor(selector, dispatch)
+  const [collateralCount, setCollateralCount] = useState(0)
+  const [debtCount, setDebtCount] = useState(0)
+
   const liquidations = waitForLiquidations(selector, dispatch)
+  const hueBalance = waitForHueBalance(selector, dispatch)
+  const priceInfo = waitForPrices(selector, dispatch)
+  const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
-  const positions = waitForPositions(selector, dispatch)
-  const prices = waitForPrices(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const userAddress = selector(state => state.wallet.address)
+  const positions = waitForPositions(selector, dispatch)
 
-  // const [collateralIncrease, setCollateralIncrease] = useState(0)
-  // const [debtIncrease, setDebtIncrease] = useState(0)
-
- if (
-    governor === null ||
+  if (
     liquidations === null ||
+    hueBalance === null ||
+    priceInfo === null ||
     market === null ||
-    positions === null ||
-    prices === null ||
-    rates === null
-  ) {
-    return <>loading spinner</>
-  }
-
-  if (positions === null || !(positions.hasOwnProperty(id))) {
-    throw new Error('PositionEditor: Position id not found: ' + id)
-  }
+    rates === null ||
+    marketContract === null ||
+    userEthBalance === null ||
+    userAddress === null ||
+    positions === null
+  ) return <TextAreaSkeleton />
 
   const position = positions[id]
 
-  const rows = [{
-    key: position.id,
-    data: {
-      'Position ID': position.id,
-      'Debt': position.debtCount + ' Hue',
-      'Collateral': roundToXDecimals(position.collateralCount, 2) + ' Eth',
-      'Current Eth/Hue price': roundToXDecimals(prices.ethPrice, 2),
+  if (position === undefined) {
+    throw new Error('PositionEditor: Position id not found: ' + id)
+  }
+
+  const collateralization = (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
+
+  const liquidationPrice = (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
+
+  const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+
+  const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+
+  const failures: {[key in string]: reason} = {
+    noCollateral: {
+      message: 'No collateral.',
+      failing: collateralCount === 0 || isNaN(collateralCount),
+      silent: true,
     },
-  }]
-
-  const table1 = <SimpleTable rows={rows} />
-
-  const interestRate = rates.interestRateAbsoluteValue * (rates.positiveInterestRate ? 1 : -1)
-  const liquidationIncentive = liquidations.liquidationIncentive + liquidations.discoveryIncentive - 1
-
-  const liquidationPrice = (market.collateralizationRequirement / position.collateralCount) * position.debtCount
-
-  const rows2 = [{
-    key: position.id,
-    data: {
-      'Min Position size': market.minPositionSize,
-      'Stability fee': (interestRate * 100) + '%',
-      'Liquidation Fee': roundToXDecimals(liquidationIncentive * 100, 2) + '%',
-      'Min Collateralization ratio': (market.collateralizationRequirement * 100) + ' %',
-      'Liquidation price': roundToXDecimals(liquidationPrice, 2),
+    invalidDebt: {
+      message: 'Invalid debt amount.',
+      failing: isNaN(debtCount),
+      silent: true,
     },
-  }]
+    notBigEnough: {
+      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
+      failing: 0 < debtCount &&  debtCount < market.minPositionSize,
+    },
+    undercollateralized: {
+      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      failing: collateralization < market.collateralizationRequirement,
+    },
+    insufficientEth: {
+      message: 'Connected wallet does not have enough Eth.',
+      failing: userEthBalance - collateralCount < 0,
+    }
+  }
 
-  const table2 = <SimpleTable rows={rows2} />
+  const failureReasons: reason[] = Object.values(failures)
+  const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  return <>{table1}{table2}</>
+  const openCreatePositionDialog = () => {
+    dispatch(openModal({
+      args: {
+        type: TransactionType.CreatePosition,
+        collateralCount,
+        debtCount,
+        Market: marketContract,
+      },
+      ethPrice: priceInfo.ethPrice,
+      liquidationPrice,
+    }))
+  }
+
+  return (
+    <>
+      <LargeText>
+        I want to create a position with
+        <PositionNumberInput
+          id="collateralInput"
+          action={(value: number) => setCollateralCount(value)}
+          value={collateralCount}
+        />
+        Eth of Collateral and
+        <PositionNumberInput
+          id="debtInput"
+          action={(value: number) => setDebtCount(value)}
+          value={debtCount}
+        />
+        Hue of debt with an interest rate of {numDisplay(interestRate, 2)}%.
+      </LargeText>
+      <div style={{marginTop: 36, marginBottom: 30}}>
+        <PositionMetadata items={[
+          {
+            title: 'Min position size',
+            value: numDisplay(market.minPositionSize) + ' Hue',
+            failing: failures.notBigEnough.failing,
+          },{
+            title: 'Collateralization Ratio',
+            value: collateralizationDisplay,
+            failing: failures.undercollateralized.failing,
+          },{
+            title: 'New Eth Balance',
+            value: numDisplay(userEthBalance - collateralCount),
+            failing: failures.insufficientEth.failing,
+          },{
+            title: 'New Hue Balance',
+            value: numDisplay(hueBalance.userBalance + debtCount)
+          },
+        ]} />
+      </div>
+      <LargeText>
+        Eth is currently <Bold>{numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
+        If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
+        I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
+      </LargeText>
+      <div style={{marginTop: 32, marginBottom: 32}}>
+        <Button onClick={openCreatePositionDialog} disabled={isFailing}>
+          Create Position
+        </Button>
+      </div>
+      <ErrorMessage reasons={failureReasons} />
+    </>
+  )
 }
 
 export default UpdatePosition
