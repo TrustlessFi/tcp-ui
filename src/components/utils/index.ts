@@ -1,4 +1,10 @@
 import { TransactionInfo, TransactionState, getTxNonce } from '../../slices/transactions'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { AppDispatch } from '../../app/store'
+import { clearEthBalance } from '../../slices/ethBalance'
+import { clearPositions } from '../../slices/positions'
+import { clearHueBalance } from '../../slices/balances/hueBalance'
+import { clearLendHueBalance } from '../../slices/balances/lendHueBalance'
 
 export const getSortedUserTxs = (userAddress: string | null, txs: TransactionState | null): TransactionInfo[] => {
   if (userAddress === null) return []
@@ -19,4 +25,11 @@ export const getOpacityTransition = (durationSeconds: number) => {
       OTransition: transition,
       transition,
   }
+}
+
+export const clearUserData = (dispatch: AppDispatch) => {
+  dispatch(clearEthBalance())
+  dispatch(clearPositions())
+  dispatch(clearHueBalance())
+  dispatch(clearLendHueBalance())
 }
