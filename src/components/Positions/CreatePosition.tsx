@@ -14,6 +14,7 @@ import PositionNumberInput from './library/PositionNumberInput'
 import ErrorMessage, { reason } from './library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import { ProtocolContract } from '../../slices/contracts'
+import ConnectWalletButton from '../utils/ConnectWalletButton';
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -30,26 +31,27 @@ const CreatePosition = () => {
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0.0)
 
-  if (
+
+  const walletNull = userAddress === null
+  const dataNull =
     liquidations === null ||
     hueBalance === null ||
     priceInfo === null ||
     market === null ||
     rates === null ||
     marketContract === null ||
-    userEthBalance === null ||
-    userAddress === null
-  ) return <TextAreaSkeleton />
+    userEthBalance === null
 
-  const collateralization = (collateralCount * priceInfo.ethPrice) / debtCount
-  const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
+  const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralizationDisplay = dataNull ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
-  const liquidationPrice = (debtCount * market.collateralizationRequirement) / (collateralCount)
-  const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
+  const liquidationPrice = dataNull ? 0 : (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
 
-  const totalLiquidationIncentive = (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+  const totalLiquidationIncentive = dataNull ? 0 : (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
 
-  const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
   const failures: {[key in string]: reason} = {
     noCollateral: {
@@ -63,16 +65,16 @@ const CreatePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
-      failing: 0 < debtCount &&  debtCount < market.minPositionSize,
+      message: dataNull ? '' : 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
+      failing: dataNull ? false : 0 < debtCount && debtCount < market.minPositionSize,
     },
     undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
-      failing: collateralization < market.collateralizationRequirement,
+      message: dataNull ? '' : 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      failing: dataNull ? false : collateralization < market.collateralizationRequirement,
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: userEthBalance - collateralCount < 0,
+      failing: dataNull ? false : userEthBalance - collateralCount < 0,
     }
   }
 
@@ -85,9 +87,9 @@ const CreatePosition = () => {
         type: TransactionType.CreatePosition,
         collateralCount,
         debtCount,
-        Market: marketContract,
+        Market: marketContract!,
       },
-      ethPrice: priceInfo.ethPrice,
+      ethPrice: priceInfo!.ethPrice,
       liquidationPrice,
     }))
   }
@@ -107,13 +109,13 @@ const CreatePosition = () => {
           action={(value: number) => setDebtCount(value)}
           value={debtCount}
         />
-        Hue of debt with an interest rate of {numDisplay(interestRate, 2)}%.
+        Hue of debt with an interest rate of {interestRateDisplay}.
       </LargeText>
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata  items={[
           {
             title: 'Min position size',
-            value: numDisplay(market.minPositionSize) + ' Hue',
+            value: (dataNull ? '-' : numDisplay(market.minPositionSize)) + ' Hue',
             failing: failures.notBigEnough.failing,
           },{
             title: 'Collateralization Ratio',
@@ -121,23 +123,28 @@ const CreatePosition = () => {
             failing: failures.undercollateralized.failing,
           },{
             title: 'New Wallet Eth Balance',
-            value: numDisplay(userEthBalance - collateralCount),
+            value: dataNull ? '-' : numDisplay(userEthBalance - collateralCount),
             failing: failures.insufficientEth.failing,
           },{
             title: 'New Wallet Hue Balance',
-            value: numDisplay(hueBalance.userBalance + debtCount)
+            value: dataNull ? '-' : numDisplay(hueBalance.userBalance + debtCount)
           },
         ]} />
       </div>
       <LargeText>
-        Eth is currently <Bold>{numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
+        Eth is currently <Bold>{dataNull ? '-' : numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
         If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
         I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
       </LargeText>
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button onClick={openCreatePositionDialog} disabled={isFailing}>
-          Create Position
-        </Button>
+        {userAddress === null ? (
+          <ConnectWalletButton />
+        ) : (
+          <Button onClick={openCreatePositionDialog} disabled={isFailing}>
+            Create Position
+          </Button>
+        )
+        }
       </div>
       <ErrorMessage reasons={failureReasons} />
     </>
