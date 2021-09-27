@@ -110,7 +110,7 @@ const CreatePosition = () => {
           action={(value: number) => setDebtCount(value)}
           value={debtCount}
         />
-        Hue of debt with an interest rate of {interestRateDisplay}.
+        Hue of debt with a {interestRateDisplay} interest rate that will vary due to market forces.
       </LargeText>
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata items={[
