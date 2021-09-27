@@ -9,10 +9,16 @@ import { numDisplay } from '../../utils'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
+
   const positions = waitForPositions(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
+  const userAddress = selector(state => state.wallet.address)
 
-  const headers = ['Position ID', 'Debt', 'Collateral']
+  const headers = ['Position ID', 'Debt', 'Collateral', 'Collateralization Ratio']
+
+  if (userAddress === null) {
+    return <>Please connect a wallet</>
+  }
 
   if (positions === null || priceInfo === null) {
     return <DataTableSkeleton headers={headers.map(header => ({key: header}))} rowCount={3} />
