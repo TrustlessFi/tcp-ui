@@ -25,6 +25,7 @@ import PositionMetadata from './library/PositionMetadata';
 import Bold from '../utils/Bold';
 import ErrorMessage from './library/ErrorMessage';
 import InputPicker from '../Lend/library/InputPicker';
+import ApprovalButton from '../utils/ApprovalButton';
 
 enum CollateralChange {
   Increase = 'Increase',
@@ -118,6 +119,10 @@ const UpdatePosition = ({ id }: { id: number }) => {
       message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
       failing: newDebtCount !== 0 && collateralization < market.collateralizationRequirement,
     },
+    paybackNotApproved: {
+      message: 'Paying back Hue is not approved.',
+      failing: debtIncrease < 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
+    },
   }
 
   const failureReasons: reason[] = Object.values(failures)
@@ -167,18 +172,17 @@ const UpdatePosition = ({ id }: { id: number }) => {
         />
         Hue.
       </LargeText>
-
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata items={[
           {
-            title: 'New Position Collateral',
+            title: 'Position Collateral',
             value: numDisplay(newCollateralCount, 2) + ' Eth',
             failing: failures.negativeCollateral.failing,
           },{
-            title: 'New Position Debt',
+            title: 'Position Debt',
             value: numDisplay(newDebtCount < 0 ? 0 : newDebtCount, 2) + ' Hue',
           },{
-            title: 'Min position size',
+            title: 'Min position Debt',
             value: numDisplay(market.minPositionSize) + ' Hue',
             failing: failures.notBigEnough.failing,
           },{
@@ -186,11 +190,11 @@ const UpdatePosition = ({ id }: { id: number }) => {
             value: collateralizationDisplay,
             failing: failures.undercollateralized.failing,
           },{
-            title: 'New Wallet Eth Balance',
+            title: 'Wallet Eth Balance',
             value: numDisplay(userEthBalance - collateralIncrease, 2) + ' Eth',
             failing: failures.insufficientEthInWallet.failing,
           },{
-            title: 'New Wallet Hue Balance',
+            title: 'Wallet Hue Balance',
             value: numDisplay(hueBalance.userBalance + debtIncrease, 2) + ' Hue',
             failing: failures.insufficientHueInWallet.failing,
           },{
@@ -204,9 +208,17 @@ const UpdatePosition = ({ id }: { id: number }) => {
         If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
         I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
       </LargeText>
+      <div style={{marginTop: 32}}>
+        <ApprovalButton
+          disabled={debtIncrease >= 0}
+          token={ProtocolContract.Hue}
+          protocolContract={ProtocolContract.Market}
+          approvalLabels={{waiting: 'Approve Payback', approving: 'Approving Payback...', approved: 'Payback Approved'}}
+        />
+      </div>
       <div style={{marginTop: 32, marginBottom: 32}}>
         <Button onClick={openCreatePositionDialog} disabled={isFailing}>
-          Create Position
+          Update Position
         </Button>
       </div>
       <ErrorMessage reasons={failureReasons} />

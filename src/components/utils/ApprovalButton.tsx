@@ -16,10 +16,12 @@ type approvalLabels = {
 const ApprovalButton = ({
   token,
   protocolContract,
+  disabled,
   approvalLabels,
 }: {
   token: ProtocolContract,
   protocolContract: ProtocolContract,
+  disabled?: boolean,
   approvalLabels?: approvalLabels
 }) => {
   const dispatch = useAppDispatch()
@@ -57,7 +59,8 @@ const ApprovalButton = ({
     balanceInfo.approval[protocolContract] === undefined ||
     thunk === undefined ||
     contractAddress === null ||
-    tokenAddress === null
+    tokenAddress === null ||
+    disabled
   ) return nullButton
 
   if (balanceInfo.approval[protocolContract] === undefined) {
@@ -75,7 +78,6 @@ const ApprovalButton = ({
   const execute = () => {
     dispatch(thunk!({Hue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
   }
-
 
   return <Button onClick={execute}>{approvalLabels.waiting}</Button>
 }
