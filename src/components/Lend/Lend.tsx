@@ -61,7 +61,7 @@ const Lend = () => {
     },
     hueNotApproved: {
       message: 'Lending is not approved.',
-      failing: hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved,
+      failing: amount !== 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
     },
   }
 
@@ -116,12 +116,13 @@ const Lend = () => {
         ]} />
       </div>
       <ApprovalButton
+        disabled={amount === 0} 
         token={ProtocolContract.Hue}
         protocolContract={ProtocolContract.Market}
         approvalLabels={{waiting: 'Approve Lend', approving: 'Approving Lend...', approved: 'Lend Approved'}}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button disabled={isFailing} onClick={openLendDialog}>
+        <Button disabled={isFailing || amount === 0} onClick={openLendDialog}>
           Lend
         </Button>
       </div>
