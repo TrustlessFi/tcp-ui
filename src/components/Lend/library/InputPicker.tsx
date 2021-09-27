@@ -13,7 +13,7 @@ const InputPicker = <T extends string, TEnumValue extends string>({
   initialValue: TEnumValue,
 }) => {
   return (
-    <div style={{display: 'inline-block', width: 146}} >
+    <div style={{display: 'inline-block', width: 146, marginTop: 8}} >
       <Dropdown
         ariaLabel="Dropdown"
         id="Lend_Borrow_Dropdown"
