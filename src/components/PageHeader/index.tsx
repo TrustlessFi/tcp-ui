@@ -1,5 +1,6 @@
 import { MouseEvent } from 'react'
 import { withRouter, useHistory, useLocation } from 'react-router'
+import { useEffect, useState } from 'react'
 import {
   Header,
   HeaderContainer,
@@ -18,6 +19,13 @@ import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator';
 
 const PageHeader = () => {
+  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+  })
+
   const history = useHistory()
   const location = useLocation()
 
@@ -57,13 +65,14 @@ const PageHeader = () => {
           </SideNav>
           <HeaderName href="/" prefix="" className='header_logo'>
             <img src={logo} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
-            Trustless Currency Protocol
+            {windowWidth < 650 ? null : 'Trustless Currency Protocol'}
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links">
             {tabs}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 16 }}>
-            <NetworkIndicator />
+            {windowWidth < 650 ? null : <NetworkIndicator />}
+            
             <span style={{marginLeft: 12}}>
               <Wallet />
             </span>

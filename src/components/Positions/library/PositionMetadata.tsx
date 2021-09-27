@@ -1,5 +1,6 @@
 import { Row, Col } from 'react-flexbox-grid'
 import Text from '../../utils/Text'
+import { useEffect, useState } from 'react'
 
 type metadata = {value: string, title: string, failing?: boolean}
 
@@ -22,12 +23,20 @@ const Metadata = ({item}: {item: metadata}) => {
 const PositionMetadata = ({items}: { items: metadata[]}) => {
   const border = '1px solid #404040'
 
+  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+  })
+
+  const countPerRow = windowWidth < 650 ? 2 : 4
+
   const rows: metadata[][] = []
-  console.log({rows})
 
   for(let i = 0; i < items.length;) {
     const itemsInRow: metadata[] = []
-    for(let j = 0; j < 4 && i < items.length;) {
+    for(let j = 0; j < countPerRow && i < items.length;) {
       itemsInRow.push(items[i])
       i++
       j++
@@ -46,7 +55,7 @@ const PositionMetadata = ({items}: { items: metadata[]}) => {
     }}>
       {rows.map((row, i0) => (
           <Row key={i0} style={i0 > 0 ? {marginTop: 8} : {}}>
-            {row.map((item, i1) => <Col key={i1} xs={3}><Metadata item={item} /></Col>)}
+            {row.map((item, i1) => <Col key={i1} xs={12 / countPerRow}><Metadata item={item} /></Col>)}
           </Row>
         )
       )}
