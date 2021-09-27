@@ -45,9 +45,7 @@ const Withdraw = () => {
 
   const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
 
-  const newWalletBalance = hueBalance.userBalance + amount
   const lentHueCount = lendHueBalance.userBalance! * market.valueOfLendTokensInHue
-  const newLentHueCount = lentHueCount - amount
 
   const failures: {[key in string]: reason} = {
     noValueEntered: {
@@ -55,9 +53,9 @@ const Withdraw = () => {
       failing: amount === 0 || isNaN(amount),
       silent: true,
     },
-    notEnoughInWallet: {
-      message: 'Not enough in lent.',
-      failing: newLentHueCount < 0,
+    notEnoughLent: {
+      message: 'Withdrawal is more than the total amount lent.',
+      failing: lentHueCount - amount < 0,
     },
     hueNotApproved: {
       message: 'Withdrawal is not approved.',
@@ -112,13 +110,13 @@ const Withdraw = () => {
           },{
             title: 'New Wallet Balance',
             value: numDisplay(hueBalance.userBalance + amount, 2) + ' Hue',
-            failing: failures.notEnoughInWallet.failing,
           },{
             title: 'Current Hue Lent',
             value: numDisplay(lentHueCount, 2),
           },{
             title: 'New Hue Lent',
-            value: numDisplay(newLentHueCount, 2)
+            value: numDisplay(lentHueCount - amount, 2),
+            failing: failures.notEnoughLent.failing,
           },
         ]} />
       </div>

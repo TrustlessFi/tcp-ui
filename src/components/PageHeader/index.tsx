@@ -72,7 +72,6 @@ const PageHeader = () => {
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 16 }}>
             {windowWidth < 650 ? null : <NetworkIndicator />}
-            
             <span style={{marginLeft: 12}}>
               <Wallet />
             </span>

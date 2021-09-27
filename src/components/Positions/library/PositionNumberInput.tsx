@@ -14,7 +14,7 @@ const PositionNumberInput = ({
 }) => {
   const invalidText = <></>
   return (
-    <div style={{display: 'inline-block', width: 167}} >
+    <div style={{display: 'inline-block', width: 167, marginTop: 8}} >
       <NumberInput
         hideSteppers
         id={id}
