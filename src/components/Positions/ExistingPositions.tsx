@@ -8,6 +8,7 @@ import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
 import { numDisplay } from '../../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton';
+import Text from '../utils/Text';
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
@@ -15,8 +16,6 @@ const ExistingPositionsTable = () => {
   const positions = waitForPositions(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
-
-  const headers = ['Position ID', 'Debt', 'Collateral', 'Collateralization Ratio']
 
   const dataNull = positions === null || priceInfo === null
 
@@ -44,7 +43,15 @@ const ExistingPositionsTable = () => {
     )
   }
 
-  if (Object.values(positions).length === 0) return <Center>You have no positions. Click New Position to create one.</Center>
+  if (Object.values(positions).length === 0) {
+    return (
+      <Center style={{padding: 24}}>
+        <Text>
+          You have no positions. Click New Position to create one.
+        </Text>
+      </Center>
+    )
+  }
 
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
