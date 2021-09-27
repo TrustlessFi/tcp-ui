@@ -32,11 +32,13 @@ const ExplorerLink = ({
   txHash,
   address,
   icon,
+  renderAsButton,
   children,
 }: {
   txHash?: string,
   address?: string,
   icon?: CarbonIconType,
+  renderAsButton?: boolean
   children: ReactNode
 }) => {
   const chainID = selector(state => state.chainID.chainID)
@@ -57,7 +59,7 @@ const ExplorerLink = ({
   const onClick = () => window.open(etherscanLink, '_blank');
 
   return (
-    <SmallLink icon={icon} onClick={onClick}>
+    <SmallLink icon={icon} onClick={onClick} renderAsButton={renderAsButton}>
       {children}
     </SmallLink>
   )
