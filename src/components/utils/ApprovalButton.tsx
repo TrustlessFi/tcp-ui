@@ -27,19 +27,16 @@ const ApprovalButton = ({
   const dispatch = useAppDispatch()
 
   let balanceInfo: balanceInfo | null
-  let thunk: AsyncThunk<void, hueApproveArgs | lendHueApproveArgs, {}>  | undefined = undefined
   let tokenAddress = getContractWaitFunction(token)(selector, dispatch)
   let contractAddress = getContractWaitFunction(protocolContract)(selector, dispatch)
 
   switch(token) {
     case ProtocolContract.Hue:
       balanceInfo = waitForHueBalance(selector, dispatch)
-      thunk = approveHue
       break
 
     case ProtocolContract.LendHue:
       balanceInfo = waitForLendHueBalance(selector, dispatch)
-      thunk = approveLendHue
       break
     default:
       throw new Error('ApprovalButton for unknown token ' + token)
@@ -57,7 +54,6 @@ const ApprovalButton = ({
   if (
     balanceInfo === null ||
     balanceInfo.approval[protocolContract] === undefined ||
-    thunk === undefined ||
     contractAddress === null ||
     tokenAddress === null ||
     disabled
@@ -76,7 +72,18 @@ const ApprovalButton = ({
 
 
   const execute = () => {
-    dispatch(thunk!({Hue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
+    switch(token) {
+      case ProtocolContract.Hue:
+        dispatch(approveHue({Hue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
+        break
+
+      case ProtocolContract.LendHue:
+        dispatch(approveLendHue({LendHue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
+        break
+
+      default:
+        throw new Error('ApprovalButton for unknown token ' + token)
+    }
   }
 
   return <Button onClick={execute}>{approvalLabels.waiting}</Button>

@@ -6,6 +6,17 @@ import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
 import { Hue } from '../../../utils/typechain'
 import { uint256Max } from '../../../utils'
+import {
+  getTxInfo,
+  TransactionStatus,
+  TransactionType,
+  transactionCreated,
+  transactionSucceeded,
+  transactionFailed
+} from '../../transactions'
+import {
+  addNotification,
+} from '../../notifications'
 
 export type hueBalanceArgs = {
   Hue: string
@@ -35,10 +46,33 @@ export const getHueBalance = createAsyncThunk(
 
 export const approveHue = createAsyncThunk(
   'hueBalance/approveHue',
-  async (args: hueApproveArgs) => {
+  async (args: hueApproveArgs, {dispatch}) => {
     const provider = getProvider()
+    const userAddress = await provider.getSigner().getAddress()
+
     const hue = getContract(args.Hue, ProtocolContract.Hue) as Hue
-    await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+    const tx = await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+
+    const txInfo = getTxInfo({
+      hash: tx.hash,
+      userAddress,
+      nonce: tx.nonce,
+      type: TransactionType.ApproveHue,
+      status: TransactionStatus.Pending,
+    })
+
+    dispatch(transactionCreated(txInfo))
+
+    const receipt = await provider.waitForTransaction(tx.hash)
+    const succeeded = receipt.status === 1
+
+    if (succeeded) {
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
+      dispatch(transactionSucceeded(tx.hash))
+    } else {
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(transactionFailed(tx.hash))
+    }
   }
 )
 
