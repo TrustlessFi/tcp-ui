@@ -2,6 +2,7 @@ import { useState } from "react"
 import {
   Button,
   TextAreaSkeleton,
+  Loading,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
@@ -10,6 +11,7 @@ import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, wait
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
 import PositionMetadata from './library/PositionMetadata'
+import RelativeLoading from '../library/RelativeLoading'
 import PositionNumberInput from './library/PositionNumberInput'
 import ErrorMessage, { reason } from './library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
@@ -31,8 +33,6 @@ const CreatePosition = () => {
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0.0)
 
-
-  const walletNull = userAddress === null
   const dataNull =
     liquidations === null ||
     hueBalance === null ||
@@ -53,7 +53,7 @@ const CreatePosition = () => {
   const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
-  const failures: {[key in string]: reason} = {
+  const failures: {[key in string]: reason} = dataNull ? {} : {
     noCollateral: {
       message: 'No collateral.',
       failing: collateralCount === 0 || isNaN(collateralCount),
@@ -65,16 +65,16 @@ const CreatePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: dataNull ? '' : 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
-      failing: dataNull ? false : 0 < debtCount && debtCount < market.minPositionSize,
+      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
+      failing: 0 < debtCount && debtCount < market.minPositionSize,
     },
     undercollateralized: {
-      message: dataNull ? '' : 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
-      failing: dataNull ? false : collateralization < market.collateralizationRequirement,
+      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      failing: collateralization < market.collateralizationRequirement,
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: dataNull ? false : userEthBalance - collateralCount < 0,
+      failing: userEthBalance - collateralCount < 0,
     }
   }
 
@@ -95,7 +95,8 @@ const CreatePosition = () => {
   }
 
   return (
-    <>
+    <div style={{position: 'relative'}}>
+      <RelativeLoading show={userAddress !== null && dataNull} />
       <LargeText>
         I want to create a position with
         <PositionNumberInput
@@ -112,19 +113,19 @@ const CreatePosition = () => {
         Hue of debt with an interest rate of {interestRateDisplay}.
       </LargeText>
       <div style={{marginTop: 36, marginBottom: 30}}>
-        <PositionMetadata  items={[
+        <PositionMetadata items={[
           {
             title: 'Min position size',
             value: (dataNull ? '-' : numDisplay(market.minPositionSize)) + ' Hue',
-            failing: failures.notBigEnough.failing,
+            failing: dataNull ? false : failures.notBigEnough.failing,
           },{
             title: 'Collateralization Ratio',
             value: collateralizationDisplay,
-            failing: failures.undercollateralized.failing,
+            failing: dataNull ? false : failures.undercollateralized.failing,
           },{
             title: 'New Wallet Eth Balance',
             value: dataNull ? '-' : numDisplay(userEthBalance - collateralCount),
-            failing: failures.insufficientEth.failing,
+            failing: dataNull ? false : failures.insufficientEth.failing,
           },{
             title: 'New Wallet Hue Balance',
             value: dataNull ? '-' : numDisplay(hueBalance.userBalance + debtCount)
@@ -143,11 +144,10 @@ const CreatePosition = () => {
           <Button onClick={openCreatePositionDialog} disabled={isFailing}>
             Create Position
           </Button>
-        )
-        }
+        )}
       </div>
       <ErrorMessage reasons={failureReasons} />
-    </>
+    </div>
   )
 }
 
