@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react'
 import { withRouter, useHistory, useLocation } from 'react-router'
-import { useEffect, useState, CSSProperties } from 'react'
+import { useEffect, useState, useRef, CSSProperties } from 'react'
 import {
   Header,
   HeaderContainer,
@@ -26,11 +26,18 @@ import NetworkIndicator from '../library/NetworkIndicator';
 const PageHeader = () => {
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
+  const [ areNavLinksHidden, setAreNavLinksHidden ] = useState(false)
+
+  const navLinks = "headerNavigationLinks"
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth)
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+      setAreNavLinksHidden(window.getComputedStyle(document.getElementById(navLinks)!).display === 'none')
+    }
     window.addEventListener('resize', handleResize)
   })
+
 
   const history = useHistory()
   const location = useLocation()
@@ -71,24 +78,25 @@ const PageHeader = () => {
     )
   })
 
-
   const smallViewport = windowWidth < 650
 
   return (
     <HeaderContainer
       render={() => (
         <Header aria-label="Site Header">
-          <OverflowMenu
-            renderIcon={isMenuOpen ? Close32 : Menu32}
-            selectorPrimaryFocus={'.selectedOption'}
-            data-floating-menu-container>
-            {tabsAsButtons}
-          </OverflowMenu>
+          <div style={areNavLinksHidden ? {} : {display: 'none'}}>
+            <OverflowMenu
+              renderIcon={isMenuOpen ? Close32 : Menu32}
+              selectorPrimaryFocus={'.selectedOption'}
+              data-floating-menu-container>
+              {tabsAsButtons}
+            </OverflowMenu>
+          </div>
           <HeaderName href="/" prefix="" className='header_logo'>
             <img src={logo} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
             {smallViewport ? null : 'Trustless Currency Protocol'}
           </HeaderName>
-          <HeaderNavigation aria-label="Main Site Navigation Links">
+          <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
             {tabs}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 16 }}>
