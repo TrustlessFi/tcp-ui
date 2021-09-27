@@ -4,8 +4,9 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
 import { waitForPositions , waitForPrices } from '../../slices/waitFor'
 import Center from '../library/Center'
-import SimpleTable from '../library/SimpleTable'
+import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { numDisplay } from '../../utils'
+import ConnectWalletButton from '../utils/ConnectWalletButton';
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
@@ -17,14 +18,31 @@ const ExistingPositionsTable = () => {
   const headers = ['Position ID', 'Debt', 'Collateral', 'Collateralization Ratio']
 
   if (userAddress === null) {
-    return <>Please connect a wallet</>
+    return <>
+      <TableHeaderOnly row={{
+        key: 'key',
+        data: {
+          'Position ID': '',
+          'Debt': '',
+          'Collateral': '',
+          'Collateralization Ratio': '',
+          'Rewards': '',
+          '': ''
+        },
+      }} />
+      <Center>
+        <div style={{margin: 32}}>
+          <ConnectWalletButton />
+        </div>
+      </Center>
+    </>
   }
 
   if (positions === null || priceInfo === null) {
     return <DataTableSkeleton headers={headers.map(header => ({key: header}))} rowCount={3} />
   }
 
-  if (Object.values(positions).length === 0) return <Center>There are no positions</Center>
+  if (Object.values(positions).length === 0) return <Center>You have no positions. Click New Position to create one.</Center>
 
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
