@@ -7,11 +7,9 @@ import { connected, connectionFailed, connecting } from '../../slices/wallet'
 import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress, equalStrings, equalStringsCaseInsensitive } from '../../utils'
 import WalletModal from './WalletModal'
-import NetworkIndicator from '../library/NetworkIndicator'
-import { getSortedUserTxs } from '../utils'
+import { getSortedUserTxs, clearUserData } from '../utils'
 import { toChecksumAddress } from '../../utils'
 import { TransactionStatus } from '../../slices/transactions'
-import { clearPositions } from '../../slices/positions'
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
@@ -19,9 +17,6 @@ const Wallet = () => {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   const chainChanged = (chainID: number | string) => {
-
-    // also refetch some of the accounts if the chain has changed from something valid to something valid
-    // can probalby combine some logic with wallet connected
 
     const getCurrentChainID = () => {
       const id = store.getState().chainID.chainID
@@ -47,20 +42,15 @@ const Wallet = () => {
   }
 
   const walletConnected = (accounts: string[]) => {
-    // TODO if new account is different than the current account, and the current account isn't null
-    // then clear all of the slices that depend on the user data
+    const account = accounts.length > 0 ? accounts[0] : null
+    const currentAccount = store.getState().wallet.address
 
-    // TODO
-    // clear out balances
-    const account = accounts && accounts[0]
+    if (currentAccount === null && account === null) return
+    if (currentAccount !== null && account !== null && equalStringsCaseInsensitive(currentAccount, account)) return
 
-    if (account != null) {
-      const currentAccount = store.getState().wallet.address
-      if (currentAccount === null || !equalStringsCaseInsensitive(currentAccount, account)) {
-        dispatch(connected(toChecksumAddress(account)))
-        dispatch(clearPositions())
-      }
-    }
+    dispatch(connected(account === null ? null : toChecksumAddress(account)))
+
+    clearUserData(dispatch)
   }
 
   const connectWallet = async () => {
@@ -72,16 +62,10 @@ const Wallet = () => {
       .catch((error: {code: number, message: string}) => {
         switch (error.code) {
           case 4001:
-            console.error({
-              content: 'Connection Rejected.',
-              kind: 'warning'
-            })
+            console.warn('Wallet connection rejected by user.')
             break
           default:
-            console.error({
-              content: `Encountered unexpected error ${error.code}:${error.message}. Check console or try again.`,
-              kind: 'error'
-            })
+            console.error(`Encountered unexpected error ${error.code}: '${error.message}'.`)
         }
 
         dispatch(connectionFailed())
