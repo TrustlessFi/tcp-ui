@@ -90,9 +90,9 @@ const Wallet = () => {
     }
   })
 
-  const onClick = () => {
+  const onClick = async () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      connectWallet()
+      await connectWallet()
     } else {
       // Set onboarding state?
       (new MetaMaskOnboarding()).startOnboarding()
@@ -127,7 +127,7 @@ const Wallet = () => {
             </Button>
         )
       : <Button size="small" onClick={onClick}>
-          Connect to a Wallet
+          Connect a Wallet
         </Button>
 
   return (
