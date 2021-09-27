@@ -3,6 +3,7 @@ import { getLocalStorage, assertUnreachable } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
+import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { ethers, ContractTransaction } from 'ethers'
@@ -15,9 +16,11 @@ import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants';
 import { v4 as uid } from 'uuid'
 import { enforce , parseMetamaskError } from '../../utils'
+import { mnt } from '../../utils/index';
 
 export enum TransactionType {
   CreatePosition,
+  UpdatePosition,
   Lend,
   Withdraw,
 }
@@ -73,6 +76,14 @@ export interface txCreatePositionArgs {
   Market: string,
 }
 
+export interface txUpdatePositionArgs {
+  type: TransactionType.UpdatePosition
+  positionID: number,
+  collateralIncrease: number,
+  debtIncrease: number,
+  Market: string,
+}
+
 export interface txLendArgs {
   type: TransactionType.Lend
   count: number,
@@ -86,7 +97,7 @@ export interface txWithdrawArgs {
 }
 
 export type TransactionArgs =
-  txCreatePositionArgs | txLendArgs | txWithdrawArgs
+  txCreatePositionArgs | txUpdatePositionArgs | txLendArgs | txWithdrawArgs
 
 export type TransactionState = {[key in string]: TransactionInfo}
 
@@ -95,6 +106,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
   switch(type) {
     case TransactionType.CreatePosition:
       return 'Position Created'
+    case TransactionType.UpdatePosition:
+      return 'Position Updated'
     case TransactionType.Lend:
       return 'Hue Lent'
     case TransactionType.Withdraw:
@@ -109,6 +122,8 @@ export const getTxNamePresentTense = (type: TransactionType) => {
   switch(type) {
     case TransactionType.CreatePosition:
       return 'Creating Position'
+    case TransactionType.UpdatePosition:
+      return 'Updating Position'
     case TransactionType.Lend:
       return 'Lending Hue'
     case TransactionType.Withdraw:
@@ -119,14 +134,27 @@ export const getTxNamePresentTense = (type: TransactionType) => {
   return ''
 }
 
-const executeTransaction = async (args: TransactionArgs, provider: ethers.providers.Web3Provider) => {
+const executeTransaction = async (
+  args: TransactionArgs,
+  provider: ethers.providers.Web3Provider,
+): Promise<ContractTransaction> => {
   const getMarket = () => getContract(args.Market, ProtocolContract.Market) as Market
+  const type = args.type
 
-  switch(args.type) {
+  switch(type) {
     case TransactionType.CreatePosition:
       return await getMarket().connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
         value: scale(args.collateralCount)
       })
+
+    case TransactionType.UpdatePosition:
+      return await getMarket().connect(provider.getSigner()).adjustPosition(
+        args.positionID,
+        mnt(args.debtIncrease),
+        args.collateralIncrease < 0 ? mnt(-args.collateralIncrease) : 0,
+        UIID,
+        args.collateralIncrease > 0 ? { value: mnt(args.collateralIncrease) } : undefined
+      )
 
     case TransactionType.Lend:
       return await getMarket().connect(provider.getSigner()).lend(scale(args.count))
@@ -134,7 +162,10 @@ const executeTransaction = async (args: TransactionArgs, provider: ethers.provid
     case TransactionType.Withdraw:
       return await getMarket().connect(provider.getSigner()).unlend(scale(args.count))
 
+    default:
+      assertUnreachable(type)
   }
+  throw new Error('Shoudnt get here')
 }
 
 export const waitForTransaction = createAsyncThunk(
@@ -188,7 +219,9 @@ export const waitForTransaction = createAsyncThunk(
     if (succeeded) {
       switch (args.type) {
         case TransactionType.CreatePosition:
+        case TransactionType.UpdatePosition:
           dispatch(clearPositions())
+          dispatch(clearEthBalance())
           dispatch(clearHueBalance())
           break
         case TransactionType.Lend:

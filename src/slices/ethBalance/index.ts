@@ -3,7 +3,7 @@ import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import { getEthBalance } from '../../utils/Multicall/chainStatus'
-import getContract from '../../utils/getContract';
+import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 
 import { TcpMulticall } from '../../utils/typechain'
@@ -30,10 +30,16 @@ export const fetchEthBalance = createAsyncThunk(
 export const ethBalanceSlice = createSlice({
   name: 'ethBalance',
   initialState: initialState as EthBalanceState,
-  reducers: {},
+  reducers: {
+    clearEthBalance: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, fetchEthBalance)
   },
-});
+})
+
+export const { clearEthBalance } = ethBalanceSlice.actions
 
 export default ethBalanceSlice.reducer
