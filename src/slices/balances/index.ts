@@ -68,7 +68,7 @@ export const tokenBalanceThunk = async (
         token,
         'balanceOf',
         rc.BigNumberUnscale,
-        Object.fromEntries(balancesList.map(item => [item.address, [item.address]]))
+        Object.fromEntries(balancesList.map(item => [item.contract, [item.address]]))
       )
     }
   )
