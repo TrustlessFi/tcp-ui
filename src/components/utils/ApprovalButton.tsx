@@ -67,7 +67,7 @@ const ApprovalButton = ({
   const approving = balanceInfo.approval[protocolContract]?.approving
   const approved = balanceInfo.approval[protocolContract]?.approved
 
-  if (approving) return <Button>{approvalLabels.approving}</Button>
+  if (approving) return <Button disabled>{approvalLabels.approving}</Button>
   if (approved) return <Button disabled>{approvalLabels.approved}</Button>
 
 
