@@ -43,6 +43,7 @@ const Withdraw = () => {
   ) return <TextAreaSkeleton />
 
   const apr = getAPR({market, rates, sdi, hueBalance})
+  console.log({apr})
 
   const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
 
@@ -89,7 +90,7 @@ const Withdraw = () => {
         <LargeText>
           I have {numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
           <div />
-          The current lend APR is {numDisplay(apr, 2)}% but will vary over time due to market forces.
+          The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
         </LargeText>
       </div>
       <LargeText>

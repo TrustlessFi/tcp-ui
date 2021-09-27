@@ -88,7 +88,7 @@ const Lend = () => {
         <LargeText>
           I have {numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
           <div />
-          The current lend APR is {numDisplay(apr, 2)}% but will vary over time due to market forces.
+          The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
         </LargeText>
       </div>
       <LargeText>
