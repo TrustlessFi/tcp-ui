@@ -23,6 +23,8 @@ export enum TransactionType {
   UpdatePosition,
   Lend,
   Withdraw,
+  ApproveHue,
+  ApproveLendHue,
 }
 
 export enum TransactionStatus {
@@ -31,7 +33,7 @@ export enum TransactionStatus {
   Failure,
 }
 
-const getTxInfo = (txInfo: {
+export const getTxInfo = (txInfo: {
   hash?: string,
   nonce?: number,
   userAddress: string,
@@ -112,6 +114,9 @@ export const getTxNamePastTense = (type: TransactionType) => {
       return 'Hue Lent'
     case TransactionType.Withdraw:
       return 'Hue Withdrawn'
+    case TransactionType.ApproveHue:
+    case TransactionType.ApproveLendHue:
+      return 'Approved'
     default:
       assertUnreachable(type)
   }
@@ -128,6 +133,9 @@ export const getTxNamePresentTense = (type: TransactionType) => {
       return 'Lending Hue'
     case TransactionType.Withdraw:
       return 'Withdrawing Hue'
+    case TransactionType.ApproveHue:
+    case TransactionType.ApproveLendHue:
+      return 'Approving'
     default:
       assertUnreachable(type)
   }
