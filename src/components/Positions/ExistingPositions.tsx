@@ -5,6 +5,7 @@ import { editorOpened } from '../../slices/positionsEditor'
 import { waitForPositions , waitForPrices } from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
+import RelativeLoading from '../library/RelativeLoading'
 import { numDisplay } from '../../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton';
 
@@ -17,29 +18,30 @@ const ExistingPositionsTable = () => {
 
   const headers = ['Position ID', 'Debt', 'Collateral', 'Collateralization Ratio']
 
-  if (userAddress === null) {
-    return <>
-      <TableHeaderOnly row={{
-        key: 'key',
-        data: {
-          'Position ID': '',
-          'Debt': '',
-          'Collateral': '',
-          'Collateralization Ratio': '',
-          'Rewards': '',
-          '': ''
-        },
-      }} />
-      <Center>
-        <div style={{margin: 32}}>
-          <ConnectWalletButton />
-        </div>
-      </Center>
-    </>
-  }
+  const dataNull = positions === null || priceInfo === null
 
-  if (positions === null || priceInfo === null) {
-    return <DataTableSkeleton headers={headers.map(header => ({key: header}))} rowCount={3} />
+  if (dataNull) {
+    return (
+      <div style={{position: 'relative'}}>
+        <RelativeLoading show={userAddress !== null} />
+        <TableHeaderOnly row={{
+          key: 'key',
+          data: {
+            'Position ID': '',
+            'Debt': '',
+            'Collateral': '',
+            'Collateralization Ratio': '',
+            'Rewards': '',
+            '': ''
+          },
+        }} />
+        <Center>
+          <div style={{margin: 32}}>
+            <ConnectWalletButton />
+          </div>
+        </Center>
+      </div>
+    )
   }
 
   if (Object.values(positions).length === 0) return <Center>You have no positions. Click New Position to create one.</Center>
