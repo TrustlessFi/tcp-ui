@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { txCreatePositionArgs, txLendArgs, txWithdrawArgs } from '../transactions'
+import { txCreatePositionArgs, txUpdatePositionArgs, txLendArgs, txWithdrawArgs } from '../transactions'
 
 export enum ModalStage {
   Closed,
@@ -16,6 +16,14 @@ export interface createPositionModalData {
   liquidationPrice: number
 }
 
+export interface updatePositionModalData {
+  args: txUpdatePositionArgs,
+  collateralization: number,
+  minCollateralization: number,
+  ethPrice: number
+  liquidationPrice: number
+}
+
 export interface lendModalData {
   args: txLendArgs,
 }
@@ -26,6 +34,7 @@ export interface withdrawModalData {
 
 export type modalData =
   createPositionModalData |
+  updatePositionModalData |
   lendModalData |
   withdrawModalData |
   null

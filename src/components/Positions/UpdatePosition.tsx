@@ -128,14 +128,17 @@ const UpdatePosition = ({ id }: { id: number }) => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  const openCreatePositionDialog = () => {
+  const openUpdatePositionDialog = () => {
     dispatch(openModal({
       args: {
-        type: TransactionType.CreatePosition,
-        collateralCount,
-        debtCount,
+        type: TransactionType.UpdatePosition,
+        positionID: id,
+        debtIncrease,
+        collateralIncrease,
         Market: marketContract,
       },
+      collateralization,
+      minCollateralization: market.collateralizationRequirement,
       ethPrice: priceInfo.ethPrice,
       liquidationPrice,
     }))
@@ -217,7 +220,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
         />
       </div>
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button onClick={openCreatePositionDialog} disabled={isFailing}>
+        <Button onClick={openUpdatePositionDialog} disabled={isFailing}>
           Update Position
         </Button>
       </div>

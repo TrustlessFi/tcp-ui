@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Modal,
 } from 'carbon-components-react'
-import { modalData, closeModal, createPositionModalData, lendModalData } from '../../slices/modal'
+import { modalData, closeModal, createPositionModalData, updatePositionModalData, lendModalData } from '../../slices/modal'
 import { TransactionType, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { numDisplay, assertUnreachable } from '../../utils'
 import LargeText from '../utils/LargeText'
@@ -13,7 +13,8 @@ import { waitForTransaction } from '../../slices/transactions'
 import ExplorerLink from '../utils/ExplorerLink'
 
 const getModalPreview = (data: NonNullable<modalData>) => {
-  switch(data.args.type) {
+  const type = data.args.type
+  switch(type) {
     case TransactionType.CreatePosition:
       data = data as createPositionModalData
 
@@ -46,6 +47,47 @@ const getModalPreview = (data: NonNullable<modalData>) => {
 
       return <>{preview}</>
 
+    case TransactionType.UpdatePosition:
+      data = data as updatePositionModalData
+
+      const collateralIncrease = data.args.collateralIncrease
+      const debtIncrease = data.args.debtIncrease
+
+      const updateItems = [
+        {
+          title: collateralIncrease > 0 ? 'Collateral Increase' : 'Collateral Decrease',
+          value: numDisplay(Math.abs(collateralIncrease), 2) + ' Eth',
+        },{
+          title: debtIncrease > 0 ? 'Debt Increase' : 'Debt Decrease',
+          value: numDisplay(Math.abs(debtIncrease), 2) + ' Hue',
+        },{
+          title: 'Collateralization',
+          value: numDisplay(data.collateralization * 100, 2) + '%',
+        },{
+          title: 'Minimum Collateralization',
+          value: numDisplay(data.minCollateralization * 100, 2) + '%',
+        },{
+          title: 'Eth Price',
+          value: numDisplay(data.ethPrice, 2) + ' Hue/Eth',
+        },{
+          title: 'Liquidation Price',
+          value: numDisplay(data.liquidationPrice, 2) + ' Hue/Eth',
+        }
+      ]
+
+      const updatePreview = updateItems.map((item, index) =>
+        <div key={index}>
+          <LargeText>
+            {item.title + ': '}
+          </LargeText>
+          <Text>
+            {item.value}
+          </Text>
+        </div>
+      )
+
+      return <>{updatePreview}</>
+
     case TransactionType.Lend:
     case TransactionType.Withdraw:
       data = data as lendModalData
@@ -59,43 +101,91 @@ const getModalPreview = (data: NonNullable<modalData>) => {
           </Text>
         </div>
       )
+    default:
+      assertUnreachable(type)
   }
 }
 
 const getVerb = (data: NonNullable<modalData>) => {
-  switch(data.args.type) {
+  const type = data.args.type
+  switch(type) {
     case TransactionType.CreatePosition:
       return 'Create'
+    case TransactionType.UpdatePosition:
+      return 'Update'
     case TransactionType.Lend:
       return 'Lend'
     case TransactionType.Withdraw:
       return 'Withdraw'
+    default:
+      assertUnreachable(type)
   }
 }
 
 const getShortName = (data: NonNullable<modalData>) => {
-  switch(data.args.type) {
+  const type = data.args.type
+  switch(type) {
     case TransactionType.CreatePosition:
       return 'Creating a Position'
+    case TransactionType.UpdatePosition:
+      return 'Updating a Position'
     case TransactionType.Lend:
       return 'Lending'
     case TransactionType.Withdraw:
       return 'Withdrawing'
+    default:
+      assertUnreachable(type)
   }
 }
 
 const getMediumName = (data: NonNullable<modalData>) => {
-  switch(data.args.type) {
+  const type = data.args.type
+  switch(type) {
+
     case TransactionType.CreatePosition:
       return 'Creating a position with '
         + numDisplay(data.args.collateralCount, 2)
         + ' Eth of collateral and '
         + numDisplay(data.args.debtCount, 2)
         + ' Hue of debt.'
+
+    case TransactionType.UpdatePosition:
+
+      const collateralIncrease = data.args.collateralIncrease
+      const collateralChangeString = collateralIncrease === 0 ? '' : (
+        collateralIncrease > 0
+        ? ' Increasing collateral by ' + numDisplay(collateralIncrease, 2) + ' Eth'
+        : ' Decreasing collateral by ' + numDisplay(-collateralIncrease, 2) + ' Eth'
+      )
+      const debtIncrease = data.args.debtIncrease
+      const debtChangeString = debtIncrease === 0 ? '' : (
+        debtIncrease > 0
+        ? ' Increasing debt by ' + numDisplay(debtIncrease, 2) + ' Hue'
+        : ' Decreasing debt by ' + numDisplay(-debtIncrease, 2) + ' Hue'
+      )
+
+      const actionString =
+        (debtChangeString.length > 0 && collateralChangeString.length > 0)
+        ? collateralChangeString + ' and ' + debtChangeString
+        : (debtChangeString.length > 0
+            ? debtChangeString
+            : collateralChangeString
+          )
+
+      return 'Updating position '
+        + data.args.positionID
+        + ' by '
+        + actionString
+        + '.'
+
     case TransactionType.Lend:
       return 'Lending ' + numDisplay(data.args.count, 2) + ' Hue.'
-    case TransactionType.Lend:
+
+    case TransactionType.Withdraw:
       return 'Withdrawing ' + numDisplay(data.args.count, 2) + ' Hue.'
+
+    default:
+      assertUnreachable(type)
   }
 }
 
@@ -125,7 +215,7 @@ const getModalContent = (
       return {
         content: getModalPreview(data),
         props: {
-          modalHeading: getTxNamePresentTense(data.args.type) + 'Transaction Preview',
+          modalHeading: getTxNamePresentTense(data.args.type) + ' Transaction Preview',
           primaryButtonText: verb,
         }
       }
