@@ -3,7 +3,7 @@ import Text from '../../utils/Text'
 
 
 const PositionMetadata = ({items}: { items: {value: string, title: string, failing?: boolean}[]}) => {
-  const border = '2px solid #161616'
+  const border = '1px solid #404040'
 
   const getColor = (isFailing?: boolean) => isFailing ? '#FA4D56' : '#8D8D8D'
 

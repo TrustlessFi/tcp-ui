@@ -32,8 +32,8 @@ enum CollateralChange {
 }
 
 enum DebtChange {
-  Payback = 'Payback',
   Borrow = 'Borrow',
+  Payback = 'Payback',
 }
 
 const UpdatePosition = ({ id }: { id: number }) => {
@@ -79,10 +79,10 @@ const UpdatePosition = ({ id }: { id: number }) => {
   const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
   const collateralIncrease = zeroIfNaN(increaseCollateral ? collateralCount : -collateralCount)
 
-  const newDebtCount = position.debtCount + debtIncrease
+  const newDebtCount = (position.debtCount + debtIncrease) < 0 ? 0 : position.debtCount + debtIncrease
   const newCollateralCount = position.collateralCount + collateralIncrease
 
-  const collateralization = (newCollateralCount * priceInfo.ethPrice) / newDebtCount
+  const collateralization = newDebtCount === 0 ? 0 : (newCollateralCount * priceInfo.ethPrice) / newDebtCount
   const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
 
   const liquidationPrice = (newDebtCount * market.collateralizationRequirement) / (newCollateralCount)
@@ -102,14 +102,22 @@ const UpdatePosition = ({ id }: { id: number }) => {
       message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
       failing: 0 < newDebtCount && newDebtCount < market.minPositionSize,
     },
-    undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
-      failing: collateralization < market.collateralizationRequirement,
+    negativeCollateral: {
+      message: 'Position does not have enough Eth.',
+      failing: newCollateralCount < 0,
     },
-    insufficientEth: {
+    insufficientEthInWallet: {
       message: 'Connected wallet does not have enough Eth.',
       failing: userEthBalance - collateralIncrease < 0,
-    }
+    },
+    insufficientHueInWallet: {
+      message: 'Connected wallet does not have enough Hue.',
+      failing: hueBalance.userBalance + debtIncrease < 0,
+    },
+    undercollateralized: {
+      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      failing: newDebtCount !== 0 && collateralization < market.collateralizationRequirement,
+    },
   }
 
   const failureReasons: reason[] = Object.values(failures)
@@ -132,8 +140,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
     <>
       <LargeText>
         Position #{id} has {numDisplay(position.collateralCount, 2)} Eth of Collateral
-        and {numDisplay(position.debtCount, 2)} Hue of debt
-        with an interest rate of {numDisplay(interestRate, 2)}%.
+        and {numDisplay(position.debtCount, 2)} Hue of debt.
         <div />
         I want to
         <InputPicker
@@ -147,7 +154,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
           action={(value: number) => setCollateralCount(value)}
           value={collateralCount}
         />
-        and
+        Eth and
         <InputPicker
           options={DebtChange}
           initialValue={initialDebtChange}
@@ -164,6 +171,13 @@ const UpdatePosition = ({ id }: { id: number }) => {
       <div style={{marginTop: 36, marginBottom: 30}}>
         <PositionMetadata items={[
           {
+            title: 'New Position Collateral',
+            value: numDisplay(newCollateralCount, 2) + ' Eth',
+            failing: failures.negativeCollateral.failing,
+          },{
+            title: 'New Position Debt',
+            value: numDisplay(newDebtCount < 0 ? 0 : newDebtCount, 2) + ' Hue',
+          },{
             title: 'Min position size',
             value: numDisplay(market.minPositionSize) + ' Hue',
             failing: failures.notBigEnough.failing,
@@ -173,11 +187,15 @@ const UpdatePosition = ({ id }: { id: number }) => {
             failing: failures.undercollateralized.failing,
           },{
             title: 'New Wallet Eth Balance',
-            value: numDisplay(userEthBalance - zeroIfNaN(collateralCount)),
-            failing: failures.insufficientEth.failing,
+            value: numDisplay(userEthBalance - collateralIncrease, 2) + ' Eth',
+            failing: failures.insufficientEthInWallet.failing,
           },{
             title: 'New Wallet Hue Balance',
-            value: numDisplay(hueBalance.userBalance + zeroIfNaN(debtCount))
+            value: numDisplay(hueBalance.userBalance + debtIncrease, 2) + ' Hue',
+            failing: failures.insufficientHueInWallet.failing,
+          },{
+            title: 'Interest Rate',
+            value: numDisplay(interestRate, 2) + '%',
           },
         ]} />
       </div>
