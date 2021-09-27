@@ -167,21 +167,27 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 // type PromiseType = PromiseType<typeof promisedOne> // => number
 
 
-export const parseMetamaskError = (rawError: any): string[] => {
-  if (rawError.hasOwnProperty('data')) {
-    if (rawError.data.hasOwnProperty('message')) {
-      return [rawError.data.message as string]
+export const parseMetamaskError = (error: any): string[] => {
+  if (error.hasOwnProperty('data')) {
+    if (error.data.hasOwnProperty('message')) {
+      return [error.data.message as string]
     }
   }
 
-  if (rawError.hasOwnProperty('message')) {
-    if ((rawError.message as string).indexOf('{') === -1) return [rawError.message]
-    const rawMessage = rawError.message as string
-    const begin = rawMessage.indexOf('{')
-    const end = rawMessage.lastIndexOf('}')
-    if (end < begin ) return [rawMessage]
+  const userRejectedMessage = ['Please re-submit the transaction and accept it in Metamask.']
 
-    const jsonString = rawMessage.substr(begin, (end - begin)+ 1)
+  if (error.hasOwnProperty('code') && error.code === 4001) {
+    return userRejectedMessage
+  }
+
+  if (error.hasOwnProperty('message')) {
+    if ((error.message as string).indexOf('{') === -1) return [error.message]
+    const message = error.message as string
+    const begin = message.indexOf('{')
+    const end = message.lastIndexOf('}')
+    if (end < begin ) return [message]
+
+    const jsonString = message.substr(begin, (end - begin)+ 1)
     const innerObject = JSON.parse(jsonString)
     if (innerObject.hasOwnProperty('message')) return [innerObject.message]
     if (innerObject.hasOwnProperty('value')) {
@@ -189,7 +195,7 @@ export const parseMetamaskError = (rawError: any): string[] => {
       if (innerObjectValue.hasOwnProperty('data')) {
         const innerObjectValueData = innerObjectValue.data
         const code = innerObjectValueData.hasOwnProperty('code') ? innerObjectValueData.code as number : null
-        if (code === 4001) return ['Transaction Rejected by user. Please re-submit the transaction and accept it in Metamask.']
+        if (code === 4001) return userRejectedMessage
         if (innerObjectValueData.hasOwnProperty('message')) {
           const returnData = [innerObjectValueData.message]
           if (code !== null) returnData.push('Metamask error code ' + code + ')')
