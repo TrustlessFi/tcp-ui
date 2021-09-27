@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import MetaMaskOnboarding from "@metamask/onboarding"
-import { Button } from 'carbon-components-react'
+import { Button, InlineLoading } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { connected, connectionFailed, connecting } from '../../slices/wallet'
@@ -12,7 +12,6 @@ import { getSortedUserTxs } from '../utils'
 import { toChecksumAddress } from '../../utils'
 import { TransactionStatus } from '../../slices/transactions'
 import { clearPositions } from '../../slices/positions'
-
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
@@ -133,8 +132,11 @@ const Wallet = () => {
   const button =
     address !== null
       ? (countPendingTxs > 0
-          ? <Button size="small" onClick={() => setIsWalletModalOpen(true)}>
-              {countPendingTxs} Pending
+          ? <Button size="small" onClick={() => setIsWalletModalOpen(true)} style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
+              <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
+                {countPendingTxs} Pending
+              </div>
+              <InlineLoading />
             </Button>
           : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
               {abbreviateAddress(address)}
