@@ -1,6 +1,8 @@
 import { CSSProperties, ReactNode } from "react";
 import { Tile } from "carbon-components-react";
 import ErrorBoundary from './ErrorBoundary'
+import LargeText from '../utils/LargeText';
+import { Row, Col } from 'react-flexbox-grid'
 
 interface AppTileProps {
   className?: string
@@ -12,16 +14,14 @@ interface AppTileProps {
 
 const AppTile = ({className, title, style, children, rightElement}: AppTileProps ) => (
   <ErrorBoundary>
-    <Tile style={{ margin: 2, ...style }} className={className}>
-      <span style={{fontSize: 24}}>
-        {title}
-      </span>
-      <span style={{float: 'right'}}>
-        {rightElement}
-      </span>
-      <div style={{marginTop: 12, marginBottom: 12}}>
-        {children}
+    <Tile style={{ ...style  }} className={className}>
+      <div style={{display: 'flex', alignItems: 'center', height: 36, paddingLeft: 16, marginBottom: 24}} >
+        <LargeText>{title}</LargeText>
+        {rightElement === undefined ? null : (
+          <span style={{marginLeft: 'auto'}}>{rightElement}</span>
+        )}
       </div>
+      {children}
     </Tile>
   </ErrorBoundary>
 )
