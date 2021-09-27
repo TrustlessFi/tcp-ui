@@ -19,6 +19,7 @@ import { TransactionType } from '../../slices/transactions/index'
 import { ProtocolContract } from '../../slices/contracts/index'
 import { getAPR } from './library'
 import ApprovalButton from '../utils/ApprovalButton'
+import { zeroIfNaN } from '../../utils/index';
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -59,10 +60,13 @@ const Lend = () => {
       message: 'Not enough in wallet.',
       failing: newWalletBalance < 0,
     },
-    hueNotApproved: {
-      message: 'Lending is not approved.',
-      failing: amount !== 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
-    },
+  }
+
+  const failingDueToNonApprovalReason = Object.values(failures).filter(reason => reason.failing).length > 0
+
+  failures['hueNotApproved'] = {
+    message: 'Lending is not approved.',
+    failing: zeroIfNaN(amount) !== 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
   }
 
   const failureReasons: reason[] = Object.values(failures)
@@ -116,7 +120,7 @@ const Lend = () => {
         ]} />
       </div>
       <ApprovalButton
-        disabled={amount === 0} 
+        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0}
         token={ProtocolContract.Hue}
         protocolContract={ProtocolContract.Market}
         approvalLabels={{waiting: 'Approve Lend', approving: 'Approving Lend...', approved: 'Lend Approved'}}

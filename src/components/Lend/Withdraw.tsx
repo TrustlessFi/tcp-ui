@@ -19,6 +19,7 @@ import { ProtocolContract } from '../../slices/contracts'
 import { selectionMade } from '../../slices/lendSelection'
 import { getAPR } from './library'
 import ApprovalButton from '../utils/ApprovalButton'
+import { zeroIfNaN } from '../../utils/index';
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
@@ -57,17 +58,20 @@ const Withdraw = () => {
       message: 'Withdrawal is more than the total amount lent.',
       failing: lentHueCount - amount < 0,
     },
-    hueNotApproved: {
-      message: 'Withdrawal is not approved.',
-      failing: lendHueBalance.approval.Market === undefined || !lendHueBalance.approval.Market.approved,
-    },
   }
 
-  const convertHueToLendHue = (amount: number) => amount / market.valueOfLendTokensInHue
-  const convertLendHueToHue = (amount: number) => amount * market.valueOfLendTokensInHue
+  const failingDueToNonApprovalReason = Object.values(failures).filter(reason => reason.failing).length > 0
+
+  failures['lendHueNotApproved'] = {
+    message: 'Withdrawal is not approved.',
+    failing: zeroIfNaN(amount) !== 0 && (lendHueBalance.approval.Market === undefined || !lendHueBalance.approval.Market.approved),
+  }
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
+
+  const convertHueToLendHue = (amount: number) => amount / market.valueOfLendTokensInHue
+  const convertLendHueToHue = (amount: number) => amount * market.valueOfLendTokensInHue
 
   const openLendDialog = () => {
     dispatch(openModal({
@@ -121,6 +125,7 @@ const Withdraw = () => {
         ]} />
       </div>
       <ApprovalButton
+        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0}
         token={ProtocolContract.LendHue}
         protocolContract={ProtocolContract.Market}
         approvalLabels={{waiting: 'Approve Withdraw', approving: 'Approving Withdraw...', approved: 'Withdraw Approved'}}
