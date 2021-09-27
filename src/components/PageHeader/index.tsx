@@ -25,7 +25,6 @@ import NetworkIndicator from '../library/NetworkIndicator';
 
 const PageHeader = () => {
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
-  const [ isMenuOpen, setIsMenuOpen ] = useState(false)
   const [ areNavLinksHidden, setAreNavLinksHidden ] = useState(false)
 
   const navLinks = "headerNavigationLinks"
@@ -36,6 +35,7 @@ const PageHeader = () => {
       setAreNavLinksHidden(window.getComputedStyle(document.getElementById(navLinks)!).display === 'none')
     }
     window.addEventListener('resize', handleResize)
+    window.addEventListener('load', handleResize)
   })
 
 
@@ -84,9 +84,9 @@ const PageHeader = () => {
     <HeaderContainer
       render={() => (
         <Header aria-label="Site Header">
-          <div style={areNavLinksHidden ? {} : {display: 'none'}}>
+          <div style={areNavLinksHidden ? {marginLeft: 8 } : {marginLeft: 8, display: 'none'}}>
             <OverflowMenu
-              renderIcon={isMenuOpen ? Close32 : Menu32}
+              renderIcon={Menu32}
               selectorPrimaryFocus={'.selectedOption'}
               data-floating-menu-container>
               {tabsAsButtons}
