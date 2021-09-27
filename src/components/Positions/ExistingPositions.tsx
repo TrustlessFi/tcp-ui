@@ -47,7 +47,7 @@ const ExistingPositionsTable = () => {
     return (
       <Center style={{padding: 24}}>
         <Text>
-          You have no positions. Click New Position to create one.
+          You have no positions.
         </Text>
       </Center>
     )
