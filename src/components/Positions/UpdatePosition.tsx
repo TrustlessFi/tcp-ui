@@ -18,7 +18,9 @@ import { ProtocolContract } from '../../slices/contracts'
 import { openModal } from '../../slices/modal'
 import { numDisplay, zeroIfNaN } from '../../utils/index';
 import { reason } from './library/ErrorMessage';
-import { TransactionType } from '../../slices/transactions/index';
+import { TransactionType } from '../../slices/transactions'
+import { clearPositions } from '../../slices/positions'
+import { editorClosed } from '../../slices/positionsEditor'
 import PositionNumberInput from './library/PositionNumberInput';
 import LargeText from '../utils/LargeText';
 import PositionMetadata from './library/PositionMetadata';
@@ -54,8 +56,16 @@ const UpdatePosition = ({ id }: { id: number }) => {
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
   const positions = waitForPositions(selector, dispatch)
+
+  const userAddress = selector(state => state.wallet.address)
+
+  const resetPositions = () => {
+    dispatch(clearPositions())
+    dispatch(editorClosed())
+  }
+
+  if (userAddress === null) resetPositions()
 
   if (
     liquidations === null ||
@@ -73,9 +83,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
   const increaseCollateral = collateralChange === CollateralChange.Increase
   const increaseDebt = debtChange === DebtChange.Borrow
 
-  if (position === undefined) {
-    throw new Error('PositionEditor: Position id not found: ' + id)
-  }
+  if (position === undefined) resetPositions()
 
   const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
   const collateralIncrease = zeroIfNaN(increaseCollateral ? collateralCount : -collateralCount)
