@@ -164,6 +164,7 @@ export const formatPositionForUniswap = (position: LiquidityPosition): CombinedL
   tokensOwed0: position.tokensOwed0,
   tokensOwed1: position.tokensOwed1
 })
+
 export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
 
 export const enforce = (conditional: boolean, errorMessage: string) => {
