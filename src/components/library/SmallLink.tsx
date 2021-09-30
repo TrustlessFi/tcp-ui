@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react";
+import React, { CSSProperties, ReactNode } from "react";
 import { Button, Link } from 'carbon-components-react'
 import { CarbonIconType } from '@carbon/icons-react'
 
@@ -7,15 +7,13 @@ const SmallLink = ({
   href,
   onClick,
   style,
-  renderAsButton,
   children,
 }: {
   icon?: CarbonIconType,
   href?: string,
   onClick?: () => void,
   style?: CSSProperties,
-  renderAsButton?: boolean,
-  children: ReactNode,
+  children: React.ReactChild,
 }) => {
   const linkAttributes = {
     renderIcon: icon,
@@ -27,15 +25,7 @@ const SmallLink = ({
   if (style === undefined) style ={}
   style.cursor = 'pointer'
 
-  return renderAsButton ? (
-    <Button
-      {...linkAttributes}
-      style={style}
-      kind="ghost"
-      size="small">
-      {children}
-    </Button>
-  ) : (
+  return (
     <Link
       {...linkAttributes}
       style={style}>
