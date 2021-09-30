@@ -1,10 +1,39 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { BigNumber } from "ethers"
+import { Token as UniswapToken, BigintIsh } from '@uniswap/sdk-core';
+import { FeeAmount, Pool as UniswapPool } from '@uniswap/v3-sdk'
 
 import { getGenericReducerBuilder } from '../'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID'
 import { fetchPools } from './api'
+
+enum TCPUniswapPoolType {
+  Collateral,
+  Protocol,
+}
+
+class TCPUniswapPool extends UniswapPool {
+  address: string
+  type: TCPUniswapPool
+
+  constructor (usArgs: {
+      tokenA: UniswapToken,
+      tokenB: UniswapToken,
+      fee: FeeAmount,
+      sqrtRatioX96: BigintIsh,
+      liquidity: BigintIsh,
+      tickCurrent: number,
+    },
+    address: string,
+    type: TCPUniswapPool,
+  ) {
+    super(usArgs.tokenA, usArgs.tokenB, usArgs.fee, usArgs.sqrtRatioX96, usArgs.liquidity, usArgs.tickCurrent)
+
+    this.address = address
+    this.type = type
+  }
+}
 
 export interface SlotInfo {
   sqrtPriceX96: BigNumber,

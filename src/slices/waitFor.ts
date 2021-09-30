@@ -181,6 +181,7 @@ export const waitForEthBalance = getWaitFunction<ethBalanceArgs, ethBalance>(
 )
 
 export const waitForLiquidityPositions = (selector: AppSelector, dispatch: AppDispatch) => {
+  // TODO remove
   dispatch(loadingLiquidityPositions())
 
   return getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
