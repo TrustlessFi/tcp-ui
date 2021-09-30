@@ -6,38 +6,32 @@ import { unscale } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import getContract from '../../utils/getContract'
 
-import { ERC20 } from '../../utils/typechain/ERC20';
+import { ERC20 } from '../../utils/typechain/ERC20'
 import { Rewards } from '../../utils/typechain/Rewards'
 import { ProtocolDataAggregator } from '../../utils/typechain/ProtocolDataAggregator'
-import { UniswapV3Pool } from '../../utils/typechain/UniswapV3Pool';
+import { UniswapV3Pool } from '../../utils/typechain/UniswapV3Pool'
 
-import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json';
-import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json';
+import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 
 interface PoolCache { [key: string]: LiquidityPool }
 
 const poolCache: PoolCache = {}
 
 export const fetchLiquidityPool = async (data: poolArgs): Promise<LiquidityPool> => {
-    const rewards = await getContract(data.Rewards, ProtocolContract.Rewards) as Rewards;
-    const poolAddress = await rewards.poolConfigForPoolID(data.poolID);
-    return getPoolInformationForAddress(poolAddress.pool);
+    const rewards = getContract(data.Rewards, ProtocolContract.Rewards) as Rewards
+    const poolAddress = await rewards.poolConfigForPoolID(data.poolID)
+    return getPoolInformationForAddress(poolAddress.pool)
 }
 
 export const getPoolInformationForAddress = async (poolAddress: string): Promise<LiquidityPool> => {
-    let pool = poolCache[poolAddress];
+    const pool = poolCache[poolAddress]
 
-    if (pool) {
-        return pool;
-    }
-    
-    const provider = getProvider();
-    
-    if (!provider) {
-        throw new Error('No provider!')
-    }
-    
-    const poolContract = new ethers.Contract(poolAddress, poolArtifact.abi, provider) as UniswapV3Pool;
+    if (pool) return pool
+
+    const provider = getProvider()
+
+    const poolContract = new ethers.Contract(poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
 
     const [
         fee,
@@ -51,10 +45,10 @@ export const getPoolInformationForAddress = async (poolAddress: string): Promise
         poolContract.slot0(),
         poolContract.token0(),
         poolContract.token1(),
-    ]);
+    ])
 
-    const token0 = new ethers.Contract(token0Address, erc20Artifact.abi, provider) as ERC20;
-    const token1 = new ethers.Contract(token1Address, erc20Artifact.abi, provider) as ERC20;
+    const token0 = new ethers.Contract(token0Address, erc20Artifact.abi, provider) as ERC20
+    const token1 = new ethers.Contract(token1Address, erc20Artifact.abi, provider) as ERC20
 
     const [
         token0Decimals,
@@ -66,7 +60,7 @@ export const getPoolInformationForAddress = async (poolAddress: string): Promise
         token0.symbol(),
         token1.decimals(),
         token1.symbol()
-    ]);
+    ])
 
     const poolInfo = {
         address: poolContract.address,
@@ -87,25 +81,23 @@ export const getPoolInformationForAddress = async (poolAddress: string): Promise
         token1Address: token1.address,
         token1Decimals,
         token1Symbol
-    } as LiquidityPool;
+    } as LiquidityPool
 
-    poolCache[poolAddress] = poolInfo;
+    poolCache[poolAddress] = poolInfo
 
-    return poolInfo;
-};
+    return poolInfo
+}
 
 export const fetchPools = async (data: poolsArgs): Promise<LiquidityPool[]> => {
-    console.log('getting pda', data);
-    const protocolDataAggregator = await getContract(data.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator;
-    console.log('got pda');
+    console.log('getting pda', data)
+    const protocolDataAggregator = getContract(data.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
+    console.log('got pda')
 
-    console.log('getting configs');
+    console.log('getting configs')
     const poolConfigs = await protocolDataAggregator?.getIncentivizedPools()
     console.log('got poolConfigs')
 
-    if(!poolConfigs || poolConfigs.length === 0) {
-        return []
-    }
+    if (!poolConfigs || poolConfigs.length === 0) return []
 
     return Promise.all(poolConfigs.map(config => getPoolInformationForAddress(config.pool)))
-};
+}

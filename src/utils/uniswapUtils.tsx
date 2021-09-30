@@ -7,7 +7,7 @@ import { ChainID } from '../slices/chainID';
 import { LiquidityPosition } from '../slices/liquidityPositions';
 import { LiquidityPool } from '../slices/pools';
 
-export const poolToUniswapPool = (chainId: ChainID, pool: LiquidityPool & { type?: string }): UniswapPool & { address?: string, type?: string }=> {
+export const poolToUniswapPool = (chainId: ChainID, pool: LiquidityPool & { type?: string }): UniswapPool & { address?: string, type?: string } => {
     const uniswapPool = new UniswapPool(
         new UniswapToken(chainId, pool.token0Address, pool.token0Decimals, pool.token0Symbol),
         new UniswapToken(chainId, pool.token1Address, pool.token1Decimals, pool.token1Symbol),
