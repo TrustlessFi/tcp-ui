@@ -2,28 +2,33 @@ import { Position } from './'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
-import { AppDispatch } from '../../app/store'
-import { waitForTransaction } from '../transactions'
-import { createPositionArgs } from './index'
-import getProvider from '../../utils/getProvider'
-import { UIID } from '../../constants'
-import { ProtocolContract } from '../contracts/index';
 import getContract from '../../utils/getContract'
-import { TransactionType } from '../transactions/index';
+import { getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
-import { Accounting, HuePositionNFT, Market } from '../../utils/typechain'
+import { Accounting, HuePositionNFT, TcpMulticallViewOnly } from '../../utils/typechain'
+import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
+  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+
+  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
+  const { positions } = await executeMulticalls(tcpMulticall, {
+    positions: getDuplicateFuncMulticall(
+      accounting,
+      'getPosition',
+      rc.PositionData,
+      Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
+    ),
+  })
 
-  const positions = await Promise.all(positionIDs.map(async (positionID) => {
-    const position = await accounting.getPosition(positionID)
+  const positionsInfo = positionIDs.map((positionID) => {
+    const position = positions[positionID.toString()]
 
     let positionDebt = position.debt
 
@@ -52,7 +57,7 @@ export const fetchPositions = async (args: positionsArgs) => {
       }
     }
 
-    const positionInfo = {
+    return {
       collateralCount: unscale(position.collateral),
       debtCount: unscale(positionDebt),
       approximateRewards: Math.round(unscale(approximateRewards)),
@@ -63,34 +68,9 @@ export const fetchPositions = async (args: positionsArgs) => {
       claimingRewards: false,
       claimedRewards: false,
     } as Position
-    return positionInfo
-  }))
+  })
 
   const positionsMap: positionsInfo = {}
-  positions.forEach(position => positionsMap[position.id] = position)
+  positionsInfo.forEach(positionInfo => positionsMap[positionInfo.id] = positionInfo)
   return positionsMap
-}
-
-export const executeCreatePosition = async (dispatch: AppDispatch, args: createPositionArgs) => {
-  const provider = getProvider()
-  const signer = provider.getSigner()
-  const userAddress = await signer.getAddress()
-
-  const market = getContract(args.Market, ProtocolContract.Market) as Market
-
-  const tx = await market.connect(signer).createPosition(scale(args.debtCount), UIID, {
-    gasLimit: 1e10,
-    value: scale(args.collateralCount)
-  })
-  const hash = tx.hash
-
-  dispatch(waitForTransaction({
-    hash,
-    message: 'Create Position',
-    userAddress,
-    nonce: tx.nonce,
-    type: TransactionType.CreatePosition,
-  }))
-
-  return hash
 }

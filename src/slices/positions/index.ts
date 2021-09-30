@@ -3,11 +3,7 @@ import { sliceState, initialState } from '../'
 import { fetchPositions } from './api'
 import { systemDebtInfo } from '../systemDebt'
 import { marketInfo } from "../market"
-import {
-  getGenericReducerBuilder,
-} from '../'
-import { getGenericWriteReducerBuilder } from '../index'
-import { executeCreatePosition } from './api'
+import { getGenericReducerBuilder } from '../'
 
 export interface Position {
   collateralCount: number,
@@ -30,12 +26,7 @@ export interface positionsArgs {
   marketInfo: marketInfo,
   Accounting: string,
   HuePositionNFT: string,
-}
-
-export interface createPositionArgs {
-  collateralCount: number,
-  debtCount: number,
-  Market: string,
+  TcpMulticall: string,
 }
 
 export interface PositionsState extends sliceState<positionsInfo> {}
@@ -43,11 +34,6 @@ export interface PositionsState extends sliceState<positionsInfo> {}
 export const getPositions = createAsyncThunk(
   'positions/getPositions',
   async (data: positionsArgs) => await fetchPositions(data),
-)
-
-export const createPosition = createAsyncThunk(
-  'positions/createPosition',
-  async (data: createPositionArgs, {dispatch}) => await executeCreatePosition(dispatch, data),
 )
 
 export const positionsSlice = createSlice({
@@ -60,7 +46,6 @@ export const positionsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPositions)
-    builder = getGenericWriteReducerBuilder(builder, createPosition)
   },
 })
 

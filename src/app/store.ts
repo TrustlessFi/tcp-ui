@@ -9,7 +9,8 @@ import transactionsReducer from '../slices/transactions'
 import walletReducer from '../slices/wallet'
 import systemDebtReducer from '../slices/systemDebt'
 import positionsEditorReducer from '../slices/positionsEditor'
-import referenceTokensReducer from '../slices/referenceTokens'
+import lendSelectionReducer from '../slices/lendSelection'
+import modalReducer from '../slices/modal'
 
 import governorReducer from '../slices/governor'
 import liquidationsReducer from '../slices/liquidations'
@@ -20,7 +21,6 @@ import ratesReducer from '../slices/rates'
 import ethBalanceReducer from '../slices/ethBalance'
 import hueBalanceReducer from '../slices/balances/hueBalance'
 import lendHueBalanceReducer from '../slices/balances/lendHueBalance'
-import referenceTokenBalancesReducer from '../slices/balances/referenceTokenBalances'
 
 import contractsReducer from '../slices/contracts'
 import notificationsReducer from '../slices/notifications'
@@ -36,7 +36,8 @@ export const store = configureStore({
     wallet: walletReducer,
     systemDebt: systemDebtReducer,
     positionsEditor: positionsEditorReducer,
-    referenceTokens: referenceTokensReducer,
+    lendSelection: lendSelectionReducer,
+    modal: modalReducer,
 
     governor: governorReducer,
     liquidations: liquidationsReducer,
@@ -47,7 +48,6 @@ export const store = configureStore({
     ethBalance: ethBalanceReducer,
     hueBalance: hueBalanceReducer,
     lendHueBalance: lendHueBalanceReducer,
-    referenceTokenBalances: referenceTokenBalancesReducer,
 
     contracts: contractsReducer,
     notifications: notificationsReducer,

@@ -13,6 +13,18 @@ type row = {
   data: { [key in string]: any }
 }
 
+export const TableHeaderOnly = ({row}: {row: row}) => (
+  <Table>
+    <TableHead>
+      <TableRow>
+        {Object.keys(row.data).map((header) => (
+          <TableHeader key={header}>{header}</TableHeader>
+        ))}
+      </TableRow>
+    </TableHead>
+  </Table>
+)
+
 const SimpleTable = ({rows}: {rows: row[]}) => rows.length === 0 ? null : (
   <Table>
     <TableHead>

@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
-import * as mc from '../../utils/Multicall'
 
-import { Rates } from "../../utils/typechain/Rates"
-import { ProtocolContract } from '../contracts/index';
-import { getLocalStorage } from '../../utils/index';
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
+import { Rates, TcpMulticallViewOnly } from "../../utils/typechain/"
+import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
@@ -16,6 +15,7 @@ export type ratesInfo = {
 
 export type ratesArgs = {
   Rates: string
+  TcpMulticall: string
 }
 
 export interface RatesState extends sliceState<ratesInfo> {}
@@ -24,17 +24,17 @@ export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
   async (args: ratesArgs): Promise<ratesInfo> => {
     const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
+    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-
-    const { result } =  (await executeMulticalls({
-      result: getMulticall(rates,
-        {
-          positiveInterestRate: mc.Boolean,
-          interestRateAbsoluteValue: mc.BigNumberUnscale,
-          getReferencePools: mc.StringArray,
-        },
-      ),
-    }))
+    const result = (await executeMulticall(
+      multicall,
+      rates,
+      {
+        positiveInterestRate: rc.Boolean,
+        interestRateAbsoluteValue: rc.BigNumberUnscale,
+        getReferencePools: rc.StringArray,
+      },
+    ))
 
     return {
       positiveInterestRate: result.positiveInterestRate,

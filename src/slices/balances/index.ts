@@ -1,11 +1,10 @@
 import { sliceState } from '../'
 import { unscale, uint255Max, bnf } from '../../utils'
-import { ERC20 } from "../../utils/typechain/ERC20"
+import { TcpMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
-import { contract } from '../../utils/getContract'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall/index'
+import getContract, { contract } from '../../utils/getContract'
+import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
 interface tokenInfo {
   address: string,
@@ -16,16 +15,18 @@ interface tokenInfo {
 
 type balances = { [key in ProtocolContract]?: number }
 
-type approval = { [key in ProtocolContract]?: {
+export type approval = {
   allowance: string,
   approving: boolean,
   approved: boolean
-}}
+}
+
+type approvals = { [key in ProtocolContract]?: approval}
 
 export interface balanceInfo {
   token: tokenInfo
   userBalance: number
-  approval: approval
+  approval: approvals
   balances: balances
 }
 
@@ -34,40 +35,45 @@ export interface balanceState extends sliceState<balanceInfo> {}
 export interface balanceArgs {
   tokenAddress: string,
   userAddress: string,
+  TcpMulticall: string,
 }
 
 export const tokenBalanceThunk = async (
   args: balanceArgs,
   approvalsList: {contract: ProtocolContract, address: string}[],
   balancesList: {contract: ProtocolContract, address: string}[],
-) => {
-  const token = contract<ERC20>(args.tokenAddress, erc20Artifact.abi)
+): Promise<balanceInfo> => {
+  const token = contract(args.tokenAddress, erc20Artifact.abi)
+  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-  const { basicInfo, approvals, balances, userBalance } = await executeMulticalls({
-    basicInfo: getMulticall(token, {
-      name: mc.String,
-      symbol: mc.String,
-      decimals: mc.Number,
-    }),
-    userBalance: getMulticall(token,
-      { balanceOf: mc.BigNumber },
-      { balanceOf: [args.userAddress] }
-    ),
-    approvals: getDuplicateFuncMulticall(
-      token,
-      'allowance',
-      mc.String,
-      Object.fromEntries(approvalsList.map(item => [item.address, [args.userAddress, item.address]]))
-    ),
-    balances: getDuplicateFuncMulticall(
-      token,
-      'balanceOf',
-      mc.BigNumberToNumber,
-      Object.fromEntries(balancesList.map(item => [item.address, [item.address]]))
-    )
-  })
+  const { basicInfo, approvals, balances, userBalance } = await executeMulticalls(
+    tcpMulticall,
+    {
+      basicInfo: getMulticall(token, {
+        name: rc.String,
+        symbol: rc.String,
+        decimals: rc.Number,
+      }),
+      userBalance: getMulticall(token,
+        { balanceOf: rc.BigNumber },
+        { balanceOf: [args.userAddress] }
+      ),
+      approvals: getDuplicateFuncMulticall(
+        token,
+        'allowance',
+        rc.BigNumberToString,
+        Object.fromEntries(approvalsList.map(item => [item.contract, [args.userAddress, item.address]]))
+      ),
+      balances: getDuplicateFuncMulticall(
+        token,
+        'balanceOf',
+        rc.BigNumberUnscale,
+        Object.fromEntries(balancesList.map(item => [item.contract, [item.address]]))
+      )
+    }
+  )
 
-  const approval: approval = Object.fromEntries(Object.entries(approvals).map(([destAddress, allowance]) => {
+  const approval: approvals = Object.fromEntries(Object.entries(approvals).map(([destAddress, allowance]) => {
     return [
       destAddress,
       {

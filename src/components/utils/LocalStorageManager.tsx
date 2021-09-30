@@ -9,7 +9,7 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
-import { referenceTokensSlice, referenceTokens } from '../../slices/referenceTokens'
+import { lendSelectionSlice, LendSelectionState } from '../../slices/lendSelection'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
@@ -21,9 +21,9 @@ type slicesState =
   marketInfo |
   pricesInfo |
   ratesInfo |
-  referenceTokens |
   systemDebtInfo |
   NotificationState |
+  LendSelectionState |
   null
 
 type persistedSlice = {
@@ -44,25 +44,30 @@ const LONG_EXPIRATION = minutes(30)
 export const slicesToPersist: persistedSlices = {
 
   // Simple slices
-  [transactionsSlice.name]: {
-    slice: transactionsSlice,
-    ttl: NO_EXPIRATION,
-    getState: (state: RootState) => state.transactions
+  [contractsSlice.name]: {
+    slice: contractsSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.contracts
+  },
+  [lendSelectionSlice.name]: {
+    slice: lendSelectionSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.lendSelection
+  },
+  [notificationsSlice.name]: {
+    slice: notificationsSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.notifications
   },
   [positionsEditorSlice.name]: {
     slice: positionsEditorSlice,
     ttl: MEDIUM_EXPIRATION,
     getState: (state: RootState) => state.positionsEditor
   },
-  [contractsSlice.name]: {
-    slice: contractsSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.contracts
-  },
-  [notificationsSlice.name]: {
-    slice: notificationsSlice,
-    ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.notifications
+  [transactionsSlice.name]: {
+    slice: transactionsSlice,
+    ttl: NO_EXPIRATION,
+    getState: (state: RootState) => state.transactions
   },
 
   // Slices with loadable state
@@ -91,23 +96,16 @@ export const slicesToPersist: persistedSlices = {
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.rates.data.value
   },
-  [referenceTokensSlice.name]: {
-    slice: referenceTokensSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.referenceTokens.data.value
-  },
 }
-
-type sliceStateWithExpiration = { expiration: number, sliceState: slicesState }
 
 const LocalStorageManager = () => {
   for (const [key, slice] of Object.entries(slicesToPersist)) {
-    const sliceState = selector(slice!.getState)
+    const sliceState = selector(slice.getState)
     if (sliceState === null) continue
-    const ttl = slice!.ttl
     const year2120 = 4733539200
-    const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + slice!.ttl
-    const stateWithTimestamp: sliceStateWithExpiration = { expiration, sliceState }
+    const ttl = slice.ttl
+    const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + ttl
+    const stateWithTimestamp = { expiration, sliceState }
     localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>

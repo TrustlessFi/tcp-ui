@@ -17,6 +17,7 @@ import {
   LendHue,
   Liquidations,
   Market,
+  TcpMulticall,
   Prices,
   ProtocolDataAggregator,
   ProtocolLock,
@@ -34,7 +35,8 @@ import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.so
 import auctionsArtifact from "./artifacts/contracts/core/logic/Auctions.sol/Auctions.json"
 import enforcedDecentralizationArtifact from "./artifacts/contracts/core/governance/EnforcedDecentralization.sol/EnforcedDecentralization.json"
 import governorArtifact from "./artifacts/contracts/core/governance/Governor.sol/Governor.json"
-import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
+import hueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
+import huePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
 import lendHueArtifact from "./artifacts/contracts/core/tokens/LendHue.sol/LendHue.json"
 import liquidationsArtifact from "./artifacts/contracts/core/logic/Liquidations.sol/Liquidations.json"
 import marketArtifact from "./artifacts/contracts/core/logic/Market.sol/Market.json"
@@ -45,20 +47,26 @@ import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json
 import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
 import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json"
 import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
+import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
+import tcpMulticallArtifact from "./artifacts/contracts/core/auxiliary/TcpMulticall.sol/TcpMulticall.json"
+import tcpMulticallViewOnlyArtifact from "./artifacts/contracts/core/auxiliary/TcpMulticallViewOnly.sol/TcpMulticallViewOnly.json"
 import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
-import hueArtifact from "./artifacts/contracts/core/tokens/Hue.sol/Hue.json"
-import huePositionNFTArtifact from "./artifacts/contracts/core/tokens/HuePositionNFT.sol/HuePositionNFT.json"
-import { assertUnreachable } from './index';
+import { assertUnreachable } from '.'
 
-const artifactLookup = {
+type abi = {[key in string]: any}[]
+type contractAbi = { abi: abi }
+
+const artifactLookup: {[key in ProtocolContract]: contractAbi} = {
   [ProtocolContract.Accounting]: accountingArtifact,
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
   [ProtocolContract.Governor]: governorArtifact,
-  [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
+  [ProtocolContract.Hue]: hueArtifact,
+  [ProtocolContract.HuePositionNFT]: huePositionNFTArtifact,
   [ProtocolContract.LendHue]: lendHueArtifact,
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
+  [ProtocolContract.TcpMulticall]: tcpMulticallArtifact,
   [ProtocolContract.Prices]: pricesArtifact,
   [ProtocolContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [ProtocolContract.ProtocolLock]: protocolLockArtifact,
@@ -66,19 +74,25 @@ const artifactLookup = {
   [ProtocolContract.Rewards]: rewardsArtifact,
   [ProtocolContract.Settlement]: settlementArtifact,
   [ProtocolContract.Tcp]: tcpArtifact,
+  [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
-  [ProtocolContract.Hue]: hueArtifact,
-  [ProtocolContract.HuePositionNFT]: huePositionNFTArtifact
 }
 
 export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
   new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
 
+const getContract = (address: string, protocolContract: ProtocolContract, multicallViewOnly = false) => {
+  const getAbi = (): abi => {
+    if (protocolContract === ProtocolContract.TcpMulticall) {
+      return multicallViewOnly ? tcpMulticallViewOnlyArtifact.abi : tcpMulticallArtifact.abi
+    } else {
+      return artifactLookup[protocolContract].abi
+    }
+  }
 
-const getContract = (address: string, protocolContract: ProtocolContract) => {
-  const contract =  new Contract(
+  const contract = new Contract(
     address,
-    artifactLookup[protocolContract].abi,
+    getAbi(),
     getProvider()
   )
 
@@ -101,6 +115,8 @@ const getContract = (address: string, protocolContract: ProtocolContract) => {
       return contract as Liquidations
     case ProtocolContract.Market:
       return contract as Market
+    case ProtocolContract.TcpMulticall:
+      return contract as TcpMulticall
     case ProtocolContract.Prices:
       return contract as Prices
     case ProtocolContract.ProtocolDataAggregator:

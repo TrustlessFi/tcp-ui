@@ -1,37 +1,26 @@
 // Copyright (c) 2020. All Rights Reserved
 // SPDX-License-Identifier: UNLICENSED
 
-import { Web3Provider } from '@ethersproject/providers'
 import { Contract, utils as ethersUtils, ethers } from 'ethers'
-import { getAddress, rootContracts } from '../Addresses'
+import { enforce, first, unscale, PromiseType } from '../'
+import { TcpMulticallViewOnly, Accounting } from '../typechain'
 
-import { enforce, first, unscale } from '../'
-import getProvider, { getChainID } from '../getProvider'
-import { contract as getContract } from '../getContract'
+export const rc  = {
+  Number: (result: any) => result as number,
+  Boolean: (result: any) => result as boolean,
+  Address: (result: any) => result as string,
+  String: (result: any) => result as string,
+  StringArray: (result: any) => result as string[],
+  BigNumber: (result: any) => result as ethers.BigNumber,
+  BigNumberToNumber: (result: any) => (result as ethers.BigNumber).toNumber(),
+  BigNumberToString: (result: any) => (result as ethers.BigNumber).toString(),
+  BigNumberUnscale: (result: any) => unscale(result as ethers.BigNumber),
+  PositionData: (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,
+}
 
-import { TcpMulticallViewOnly } from '../typechain'
+export const rcDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
 
-import tcpMulticallViewOnlyArtifact from '../artifacts/contracts/mocks/Multicall2.sol/Multicall2.json'
-
-export const Number = (result: any) => result as number
-export const Boolean = (result: any) => result as boolean
-export const Address = (result: any) => result as string
-export const String = (result: any) => result as string
-export const StringArray = (result: any) => result as string[]
-export const BigNumber = (result: any) => result as ethers.BigNumber
-export const BigNumberToNumber = (result: any) => (result as ethers.BigNumber).toNumber()
-export const BigNumberUnscale = (result: any) => unscale(result as ethers.BigNumber)
-export const BigNumberUnscaleDecimals = (decimals: number) => (result: any) => unscale(result as ethers.BigNumber, decimals)
-
-type resultConverter =
-  typeof Number |
-  typeof Boolean |
-  typeof Address |
-  typeof String |
-  typeof StringArray |
-  typeof BigNumber |
-  typeof BigNumberToNumber |
-  typeof BigNumberUnscale
+type resultConverter = (typeof rc)[keyof typeof rc]
 
 interface Call<CallType extends resultConverter> {
   id: string
@@ -81,10 +70,10 @@ export const getDuplicateFuncMulticall = <
 
     return [id, {
       id,
-      contract: contract,
-      func: func,
+      contract,
+      func,
       args,
-      converter: converter,
+      converter,
       inputs,
       outputs,
       encoding,
@@ -92,37 +81,41 @@ export const getDuplicateFuncMulticall = <
   })) as {[K in keyof SpecificCalls]: Call<ConverterType>}
 }
 
-
-/* TODO
-export const executeMulticall = async <
-  Functions extends {[key in string]: resultConverter}
->(
+export const executeMulticall = async <Functions extends {[key in string]: resultConverter}> (
+  tcpMulticall: TcpMulticallViewOnly,
   contract: Contract,
-  functions: Functions,
+  funcs: Functions,
   args?: {[key in keyof Functions]?: any[]},
-  provider?: Web3Provider,
 ) => {
-  const multicall = getMulticall(contract, functions, args)
+  const multicall = getMulticall(contract, funcs, args)
 
-  (await executeMulticalls({aMulticall: functions}, provider)).aMulticall
+  return (await executeMulticalls(tcpMulticall, {aMulticall: multicall})).aMulticall
 }
-*/
 
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
 >(
+  tcpMulticall: TcpMulticallViewOnly,
   multicalls: Multicalls,
-  provider?: Web3Provider,
 ) => {
-  const multicallContract = getContract<TcpMulticallViewOnly>(
-    getAddress(await getChainID(), rootContracts.TcpMulticall),
-    tcpMulticallViewOnlyArtifact.abi,
-    provider === undefined ? getProvider() : provider,
-  )
+  try {
+    return executeMulticallsImpl(tcpMulticall, multicalls)
+  } catch (exception) {
+    console.error('Caught Multicall Execution Error:')
+    console.error({exception})
+    throw exception
+  }
+}
 
+const executeMulticallsImpl = async <
+  Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
+>(
+  tcpMulticall: TcpMulticallViewOnly,
+  multicalls: Multicalls,
+) => {
   const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
 
-  const rawResults = await multicallContract.all(calls.map(
+  const rawResults = await tcpMulticall.all(calls.map(
     call => ({ target: call.contract.address, callData: call.encoding })
   ))
 
@@ -131,8 +124,11 @@ export const executeMulticalls = async <
     rawResults.returnData.map((rawResult, index) => {
       const call = calls[index]
       const resultsArray = Object.values(abiCoder.decode(call.outputs!, rawResult))
+
       // TODO as needed: support more than one result
-      enforce(resultsArray.length === 1, 'More than one result')
+      const countResults = resultsArray.length
+      if (countResults > 1) console.warn('multicall ' + call.id + ' (' + call.func + ') has ' + countResults + ' results')
+
       return [call.id, call.converter(first(resultsArray))]
     })
   )

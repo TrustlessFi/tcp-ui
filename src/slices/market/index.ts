@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
-import { Market } from "../../utils/typechain/Market"
+import { Market, TcpMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
-import { getLocalStorage } from '../../utils/index'
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall'
+import { getLocalStorage, mnt } from '../../utils'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export interface marketArgs {
   Market: string
+  TcpMulticall: string
 }
 
 export type marketInfo = {
@@ -19,6 +19,7 @@ export type marketInfo = {
   interestPortionToLenders: number,
   periodLength: number,
   firstPeriod: number,
+  valueOfLendTokensInHue: number,
 }
 
 export interface MarketState extends sliceState<marketInfo> {}
@@ -27,22 +28,32 @@ export const getMarketInfo = createAsyncThunk(
   'market/getMarketInfo',
   async (args: marketArgs): Promise<marketInfo> => {
     const market = getContract(args.Market, ProtocolContract.Market) as Market
+    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-    return (await executeMulticalls({
-      basicInfo: getMulticall(market,
-        {
-          lastPeriodGlobalInterestAccrued: mc.BigNumberToNumber,
-          collateralizationRequirement: mc.BigNumberUnscale,
-          minPositionSize: mc.BigNumberUnscale,
-          twapDuration: mc.Number,
-          interestPortionToLenders: mc.BigNumberUnscale,
-          periodLength: mc.BigNumberToNumber,
-          firstPeriod: mc.BigNumberToNumber,
-        },
-      ),
-    })).basicInfo
+    return (await executeMulticall(
+      multicall,
+      market,
+      {
+        lastPeriodGlobalInterestAccrued: rc.BigNumberToNumber,
+        collateralizationRequirement: rc.BigNumberUnscale,
+        minPositionSize: rc.BigNumberUnscale,
+        twapDuration: rc.Number,
+        interestPortionToLenders: rc.BigNumberUnscale,
+        periodLength: rc.BigNumberToNumber,
+        firstPeriod: rc.BigNumberToNumber,
+        valueOfLendTokensInHue: rc.BigNumberUnscale,
+      },
+      {
+        valueOfLendTokensInHue: [mnt(1)]
+      }
+    ))
   }
 )
+
+export interface lendArgs {
+  Market: string,
+  amount: number,
+}
 
 const name = 'market'
 

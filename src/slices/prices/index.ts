@@ -3,10 +3,10 @@ import { sliceState, getState, getGenericReducerBuilder } from '../'
 import { liquidationsInfo } from '../liquidations'
 import getContract from '../../utils/getContract'
 
-import { Prices } from "../../utils/typechain/Prices"
-import { unscale } from "../../utils"
-import { ProtocolContract } from '../contracts/index';
-import { getLocalStorage } from '../../utils/index';
+import { Prices, TcpMulticallViewOnly } from "../../utils/typechain"
+import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 
 export type pricesInfo = {
@@ -16,24 +16,23 @@ export type pricesInfo = {
 export interface PricesState extends sliceState<pricesInfo> {}
 
 export interface pricesArgs {
-  liquidationsInfo: liquidationsInfo,
+  liquidationsInfo: liquidationsInfo
   Prices: string
+  TcpMulticall: string
 }
 
 export const getPricesInfo = createAsyncThunk(
   'prices/getPricesInfo',
-  async (args: pricesArgs) => {
+  async (args: pricesArgs): Promise<pricesInfo> => {
     const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
+    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-    const [
-      ethPrice,
-    ] = await Promise.all([
-      prices.calculateInstantCollateralPrice(args.liquidationsInfo.twapDuration),
-    ])
+    const ethPrice = (await executeMulticall(multicall, prices,
+      { calculateInstantCollateralPrice: rc.BigNumberUnscale },
+      { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },
+    ))
 
-    return {
-      ethPrice: unscale(ethPrice)
-    }
+    return { ethPrice: ethPrice.calculateInstantCollateralPrice }
   }
 )
 

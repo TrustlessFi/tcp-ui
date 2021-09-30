@@ -1,7 +1,7 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
 import { Governor } from "../../utils/typechain"
 import { ChainID } from '../chainID'
-import { getContractArgs, ProtocolContract, getContractReturnType, getGovernorContractArgs } from './'
+import { getContractArgs, ProtocolContract, getContractReturnType, getSingleContractArgs } from './'
 
 import getProvider from '../../utils/getProvider'
 import { assertUnreachable } from '../../utils'
@@ -9,7 +9,9 @@ import { Contract } from 'ethers'
 
 import governorArtifact from '../../utils/artifacts/contracts/core/governance/Governor.sol/Governor.json'
 
-export const executeGetGovernor = async (args: getGovernorContractArgs) => getAddress(args.chainID, rootContracts.Governor)
+export const executeGetGovernor = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.Governor)
+
+export const executeGetTcpMulticall = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.TcpMulticall)
 
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
   const governor = new Contract(
@@ -58,8 +60,12 @@ const getContract = async (governor: Governor, contract: ProtocolContract, chain
       return await governor.hue()
     case ProtocolContract.HuePositionNFT:
       return await governor.huePositionNFT()
+
     case ProtocolContract.Governor:
       throw new Error('getContract: Handled in executeGetGovernor')
+    case ProtocolContract.TcpMulticall:
+      throw new Error('getContract: Handled in executeGetMulticall')
+
     default:
       assertUnreachable(contract)
 

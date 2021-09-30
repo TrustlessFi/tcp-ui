@@ -1,12 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
 
-import { Liquidations } from "../../utils/typechain/Liquidations"
-import { ProtocolContract } from '../contracts/index';
-import { getLocalStorage } from '../../utils/index';
-import { getMulticall, getDuplicateFuncMulticall, executeMulticalls } from '../../utils/Multicall/index';
-import * as mc from '../../utils/Multicall'
+import {
+  Liquidations,
+  TcpMulticallViewOnly,
+} from '../../utils/typechain'
+import { ProtocolContract } from '../contracts'
+import { getLocalStorage } from '../../utils'
+import { executeMulticall, rc } from '../../utils/Multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -16,6 +18,7 @@ export type liquidationsInfo = {
 
 export type liquidationsArgs = {
   Liquidations: string,
+  TcpMulticall: string,
 }
 
 export interface LiquidationsState extends sliceState<liquidationsInfo> {}
@@ -25,16 +28,17 @@ export const getLiquidationsInfo = createAsyncThunk(
 
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
+    const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
 
-    return (await executeMulticalls({
-      info: getMulticall(liquidations,
-        {
-          twapDuration: mc.Number,
-          discoveryIncentive: mc.BigNumberUnscale,
-          liquidationIncentive: mc.BigNumberUnscale,
-        },
-      ),
-    })).info
+    return (await executeMulticall(
+      tcpMulticall,
+      liquidations,
+      {
+        twapDuration: rc.Number,
+        discoveryIncentive: rc.BigNumberUnscale,
+        liquidationIncentive: rc.BigNumberUnscale,
+      },
+    ))
   }
 )
 

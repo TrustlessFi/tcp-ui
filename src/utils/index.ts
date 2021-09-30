@@ -4,20 +4,21 @@ import { BigNumber, BigNumberish, utils } from "ethers";
 
 import { USDC, USDT } from '../components/uniswap/src/constants/tokens';
 import { LiquidityPosition } from '../slices/liquidityPositions';
+import { SerializedError } from '@reduxjs/toolkit'
 
-export const zeroAddress = '0x0000000000000000000000000000000000000000';
+export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
-export const isDevEnvironment = process.env.NODE_ENV === 'development';
+export const isDevEnvironment = process.env.NODE_ENV === 'development'
 
 export const sleepS = (seconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+  return new Promise(resolve => setTimeout(resolve, seconds * 1000))
 }
 
 // ======================= Number Utils ============================
 export const log = (input: { base: number; val: number }) =>
-  Math.log(input.val) / Math.log(input.base);
+  Math.log(input.val) / Math.log(input.base)
 
-export const bnf = (val: BigNumberish) => BigNumber.from(val);
+export const bnf = (val: BigNumberish) => BigNumber.from(val)
 
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
 
@@ -26,7 +27,7 @@ export const mnt = (quantity: number, decimals = 18): string => {
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
 
-export const numVal = (num: string | number): number => typeof num == 'string' ? parseInt(num) : num
+export const numVal = (num: string | number): number => typeof num == 'string' ? parseFloat(num) : num
 
 type direction = 'up' | 'down'
 
@@ -66,7 +67,7 @@ export const unscale = (quantity: BigNumber, decimals = 18): number => {
 }
 
 export const timeToPeriod = (time: number, periodLength: number, firstPeriod: number) => {
-  return (Math.floor(time / periodLength)) - firstPeriod;
+  return (Math.floor(time / periodLength)) - firstPeriod
 }
 
 export const toInt = (val: number | string) => typeof val === 'number' ? val : parseInt(val)
@@ -74,28 +75,41 @@ export const toInt = (val: number | string) => typeof val === 'number' ? val : p
 export const anyNull = (items: (any | null)[]) => items.some(item => item === null)
 
 // ======================= Number Display Utils ============================
-export const roundToXDecimals = (val: number, decimals: number = 0) =>
-  Math.round(val * 10 ** decimals) / 10 ** decimals;
+export const roundToXDecimals = (val: number, decimals: number = 0) => {
+  const result = (Math.round(val * 10 ** decimals) / 10 ** decimals).toString()
+  if (decimals === 0) return result
+  else {
+    const decimalPointIndex = result.lastIndexOf('.')
+    if (decimalPointIndex === -1) return result
+    const decimalCount = result.substr(result.lastIndexOf('.') + 1).length
+    if (decimalCount < decimals) return result + '0'.repeat(decimals - decimalCount)
+    else return result
+  }
+}
 
-export const addCommas = (val: number): string =>
-  val.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+export const addCommas = (val: number | string): string => {
+  if (typeof val === 'number') val = val.toString()
+  return val.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
+}
+
+export const zeroIfNaN = (val: number) => isNaN(val) ? 0 : val
 
 export const numDisplay = (
   val: number,
   decimals: number | null = null
 ): string => {
-  if (isNaN(val)) return "-";
+  if (isNaN(val)) return "-"
   if (decimals === null) {
-    let logVal = Math.floor(log({ val: Math.abs(val), base: 10 }));
-    decimals = Math.min(logVal > -1 ? 0 : Math.abs(logVal), 6) + 2;
+    let logVal = Math.floor(log({ val: Math.abs(val), base: 10 }))
+    decimals = Math.min(logVal > -1 ? 0 : Math.abs(logVal), 6) + 2
   }
-  if (isNaN(val)) return "-";
-  return addCommas(roundToXDecimals(val, decimals));
+  if (isNaN(val) || !isFinite(val)) return "-"
+  return addCommas(roundToXDecimals(val, decimals))
 }
 
 // ======================= Constants ============================
-export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
-export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967';
+export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
+export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967'
 
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
@@ -188,6 +202,11 @@ export const getLocalStorage = (key: string, defaultValue: any = null) => {
 
 export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 
+export const firstOrNull = <T>(array: Array<T>): T | null => {
+  if (array.length === 0) return null
+  return array[0]
+}
+
 export const first = <T>(array: Array<T>): T => {
   enforce(array.length > 0, 'First for empty array')
   return array[0]
@@ -200,5 +219,71 @@ export const last = <T>(array: Array<T>): T => {
 
 
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
-
 // type PromiseType = PromiseType<typeof promisedOne> // => number
+
+
+export const parseMetamaskError = (error: any): string[] => {
+  if (error.hasOwnProperty('data')) {
+    if (error.data.hasOwnProperty('message')) {
+      return [error.data.message as string]
+    }
+  }
+
+  const userRejectedMessage = ['Please re-submit the transaction and accept it in Metamask.']
+
+  if (error.hasOwnProperty('code') && error.code === 4001) {
+    return userRejectedMessage
+  }
+
+  if (error.hasOwnProperty('message')) {
+    if ((error.message as string).indexOf('{') === -1) return [error.message]
+    const message = error.message as string
+    const begin = message.indexOf('{')
+    const end = message.lastIndexOf('}')
+    if (end < begin ) return [message]
+
+    const jsonString = message.substr(begin, (end - begin)+ 1)
+    const innerObject = JSON.parse(jsonString)
+    if (innerObject.hasOwnProperty('message')) return [innerObject.message]
+    if (innerObject.hasOwnProperty('value')) {
+      const innerObjectValue = innerObject.value
+      if (innerObjectValue.hasOwnProperty('data')) {
+        const innerObjectValueData = innerObjectValue.data
+        const code = innerObjectValueData.hasOwnProperty('code') ? innerObjectValueData.code as number : null
+        if (code === 4001) return userRejectedMessage
+        if (innerObjectValueData.hasOwnProperty('message')) {
+          const returnData = [innerObjectValueData.message]
+          if (code !== null) returnData.push('Metamask error code ' + code + ')')
+          return returnData
+        }
+      }
+    }
+  }
+
+  return ['Unknown metamask error']
+}
+
+const zeroThroughF = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', ]
+
+export const isTxHash = (hash: string) => {
+  if (hash.length !== 66) return false
+  if (hash.substr(0, 2) !== '0x' ) return false
+  if (hash.toLowerCase().substr(2).split('').filter(letter => zeroThroughF.includes(letter)).length != 64) return false
+  return true
+}
+
+export const xor = (a: boolean, b: boolean) => ( a || b ) && !( a && b )
+
+
+export const equalArrays = (a: any[], b: any[]) => {
+  if (a.length !== b.length) return false
+  return a.filter((aItem, index) => aItem !== b[index] ).length === 0
+}
+
+export const equalStrings = (a: string, b: string) => {
+  return equalArrays(a.split(''), b.split(''))
+}
+
+export const equalStringsCaseInsensitive = (a: string, b: string) => {
+  return equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
+}

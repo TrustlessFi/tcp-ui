@@ -30,6 +30,11 @@ svg.danger_icon {
   fill: $error-red;
 }
 
+.header_logo {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
 .bx--toast-notification {
   bottom: -24px;
   position: absolute;

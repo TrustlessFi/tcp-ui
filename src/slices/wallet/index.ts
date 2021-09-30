@@ -19,7 +19,7 @@ export const walletSlice = createSlice({
     connecting: (state) => {
       state.connecting = true
     },
-    connected: (state, action: PayloadAction<string>) => {
+    connected: (state, action: PayloadAction<string | null>) => {
       state.connecting = false
       state.address = action.payload
     },

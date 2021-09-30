@@ -3,7 +3,7 @@ import { sliceState, initialState } from '../'
 import { genProposals } from './api'
 import { getGenericReducerBuilder } from '../'
 
-export enum ProposalStates {
+export enum ProposalState {
   Pending = 'Pending',
   Active = 'Active',
   Canceled = 'Canceled',
@@ -28,7 +28,7 @@ export interface Proposal {
     againstVotes: number
     canceled: boolean
     executed: boolean
-    state: ProposalStates | undefined
+    state: ProposalState,
   },
   receipt: {
     hasVoted: boolean

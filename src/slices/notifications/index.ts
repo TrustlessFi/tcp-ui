@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TransactionInfo } from '../transactions/index';
+import { TransactionInfo } from '../transactions'
 import { timeMS } from '../../utils'
-import { getLocalStorage } from '../../utils/index';
+import { getLocalStorage } from '../../utils'
+import { TransactionStatus, getTxNonce } from '../transactions'
+import { getTxHash } from '../transactions'
 
 export interface notificationInfo extends TransactionInfo {
   startTimeMS: number
@@ -18,12 +20,14 @@ export const notificationsSlice = createSlice({
   initialState: getLocalStorage(name, initialState) as NotificationState,
   reducers: {
     addNotification: (state, action: PayloadAction<TransactionInfo>) => {
-      const notification = action.payload
-      state[notification.hash] = { ...notification, startTimeMS: timeMS() }
+      const tx = action.payload
+      if (tx.status !== TransactionStatus.Pending) {
+        state[getTxNonce(tx)] = { ...action.payload, startTimeMS: timeMS() }
+      }
     },
     notificationClosed: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      if (state.hasOwnProperty(hash)) delete state[hash]
+      return Object.fromEntries(Object.values(state).filter(notif => getTxHash(notif) !== hash).map(notif => [notif.hash, notif]))
     },
   }
 })
