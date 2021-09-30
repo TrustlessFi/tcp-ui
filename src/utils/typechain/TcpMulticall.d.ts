@@ -170,7 +170,9 @@ export class TcpMulticall extends BaseContract {
 
     getChainId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    getCurrentBlockCoinbase(overrides?: CallOverrides): Promise<[string]>;
+    getCurrentBlockCoinbase(
+      overrides?: CallOverrides
+    ): Promise<[string] & { coinbase: string }>;
 
     getCurrentBlockDifficulty(overrides?: CallOverrides): Promise<[BigNumber]>;
 

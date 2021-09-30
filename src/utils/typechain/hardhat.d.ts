@@ -893,10 +893,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.PoolTicksCounterTest__factory>;
     getContractFactory(
-      name: "PositionValueTest",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.PositionValueTest__factory>;
-    getContractFactory(
       name: "SelfPermitTest",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SelfPermitTest__factory>;
