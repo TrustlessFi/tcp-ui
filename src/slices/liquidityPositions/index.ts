@@ -5,26 +5,29 @@ import { sliceState, initialState } from '../'
 import { addLiquidityToPosition, fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
 import { ChainID } from '../chainID'
-import { LiquidityPool } from '../pools'
 
 export interface LiquidityPosition {
+  // set during update?
   addingLiquidity?: boolean,
-  cumulativeLiquidity: number,
-  id: number,
-  lastBlockPositionIncreased: number,
-  lastTimeRewarded: number,
-  liquidity: BigNumber,
-  nonce: BigNumber,
-  owner: string,
-  pool: LiquidityPool,
   removingLiquidity?: boolean,
-  tickLower: number,
-  tickUpper: number,
+  nonce: BigNumber,
+
+  // ???
   tokensOwed0: BigNumber,
   tokensOwed1: BigNumber,
+
+  // Core data
+  cumulativeLiquidity: string,
+  id: number,
+  lastTimeRewarded: number,
+  lastBlockPositionIncreased: number,
+  liquidity: BigNumber,
+  owner: string,
+  pool: string,
+  tickLower: number,
+  tickUpper: number,
   totalRewards: number,
 };
-
 
 export interface liquidityPositions {
   creating: boolean,
@@ -44,8 +47,8 @@ export interface liquidityPositionsArgs {
 export interface liquidityPositionArgs {
   Accounting: string,
   chainID: ChainID,
-  positionID: number,
   Rewards: string
+  positionID: number,
 }
 
 export interface LiquidityPositionsState extends sliceState<liquidityPositions> {}

@@ -1,42 +1,33 @@
 import { ethers } from 'ethers'
 
-import { LiquidityPool, poolArgs, poolsArgs } from './'
+import { getPoolsArgs, poolsInfo, SerializedUniswapPool } from './'
+import { Pool as UniswapPool } from '@uniswap/v3-sdk'
+import { Token as UniswapToken } from '@uniswap/sdk-core';
 import { ProtocolContract } from '../contracts'
-import { unscale } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import getContract from '../../utils/getContract'
+import { inflateUniswapToken} from '../../utils/uniswapUtils'
 
 import { ERC20 } from '../../utils/typechain/ERC20'
-import { Rewards } from '../../utils/typechain/Rewards'
 import { ProtocolDataAggregator } from '../../utils/typechain/ProtocolDataAggregator'
 import { UniswapV3Pool } from '../../utils/typechain/UniswapV3Pool'
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import { ChainID } from '../chainID/index';
+import { BigNumber } from 'ethers'
 
-interface PoolCache { [key: string]: LiquidityPool }
-
-const poolCache: PoolCache = {}
-
-export const fetchLiquidityPool = async (data: poolArgs): Promise<LiquidityPool> => {
-    const rewards = getContract(data.Rewards, ProtocolContract.Rewards) as Rewards
-    const poolAddress = await rewards.poolConfigForPoolID(data.poolID)
-    return getPoolInformationForAddress(poolAddress.pool)
-}
-
-export const getPoolInformationForAddress = async (poolAddress: string): Promise<LiquidityPool> => {
-    const pool = poolCache[poolAddress]
-
-    if (pool) return pool
-
+export const getPool = async (
+  poolConfig: {pool: string, rewardsPortion: BigNumber},
+  chainID: ChainID
+): Promise<SerializedUniswapPool> => {
     const provider = getProvider()
-
-    const poolContract = new ethers.Contract(poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
+    const poolContract = new ethers.Contract(poolConfig.pool, poolArtifact.abi, provider) as UniswapV3Pool
 
     const [
         fee,
         liquidity,
-        [sqrtPriceX96, tick, observationIndex, observationCardinality, observationCardinalityNext, feeProtocol, unlocked],
+        [sqrtRatioX96, tickCurrent, _observationIndex, _observationCardinality, _observationCardinalityNext, _feeProtocol, _unlocked],
         token0Address,
         token1Address,
     ] = await Promise.all([
@@ -51,53 +42,58 @@ export const getPoolInformationForAddress = async (poolAddress: string): Promise
     const token1 = new ethers.Contract(token1Address, erc20Artifact.abi, provider) as ERC20
 
     const [
-        token0Decimals,
-        token0Symbol,
-        token1Decimals,
-        token1Symbol
+      token0Name,
+      token0Symbol,
+      token0Decimals,
+      token1Name,
+      token1Symbol,
+      token1Decimals,
     ] = await Promise.all([
-        token0.decimals(),
-        token0.symbol(),
-        token1.decimals(),
-        token1.symbol()
+      token0.name(),
+      token0.symbol(),
+      token0.decimals(),
+      token1.name(),
+      token1.symbol(),
+      token1.decimals(),
     ])
 
-    const poolInfo = {
-        address: poolContract.address,
-        fee,
-        liquidity: unscale(liquidity),
-        slot0: {
-            sqrtPriceX96,
-            tick,
-            observationIndex,
-            observationCardinality,
-            observationCardinalityNext,
-            feeProtocol,
-            unlocked
-        },
-        token0Address: token0.address,
-        token0Decimals,
-        token0Symbol,
-        token1Address: token1.address,
-        token1Decimals,
-        token1Symbol
-    } as LiquidityPool
-
-    poolCache[poolAddress] = poolInfo
-
-    return poolInfo
+    return {
+      tokenA: {
+        chainID,
+        address: token0.address,
+        name: token0Name,
+        symbol: token0Symbol,
+        decimals: token0Decimals,
+      },
+      tokenB: {
+        chainID,
+        address: token1.address,
+        name: token1Name,
+        symbol: token1Symbol,
+        decimals: token1Decimals,
+      },
+      fee,
+      sqrtRatioX96: sqrtRatioX96.toString(),
+      liquidity: liquidity.toString(),
+      tickCurrent,
+    }
 }
 
-export const fetchPools = async (data: poolsArgs): Promise<LiquidityPool[]> => {
-    console.log('getting pda', data)
-    const protocolDataAggregator = getContract(data.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
-    console.log('got pda')
+export const fetchPools = async (args: getPoolsArgs): Promise<poolsInfo> => {
+    const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
 
-    console.log('getting configs')
-    const poolConfigs = await protocolDataAggregator?.getIncentivizedPools()
-    console.log('got poolConfigs')
+    const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
 
-    if (!poolConfigs || poolConfigs.length === 0) return []
+    const pools = await Promise.all(poolConfigs.map(poolConfig => getPool(poolConfig, args.chainID)))
 
-    return Promise.all(poolConfigs.map(config => getPoolInformationForAddress(config.pool)))
-}
+    return Object.fromEntries(pools.map(pool =>
+      [
+        UniswapPool.getAddress(
+          inflateUniswapToken(pool.tokenA),
+          inflateUniswapToken(pool.tokenB),
+          pool.fee
+        ),
+        pool
+      ]
+    ))
+  }

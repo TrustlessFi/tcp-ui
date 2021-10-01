@@ -6,7 +6,7 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPools, poolsArgs, poolsInfo } from './pools'
+import { getPools, getPoolsArgs, poolsInfo } from './pools'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
 import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions, loading as loadingLiquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
@@ -191,7 +191,7 @@ export const waitForLiquidityPositions = (selector: AppSelector, dispatch: AppDi
   )(selector, dispatch)
 }
 
-export const waitForPools = getWaitFunction<poolsArgs, poolsInfo>(
+export const waitForPools = getWaitFunction<getPoolsArgs, poolsInfo>(
   (state: RootState) => state.pools,
   getPools,
   [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator],

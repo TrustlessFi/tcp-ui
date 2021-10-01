@@ -3,50 +3,49 @@ import { Token as UniswapToken } from '@uniswap/sdk-core';
 import { Pool as UniswapPool } from '@uniswap/v3-sdk';
 import { PositionDetails as UniswapPosition } from '../components/uniswap/src/types/position';
 
-import { ChainID } from '../slices/chainID';
 import { LiquidityPosition } from '../slices/liquidityPositions';
-import { LiquidityPool } from '../slices/pools';
+import { SerializedUniswapPool, SerializedUniswapToken } from '../slices/pools/index';
+import { bnf } from './';
 
-export const poolToUniswapPool = (chainId: ChainID, pool: LiquidityPool & { type?: string }): UniswapPool & { address?: string, type?: string } => {
-    const uniswapPool = new UniswapPool(
-        new UniswapToken(chainId, pool.token0Address, pool.token0Decimals, pool.token0Symbol),
-        new UniswapToken(chainId, pool.token1Address, pool.token1Decimals, pool.token1Symbol),
-        pool.fee,
-        pool.slot0.sqrtPriceX96.toString(),
-        pool.liquidity,
-        pool.slot0.tick
-    ) as UniswapPool & { address?: string, type?: string };
+export const positionToUniswapPosition = (
+  position: LiquidityPosition,
+  flatPool: SerializedUniswapPool
+): UniswapPosition => {
+    const pool = inflateUniswapPool(flatPool)
 
-    if(pool.address) {
-        uniswapPool.address = pool.address;
-    }
-
-    if(pool.type) {
-        uniswapPool.type = pool.type;
-    }
-
-    return uniswapPool;
-}
-
-export const positionToUniswapPosition = (chainId: ChainID, position: LiquidityPosition): UniswapPosition => {
     return {
-        //pool: poolToUniswapPool(chainId, position.pool),
-        fee: position.pool.fee,
-        feeGrowthInside0LastX128: BigNumber.from(0),
-        feeGrowthInside1LastX128: BigNumber.from(0),
-        liquidity: BigNumber.from(position.liquidity),
         nonce: position.nonce,
+        tokenId: BigNumber.from(0), // TODO supply this
         operator: position.owner,
-        slot0: {
-            liquidity: position.liquidity.toNumber(),
-            ...position.pool.slot0,
-        },
+        token0: pool.token0.address,
+        token1: pool.token1.address,
+        fee: pool.fee,
         tickLower: position.tickLower,
         tickUpper: position.tickUpper,
-        token0: position.pool.token0Address,
-        token1: position.pool.token1Address,
-        tokenId: BigNumber.from(0),
+        liquidity: BigNumber.from(position.liquidity),
+        feeGrowthInside0LastX128: BigNumber.from(0), // TODO supply this
+        feeGrowthInside1LastX128: BigNumber.from(0), // TODO supply this
+        slot0: {
+            liquidity: position.liquidity.toNumber(),
+            sqrtPriceX96: bnf(pool.sqrtRatioX96.toString()),
+            tick: pool.tickCurrent
+        },
         tokensOwed0: position.tokensOwed0,
         tokensOwed1: position.tokensOwed1,
     };
 };
+
+export const inflateUniswapToken = (pool: SerializedUniswapToken) => {
+  return new UniswapToken(pool.chainID, pool.address, pool.decimals, pool.symbol, pool.name)
+}
+
+export const inflateUniswapPool = (pool: SerializedUniswapPool) => {
+    return new UniswapPool(
+        inflateUniswapToken(pool.tokenA),
+        inflateUniswapToken(pool.tokenB),
+        pool.fee,
+        pool.sqrtRatioX96,
+        pool.liquidity,
+        pool.tickCurrent,
+    )
+}
