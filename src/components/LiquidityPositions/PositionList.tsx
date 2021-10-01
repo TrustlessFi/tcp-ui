@@ -15,18 +15,20 @@ const PositionList = () => {
   const history = useHistory();
   const dispatch = useAppDispatch()
 
-  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const pools = waitForPools(selector, dispatch)
+  console.log('inside positions list 1')
+  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
+  console.log('inside positions list 2')
+  console.log({pools, liquidityPositions})
 
   if (liquidityPositions === null || pools === null) {
-      return (
-        <AppTile title='Liquidity Positions' style={{position: 'relative'}}>
-          <UniswapWrapper>
-            <RelativeLoading show />
-          </UniswapWrapper>
-        </AppTile>
-      )
-
+    return (
+      <AppTile title='Liquidity Positions' style={{position: 'relative'}}>
+        <UniswapWrapper>
+          <RelativeLoading show />
+        </UniswapWrapper>
+      </AppTile>
+    )
   }
 
   const uniswapFormattedPositions = Object.values(liquidityPositions.positions).map(position =>

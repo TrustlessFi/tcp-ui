@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Pool as UniswapPool, FeeAmount } from '@uniswap/v3-sdk'
 import { Token as UniswapToken, BigintIsh } from '@uniswap/sdk-core';
 
-import { getGenericReducerBuilder } from '../'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID'
 import { fetchPools } from './api'

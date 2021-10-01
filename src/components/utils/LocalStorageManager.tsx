@@ -106,7 +106,7 @@ const LocalStorageManager = () => {
     const ttl = slice.ttl
     const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + ttl
     const stateWithTimestamp = { expiration, sliceState }
-    localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
+    // localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>
 }

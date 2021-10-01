@@ -58,7 +58,7 @@ export const getLiquidityPositions = createAsyncThunk(
   async (data: liquidityPositionsArgs) => fetchLiquidityPositions(data),
 )
 
-const addLiquidityToPositionThunk = createAsyncThunk(
+export const addLiquidityToPositionThunk = createAsyncThunk(
   'liquidityPositions/addLiquidityToPosition',
   async (params: { positionID: string, liquidityToAdd: number }) => addLiquidityToPosition(params.positionID, params.liquidityToAdd)
 )
@@ -68,17 +68,11 @@ export { addLiquidityToPositionThunk as addLiquidityToPosition }
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
   initialState: initialState as LiquidityPositionsState,
-  reducers: {
-    loading: (state) => {
-      state.loading = true
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     getGenericReducerBuilder(builder, getLiquidityPositions)
     getGenericReducerBuilder(builder, addLiquidityToPositionThunk)
   },
 })
-
-export const { loading } = liquidityPositionsSlice.actions;
 
 export default liquidityPositionsSlice.reducer

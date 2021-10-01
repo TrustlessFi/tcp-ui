@@ -24,20 +24,21 @@ const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promise<Liqu
   const poolConfig = await rewards.poolConfigForPoolID(poolID)
 
   return {
-      cumulativeLiquidity: cumulativeLiquidity.toString(),
-      id: data.positionID,
-      lastTimeRewarded: lastTimeRewarded.toNumber(),
-      lastBlockPositionIncreased: lastBlockPositionIncreased.toNumber(),
-      liquidity,
-      owner,
-      pool: poolConfig.pool,
-      tickLower,
-      tickUpper,
-      totalRewards: unscale(totalRewards),
+    cumulativeLiquidity: cumulativeLiquidity.toString(),
+    id: data.positionID,
+    lastTimeRewarded: lastTimeRewarded.toNumber(),
+    lastBlockPositionIncreased: lastBlockPositionIncreased.toNumber(),
+    liquidity,
+    owner,
+    pool: poolConfig.pool,
+    tickLower,
+    tickUpper,
+    totalRewards: unscale(totalRewards),
   } as LiquidityPosition
 }
 
 export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
+  console.log("start fetch liquidity positions")
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
 
   const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
@@ -47,20 +48,21 @@ export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Pro
     chainID: args.chainID,
     positionID: id.toNumber(),
     Rewards: args.Rewards
-  })));
+  })))
 
   const state = positions.reduce((agg: liquidityPositions, position) => {
-      agg.positions[position.id] = position;
-      return agg;
+    agg.positions[position.id] = position
+    return agg
   }, {
     creating: false,
     loading: false,
     positions: {}
-  });
+  })
+  console.log("End fetch liquidity position")
 
-  return state;
+  return state
 }
 
 export const addLiquidityToPosition = async (positionID: string, liquidityToAdd: number) => {
-  return {};
+  return {}
 }
