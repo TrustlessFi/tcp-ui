@@ -39,7 +39,7 @@ const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () 
         <NetworkIndicator style={{marginLeft: '8px' }} />
         <div />
         <LargeText>{abbreviateAddress(address)}</LargeText>
-        <div />
+        <div style={{marginBottom: 16}} />
         <CopyToClipboard text={address} onCopy={() => setIsCopied(true)}>
           <SmallLink icon={isCopied ? Checkmark16 : Copy16}>Copy Address</SmallLink>
         </CopyToClipboard>
