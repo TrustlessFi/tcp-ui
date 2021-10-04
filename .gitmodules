@@ -1,3 +1,0 @@
-[submodule "src/components/uniswap"]
-	path = src/components/uniswap
-	url = git@github.com:TrustlessFinance/uniswap-interface.git
