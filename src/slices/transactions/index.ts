@@ -159,9 +159,9 @@ const executeTransaction = async (
       return await getMarket().connect(provider.getSigner()).adjustPosition(
         args.positionID,
         mnt(args.debtIncrease),
-        args.collateralIncrease < 0 ? mnt(-args.collateralIncrease) : 0,
+        args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
         UIID,
-        args.collateralIncrease > 0 ? { value: mnt(args.collateralIncrease) } : undefined
+        { value: (args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0) }
       )
 
     case TransactionType.Lend:
