@@ -32,12 +32,12 @@ const PageHeader = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
-      setAreNavLinksHidden(window.getComputedStyle(document.getElementById(navLinks)!).display === 'none')
+      const navLinksElement = document.getElementById(navLinks)
+      if (navLinksElement !== null) setAreNavLinksHidden(window.getComputedStyle(navLinksElement).display === 'none')
     }
     window.addEventListener('resize', handleResize)
     window.addEventListener('load', handleResize)
   })
-
 
   const history = useHistory()
   const location = useLocation()

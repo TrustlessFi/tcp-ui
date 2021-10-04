@@ -5,26 +5,29 @@ import { sliceState, initialState } from '../'
 import { addLiquidityToPosition, fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
 import { ChainID } from '../chainID'
-import { LiquidityPool } from '../pools'
 
 export interface LiquidityPosition {
+  // set during update?
   addingLiquidity?: boolean,
-  cumulativeLiquidity: number,
-  id: number,
-  lastBlockPositionIncreased: number,
-  lastTimeRewarded: number,
-  liquidity: BigNumber,
-  nonce: BigNumber,
-  owner: string,
-  pool: LiquidityPool,
   removingLiquidity?: boolean,
-  tickLower: number,
-  tickUpper: number,
+  nonce: BigNumber,
+
+  // ???
   tokensOwed0: BigNumber,
   tokensOwed1: BigNumber,
+
+  // Core data
+  cumulativeLiquidity: string,
+  id: number,
+  lastTimeRewarded: number,
+  lastBlockPositionIncreased: number,
+  liquidity: BigNumber,
+  owner: string,
+  pool: string,
+  tickLower: number,
+  tickUpper: number,
   totalRewards: number,
 };
-
 
 export interface liquidityPositions {
   creating: boolean,
@@ -44,8 +47,8 @@ export interface liquidityPositionsArgs {
 export interface liquidityPositionArgs {
   Accounting: string,
   chainID: ChainID,
-  positionID: number,
   Rewards: string
+  positionID: number,
 }
 
 export interface LiquidityPositionsState extends sliceState<liquidityPositions> {}
@@ -55,7 +58,7 @@ export const getLiquidityPositions = createAsyncThunk(
   async (data: liquidityPositionsArgs) => fetchLiquidityPositions(data),
 )
 
-const addLiquidityToPositionThunk = createAsyncThunk(
+export const addLiquidityToPositionThunk = createAsyncThunk(
   'liquidityPositions/addLiquidityToPosition',
   async (params: { positionID: string, liquidityToAdd: number }) => addLiquidityToPosition(params.positionID, params.liquidityToAdd)
 )
@@ -65,17 +68,11 @@ export { addLiquidityToPositionThunk as addLiquidityToPosition }
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
   initialState: initialState as LiquidityPositionsState,
-  reducers: {
-    loading: (state) => {
-      state.loading = true
-    }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     getGenericReducerBuilder(builder, getLiquidityPositions)
     getGenericReducerBuilder(builder, addLiquidityToPositionThunk)
   },
 })
-
-export const { loading } = liquidityPositionsSlice.actions;
 
 export default liquidityPositionsSlice.reducer

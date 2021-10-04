@@ -1,7 +1,7 @@
 import { AsyncThunk, Draft } from '@reduxjs/toolkit'
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernor, executeGetContract, executeGetTcpMulticall } from './api'
+import { executeGetGovernor, executeGetContract, executeGetTcpMulticall, executeGetProtocolDataAggregator } from './api'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID'
 import { getLocalStorage } from '../../utils'
@@ -45,6 +45,11 @@ export const getGovernorContract = createAsyncThunk(
 export const getTcpMulticallContract = createAsyncThunk(
   'contracts/getTcpMulticall',
   async (args: getSingleContractArgs) => await executeGetTcpMulticall(args),
+)
+
+export const getProtocolDataAggregatorContract = createAsyncThunk(
+  'contracts/getProtocolDataAggregatorContract',
+  async (args: getSingleContractArgs) => await executeGetProtocolDataAggregator(args),
 )
 
 export const getContractThunk = (contract: ProtocolContract) => {
@@ -113,6 +118,8 @@ export const contractsSlice = createSlice({
         builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getGovernorContract, contract)
       } else if (contract === ProtocolContract.TcpMulticall) {
         builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getTcpMulticallContract, contract)
+      } else if (contract === ProtocolContract.ProtocolDataAggregator) {
+        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getProtocolDataAggregatorContract, contract)
       } else {
         builder = getContractGenericReducerBuilder<getContractArgs>(builder, getContractThunk(contract), contract)
       }

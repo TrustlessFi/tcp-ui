@@ -1,35 +1,29 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { BigNumber } from "ethers"
+import { Pool as UniswapPool, FeeAmount } from '@uniswap/v3-sdk'
+import { Token as UniswapToken, BigintIsh } from '@uniswap/sdk-core';
 
-import { getGenericReducerBuilder } from '../'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID'
 import { fetchPools } from './api'
 
-export interface SlotInfo {
-  sqrtPriceX96: BigNumber,
-  tick: number,
-  observationIndex: number,
-  observationCardinality: number,
-  observationCardinalityNext: number,
-  feeProtocol: number,
-  unlocked: boolean,
+export interface SerializedUniswapToken {
+  chainID: ChainID
+  address: string,
+  name: string,
+  symbol: string,
+  decimals: number,
 }
 
-export interface LiquidityPool {
-    address: string,
-    fee: number,
-    liquidity: number,
-    slot0: SlotInfo,
-    token0Address: string,
-    token0Decimals: number,
-    token0Symbol: string,
-    token1Address: string,
-    token1Decimals: number,
-    token1Symbol: string
+export interface SerializedUniswapPool {
+  tokenA: SerializedUniswapToken
+  tokenB: SerializedUniswapToken
+  fee: FeeAmount
+  sqrtRatioX96: BigintIsh
+  liquidity: BigintIsh
+  tickCurrent: number
 }
 
-export interface poolsArgs {
+export interface getPoolsArgs {
     chainID: ChainID,
     ProtocolDataAggregator: string
 }
@@ -40,13 +34,13 @@ export interface poolArgs {
     Rewards: string
 }
 
-export type poolsInfo = LiquidityPool[]
+export type poolsInfo = {[key: string]: SerializedUniswapPool}
 
 export interface PoolsState extends sliceState<poolsInfo> {}
 
 export const getPools = createAsyncThunk(
   'pools/getPools',
-  async (data: poolsArgs) => await fetchPools(data),
+  async (args: getPoolsArgs) => await fetchPools(args),
 )
 
 export const poolsSlice = createSlice({
@@ -54,7 +48,19 @@ export const poolsSlice = createSlice({
   initialState: initialState as PoolsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getPools)
+    // TODO add back in the generic builder
+    builder
+      .addCase(getPools.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(getPools.rejected, (state, action) => {
+        state.loading = false
+        state.data.error = action.error
+      })
+      .addCase(getPools.fulfilled, (state, action) => {
+        state.loading = false
+        state.data.value = action.payload
+      })
   },
 })
 

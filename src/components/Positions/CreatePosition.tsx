@@ -1,8 +1,6 @@
 import { useState } from "react"
 import {
   Button,
-  TextAreaSkeleton,
-  Loading,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'

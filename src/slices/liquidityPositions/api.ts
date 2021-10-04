@@ -1,15 +1,13 @@
 import { liquidityPositions, liquidityPositionArgs, liquidityPositionsArgs, LiquidityPosition } from './'
 import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
-import { fetchLiquidityPool } from '../pools/api'
 import { unscale } from '../../utils'
 
-import { Accounting } from '../../utils/typechain/Accounting'
+import { Accounting, Rewards } from '../../utils/typechain/'
 
-export const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promise<LiquidityPosition> => {
-  console.log('getting accounting');
-  const accounting = getContract(data.Accounting, ProtocolContract.Accounting) as Accounting;
-  console.log('got accounting');
+const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promise<LiquidityPosition> => {
+  const accounting = getContract(data.Accounting, ProtocolContract.Accounting) as Accounting
+  const rewards = getContract(data.Rewards, ProtocolContract.Rewards) as Rewards
 
   const [
       owner,
@@ -21,52 +19,50 @@ export const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promi
       lastTimeRewarded,
       tickLower,
       tickUpper
-  ] = await accounting.getPoolPosition(data.positionID);
+  ] = await accounting.getPoolPosition(data.positionID)
 
-  const pool = await fetchLiquidityPool({
-    chainID: data.chainID,
-    poolID,
-    Rewards: data.Rewards
-  });
+  const poolConfig = await rewards.poolConfigForPoolID(poolID)
 
   return {
-      cumulativeLiquidity: unscale(cumulativeLiquidity),
-      id: data.positionID,
-      lastTimeRewarded: unscale(lastTimeRewarded),
-      lastBlockPositionIncreased: unscale(lastBlockPositionIncreased),
-      liquidity,
-      owner,
-      pool,
-      tickLower,
-      tickUpper,
-      totalRewards: unscale(totalRewards),
-  } as LiquidityPosition;
+    cumulativeLiquidity: cumulativeLiquidity.toString(),
+    id: data.positionID,
+    lastTimeRewarded: lastTimeRewarded.toNumber(),
+    lastBlockPositionIncreased: lastBlockPositionIncreased.toNumber(),
+    liquidity,
+    owner,
+    pool: poolConfig.pool,
+    tickLower,
+    tickUpper,
+    totalRewards: unscale(totalRewards),
+  } as LiquidityPosition
 }
 
-export const fetchLiquidityPositions = async (data: liquidityPositionsArgs) => {
-  const accounting = await getContract(data.Accounting, ProtocolContract.Accounting) as Accounting;
+export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
+  console.log("start fetch liquidity positions")
+  const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
 
-  const positionIDs = await accounting.getPoolPositionNftIdsByOwner(data.userAddress);
+  const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
 
   const positions = await Promise.all(positionIDs.map(id => fetchLiquidityPosition({
-    Accounting: data.Accounting,
-    chainID: data.chainID,
+    Accounting: args.Accounting,
+    chainID: args.chainID,
     positionID: id.toNumber(),
-    Rewards: data.Rewards
-  })));
+    Rewards: args.Rewards
+  })))
 
   const state = positions.reduce((agg: liquidityPositions, position) => {
-      agg.positions[position.id] = position;
-      return agg;
+    agg.positions[position.id] = position
+    return agg
   }, {
     creating: false,
     loading: false,
     positions: {}
-  });
+  })
+  console.log("End fetch liquidity position")
 
-  return state;
+  return state
 }
 
 export const addLiquidityToPosition = async (positionID: string, liquidityToAdd: number) => {
-  return {};
+  return {}
 }

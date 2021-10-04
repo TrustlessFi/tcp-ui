@@ -78,6 +78,6 @@ export const getGenericReducerBuilder = <Args extends {}, Value>(
     })
     .addCase(thunk.fulfilled, (state, action) => {
       state.loading = false
-      state.data.value = action.payload;
+      state.data.value = action.payload
     })
 }

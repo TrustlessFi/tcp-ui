@@ -1,6 +1,5 @@
 import { getAddress, rootContracts } from '../../utils/Addresses';
 import { Governor } from "../../utils/typechain"
-import { ChainID } from '../chainID'
 import { getContractArgs, ProtocolContract, getContractReturnType, getSingleContractArgs } from './'
 
 import getProvider from '../../utils/getProvider'
@@ -13,6 +12,8 @@ export const executeGetGovernor = async (args: getSingleContractArgs) => getAddr
 
 export const executeGetTcpMulticall = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.TcpMulticall)
 
+export const executeGetProtocolDataAggregator = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.ProtocolDataAggregator)
+
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
   const governor = new Contract(
     args.Governor,
@@ -24,7 +25,7 @@ export const executeGetContract = async (args: getContractArgs): Promise<getCont
   return contractAddress
 }
 
-const getContract = async (governor: Governor, contract: ProtocolContract, chainID?: ChainID): Promise<string> => {
+const getContract = async (governor: Governor, contract: ProtocolContract): Promise<string> => {
   switch (contract) {
     case ProtocolContract.TcpGovernorAlpha:
       return await governor.governorAlpha()
@@ -42,8 +43,6 @@ const getContract = async (governor: Governor, contract: ProtocolContract, chain
       return await governor.market()
     case ProtocolContract.Prices:
       return await governor.prices()
-    case ProtocolContract.ProtocolDataAggregator:
-      return chainID ? await getAddress(chainID, contract as unknown as rootContracts) : ''
     case ProtocolContract.ProtocolLock:
       return await governor.protocolLock()
     case ProtocolContract.Rates:
@@ -65,6 +64,8 @@ const getContract = async (governor: Governor, contract: ProtocolContract, chain
       throw new Error('getContract: Handled in executeGetGovernor')
     case ProtocolContract.TcpMulticall:
       throw new Error('getContract: Handled in executeGetMulticall')
+    case ProtocolContract.ProtocolDataAggregator:
+      throw new Error('getContract: Handled in executeGetProtocolDataAggregator')
 
     default:
       assertUnreachable(contract)

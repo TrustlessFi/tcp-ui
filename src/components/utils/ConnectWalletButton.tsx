@@ -27,12 +27,9 @@ const ConnectWalletButton = ({
     }
   }
 
-  const sizeAttribute = mini === true ? { size: 'small' } : {}
-
-  return (
-    <Button {...sizeAttribute} onClick={onClick} disabled={wallet.connecting}>
-      {text}
-    </Button>
+  return (mini
+    ? <Button onClick={onClick} size="small">{text}</Button>
+    : <Button onClick={onClick}>{text}</Button>
   )
 }
 

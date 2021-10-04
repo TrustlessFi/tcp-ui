@@ -6,16 +6,16 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPools, poolsArgs, poolsInfo } from './pools'
+import { getPools, getPoolsArgs, poolsInfo } from './pools'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
-import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions, loading as loadingLiquidityPositions } from './liquidityPositions'
+import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
 import { ethBalance, ethBalanceArgs, fetchEthBalance } from './ethBalance'
-import { ProtocolContract, getGovernorContract, getContractArgs, getContractThunk, getContractReturnType, getTcpMulticallContract, getSingleContractArgs } from './contracts'
+import { ProtocolContract, getGovernorContract, getProtocolDataAggregatorContract, getContractArgs, getContractThunk, getContractReturnType, getTcpMulticallContract, getSingleContractArgs } from './contracts'
 
 import { sliceState } from './'
 
@@ -56,6 +56,8 @@ const getNodeFetch = (
       return {[ProtocolContract.Governor]: waitForGovernorContract(selector, dispatch)}
     case ProtocolContract.TcpMulticall:
       return {[ProtocolContract.TcpMulticall]: waitForTcpMulticallContract(selector, dispatch)}
+    case ProtocolContract.ProtocolDataAggregator:
+      return {[ProtocolContract.ProtocolDataAggregator]: waitForProtocolDataAggregator(selector, dispatch)}
 
     default:
       if (!isProtocolContract(fetchNode)) throw new Error('Missing fetchNode ' + fetchNode)
@@ -104,6 +106,12 @@ export const waitForGovernorContract = getWaitFunction<getSingleContractArgs, ge
 export const waitForTcpMulticallContract = getWaitFunction<getSingleContractArgs, getContractReturnType>(
   (state: RootState) => state.contracts[ProtocolContract.TcpMulticall],
   getTcpMulticallContract,
+  [FetchNode.ChainID],
+)
+
+export const waitForProtocolDataAggregator = getWaitFunction<getSingleContractArgs, getContractReturnType>(
+  (state: RootState) => state.contracts[ProtocolContract.ProtocolDataAggregator],
+  getProtocolDataAggregatorContract,
   [FetchNode.ChainID],
 )
 
@@ -180,17 +188,13 @@ export const waitForEthBalance = getWaitFunction<ethBalanceArgs, ethBalance>(
   [FetchNode.UserAddress, ProtocolContract.TcpMulticall],
 )
 
-export const waitForLiquidityPositions = (selector: AppSelector, dispatch: AppDispatch) => {
-  dispatch(loadingLiquidityPositions())
+export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
+  (state: RootState) => state.liquidityPositions,
+  getLiquidityPositions,
+  [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards],
+)
 
-  return getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
-    (state: RootState) => state.liquidityPositions,
-    getLiquidityPositions,
-    [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards],
-  )(selector, dispatch)
-}
-
-export const waitForPools = getWaitFunction<poolsArgs, poolsInfo>(
+export const waitForPools = getWaitFunction<getPoolsArgs, poolsInfo>(
   (state: RootState) => state.pools,
   getPools,
   [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator],
