@@ -28,7 +28,7 @@
     "@types/carbon__colors": "^0.0.1",
     "@types/carbon__icons-react": "^10.31.2",
     "@types/jest": "^27.0.1",
-    "@types/node": "^16.17.10",
+    "@types/node": "^16.10.2",
     "@types/react": "^17.0.19",
     "@types/react-copy-to-clipboard": "^5.0.1",
     "@types/react-dom": "^17.0.9",
