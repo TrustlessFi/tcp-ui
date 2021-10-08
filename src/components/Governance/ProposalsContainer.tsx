@@ -9,6 +9,54 @@ import { ListItem, UnorderedList } from 'carbon-components-react';
 import { AppTag } from '../library/AppTag';
 import { useDispatch } from 'react-redux';
 
+// 3 ways to modify what proposals you see in the governance tab:
+
+// Options filtering (None, All, Default)
+// TODO: Type aka State filtering
+// Sorting (by ID or State)
+
+enum SortOption {
+  IDDescending = 'IDDescending',
+  IDAscending = 'IDAscending',
+  StateDescending = 'StateDescending',
+  StateAscending = 'StateAscending',
+}
+
+enum SortType {
+  ID = 'ID',
+  State = 'State',
+}
+
+const isIDSort = (option: SortOption): boolean => option === SortOption.IDDescending || option === SortOption.IDAscending;
+const isStateSort = (option: SortOption): boolean => option === SortOption.StateDescending || option === SortOption.StateAscending;
+const switchIDSort = (option: SortOption): SortOption => option === SortOption.IDDescending ? SortOption.IDAscending : SortOption.IDDescending;
+const switchStateSort = (option: SortOption): SortOption => option === SortOption.StateDescending ? SortOption.StateAscending : SortOption.StateDescending;
+
+const orderStates = (state: ProposalState): number => [
+  ProposalState.Pending,
+  ProposalState.Active,
+  ProposalState.Defeated,
+  ProposalState.Succeeded,
+  ProposalState.Queued,
+  ProposalState.Executed,
+  ProposalState.Canceled,
+  ProposalState.Expired,
+].indexOf(state);
+
+// TODO: update icon values for carbon and add icon as optional prop to AppTags
+// const displaySortIcon = (option: SortOption): IconName => {
+//   switch(option) {
+//     case SortOption.IDDescending:
+//       return 'sort-numerical-desc'
+//     case SortOption.IDAscending:
+//       return 'sort-numerical'
+//     case SortOption.StateDescending:
+//       return 'sort-desc'
+//     case SortOption.StateAscending:
+//       return 'sort-asc'
+//   }
+// }
+
 const defaultSelectedStates: {[key in ProposalState]: boolean} = {
   Pending: true,
   Active: true,
@@ -23,20 +71,38 @@ const defaultSelectedStates: {[key in ProposalState]: boolean} = {
 const ProposalsContainer: FunctionComponent = () => {
   const dispatch = useDispatch()
   const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalState]: boolean}>(defaultSelectedStates);
+  // options filtering
   const [ defaultSelected, updateDefaultSelected ] = useState<boolean>(true);
   const [ allSelected, updateAllSelected ] = useState<boolean>(false);
   const [ noneSelected, updateNoneSelected ] = useState<boolean>(false);
+  // sorting
+  const [ statusSortOption, updateStatusSortOption ] = useState<SortOption>(SortOption.IDDescending);
 
   const proposalsState = waitForProposals(useAppSelector, dispatch);
-  const [ filteredProposals, updateFilteredProposals ] = useState<IProposal[]>([]);
+  const [ displayedProposals, updateDisplayedProposals ] = useState<IProposal[]>([]);
 
   useEffect(() => {
     const proposals = proposalsState && Object.values(proposalsState);
     if (proposals && proposals.length) {
-      updateFilteredProposals(proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalState]));
+      const filteredProposals = proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalState]);
+      const sortedProposals = filteredProposals.sort((a, b) => {
+        switch (statusSortOption) {
+          case SortOption.IDDescending:
+            return b.proposal.id - a.proposal.id;
+          case SortOption.IDAscending:
+            return a.proposal.id - b.proposal.id;
+          case SortOption.StateDescending:
+            return orderStates(a.proposal.state) - orderStates(b.proposal.state);
+          case SortOption.StateAscending:
+            return orderStates(b.proposal.state) - orderStates(a.proposal.state);
+        }
+      })
+      updateDisplayedProposals(sortedProposals);
+      sortedProposals.forEach(pro => console.log(pro.proposal.id));
     }
-  }, [selectedStates, proposalsState]);
+  }, [selectedStates, statusSortOption, proposalsState]);
 
+  // options filtering
   useEffect(() => {
     const numberOfTrueStates = Object.entries(selectedStates).filter(entry => entry[1]).length;
     const numberOfFalseStates = Object.entries(selectedStates).filter(entry => !entry[1]).length;
@@ -58,6 +124,7 @@ const ProposalsContainer: FunctionComponent = () => {
     }
   }, [selectedStates]);
 
+  // options filtering
   const setAll = (selected: boolean): void => {
     let newSelectedStates: {[key in ProposalState]: boolean} = { ...selectedStates };
     for (const label in selectedStates) {
@@ -66,8 +133,28 @@ const ProposalsContainer: FunctionComponent = () => {
     updateSelectedStates(newSelectedStates);
   };
 
+  // options filtering
   const setDefault = (): void => {
     updateSelectedStates(defaultSelectedStates);
+  };
+
+  // type filtering
+  const toggleTag = (state: ProposalState): void => {
+    const newselectedStates = {
+      ...selectedStates,
+      status: !selectedStates[state],
+    };
+    updateSelectedStates(newselectedStates);
+  };
+
+  // sorting
+  const toggleSort = (sortType: SortType): void => {
+    if (sortType === SortType.ID) {
+      updateStatusSortOption(switchIDSort(statusSortOption));
+    }
+    if (sortType === SortType.State) {
+      updateStatusSortOption(switchStateSort(statusSortOption));
+    }
   };
 
   if (!proposalsState) {
@@ -92,12 +179,14 @@ const ProposalsContainer: FunctionComponent = () => {
         allSelected={allSelected}
         defaultSelected={defaultSelected}
         noneSelected={noneSelected}
-        proposalsShown={filteredProposals.length}
+        proposalsShown={displayedProposals.length}
         proposalsTotal={(proposalsState && Object.values(proposalsState).length) || 0}
         setAll={setAll}
         setDefault={setDefault}
+        statusSortOption={statusSortOption}
+        toggleSort={toggleSort}
       />
-      <ProposalsList filteredProposals={filteredProposals} />
+      <ProposalsList displayedProposals={displayedProposals} />
     </>
   );
 }
@@ -111,6 +200,8 @@ interface ProposalsHeaderProps {
   proposalsTotal: number;
   setAll: (selected: boolean) => void;
   setDefault: () => void;
+  statusSortOption: SortOption;
+  toggleSort: (sortType: SortType) => void;
 }
 
 const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
@@ -120,7 +211,9 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
   proposalsShown,
   proposalsTotal,
   setDefault,
+  statusSortOption,
   setAll,
+  toggleSort,
 }) => {
   return (
     <>
@@ -130,22 +223,26 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
         <AppTag name="All" color="blue" selected={allSelected} onClick={() => setAll(true)} />
         <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
       </div>
+      <div>
+        <AppTag name="Sort By ID" selected={isIDSort(statusSortOption)} onClick={() => toggleSort(SortType.ID)} />
+        <AppTag name="Sort By State" selected={isStateSort(statusSortOption)} onClick={() => toggleSort(SortType.State)} />
+      </div>
     </>
   );
 }
 
 interface ProposalsListProps {
-  filteredProposals: IProposal[] | null;
+  displayedProposals: IProposal[] | null;
 }
 
-const ProposalsList: FunctionComponent<ProposalsListProps> = ({ filteredProposals }) => {
-  if (filteredProposals && !filteredProposals.length) {
+const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposals }) => {
+  if (displayedProposals && !displayedProposals.length) {
     return null;
   }
 
   return (
     <UnorderedList>
-      {filteredProposals && filteredProposals.map(proposal =>
+      {displayedProposals && displayedProposals.map(proposal =>
       <ListItem key={proposal.proposal.id}>
         <Proposal proposal={proposal} />
       </ListItem>

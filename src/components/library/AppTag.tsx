@@ -9,7 +9,7 @@ interface AppTagProps {
 }
 
 export const AppTag: FunctionComponent<AppTagProps> = ({
-  color = "grey" as TagTypeName,
+  color = "gray" as TagTypeName,
   name,
   onClick,
   selected = false,
