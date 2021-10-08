@@ -128,7 +128,7 @@ export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: num
   getProposal(2, {
     blockTimestamp,
     blockNumber,
-    percentageCompletion: 120,
+    percentageCompletion: 160,
     hasVoted: false,
     hasVotedFor: false,
     canceled: false,
@@ -137,13 +137,22 @@ export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: num
   getProposal(3, {
     blockTimestamp,
     blockNumber,
+    percentageCompletion: 120,
+    hasVoted: false,
+    hasVotedFor: false,
+    canceled: false,
+    executed: true,
+  }),
+  getProposal(4, {
+    blockTimestamp,
+    blockNumber,
     percentageCompletion: 80,
     hasVoted: true,
     hasVotedFor: true,
     canceled: false,
     executed: false,
   }),
-  getProposal(4, {
+  getProposal(5, {
     blockTimestamp,
     blockNumber,
     percentageCompletion: 10,
