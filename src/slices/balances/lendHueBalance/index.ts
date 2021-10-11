@@ -21,7 +21,7 @@ import {
 export type lendHueBalanceArgs = {
   LendHue: string
   Market: string
-  TcpMulticall: string
+  TrustlessMulticall: string
   userAddress: string
 }
 
@@ -34,7 +34,7 @@ export type lendHueApproveArgs = {
 export const getLendHueBalance = createAsyncThunk(
   'lendHueBalance/getLendHueBalance',
   async (args: lendHueBalanceArgs) => tokenBalanceThunk(
-    { tokenAddress: args.LendHue, userAddress: args.userAddress, TcpMulticall: args.TcpMulticall},
+    { tokenAddress: args.LendHue, userAddress: args.userAddress, TrustlessMulticall: args.TrustlessMulticall},
     [{contract: ProtocolContract.Market, address: args.Market}],
     [],
   ),

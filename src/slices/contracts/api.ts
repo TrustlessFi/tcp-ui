@@ -10,7 +10,7 @@ import governorArtifact from '../../utils/artifacts/contracts/core/governance/Go
 
 export const executeGetGovernor = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.Governor)
 
-export const executeGetTcpMulticall = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.TcpMulticall)
+export const executeGetTrustlessMulticall = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.TrustlessMulticall)
 
 export const executeGetProtocolDataAggregator = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.ProtocolDataAggregator)
 
@@ -62,7 +62,7 @@ const getContract = async (governor: Governor, contract: ProtocolContract): Prom
 
     case ProtocolContract.Governor:
       throw new Error('getContract: Handled in executeGetGovernor')
-    case ProtocolContract.TcpMulticall:
+    case ProtocolContract.TrustlessMulticall:
       throw new Error('getContract: Handled in executeGetMulticall')
     case ProtocolContract.ProtocolDataAggregator:
       throw new Error('getContract: Handled in executeGetProtocolDataAggregator')

@@ -3,7 +3,7 @@
 
 import { Contract, utils as ethersUtils, ethers } from 'ethers'
 import { enforce, first, unscale, PromiseType } from '../'
-import { TcpMulticallViewOnly, Accounting } from '../typechain'
+import { TrustlessMulticallViewOnly, Accounting } from '../typechain'
 
 export const rc  = {
   Number: (result: any) => result as number,
@@ -82,7 +82,7 @@ export const getDuplicateFuncMulticall = <
 }
 
 export const executeMulticall = async <Functions extends {[key in string]: resultConverter}> (
-  tcpMulticall: TcpMulticallViewOnly,
+  tcpMulticall: TrustlessMulticallViewOnly,
   contract: Contract,
   funcs: Functions,
   args?: {[key in keyof Functions]?: any[]},
@@ -95,7 +95,7 @@ export const executeMulticall = async <Functions extends {[key in string]: resul
 export const executeMulticalls = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
 >(
-  tcpMulticall: TcpMulticallViewOnly,
+  tcpMulticall: TrustlessMulticallViewOnly,
   multicalls: Multicalls,
 ) => {
   try {
@@ -110,7 +110,7 @@ export const executeMulticalls = async <
 const executeMulticallsImpl = async <
   Multicalls extends {[key in string]: {[key in string]: Call<resultConverter>}}
 >(
-  tcpMulticall: TcpMulticallViewOnly,
+  tcpMulticall: TrustlessMulticallViewOnly,
   multicalls: Multicalls,
 ) => {
   const calls = Object.values(multicalls).map(multicall => Object.values(multicall)).flat()
@@ -121,7 +121,7 @@ const executeMulticallsImpl = async <
 
   const abiCoder = new ethersUtils.AbiCoder()
   const results = Object.fromEntries(
-    rawResults.returnData.map((rawResult, index) => {
+    rawResults.returnData.map((rawResult: any, index: number) => {
       const call = calls[index]
       const resultsArray = Object.values(abiCoder.decode(call.outputs!, rawResult))
 

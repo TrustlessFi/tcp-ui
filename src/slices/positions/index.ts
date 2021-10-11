@@ -26,7 +26,7 @@ export interface positionsArgs {
   marketInfo: marketInfo,
   Accounting: string,
   HuePositionNFT: string,
-  TcpMulticall: string,
+  TrustlessMulticall: string,
 }
 
 export interface PositionsState extends sliceState<positionsInfo> {}

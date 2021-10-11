@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getState, getGenericReducerBuilder } from '../'
 import getContract from '../../utils/getContract'
 
-import { Rates, TcpMulticallViewOnly } from "../../utils/typechain/"
+import { Rates, TrustlessMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticall, rc } from '../../utils/Multicall'
@@ -15,7 +15,7 @@ export type ratesInfo = {
 
 export type ratesArgs = {
   Rates: string
-  TcpMulticall: string
+  TrustlessMulticall: string
 }
 
 export interface RatesState extends sliceState<ratesInfo> {}
@@ -24,7 +24,7 @@ export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
   async (args: ratesArgs): Promise<ratesInfo> => {
     const rates = getContract(args.Rates, ProtocolContract.Rates) as Rates
-    const multicall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+    const multicall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
     const result = (await executeMulticall(
       multicall,

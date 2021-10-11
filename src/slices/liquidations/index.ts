@@ -4,11 +4,11 @@ import getContract from '../../utils/getContract'
 
 import {
   Liquidations,
-  TcpMulticallViewOnly,
+  TrustlessMulticallViewOnly,
 } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticall, rc } from '../../utils/Multicall'
+import { executeMulticall, rc } from '@trustlessfi/multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -18,7 +18,7 @@ export type liquidationsInfo = {
 
 export type liquidationsArgs = {
   Liquidations: string,
-  TcpMulticall: string,
+  TrustlessMulticall: string,
 }
 
 export interface LiquidationsState extends sliceState<liquidationsInfo> {}
@@ -28,7 +28,7 @@ export const getLiquidationsInfo = createAsyncThunk(
 
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
-    const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+    const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
     return (await executeMulticall(
       tcpMulticall,

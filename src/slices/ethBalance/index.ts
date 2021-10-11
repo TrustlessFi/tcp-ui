@@ -6,7 +6,7 @@ import { getEthBalance } from '../../utils/Multicall/chainStatus'
 import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 
-import { TcpMulticall } from '../../utils/typechain'
+import { TrustlessMulticall } from '../../utils/typechain'
 
 export type ethBalance = number
 
@@ -15,13 +15,13 @@ export interface EthBalanceState extends sliceState<ethBalance> {}
 
 export type ethBalanceArgs = {
   userAddress: string,
-  TcpMulticall: string,
+  TrustlessMulticall: string,
 }
 
 export const fetchEthBalance = createAsyncThunk(
   'ethBalance/fetchEthBalance',
   async (args: ethBalanceArgs) => {
-    const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall) as TcpMulticall
+    const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
 
     return unscale(await getEthBalance(tcpMulticall, args.userAddress))
   }

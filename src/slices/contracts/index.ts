@@ -1,7 +1,7 @@
 import { AsyncThunk, Draft } from '@reduxjs/toolkit'
 import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernor, executeGetContract, executeGetTcpMulticall, executeGetProtocolDataAggregator } from './api'
+import { executeGetGovernor, executeGetContract, executeGetTrustlessMulticall, executeGetProtocolDataAggregator } from './api'
 import { sliceState, initialState } from '../'
 import { ChainID } from '../chainID'
 import { getLocalStorage } from '../../utils'
@@ -24,7 +24,7 @@ export enum ProtocolContract {
   Settlement = "Settlement",
   Tcp = "Tcp",
   TcpGovernorAlpha = "TcpGovernorAlpha",
-  TcpMulticall = "TcpMulticall",
+  TrustlessMulticall = "TrustlessMulticall",
   TcpTimelock = "TcpTimelock",
 }
 
@@ -42,9 +42,9 @@ export const getGovernorContract = createAsyncThunk(
   async (args: getSingleContractArgs) => await executeGetGovernor(args),
 )
 
-export const getTcpMulticallContract = createAsyncThunk(
-  'contracts/getTcpMulticall',
-  async (args: getSingleContractArgs) => await executeGetTcpMulticall(args),
+export const getTrustlessMulticallContract = createAsyncThunk(
+  'contracts/getTrustlessMulticall',
+  async (args: getSingleContractArgs) => await executeGetTrustlessMulticall(args),
 )
 
 export const getProtocolDataAggregatorContract = createAsyncThunk(
@@ -81,7 +81,7 @@ const contractsInitialState: ProtocolContractsState = {
   [ProtocolContract.Settlement]: initialState,
   [ProtocolContract.Tcp]: initialState,
   [ProtocolContract.TcpGovernorAlpha]: initialState,
-  [ProtocolContract.TcpMulticall]: initialState,
+  [ProtocolContract.TrustlessMulticall]: initialState,
   [ProtocolContract.TcpTimelock]: initialState,
 }
 
@@ -116,8 +116,8 @@ export const contractsSlice = createSlice({
 
       if (contract === ProtocolContract.Governor) {
         builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getGovernorContract, contract)
-      } else if (contract === ProtocolContract.TcpMulticall) {
-        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getTcpMulticallContract, contract)
+      } else if (contract === ProtocolContract.TrustlessMulticall) {
+        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getTrustlessMulticallContract, contract)
       } else if (contract === ProtocolContract.ProtocolDataAggregator) {
         builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getProtocolDataAggregatorContract, contract)
       } else {

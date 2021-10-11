@@ -2,30 +2,30 @@
 // SPDX-License-Identifier: UNLICENSED
 
 
-import { TcpMulticall } from '../typechain'
+import { TrustlessMulticall } from '../typechain'
 import { BigNumberish } from 'ethers'
 
 
-export const getCurrentBlockDifficulty = async (multicall: TcpMulticall) =>
+export const getCurrentBlockDifficulty = async (multicall: TrustlessMulticall) =>
   await multicall.getCurrentBlockDifficulty()
 
-export const getCurrentBlockGasLimit = async (multicall: TcpMulticall) =>
+export const getCurrentBlockGasLimit = async (multicall: TrustlessMulticall) =>
   await multicall.getCurrentBlockGasLimit()
 
-export const getCurrentBlockTimestamp = async (multicall: TcpMulticall) =>
+export const getCurrentBlockTimestamp = async (multicall: TrustlessMulticall) =>
   await multicall.getCurrentBlockTimestamp()
 
-export const getEthBalance = async (multicall: TcpMulticall, address: string) =>
+export const getEthBalance = async (multicall: TrustlessMulticall, address: string) =>
   await multicall.getEthBalance(address)
 
-export const getBlockNumber = async (multicall: TcpMulticall) =>
+export const getBlockNumber = async (multicall: TrustlessMulticall) =>
   await multicall.getBlockNumber()
 
-export const getBlockHash = async (multicall: TcpMulticall, blockNumber: BigNumberish) =>
+export const getBlockHash = async (multicall: TrustlessMulticall, blockNumber: BigNumberish) =>
   await multicall.getBlockHash(blockNumber)
 
-export const getLastBlockHash = async (multicall: TcpMulticall) =>
+export const getLastBlockHash = async (multicall: TrustlessMulticall) =>
   await multicall.getLastBlockHash()
 
-export const getCurrentBlockCoinbase = async (multicall: TcpMulticall) =>
+export const getCurrentBlockCoinbase = async (multicall: TrustlessMulticall) =>
   await multicall.getCurrentBlockCoinbase()

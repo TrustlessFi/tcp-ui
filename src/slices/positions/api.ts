@@ -5,13 +5,13 @@ import { positionsInfo, positionsArgs } from './'
 import getContract from '../../utils/getContract'
 import { getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
 
-import { Accounting, HuePositionNFT, TcpMulticallViewOnly } from '../../utils/typechain'
+import { Accounting, HuePositionNFT, TrustlessMulticallViewOnly } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
-  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+  const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
   const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 

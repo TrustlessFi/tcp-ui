@@ -1,6 +1,6 @@
 import { sliceState } from '../'
 import { unscale, uint255Max, bnf } from '../../utils'
-import { TcpMulticallViewOnly } from '../../utils/typechain/'
+import { TrustlessMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
 import getContract, { contract } from '../../utils/getContract'
@@ -35,7 +35,7 @@ export interface balanceState extends sliceState<balanceInfo> {}
 export interface balanceArgs {
   tokenAddress: string,
   userAddress: string,
-  TcpMulticall: string,
+  TrustlessMulticall: string,
 }
 
 export const tokenBalanceThunk = async (
@@ -44,7 +44,7 @@ export const tokenBalanceThunk = async (
   balancesList: {contract: ProtocolContract, address: string}[],
 ): Promise<balanceInfo> => {
   const token = contract(args.tokenAddress, erc20Artifact.abi)
-  const tcpMulticall = getContract(args.TcpMulticall, ProtocolContract.TcpMulticall, true) as unknown as TcpMulticallViewOnly
+  const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
   const { basicInfo, approvals, balances, userBalance } = await executeMulticalls(
     tcpMulticall,
