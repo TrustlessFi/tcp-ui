@@ -21,12 +21,14 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface LiquidationsInterface extends ethers.utils.Interface {
   functions: {
+    "accounting()": FunctionFragment;
     "currentPeriod()": FunctionFragment;
     "discoverUndercollateralizedPositions(uint64[])": FunctionFragment;
     "discoveryIncentive()": FunctionFragment;
     "ensureLiquidationIncentive()": FunctionFragment;
     "firstPeriod()": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "liquidate(uint256)": FunctionFragment;
     "liquidationIncentive()": FunctionFragment;
     "maxRewardsRatio()": FunctionFragment;
@@ -44,6 +46,10 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     "validUpdate(bytes4)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "accounting",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "currentPeriod",
     values?: undefined
@@ -65,6 +71,7 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidate",
     values: [BigNumberish]
@@ -120,6 +127,7 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     values: [BytesLike]
   ): string;
 
+  decodeFunctionResult(functionFragment: "accounting", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "currentPeriod",
     data: BytesLike
@@ -141,6 +149,7 @@ interface LiquidationsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "liquidate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidationIncentive",
@@ -266,6 +275,8 @@ export class Liquidations extends BaseContract {
   interface: LiquidationsInterface;
 
   functions: {
+    accounting(overrides?: CallOverrides): Promise<[string]>;
+
     currentPeriod(
       overrides?: CallOverrides
     ): Promise<[BigNumber] & { period: BigNumber }>;
@@ -284,6 +295,8 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
+
+    hue(overrides?: CallOverrides): Promise<[string]>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -340,6 +353,8 @@ export class Liquidations extends BaseContract {
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
   };
 
+  accounting(overrides?: CallOverrides): Promise<string>;
+
   currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   discoverUndercollateralizedPositions(
@@ -356,6 +371,8 @@ export class Liquidations extends BaseContract {
   firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  hue(overrides?: CallOverrides): Promise<string>;
 
   liquidate(
     baseTokensToRepay: BigNumberish,
@@ -412,6 +429,8 @@ export class Liquidations extends BaseContract {
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
+    accounting(overrides?: CallOverrides): Promise<string>;
+
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     discoverUndercollateralizedPositions(
@@ -426,6 +445,8 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    hue(overrides?: CallOverrides): Promise<string>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -536,6 +557,8 @@ export class Liquidations extends BaseContract {
   };
 
   estimateGas: {
+    accounting(overrides?: CallOverrides): Promise<BigNumber>;
+
     currentPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     discoverUndercollateralizedPositions(
@@ -552,6 +575,8 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,
@@ -605,6 +630,8 @@ export class Liquidations extends BaseContract {
   };
 
   populateTransaction: {
+    accounting(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     currentPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     discoverUndercollateralizedPositions(
@@ -623,6 +650,8 @@ export class Liquidations extends BaseContract {
     firstPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidate(
       baseTokensToRepay: BigNumberish,

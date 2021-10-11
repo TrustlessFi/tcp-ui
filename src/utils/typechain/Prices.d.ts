@@ -29,8 +29,9 @@ interface PricesInterface extends ethers.utils.Interface {
     "deployer()": FunctionFragment;
     "getRealHueCountForSinglePoolPosition(address,int24,int24,int24,uint128,uint32)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "hueTcpPrice(uint32)": FunctionFragment;
-    "init(address,address)": FunctionFragment;
+    "init()": FunctionFragment;
     "initializePool(address)": FunctionFragment;
     "initializeWethPool(address)": FunctionFragment;
     "isPoolInitialized(address)": FunctionFragment;
@@ -39,7 +40,9 @@ interface PricesInterface extends ethers.utils.Interface {
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
     "systemObtainReferencePrice(address)": FunctionFragment;
+    "tcp()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
+    "weth()": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -75,14 +78,12 @@ interface PricesInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "hueTcpPrice",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "init",
-    values: [string, string]
-  ): string;
+  encodeFunctionData(functionFragment: "init", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initializePool",
     values: [string]
@@ -106,10 +107,12 @@ interface PricesInterface extends ethers.utils.Interface {
     functionFragment: "systemObtainReferencePrice",
     values: [string]
   ): string;
+  encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "weth", values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: "calculateInstantCollateralPrice",
@@ -137,6 +140,7 @@ interface PricesInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "hueTcpPrice",
     data: BytesLike
@@ -165,10 +169,12 @@ interface PricesInterface extends ethers.utils.Interface {
     functionFragment: "systemObtainReferencePrice",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
 
   events: {
     "PriceUpdated(address,uint256,int24)": EventFragment;
@@ -262,14 +268,14 @@ export class Prices extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hue(overrides?: CallOverrides): Promise<[string]>;
+
     hueTcpPrice(
       twapDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
     init(
-      _collateralPool: string,
-      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -315,7 +321,11 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    tcp(overrides?: CallOverrides): Promise<[string]>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
+
+    weth(overrides?: CallOverrides): Promise<[string]>;
   };
 
   calculateInstantCollateralPrice(
@@ -357,14 +367,14 @@ export class Prices extends BaseContract {
 
   governor(overrides?: CallOverrides): Promise<string>;
 
+  hue(overrides?: CallOverrides): Promise<string>;
+
   hueTcpPrice(
     twapDuration: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   init(
-    _collateralPool: string,
-    _protocolPool: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -407,7 +417,11 @@ export class Prices extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  tcp(overrides?: CallOverrides): Promise<string>;
+
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+  weth(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     calculateInstantCollateralPrice(
@@ -449,16 +463,14 @@ export class Prices extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<string>;
 
+    hue(overrides?: CallOverrides): Promise<string>;
+
     hueTcpPrice(
       twapDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    init(
-      _collateralPool: string,
-      _protocolPool: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    init(overrides?: CallOverrides): Promise<void>;
 
     initializePool(pool: string, overrides?: CallOverrides): Promise<void>;
 
@@ -494,7 +506,11 @@ export class Prices extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    tcp(overrides?: CallOverrides): Promise<string>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+    weth(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -550,14 +566,14 @@ export class Prices extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
+
     hueTcpPrice(
       twapDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     init(
-      _collateralPool: string,
-      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -591,7 +607,11 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    tcp(overrides?: CallOverrides): Promise<BigNumber>;
+
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    weth(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -634,14 +654,14 @@ export class Prices extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     hueTcpPrice(
       twapDuration: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     init(
-      _collateralPool: string,
-      _protocolPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -678,9 +698,13 @@ export class Prices extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     validUpdate(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    weth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

@@ -149,13 +149,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RewardsContract__factory>;
     getContractFactory(
-      name: "TcpMulticall",
+      name: "TrustlessMulticall",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TcpMulticall__factory>;
+    ): Promise<Contracts.TrustlessMulticall__factory>;
     getContractFactory(
-      name: "TcpMulticallViewOnly",
+      name: "TrustlessMulticallViewOnly",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.TcpMulticallViewOnly__factory>;
+    ): Promise<Contracts.TrustlessMulticallViewOnly__factory>;
     getContractFactory(
       name: "EnforcedDecentralization",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -252,6 +252,10 @@ declare module "hardhat/types/runtime" {
       name: "IProtocolLock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IProtocolLock__factory>;
+    getContractFactory(
+      name: "IProtocolTokenWithNFTIcon",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IProtocolTokenWithNFTIcon__factory>;
     getContractFactory(
       name: "IRates",
       signerOrOptions?: ethers.Signer | FactoryOptions

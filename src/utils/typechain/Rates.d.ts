@@ -28,7 +28,7 @@ interface RatesInterface extends ethers.utils.Interface {
     "getReferencePools()": FunctionFragment;
     "getRewardCount()": FunctionFragment;
     "governor()": FunctionFragment;
-    "init(address,address[])": FunctionFragment;
+    "init()": FunctionFragment;
     "interestRateAbsoluteValue()": FunctionFragment;
     "interestRateParameters()": FunctionFragment;
     "minTimeBetweenUpdates()": FunctionFragment;
@@ -71,10 +71,7 @@ interface RatesInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "init",
-    values: [string, string[]]
-  ): string;
+  encodeFunctionData(functionFragment: "init", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "interestRateAbsoluteValue",
     values?: undefined
@@ -319,8 +316,6 @@ export class Rates extends BaseContract {
     governor(overrides?: CallOverrides): Promise<[string]>;
 
     init(
-      _collateralPool: string,
-      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -431,8 +426,6 @@ export class Rates extends BaseContract {
   governor(overrides?: CallOverrides): Promise<string>;
 
   init(
-    _collateralPool: string,
-    _referencePools: string[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -539,11 +532,7 @@ export class Rates extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<string>;
 
-    init(
-      _collateralPool: string,
-      _referencePools: string[],
-      overrides?: CallOverrides
-    ): Promise<void>;
+    init(overrides?: CallOverrides): Promise<void>;
 
     interestRateAbsoluteValue(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -684,8 +673,6 @@ export class Rates extends BaseContract {
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
     init(
-      _collateralPool: string,
-      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -776,8 +763,6 @@ export class Rates extends BaseContract {
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     init(
-      _collateralPool: string,
-      _referencePools: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

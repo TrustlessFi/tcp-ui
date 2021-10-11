@@ -155,6 +155,81 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint64",
+        name: "positionNFTTokenID",
+        type: "uint64",
+      },
+    ],
+    name: "getPosition",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "count",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "startTotalRewards",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "startCumulativeVirtualCount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint64",
+            name: "lastPeriodUpdated",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "endPeriod",
+            type: "uint64",
+          },
+          {
+            internalType: "uint64",
+            name: "durationMonths",
+            type: "uint64",
+          },
+          {
+            internalType: "uint16",
+            name: "tokenID",
+            type: "uint16",
+          },
+        ],
+        internalType: "struct ITDao.TokenPosition",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint16",
+        name: "id",
+        type: "uint16",
+      },
+    ],
+    name: "idToToken",
+    outputs: [
+      {
+        internalType: "contract IERC20",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "contract IERC20",
         name: "token",
         type: "address",

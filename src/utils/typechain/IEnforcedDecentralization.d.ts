@@ -53,7 +53,7 @@ interface IEnforcedDecentralizationInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "ActionBlacklisted(string)": EventFragment;
+    "ActionBlacklisted(address,string)": EventFragment;
     "PhaseOneStartTimeSet(uint64)": EventFragment;
     "PhaseStartDelayed(uint8,uint64,uint8)": EventFragment;
     "UpdateLockDelayed(uint64,uint8)": EventFragment;
@@ -153,8 +153,12 @@ export class IEnforcedDecentralization extends BaseContract {
 
   filters: {
     ActionBlacklisted(
+      target?: string | null,
       signature?: string | null
-    ): TypedEventFilter<[string], { signature: string }>;
+    ): TypedEventFilter<
+      [string, string],
+      { target: string; signature: string }
+    >;
 
     PhaseOneStartTimeSet(
       startTime?: null

@@ -22,6 +22,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface RewardsInterface extends ethers.utils.Interface {
   functions: {
+    "accounting()": FunctionFragment;
     "accrueRewards()": FunctionFragment;
     "addIncentivePool(address,uint64)": FunctionFragment;
     "claimRewards(uint256,uint32)": FunctionFragment;
@@ -40,6 +41,7 @@ interface RewardsInterface extends ethers.utils.Interface {
     "maxCollateralLiquidityDecreasePerPeriod()": FunctionFragment;
     "minCollateralLiquidityByPeriod(address)": FunctionFragment;
     "minHueCountPerPosition()": FunctionFragment;
+    "nftPositionManager()": FunctionFragment;
     "periodLength()": FunctionFragment;
     "poolConfigForPoolID(uint16)": FunctionFragment;
     "poolIDForPool(address)": FunctionFragment;
@@ -52,10 +54,16 @@ interface RewardsInterface extends ethers.utils.Interface {
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
     "twapDuration()": FunctionFragment;
+    "uniswapV3Factory()": FunctionFragment;
     "updatePoolIncentive(uint16,uint64)": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
+    "weth()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "accounting",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "accrueRewards",
     values?: undefined
@@ -157,6 +165,10 @@ interface RewardsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "nftPositionManager",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "periodLength",
     values?: undefined
   ): string;
@@ -207,6 +219,10 @@ interface RewardsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "uniswapV3Factory",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "updatePoolIncentive",
     values: [BigNumberish, BigNumberish]
   ): string;
@@ -214,7 +230,9 @@ interface RewardsInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "weth", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "accounting", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "accrueRewards",
     data: BytesLike
@@ -276,6 +294,10 @@ interface RewardsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "nftPositionManager",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "periodLength",
     data: BytesLike
   ): Result;
@@ -318,6 +340,10 @@ interface RewardsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "uniswapV3Factory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updatePoolIncentive",
     data: BytesLike
   ): Result;
@@ -325,6 +351,7 @@ interface RewardsInterface extends ethers.utils.Interface {
     functionFragment: "validUpdate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "weth", data: BytesLike): Result;
 
   events: {
     "LiquidationPenaltyUpdated(uint64)": EventFragment;
@@ -411,6 +438,8 @@ export class Rewards extends BaseContract {
   interface: RewardsInterface;
 
   functions: {
+    accounting(overrides?: CallOverrides): Promise<[string]>;
+
     accrueRewards(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -513,6 +542,8 @@ export class Rewards extends BaseContract {
 
     minHueCountPerPosition(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    nftPositionManager(overrides?: CallOverrides): Promise<[string]>;
+
     periodLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     poolConfigForPoolID(
@@ -568,6 +599,8 @@ export class Rewards extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<[number]>;
 
+    uniswapV3Factory(overrides?: CallOverrides): Promise<[string]>;
+
     updatePoolIncentive(
       poolID: BigNumberish,
       incentive: BigNumberish,
@@ -575,7 +608,11 @@ export class Rewards extends BaseContract {
     ): Promise<ContractTransaction>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
+
+    weth(overrides?: CallOverrides): Promise<[string]>;
   };
+
+  accounting(overrides?: CallOverrides): Promise<string>;
 
   accrueRewards(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -675,6 +712,8 @@ export class Rewards extends BaseContract {
 
   minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
+  nftPositionManager(overrides?: CallOverrides): Promise<string>;
+
   periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
   poolConfigForPoolID(
@@ -728,6 +767,8 @@ export class Rewards extends BaseContract {
 
   twapDuration(overrides?: CallOverrides): Promise<number>;
 
+  uniswapV3Factory(overrides?: CallOverrides): Promise<string>;
+
   updatePoolIncentive(
     poolID: BigNumberish,
     incentive: BigNumberish,
@@ -736,7 +777,11 @@ export class Rewards extends BaseContract {
 
   validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
+  weth(overrides?: CallOverrides): Promise<string>;
+
   callStatic: {
+    accounting(overrides?: CallOverrides): Promise<string>;
+
     accrueRewards(overrides?: CallOverrides): Promise<void>;
 
     addIncentivePool(
@@ -841,6 +886,8 @@ export class Rewards extends BaseContract {
 
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
+    nftPositionManager(overrides?: CallOverrides): Promise<string>;
+
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolConfigForPoolID(
@@ -896,6 +943,8 @@ export class Rewards extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<number>;
 
+    uniswapV3Factory(overrides?: CallOverrides): Promise<string>;
+
     updatePoolIncentive(
       poolID: BigNumberish,
       incentive: BigNumberish,
@@ -903,6 +952,8 @@ export class Rewards extends BaseContract {
     ): Promise<void>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
+    weth(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -1028,6 +1079,8 @@ export class Rewards extends BaseContract {
   };
 
   estimateGas: {
+    accounting(overrides?: CallOverrides): Promise<BigNumber>;
+
     accrueRewards(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1126,6 +1179,8 @@ export class Rewards extends BaseContract {
 
     minHueCountPerPosition(overrides?: CallOverrides): Promise<BigNumber>;
 
+    nftPositionManager(overrides?: CallOverrides): Promise<BigNumber>;
+
     periodLength(overrides?: CallOverrides): Promise<BigNumber>;
 
     poolConfigForPoolID(
@@ -1179,6 +1234,8 @@ export class Rewards extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
+    uniswapV3Factory(overrides?: CallOverrides): Promise<BigNumber>;
+
     updatePoolIncentive(
       poolID: BigNumberish,
       incentive: BigNumberish,
@@ -1186,9 +1243,13 @@ export class Rewards extends BaseContract {
     ): Promise<BigNumber>;
 
     validUpdate(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    weth(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    accounting(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     accrueRewards(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1291,6 +1352,10 @@ export class Rewards extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    nftPositionManager(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     periodLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     poolConfigForPoolID(
@@ -1347,6 +1412,8 @@ export class Rewards extends BaseContract {
 
     twapDuration(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    uniswapV3Factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     updatePoolIncentive(
       poolID: BigNumberish,
       incentive: BigNumberish,
@@ -1357,5 +1424,7 @@ export class Rewards extends BaseContract {
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    weth(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

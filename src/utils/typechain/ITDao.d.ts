@@ -21,11 +21,21 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ITDaoInterface extends ethers.utils.Interface {
   functions: {
+    "getPosition(uint64)": FunctionFragment;
+    "idToToken(uint16)": FunctionFragment;
     "lockTokens(address,uint256,uint8,address)": FunctionFragment;
     "mintVotingRewards(address,uint256)": FunctionFragment;
     "sendUnderlyingVotingRewards(address,uint256,address,uint256)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "getPosition",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "idToToken",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "lockTokens",
     values: [string, BigNumberish, BigNumberish, string]
@@ -39,6 +49,11 @@ interface ITDaoInterface extends ethers.utils.Interface {
     values: [string, BigNumberish, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "getPosition",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "idToToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "lockTokens", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "mintVotingRewards",
@@ -116,6 +131,33 @@ export class ITDao extends BaseContract {
   interface: ITDaoInterface;
 
   functions: {
+    getPosition(
+      positionNFTTokenID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          number
+        ] & {
+          count: BigNumber;
+          startTotalRewards: BigNumber;
+          startCumulativeVirtualCount: BigNumber;
+          lastPeriodUpdated: BigNumber;
+          endPeriod: BigNumber;
+          durationMonths: BigNumber;
+          tokenID: number;
+        }
+      ]
+    >;
+
+    idToToken(id: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+
     lockTokens(
       token: string,
       count: BigNumberish,
@@ -138,6 +180,31 @@ export class ITDao extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  getPosition(
+    positionNFTTokenID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      number
+    ] & {
+      count: BigNumber;
+      startTotalRewards: BigNumber;
+      startCumulativeVirtualCount: BigNumber;
+      lastPeriodUpdated: BigNumber;
+      endPeriod: BigNumber;
+      durationMonths: BigNumber;
+      tokenID: number;
+    }
+  >;
+
+  idToToken(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   lockTokens(
     token: string,
@@ -162,6 +229,31 @@ export class ITDao extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    getPosition(
+      positionNFTTokenID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+      ] & {
+        count: BigNumber;
+        startTotalRewards: BigNumber;
+        startCumulativeVirtualCount: BigNumber;
+        lastPeriodUpdated: BigNumber;
+        endPeriod: BigNumber;
+        durationMonths: BigNumber;
+        tokenID: number;
+      }
+    >;
+
+    idToToken(id: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
     lockTokens(
       token: string,
       count: BigNumberish,
@@ -246,6 +338,13 @@ export class ITDao extends BaseContract {
   };
 
   estimateGas: {
+    getPosition(
+      positionNFTTokenID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    idToToken(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
     lockTokens(
       token: string,
       count: BigNumberish,
@@ -270,6 +369,16 @@ export class ITDao extends BaseContract {
   };
 
   populateTransaction: {
+    getPosition(
+      positionNFTTokenID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    idToToken(
+      id: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     lockTokens(
       token: string,
       count: BigNumberish,

@@ -37,6 +37,7 @@ interface TcpInterface extends ethers.utils.Interface {
     "delegates(address)": FunctionFragment;
     "getCurrentVotes(address)": FunctionFragment;
     "getPriorVotes(address,uint256)": FunctionFragment;
+    "getTokenNFTIcon()": FunctionFragment;
     "governor(address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "mintTo(address,uint256)": FunctionFragment;
@@ -101,6 +102,10 @@ interface TcpInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "getPriorVotes",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTokenNFTIcon",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values: [string]): string;
   encodeFunctionData(
@@ -169,6 +174,10 @@ interface TcpInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getPriorVotes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTokenNFTIcon",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
@@ -329,6 +338,8 @@ export class Tcp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    getTokenNFTIcon(overrides?: CallOverrides): Promise<[string]>;
+
     governor(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
 
     increaseAllowance(
@@ -443,6 +454,8 @@ export class Tcp extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getTokenNFTIcon(overrides?: CallOverrides): Promise<string>;
+
   governor(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   increaseAllowance(
@@ -547,6 +560,8 @@ export class Tcp extends BaseContract {
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getTokenNFTIcon(overrides?: CallOverrides): Promise<string>;
 
     governor(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
@@ -705,6 +720,8 @@ export class Tcp extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getTokenNFTIcon(overrides?: CallOverrides): Promise<BigNumber>;
+
     governor(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     increaseAllowance(
@@ -827,6 +844,8 @@ export class Tcp extends BaseContract {
       blockNumber: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getTokenNFTIcon(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(
       arg0: string,

@@ -33,6 +33,7 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     "extensionPerBid()": FunctionFragment;
     "getAllAuctions(uint64,bool)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "hueToBeBought()": FunctionFragment;
     "hueToBeSold()": FunctionFragment;
     "latestAuctionCompletionTime()": FunctionFragment;
@@ -117,6 +118,7 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "hueToBeBought",
     values?: undefined
@@ -305,6 +307,7 @@ interface AuctionsTestableInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "hueToBeBought",
     data: BytesLike
@@ -618,6 +621,8 @@ export class AuctionsTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hue(overrides?: CallOverrides): Promise<[string]>;
+
     hueToBeBought(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -855,6 +860,8 @@ export class AuctionsTestable extends BaseContract {
 
   governor(overrides?: CallOverrides): Promise<string>;
 
+  hue(overrides?: CallOverrides): Promise<string>;
+
   hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
   hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1087,6 +1094,8 @@ export class AuctionsTestable extends BaseContract {
     >;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    hue(overrides?: CallOverrides): Promise<string>;
 
     hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1389,6 +1398,8 @@ export class AuctionsTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
+
     hueToBeBought(overrides?: CallOverrides): Promise<BigNumber>;
 
     hueToBeSold(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1581,6 +1592,8 @@ export class AuctionsTestable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     hueToBeBought(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

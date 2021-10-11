@@ -22,12 +22,14 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface SettlementInterface extends ethers.utils.Interface {
   functions: {
     "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD()": FunctionFragment;
+    "accounting()": FunctionFragment;
     "confirmNoPriceConfidence()": FunctionFragment;
     "confirmPrice()": FunctionFragment;
     "ethPriceProvider()": FunctionFragment;
     "getCollateralForHue(uint64,uint256)": FunctionFragment;
     "getRecentPrice()": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "initializeSettlement()": FunctionFragment;
     "noPriceConfidenceUserVotes(address)": FunctionFragment;
     "priceConfidence()": FunctionFragment;
@@ -38,6 +40,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     "stakeTokensForNoPriceConfidence(uint256)": FunctionFragment;
     "stop()": FunctionFragment;
     "stopped()": FunctionFragment;
+    "tcp()": FunctionFragment;
     "thresholdMet()": FunctionFragment;
     "unstakeTokensForNoPriceConfidence()": FunctionFragment;
     "validUpdate(bytes4)": FunctionFragment;
@@ -46,6 +49,10 @@ interface SettlementInterface extends ethers.utils.Interface {
 
   encodeFunctionData(
     functionFragment: "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "accounting",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -69,6 +76,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initializeSettlement",
     values?: undefined
@@ -103,6 +111,7 @@ interface SettlementInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "stop", values?: undefined): string;
   encodeFunctionData(functionFragment: "stopped", values?: undefined): string;
+  encodeFunctionData(functionFragment: "tcp", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "thresholdMet",
     values?: undefined
@@ -124,6 +133,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     functionFragment: "SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "accounting", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "confirmNoPriceConfidence",
     data: BytesLike
@@ -145,6 +155,7 @@ interface SettlementInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "initializeSettlement",
     data: BytesLike
@@ -179,6 +190,7 @@ interface SettlementInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "stop", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stopped", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tcp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "thresholdMet",
     data: BytesLike
@@ -267,6 +279,8 @@ export class Settlement extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    accounting(overrides?: CallOverrides): Promise<[string]>;
+
     confirmNoPriceConfidence(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -288,6 +302,8 @@ export class Settlement extends BaseContract {
     ): Promise<[BigNumber] & { ethPrice: BigNumber }>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
+
+    hue(overrides?: CallOverrides): Promise<[string]>;
 
     initializeSettlement(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -322,6 +338,8 @@ export class Settlement extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<[boolean]>;
 
+    tcp(overrides?: CallOverrides): Promise<[string]>;
+
     thresholdMet(overrides?: CallOverrides): Promise<[boolean]>;
 
     unstakeTokensForNoPriceConfidence(
@@ -339,6 +357,8 @@ export class Settlement extends BaseContract {
   SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  accounting(overrides?: CallOverrides): Promise<string>;
 
   confirmNoPriceConfidence(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -359,6 +379,8 @@ export class Settlement extends BaseContract {
   getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  hue(overrides?: CallOverrides): Promise<string>;
 
   initializeSettlement(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -393,6 +415,8 @@ export class Settlement extends BaseContract {
 
   stopped(overrides?: CallOverrides): Promise<boolean>;
 
+  tcp(overrides?: CallOverrides): Promise<string>;
+
   thresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
   unstakeTokensForNoPriceConfidence(
@@ -411,6 +435,8 @@ export class Settlement extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    accounting(overrides?: CallOverrides): Promise<string>;
+
     confirmNoPriceConfidence(overrides?: CallOverrides): Promise<void>;
 
     confirmPrice(overrides?: CallOverrides): Promise<void>;
@@ -426,6 +452,8 @@ export class Settlement extends BaseContract {
     getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    hue(overrides?: CallOverrides): Promise<string>;
 
     initializeSettlement(overrides?: CallOverrides): Promise<void>;
 
@@ -455,6 +483,8 @@ export class Settlement extends BaseContract {
     stop(overrides?: CallOverrides): Promise<void>;
 
     stopped(overrides?: CallOverrides): Promise<boolean>;
+
+    tcp(overrides?: CallOverrides): Promise<string>;
 
     thresholdMet(overrides?: CallOverrides): Promise<boolean>;
 
@@ -532,6 +562,8 @@ export class Settlement extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    accounting(overrides?: CallOverrides): Promise<BigNumber>;
+
     confirmNoPriceConfidence(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -551,6 +583,8 @@ export class Settlement extends BaseContract {
     getRecentPrice(overrides?: CallOverrides): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
+
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
 
     initializeSettlement(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -585,6 +619,8 @@ export class Settlement extends BaseContract {
 
     stopped(overrides?: CallOverrides): Promise<BigNumber>;
 
+    tcp(overrides?: CallOverrides): Promise<BigNumber>;
+
     thresholdMet(overrides?: CallOverrides): Promise<BigNumber>;
 
     unstakeTokensForNoPriceConfidence(
@@ -603,6 +639,8 @@ export class Settlement extends BaseContract {
     SETTLEMENT_PRICE_NO_CONFIDENCE_THRESHOLD(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    accounting(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     confirmNoPriceConfidence(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -623,6 +661,8 @@ export class Settlement extends BaseContract {
     getRecentPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     initializeSettlement(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -658,6 +698,8 @@ export class Settlement extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     stopped(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    tcp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     thresholdMet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

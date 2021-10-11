@@ -257,8 +257,8 @@ interface MarketInterface extends ethers.utils.Interface {
     "InterestPortionToLendersUpdated(uint256)": EventFragment;
     "Lend(address,uint256,uint256)": EventFragment;
     "MinPositionSizeUpdated(uint256)": EventFragment;
-    "PositionAdjusted(uint64,uint256,uint256,uint256,uint256)": EventFragment;
-    "PositionCreated(address,uint64)": EventFragment;
+    "PositionAdjusted(uint64,uint256,uint256,uint256,uint256,uint256,uint256)": EventFragment;
+    "PositionCreated(address,uint64,uint256)": EventFragment;
     "PositionUpdated(uint256,uint64,uint256,uint256)": EventFragment;
     "RewardsDistributed(address,bool,uint256)": EventFragment;
     "Stopped()": EventFragment;
@@ -735,24 +735,37 @@ export class Market extends BaseContract {
       debtIncrease?: null,
       debtDecrease?: null,
       collateralIncrease?: null,
-      collateralDecrease?: null
+      collateralDecrease?: null,
+      newDebt?: null,
+      newCollateral?: null
     ): TypedEventFilter<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber],
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ],
       {
         positionID: BigNumber;
         debtIncrease: BigNumber;
         debtDecrease: BigNumber;
         collateralIncrease: BigNumber;
         collateralDecrease: BigNumber;
+        newDebt: BigNumber;
+        newCollateral: BigNumber;
       }
     >;
 
     PositionCreated(
       creator?: string | null,
-      positionID?: BigNumberish | null
+      positionID?: BigNumberish | null,
+      initialDebt?: null
     ): TypedEventFilter<
-      [string, BigNumber],
-      { creator: string; positionID: BigNumber }
+      [string, BigNumber, BigNumber],
+      { creator: string; positionID: BigNumber; initialDebt: BigNumber }
     >;
 
     PositionUpdated(

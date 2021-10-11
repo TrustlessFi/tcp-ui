@@ -21,10 +21,14 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
   functions: {
-    "blacklistAction(string)": FunctionFragment;
+    "blacklistAction(address,string)": FunctionFragment;
     "currentPhase()": FunctionFragment;
     "delayPhaseStartTime(uint8)": FunctionFragment;
     "governor()": FunctionFragment;
+    "isBlacklistedAction(address,bytes4)": FunctionFragment;
+    "isPermanentAction(address,bytes4)": FunctionFragment;
+    "isProtocolAction(address,bytes4)": FunctionFragment;
+    "isUpgradeAction(address,bytes4)": FunctionFragment;
     "phaseInfo(uint8)": FunctionFragment;
     "requireValidAction(address,string)": FunctionFragment;
     "setPhaseOneStartTime(uint64)": FunctionFragment;
@@ -34,7 +38,7 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
 
   encodeFunctionData(
     functionFragment: "blacklistAction",
-    values: [string]
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "currentPhase",
@@ -45,6 +49,22 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "isBlacklistedAction",
+    values: [string, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isPermanentAction",
+    values: [string, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isProtocolAction",
+    values: [string, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isUpgradeAction",
+    values: [string, BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "phaseInfo",
     values: [BigNumberish]
@@ -76,6 +96,22 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isBlacklistedAction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isPermanentAction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isProtocolAction",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "isUpgradeAction",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "phaseInfo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "requireValidAction",
@@ -92,7 +128,7 @@ interface EnforcedDecentralizationInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "ActionBlacklisted(string)": EventFragment;
+    "ActionBlacklisted(address,string)": EventFragment;
     "PhaseOneStartTimeSet(uint64)": EventFragment;
     "PhaseStartDelayed(uint8,uint64,uint8)": EventFragment;
     "Stopped()": EventFragment;
@@ -151,6 +187,7 @@ export class EnforcedDecentralization extends BaseContract {
 
   functions: {
     blacklistAction(
+      target: string,
       signature: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -163,6 +200,30 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<ContractTransaction>;
 
     governor(overrides?: CallOverrides): Promise<[string]>;
+
+    isBlacklistedAction(
+      arg0: string,
+      arg1: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isPermanentAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isProtocolAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    isUpgradeAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -191,6 +252,7 @@ export class EnforcedDecentralization extends BaseContract {
   };
 
   blacklistAction(
+    target: string,
     signature: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -203,6 +265,30 @@ export class EnforcedDecentralization extends BaseContract {
   ): Promise<ContractTransaction>;
 
   governor(overrides?: CallOverrides): Promise<string>;
+
+  isBlacklistedAction(
+    arg0: string,
+    arg1: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isPermanentAction(
+    target: string,
+    selector: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isProtocolAction(
+    target: string,
+    selector: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  isUpgradeAction(
+    target: string,
+    selector: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   phaseInfo(
     arg0: BigNumberish,
@@ -231,6 +317,7 @@ export class EnforcedDecentralization extends BaseContract {
 
   callStatic: {
     blacklistAction(
+      target: string,
       signature: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -243,6 +330,30 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<void>;
 
     governor(overrides?: CallOverrides): Promise<string>;
+
+    isBlacklistedAction(
+      arg0: string,
+      arg1: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isPermanentAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isProtocolAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    isUpgradeAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -272,8 +383,12 @@ export class EnforcedDecentralization extends BaseContract {
 
   filters: {
     ActionBlacklisted(
+      target?: string | null,
       signature?: string | null
-    ): TypedEventFilter<[string], { signature: string }>;
+    ): TypedEventFilter<
+      [string, string],
+      { target: string; signature: string }
+    >;
 
     PhaseOneStartTimeSet(
       startTime?: null
@@ -301,6 +416,7 @@ export class EnforcedDecentralization extends BaseContract {
 
   estimateGas: {
     blacklistAction(
+      target: string,
       signature: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -313,6 +429,30 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<BigNumber>;
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
+
+    isBlacklistedAction(
+      arg0: string,
+      arg1: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isPermanentAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isProtocolAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    isUpgradeAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     phaseInfo(
       arg0: BigNumberish,
@@ -337,6 +477,7 @@ export class EnforcedDecentralization extends BaseContract {
 
   populateTransaction: {
     blacklistAction(
+      target: string,
       signature: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -349,6 +490,30 @@ export class EnforcedDecentralization extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isBlacklistedAction(
+      arg0: string,
+      arg1: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isPermanentAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isProtocolAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    isUpgradeAction(
+      target: string,
+      selector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     phaseInfo(
       arg0: BigNumberish,

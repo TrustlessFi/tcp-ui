@@ -15,6 +15,12 @@ const _abi = [
     inputs: [
       {
         indexed: true,
+        internalType: "address",
+        name: "target",
+        type: "address",
+      },
+      {
+        indexed: true,
         internalType: "string",
         name: "signature",
         type: "string",

@@ -41,12 +41,14 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     "getTick(uint256,uint256)": FunctionFragment;
     "getUIs(uint32,uint32)": FunctionFragment;
     "governor()": FunctionFragment;
+    "hue()": FunctionFragment;
     "increaseDebt(uint256)": FunctionFragment;
     "increaseLentHue(uint256)": FunctionFragment;
     "increasePoolLiquidity(address,uint256)": FunctionFragment;
     "init()": FunctionFragment;
     "lentHue()": FunctionFragment;
     "nextUserInterfaceID()": FunctionFragment;
+    "nftPositionManager()": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "onRewardsUpgrade(address)": FunctionFragment;
     "poolLiquidity(address)": FunctionFragment;
@@ -139,6 +141,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "governor", values?: undefined): string;
+  encodeFunctionData(functionFragment: "hue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "increaseDebt",
     values: [BigNumberish]
@@ -155,6 +158,10 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "lentHue", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "nextUserInterfaceID",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "nftPositionManager",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -333,6 +340,7 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "getTick", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getUIs", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "governor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "increaseDebt",
     data: BytesLike
@@ -349,6 +357,10 @@ interface AccountingTestableInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "lentHue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nextUserInterfaceID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "nftPositionManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -730,6 +742,8 @@ export class AccountingTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<[string]>;
 
+    hue(overrides?: CallOverrides): Promise<[string]>;
+
     increaseDebt(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -753,6 +767,8 @@ export class AccountingTestable extends BaseContract {
     lentHue(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     nextUserInterfaceID(overrides?: CallOverrides): Promise<[number]>;
+
+    nftPositionManager(overrides?: CallOverrides): Promise<[string]>;
 
     onERC721Received(
       arg0: string,
@@ -1061,6 +1077,8 @@ export class AccountingTestable extends BaseContract {
 
   governor(overrides?: CallOverrides): Promise<string>;
 
+  hue(overrides?: CallOverrides): Promise<string>;
+
   increaseDebt(
     count: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1084,6 +1102,8 @@ export class AccountingTestable extends BaseContract {
   lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
   nextUserInterfaceID(overrides?: CallOverrides): Promise<number>;
+
+  nftPositionManager(overrides?: CallOverrides): Promise<string>;
 
   onERC721Received(
     arg0: string,
@@ -1383,6 +1403,8 @@ export class AccountingTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<string>;
 
+    hue(overrides?: CallOverrides): Promise<string>;
+
     increaseDebt(count: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     increaseLentHue(
@@ -1401,6 +1423,8 @@ export class AccountingTestable extends BaseContract {
     lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     nextUserInterfaceID(overrides?: CallOverrides): Promise<number>;
+
+    nftPositionManager(overrides?: CallOverrides): Promise<string>;
 
     onERC721Received(
       arg0: string,
@@ -1628,6 +1652,8 @@ export class AccountingTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    hue(overrides?: CallOverrides): Promise<BigNumber>;
+
     increaseDebt(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1651,6 +1677,8 @@ export class AccountingTestable extends BaseContract {
     lentHue(overrides?: CallOverrides): Promise<BigNumber>;
 
     nextUserInterfaceID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    nftPositionManager(overrides?: CallOverrides): Promise<BigNumber>;
 
     onERC721Received(
       arg0: string,
@@ -1866,6 +1894,8 @@ export class AccountingTestable extends BaseContract {
 
     governor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    hue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     increaseDebt(
       count: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1889,6 +1919,10 @@ export class AccountingTestable extends BaseContract {
     lentHue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     nextUserInterfaceID(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    nftPositionManager(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
