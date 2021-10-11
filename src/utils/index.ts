@@ -118,7 +118,7 @@ export type Nullable<T> = { [K in keyof T]: T[K] | null }
 export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
 
 export const enforce = (conditional: boolean, errorMessage: string) => {
-  if (!conditional) throw errorMessage
+  if (!conditional) throw new Error(errorMessage)
 }
 
 // ======================= Time ============================
