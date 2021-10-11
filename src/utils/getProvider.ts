@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { ChainID } from '../slices/chainID'
+import { ChainID } from '@trustlessfi/addresses'
 
 const getProvider = () => {
   if (window.hasOwnProperty('ethereum') && window.ethereum) {

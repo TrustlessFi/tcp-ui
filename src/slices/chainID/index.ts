@@ -1,23 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
-export enum ChainID {
-  // Mainnet = 1,
-  Rinkeby = 4,
-  Hardhat = 1337,
-}
+import { ChainID } from '@trustlessfi/addresses'
 
 export interface ChainIDState {
   chainID: ChainID | null
   unknownChainID: number | null
-}
-
-export const chainIDToName = (chainID: ChainID) => {
-  switch(chainID) {
-    case ChainID.Rinkeby:
-      return 'Rinkeby'
-    case ChainID.Hardhat:
-      return 'Hardhat'
-  }
 }
 
 const initialState: ChainIDState = {

@@ -3,7 +3,7 @@ import { Pool as UniswapPool, FeeAmount } from '@uniswap/v3-sdk'
 import { Token as UniswapToken, BigintIsh } from '@uniswap/sdk-core';
 
 import { sliceState, initialState } from '../'
-import { ChainID } from '../chainID'
+import { ChainID } from '@trustlessfi/addresses'
 import { fetchPools } from './api'
 
 export interface SerializedUniswapToken {

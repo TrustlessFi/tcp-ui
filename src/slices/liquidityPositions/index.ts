@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, initialState } from '../'
 import { addLiquidityToPosition, fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
-import { ChainID } from '../chainID'
+import { ChainID } from '@trustlessfi/addresses'
 
 export interface LiquidityPosition {
   // set during update?

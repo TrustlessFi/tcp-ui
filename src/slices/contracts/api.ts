@@ -1,4 +1,4 @@
-import { getAddress, rootContracts } from '../../utils/Addresses';
+import { getAddress, TcpRootContract, ProtocolID, TrustlessMulticallRootContract } from '@trustlessfi/addresses'
 import { Governor } from "../../utils/typechain"
 import { getContractArgs, ProtocolContract, getContractReturnType, getSingleContractArgs } from './'
 
@@ -8,11 +8,14 @@ import { Contract } from 'ethers'
 
 import governorArtifact from '../../utils/artifacts/contracts/core/governance/Governor.sol/Governor.json'
 
-export const executeGetGovernor = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.Governor)
+export const executeGetGovernor = async (args: getSingleContractArgs) =>
+  getAddress(ProtocolID.TCP, args.chainID, TcpRootContract.Governor)
 
-export const executeGetTrustlessMulticall = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.TrustlessMulticall)
+export const executeGetTrustlessMulticall = async (args: getSingleContractArgs) =>
+  getAddress(ProtocolID.TrustlessMulticall, args.chainID, TrustlessMulticallRootContract.TrustlessMulticall)
 
-export const executeGetProtocolDataAggregator = async (args: getSingleContractArgs) => getAddress(args.chainID, rootContracts.ProtocolDataAggregator)
+export const executeGetProtocolDataAggregator = async (args: getSingleContractArgs) =>
+  getAddress(ProtocolID.TCP, args.chainID, TcpRootContract.ProtocolDataAggregator)
 
 export const executeGetContract = async (args: getContractArgs): Promise<getContractReturnType> => {
   const governor = new Contract(

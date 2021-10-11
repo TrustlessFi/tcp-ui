@@ -1,6 +1,6 @@
 import { Tag, TagTypeName } from 'carbon-components-react';
 import { useAppSelector as selector } from '../../app/hooks'
-import { chainIDToName, ChainID } from '../../slices/chainID'
+import { ChainID, chainIDToName } from '@trustlessfi/addresses'
 import { CSSProperties, ReactNode } from 'react';
 
 

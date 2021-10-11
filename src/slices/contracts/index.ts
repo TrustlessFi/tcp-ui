@@ -3,7 +3,7 @@ import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { executeGetGovernor, executeGetContract, executeGetTrustlessMulticall, executeGetProtocolDataAggregator } from './api'
 import { sliceState, initialState } from '../'
-import { ChainID } from '../chainID'
+import { ChainID } from '@trustlessfi/addresses'
 import { getLocalStorage } from '../../utils'
 
 export enum ProtocolContract {

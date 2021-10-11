@@ -14,7 +14,7 @@ import { UniswapV3Pool } from '../../utils/typechain/UniswapV3Pool'
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
-import { ChainID } from '../chainID/index';
+import { ChainID } from '@trustlessfi/addresses'
 import { BigNumber } from 'ethers'
 
 export const getPool = async (
