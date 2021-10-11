@@ -4,7 +4,7 @@ import getContract from '../../utils/getContract'
 import { Market, TrustlessMulticallViewOnly } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage, mnt } from '../../utils'
-import { executeMulticall, rc } from '../../utils/Multicall'
+import { executeMulticall, rc } from '@trustlessfi/multicall'
 
 export interface marketArgs {
   Market: string

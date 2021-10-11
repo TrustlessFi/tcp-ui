@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
-import { getEthBalance } from '../../utils/Multicall/chainStatus'
+import { getEthBalance } from '@trustlessfi/multicall'
 import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 

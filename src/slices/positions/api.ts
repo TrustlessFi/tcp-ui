@@ -3,7 +3,8 @@ import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 import getContract from '../../utils/getContract'
-import { getDuplicateFuncMulticall, executeMulticalls, rc } from '../../utils/Multicall'
+import { getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
+import { PromiseType } from '@trustlessfi/utils'
 
 import { Accounting, HuePositionNFT, TrustlessMulticallViewOnly } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
@@ -22,7 +23,7 @@ export const fetchPositions = async (args: positionsArgs) => {
     positions: getDuplicateFuncMulticall(
       accounting,
       'getPosition',
-      rc.PositionData,
+      (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,
       Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
     ),
   })

@@ -6,7 +6,7 @@ import getContract from '../../utils/getContract'
 import { Prices, TrustlessMulticallViewOnly } from "../../utils/typechain"
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticall, rc } from '../../utils/Multicall'
+import { executeMulticall, rc } from '@trustlessfi/multicall'
 
 
 export type pricesInfo = {
