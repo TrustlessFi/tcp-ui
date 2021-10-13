@@ -298,11 +298,7 @@ export default function AddLiquidity({
         );
       } else {
         addLiquidity(
-          selectedPool.address,
-          Number(position.amount0.toFixed(4, undefined, 1)),
-          Number(position.amount1.toFixed(4, undefined, 1)),
-          position.tickLower,
-          position.tickUpper
+          position
         );
       }
     } else {
