@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 // 3 ways to modify what proposals you see in the governance tab:
 
 // Options filtering (None, All, Default)
-// TODO: Type aka State filtering
+// Type aka State filtering
 // Sorting (by ID or State)
 
 enum SortOption {
@@ -32,7 +32,7 @@ const isStateSort = (option: SortOption): boolean => option === SortOption.State
 const switchIDSort = (option: SortOption): SortOption => option === SortOption.IDDescending ? SortOption.IDAscending : SortOption.IDDescending;
 const switchStateSort = (option: SortOption): SortOption => option === SortOption.StateDescending ? SortOption.StateAscending : SortOption.StateDescending;
 
-const orderStates = (state: ProposalState): number => [
+const stateList = [
   ProposalState.Pending,
   ProposalState.Active,
   ProposalState.Defeated,
@@ -41,7 +41,9 @@ const orderStates = (state: ProposalState): number => [
   ProposalState.Executed,
   ProposalState.Canceled,
   ProposalState.Expired,
-].indexOf(state);
+]
+
+const orderStates = (state: ProposalState): number => stateList.indexOf(state);
 
 // TODO: update icon values for carbon and add icon as optional prop to AppTags
 // const displaySortIcon = (option: SortOption): IconName => {
@@ -98,29 +100,31 @@ const ProposalsContainer: FunctionComponent = () => {
         }
       })
       updateDisplayedProposals(sortedProposals);
-      sortedProposals.forEach(pro => console.log(pro.proposal.id));
     }
   }, [selectedStates, statusSortOption, proposalsState]);
 
   // options filtering
   useEffect(() => {
-    const numberOfTrueStates = Object.entries(selectedStates).filter(entry => entry[1]).length;
-    const numberOfFalseStates = Object.entries(selectedStates).filter(entry => !entry[1]).length;
-    if (!numberOfTrueStates) {
-      // none
+    const isNoneSelected = !Object.entries(selectedStates).filter(entry => entry[1]).length;
+    const isAllSelected = !Object.entries(selectedStates).filter(entry => !entry[1]).length;
+    const isDefaultSelected = Object.entries(selectedStates).every(entry => entry[1] === defaultSelectedStates[entry[0] as ProposalState]);
+    if (isNoneSelected) {
       updateAllSelected(false);
       updateNoneSelected(true);
       updateDefaultSelected(false);
-    } else if (!numberOfFalseStates) {
-      // all
+    } else if (isAllSelected) {
       updateAllSelected(true);
       updateNoneSelected(false);
       updateDefaultSelected(false);
-    } else {
-      // default
+    } else if (isDefaultSelected) {
       updateAllSelected(false);
       updateNoneSelected(false);
       updateDefaultSelected(true);
+    } else {
+      // some other combination, due to tag filtering
+      updateAllSelected(false);
+      updateNoneSelected(false);
+      updateDefaultSelected(false);
     }
   }, [selectedStates]);
 
@@ -142,7 +146,7 @@ const ProposalsContainer: FunctionComponent = () => {
   const toggleTag = (state: ProposalState): void => {
     const newselectedStates = {
       ...selectedStates,
-      status: !selectedStates[state],
+      [state]: !selectedStates[state],
     };
     updateSelectedStates(newselectedStates);
   };
@@ -183,8 +187,10 @@ const ProposalsContainer: FunctionComponent = () => {
         proposalsTotal={(proposalsState && Object.values(proposalsState).length) || 0}
         setAll={setAll}
         setDefault={setDefault}
+        selectedStates={selectedStates}
         statusSortOption={statusSortOption}
         toggleSort={toggleSort}
+        toggleTag={toggleTag}
       />
       <ProposalsList displayedProposals={displayedProposals} />
     </>
@@ -200,8 +206,10 @@ interface ProposalsHeaderProps {
   proposalsTotal: number;
   setAll: (selected: boolean) => void;
   setDefault: () => void;
+  selectedStates: {[key in ProposalState]: boolean};
   statusSortOption: SortOption;
   toggleSort: (sortType: SortType) => void;
+  toggleTag: (state: ProposalState) => void;
 }
 
 const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
@@ -211,21 +219,38 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
   proposalsShown,
   proposalsTotal,
   setDefault,
+  selectedStates,
   statusSortOption,
   setAll,
   toggleSort,
+  toggleTag,
 }) => {
   return (
     <>
       <div> Displaying {proposalsShown} of {proposalsTotal} </div>
-      <div>
-        <AppTag name="Default" color="blue" selected={defaultSelected} onClick={setDefault} />
-        <AppTag name="All" color="blue" selected={allSelected} onClick={() => setAll(true)} />
-        <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <div>
+          <AppTag name="Default" color="blue" selected={defaultSelected} onClick={setDefault} />
+          <AppTag name="All" color="blue" selected={allSelected} onClick={() => setAll(true)} />
+          <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
+        </div>
+        <div>
+          <AppTag name="Sort By ID" selected={isIDSort(statusSortOption)} onClick={() => toggleSort(SortType.ID)} />
+          <AppTag name="Sort By State" selected={isStateSort(statusSortOption)} onClick={() => toggleSort(SortType.State)} />
+        </div>
       </div>
       <div>
-        <AppTag name="Sort By ID" selected={isIDSort(statusSortOption)} onClick={() => toggleSort(SortType.ID)} />
-        <AppTag name="Sort By State" selected={isStateSort(statusSortOption)} onClick={() => toggleSort(SortType.State)} />
+        {stateList.map((state) => {
+          return (
+            <AppTag
+              name={state}
+              key={state}
+              color="cyan"
+              selected={selectedStates[state]}
+              onClick={() => toggleTag(state)}
+            />
+          );
+        })}
       </div>
     </>
   );
