@@ -264,7 +264,9 @@ export const waitForTransaction = createAsyncThunk(
     }
 
     if (succeeded) {
-      switch (args.type) {
+      const type = args.type
+
+      switch (type) {
         case TransactionType.CreatePosition:
         case TransactionType.UpdatePosition:
           dispatch(clearPositions())
@@ -276,8 +278,11 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearLendHueBalance())
           dispatch(clearHueBalance())
           break
-
+        case TransactionType.CreateLiquidityPosition:
           // TODO add data clearing for create liquidity position
+          break
+      default:
+        assertUnreachable(type)
       }
     }
   })
