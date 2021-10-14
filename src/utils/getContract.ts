@@ -47,10 +47,10 @@ import ratesArtifact from "./artifacts/contracts/core/logic/Rates.sol/Rates.json
 import rewardsArtifact from "./artifacts/contracts/core/logic/Rewards.sol/Rewards.json"
 import settlementArtifact from "./artifacts/contracts/core/logic/Settlement.sol/Settlement.json"
 import tcpArtifact from "./artifacts/contracts/core/governance/Tcp.sol/Tcp.json"
-import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TCPGovernorAlpha.sol/TcpGovernorAlpha.json"
+import tcpGovernorAlphaArtifact from "./artifacts/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
 import trustlessMulticallArtifact from "./artifacts/contracts/core/auxiliary/TrustlessMulticall.sol/TrustlessMulticall.json"
 import trustlessMulticallViewOnlyArtifact from "./artifacts/contracts/core/auxiliary/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
-import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TCPTimelock.sol/TcpTimelock.json"
+import tcpTimelockArtifact from "./artifacts/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
 import { assertUnreachable } from '.'
 
 type abi = {[key in string]: any}[]

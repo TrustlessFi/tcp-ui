@@ -10,13 +10,12 @@ import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
-import { Market, Rewards, TcpMulticall } from '../../utils/typechain'
+import { Market, Rewards, TrustlessMulticall } from '../../utils/typechain'
 import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'
 import { v4 as uid } from 'uuid'
 import { enforce, mnt, parseMetamaskError } from '../../utils'
-import { getCurrentBlockTimestamp } from '../../utils/Multicall/chainStatus'
 
 export enum TransactionType {
   CreatePosition,
@@ -191,11 +190,11 @@ const executeTransaction = async (
       return await getMarket(args.Market).connect(provider.getSigner()).unlend(scale(args.count))
 
     case TransactionType.CreateLiquidityPosition:
-      let rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-      let multicall = getContract(args.Multicall, ProtocolContract.TcpMulticall) as TcpMulticall
+      const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
+      const multicall = getContract(args.Multicall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
 
-      const blockTime = await getCurrentBlockTimestamp(multicall)
-      
+      const blockTime = await multicall.getCurrentBlockTimestamp()
+
       return await rewards.connect(provider.getSigner()).createLiquidityPosition({
         token0: args.token0,
         token1: args.token1,
@@ -277,6 +276,8 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearLendHueBalance())
           dispatch(clearHueBalance())
           break
+
+          // TODO add data clearing for create liquidity position
       }
     }
   })

@@ -16,7 +16,7 @@ import { inflateUniswapPool } from '../../utils/uniswapUtils'
 const CreatePosition = (props: RouteComponentProps) => {
     const dispatch = useAppDispatch()
 
-    const multicallContract = getContractWaitFunction(ProtocolContract.TcpMulticall)(selector, dispatch)
+    const multicallContract = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
     const rewardsContract = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
 
     const chainId = selector(state => state.chainID.chainID)
@@ -28,7 +28,9 @@ const CreatePosition = (props: RouteComponentProps) => {
     if (chainId === null ||
         rewardsAddress === null ||
         pools === null ||
-        liquidityPositions === null
+        liquidityPositions === null ||
+        multicallContract === null ||
+        rewardsContract === null
     ) {
       return (
         <div className='add-liquidity-container' style={{position: 'relative'}}>
@@ -46,10 +48,6 @@ const CreatePosition = (props: RouteComponentProps) => {
             amount0: amount0Min,
             amount1: amount1Min
         } = position.mintAmountsWithSlippage(new Percent(10, 100));
-
-        if(!multicallContract || !rewardsContract) {
-            return;
-        }
 
         dispatch(waitForTransaction({
             Multicall: multicallContract,

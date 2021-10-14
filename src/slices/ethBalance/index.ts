@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
-import { getEthBalance } from '@trustlessfi/multicall'
 import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 
@@ -23,7 +22,7 @@ export const fetchEthBalance = createAsyncThunk(
   async (args: ethBalanceArgs) => {
     const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
 
-    return unscale(await getEthBalance(tcpMulticall, args.userAddress))
+    return unscale(await tcpMulticall.getEthBalance(args.userAddress))
   }
 )
 
