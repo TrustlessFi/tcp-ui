@@ -320,7 +320,9 @@ export function useV3DerivedMintInfo(
             tickLower,
             tickUpper,
             amount0: independentAmount.quotient,
-            useFullPrecision: true, // we want full precision for the theoretical position
+            // original uniswap comment: we want full precision for the theoretical position
+            // new trustless comment: this was causing 1:1 currencies to come out like 1:0.999999999998
+            useFullPrecision: false,
           })
         : Position.fromAmount1({
             pool: poolForPosition,

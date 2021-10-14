@@ -6,17 +6,17 @@ import { clearPositions } from '../positions'
 import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
-import { ethers, ContractTransaction } from 'ethers'
+import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
-import { Market } from '../../utils/typechain'
+import { Market, Rewards, TcpMulticall } from '../../utils/typechain'
 import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
-import { UIID } from '../../constants';
+import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'
 import { v4 as uid } from 'uuid'
-import { enforce , parseMetamaskError } from '../../utils'
-import { mnt } from '../../utils/index';
+import { enforce, mnt, parseMetamaskError } from '../../utils'
+import { getCurrentBlockTimestamp } from '../../utils/Multicall/chainStatus'
 
 export enum TransactionType {
   CreatePosition,
@@ -25,6 +25,7 @@ export enum TransactionType {
   Withdraw,
   ApproveHue,
   ApproveLendHue,
+  CreateLiquidityPosition,
 }
 
 export enum TransactionStatus {
@@ -98,8 +99,23 @@ export interface txWithdrawArgs {
   Market: string,
 }
 
+export interface txCreateLiquidityPositionArgs {
+  type: TransactionType.CreateLiquidityPosition,
+  token0: string,
+  token1: string,
+  fee: number,
+  tickLower: number,
+  tickUpper: number,
+  amount0Desired: BigNumber,
+  amount0Min: BigNumber,
+  amount1Desired: BigNumber,
+  amount1Min: BigNumber,
+  Multicall: string,
+  Rewards: string,
+}
+
 export type TransactionArgs =
-  txCreatePositionArgs | txUpdatePositionArgs | txLendArgs | txWithdrawArgs
+  txCreatePositionArgs | txUpdatePositionArgs | txLendArgs | txWithdrawArgs | txCreateLiquidityPositionArgs
 
 export type TransactionState = {[key in string]: TransactionInfo}
 
@@ -117,6 +133,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
     case TransactionType.ApproveHue:
     case TransactionType.ApproveLendHue:
       return 'Approved'
+    case TransactionType.CreateLiquidityPosition:
+      return 'Liquidity Position Created'
     default:
       assertUnreachable(type)
   }
@@ -136,6 +154,8 @@ export const getTxNamePresentTense = (type: TransactionType) => {
     case TransactionType.ApproveHue:
     case TransactionType.ApproveLendHue:
       return 'Approving'
+    case TransactionType.CreateLiquidityPosition:
+      return 'Creating Liquidity Position'
     default:
       assertUnreachable(type)
   }
@@ -146,17 +166,17 @@ const executeTransaction = async (
   args: TransactionArgs,
   provider: ethers.providers.Web3Provider,
 ): Promise<ContractTransaction> => {
-  const getMarket = () => getContract(args.Market, ProtocolContract.Market) as Market
+  const getMarket = (address: string) => getContract(address, ProtocolContract.Market) as Market
   const type = args.type
 
   switch(type) {
     case TransactionType.CreatePosition:
-      return await getMarket().connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
+      return await getMarket(args.Market).connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
         value: scale(args.collateralCount)
       })
 
     case TransactionType.UpdatePosition:
-      return await getMarket().connect(provider.getSigner()).adjustPosition(
+      return await getMarket(args.Market).connect(provider.getSigner()).adjustPosition(
         args.positionID,
         mnt(args.debtIncrease),
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
@@ -165,10 +185,30 @@ const executeTransaction = async (
       )
 
     case TransactionType.Lend:
-      return await getMarket().connect(provider.getSigner()).lend(scale(args.count))
+      return await getMarket(args.Market).connect(provider.getSigner()).lend(scale(args.count))
 
     case TransactionType.Withdraw:
-      return await getMarket().connect(provider.getSigner()).unlend(scale(args.count))
+      return await getMarket(args.Market).connect(provider.getSigner()).unlend(scale(args.count))
+
+    case TransactionType.CreateLiquidityPosition:
+      let rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
+      let multicall = getContract(args.Multicall, ProtocolContract.TcpMulticall) as TcpMulticall
+
+      const blockTime = await getCurrentBlockTimestamp(multicall)
+      
+      return await rewards.connect(provider.getSigner()).createLiquidityPosition({
+        token0: args.token0,
+        token1: args.token1,
+        fee: args.fee,
+        tickLower: args.tickLower,
+        tickUpper: args.tickUpper,
+        amount0Desired: args.amount0Desired,
+        amount0Min: args.amount0Min,
+        amount1Desired: args.amount1Desired,
+        amount1Min: args.amount1Min,
+        deadline: BigNumber.from(blockTime).add(DEFAULT_TRANSACTION_TIMEOUT),
+        recipient: ''
+      }, UIID)
 
     default:
       assertUnreachable(type)
