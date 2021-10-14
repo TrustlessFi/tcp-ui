@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers'
 import { Position } from '@uniswap/v3-sdk'
 import { Percent } from '@uniswap/sdk-core'
 
-import { getContractWaitFunction, waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
+import { getContractWaitFunction, waitForLiquidityPositions, waitForPools, waitForTrustlessMulticallContract } from '../../slices/waitFor'
 import { ProtocolContract } from  '../../slices/contracts'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { TransactionType, waitForTransaction } from '../../slices/transactions'
@@ -16,7 +16,7 @@ import { inflateUniswapPool } from '../../utils/uniswapUtils'
 const CreatePosition = (props: RouteComponentProps) => {
     const dispatch = useAppDispatch()
 
-    const multicallContract = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
+    const multicallContract = waitForTrustlessMulticallContract(selector, dispatch)
     const rewardsContract = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
 
     const chainId = selector(state => state.chainID.chainID)
