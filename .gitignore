@@ -26,7 +26,8 @@ yarn-debug.log*
 yarn-error.log*
 
 
-#yarn
+
+# yarn v3
 .pnp.*
 .yarn/*
 !.yarn/patches
