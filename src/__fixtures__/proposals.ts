@@ -1,4 +1,4 @@
-import { Proposal, ProposalState } from "../slices/proposals";
+import { Proposal, proposalsInfo, ProposalState } from "../slices/proposals";
 import { timeS, days, hours, randomInRange, enforce } from '../utils'
 import { Contract } from 'ethers'
 
@@ -115,7 +115,7 @@ const getProposal = (id: number, args: {
   return proposal
 }
 
-export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: number): Proposal[] => [
+const getProposalsFixture = (blockNumber: number, blockTimestamp: number): Proposal[] => [
   getProposal(1, {
     blockTimestamp,
     blockNumber,
@@ -162,3 +162,8 @@ export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: num
     executed: false,
   }),
 ]
+
+export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: number): proposalsInfo => {
+  const proposals = getProposalsFixture(blockNumber, blockTimestamp);
+  return Object.assign({}, proposals);
+};
