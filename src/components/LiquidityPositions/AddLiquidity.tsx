@@ -52,9 +52,9 @@ const AddLiquidity = (props: RouteComponentProps<MatchParams>) => {
         <div className='add-liquidity-container'>
             <UniswapWrapper>
                 <UniswapAddLiquidity
-                    adding={!!position?.addingLiquidity}
+                    adding={position.addingLiquidity === true}
                     addLiquidity={addLiquidityToPosition}
-                    loading={!!liquidityPositions?.loading}
+                    loading={liquidityPositions.loading}
                     position={uniswapFormattedPosition}
                     spenderAddress={rewardsAddress}
                     {...props}

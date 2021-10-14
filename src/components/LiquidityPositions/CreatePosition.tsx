@@ -69,7 +69,7 @@ const CreatePosition = (props: RouteComponentProps) => {
         <div className='create-position-container'>
             <UniswapWrapper>
                 <AddLiquidity
-                    adding={liquidityPositions?.creating || false}
+                    adding={liquidityPositions.creating === true}
                     addLiquidity={createPosition}
                     pools={Object.values(pools).map(pool => inflateUniswapPool(pool))}
                     spenderAddress={rewardsAddress}
