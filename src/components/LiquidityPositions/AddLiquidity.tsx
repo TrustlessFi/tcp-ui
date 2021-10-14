@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import { getContractWaitFunction, waitForLiquidityPositions , waitForPools } from '../../slices/waitFor'

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from 'carbon-components-react';
 import { useHistory } from 'react-router';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -16,10 +15,7 @@ const PositionList = () => {
   const dispatch = useAppDispatch()
 
   const pools = waitForPools(selector, dispatch)
-  console.log('inside positions list 1')
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
-  console.log('inside positions list 2')
-  console.log({pools, liquidityPositions})
 
   if (liquidityPositions === null || pools === null) {
     return (
@@ -42,8 +38,7 @@ const PositionList = () => {
           onClick={() => history.push('/liquidity/add')}
           size='sm'
           tabIndex={0}
-          type='submit'
-      >
+          type='submit'>
         New Position
       </Button>
       <div className='position-list-container'>
