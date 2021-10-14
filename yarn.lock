@@ -3114,10 +3114,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@trustlessfi/addresses@npm:0.2.2"
-  checksum: 8203c9af85811cfba3dcf6c4784d6c28ee6a9949cf8653b42862f3d501085a9e0750ea977847f1761e309cdb4561bf08ad9179278da624174313988531408f91
+"@trustlessfi/addresses@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "@trustlessfi/addresses@npm:0.2.3"
+  checksum: c4b45462209c2fdcc9d6fca6a58d3fe52439340877dcc69c9db468a7d25728f5814508ea0b1584f337619c1f06567c8757e100c9981d114b952bfef45fe33328
   languageName: node
   linkType: hard
 
@@ -18689,7 +18689,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/user-event": ^13.2.1
-    "@trustlessfi/addresses": ^0.2.2
+    "@trustlessfi/addresses": ^0.2.3
     "@trustlessfi/multicall": ^0.2.10
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.36.1
