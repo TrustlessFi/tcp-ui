@@ -10,8 +10,8 @@ import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
-import { Market, Rewards, TrustlessMulticall } from '../../utils/typechain'
-import getContract from '../../utils/getContract'
+import { Market, Rewards } from '../../utils/typechain'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'
 import { v4 as uid } from 'uuid'
@@ -109,7 +109,7 @@ export interface txCreateLiquidityPositionArgs {
   amount0Min: BigNumber,
   amount1Desired: BigNumber,
   amount1Min: BigNumber,
-  Multicall: string,
+  TrustlessMulticall: string,
   Rewards: string,
 }
 
@@ -191,9 +191,9 @@ const executeTransaction = async (
 
     case TransactionType.CreateLiquidityPosition:
       const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-      const multicall = getContract(args.Multicall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
+      const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
-      const blockTime = await multicall.getCurrentBlockTimestamp()
+      const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
 
       return await rewards.connect(provider.getSigner()).createLiquidityPosition({
         token0: args.token0,

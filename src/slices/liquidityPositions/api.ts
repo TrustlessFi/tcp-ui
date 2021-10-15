@@ -1,20 +1,20 @@
 import { liquidityPositions, liquidityPositionsArgs, LiquidityPosition } from './'
-import getContract from '../../utils/getContract'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 import { unscale, unique } from '../../utils'
 import { PromiseType } from '@trustlessfi/utils'
 import { executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
 
-import { Accounting, Rewards, TrustlessMulticall } from '../../utils/typechain/'
+import { Accounting, Rewards } from '../../utils/typechain/'
 
 export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-  const multicall = getContract(args.Multicall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
+  const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
   const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
 
-  const { positions } = await executeMulticalls(multicall, {
+  const { positions } = await executeMulticalls(trustlessMulticall, {
     positions: getDuplicateFuncMulticall(
       accounting,
       'getPoolPosition',
@@ -25,7 +25,7 @@ export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Pro
 
   const poolIDs: number[] = unique(Object.values(positions).map(position => position.poolID))
 
-  const { poolConfigs } = await executeMulticalls(multicall, {
+  const { poolConfigs } = await executeMulticalls(trustlessMulticall, {
     poolConfigs: getDuplicateFuncMulticall(
       rewards,
       'poolConfigForPoolID',

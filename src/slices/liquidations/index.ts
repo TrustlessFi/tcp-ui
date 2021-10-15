@@ -1,11 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getState, getGenericReducerBuilder } from '../'
-import getContract from '../../utils/getContract'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 
-import {
-  Liquidations,
-  TrustlessMulticallViewOnly,
-} from '../../utils/typechain'
+import { Liquidations, } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticall, rc } from '@trustlessfi/multicall'
@@ -28,7 +25,7 @@ export const getLiquidationsInfo = createAsyncThunk(
 
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
-    const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
     return (await executeMulticall(
       trustlessMulticall,

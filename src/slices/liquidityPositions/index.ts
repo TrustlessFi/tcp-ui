@@ -24,8 +24,7 @@ export interface liquidityPositions { [key: number]: LiquidityPosition }
 
 export interface liquidityPositionsArgs {
   Accounting: string,
-  Multicall: string,
-  chainID: ChainID,
+  TrustlessMulticall: string,
   Rewards: string,
   userAddress: string
 }
