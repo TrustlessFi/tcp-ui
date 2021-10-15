@@ -1,23 +1,23 @@
-import { DataTableSkeleton, Button } from 'carbon-components-react'
+import { Button } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
-import { waitForPositions , waitForPrices } from '../../slices/waitFor'
+import { waitForLiquidityPositions, waitForPools } from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
-import { numDisplay } from '../../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton';
 import Text from '../utils/Text';
+import { LiquidityPosition } from '../../slices/liquidityPositions'
 
-const ExistingPositionsTable = () => {
+const LiquidityPositionsTable = () => {
   const dispatch = useAppDispatch()
 
-  const positions = waitForPositions(selector, dispatch)
-  const priceInfo = waitForPrices(selector, dispatch)
+  const pools = waitForPools(selector, dispatch)
+  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
-  if (positions === null || priceInfo === null || positions === null) {
+  if (pools === null || liquidityPositions === null || userAddress === null) {
     return (
       <div style={{position: 'relative'}}>
         <RelativeLoading show={userAddress !== null} />
@@ -41,7 +41,7 @@ const ExistingPositionsTable = () => {
     )
   }
 
-  if (Object.values(positions).length === 0) {
+  if (Object.values(liquidityPositions).length === 0) {
     return (
       <Center style={{padding: 24}}>
         <Text>
@@ -51,15 +51,14 @@ const ExistingPositionsTable = () => {
     )
   }
 
-  const rows = Object.values(positions).map(position => {
-    const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
-    return {
+  const rows = Object.values(liquidityPositions).map((position: LiquidityPosition) => (
+    {
       key: position.id,
       data: {
         'Position ID': position.id,
-        'Debt': numDisplay(position.debtCount, 2) + ' Hue',
-        'Collateral': numDisplay(position.collateralCount, 2) + ' Eth',
-        'Collateralization Ratio': numDisplay(collateralization * 100, 0) + '%',
+        'Liquidity': position.liquidity,
+        'Tick Lower': position.tickUpper,
+        'Tick Upper': position.tickLower,
         'Rewards': '~546 TCP',
         '': 'claim'
       },
@@ -68,14 +67,14 @@ const ExistingPositionsTable = () => {
         creating: false,
       }))
     }
-  })
+  ))
 
   return <SimpleTable rows={rows} />
 }
 
-const ExistingPositions = () => {
+const LiquidityPositions = () => {
   const dispatch = useAppDispatch()
-  const createPositionButton =
+  const createLiquidityPositionButton =
     <Button
       size="small"
       onClick={() => dispatch(editorOpened({
@@ -87,10 +86,10 @@ const ExistingPositions = () => {
     </Button>
 
   return (
-    <AppTile title="Positions" rightElement={createPositionButton}>
-      <ExistingPositionsTable />
+    <AppTile title="Uniswap Reward Positions" rightElement={createLiquidityPositionButton}>
+      <LiquidityPositionsTable />
     </AppTile>
   )
 }
 
-export default ExistingPositions
+export default LiquidityPositions

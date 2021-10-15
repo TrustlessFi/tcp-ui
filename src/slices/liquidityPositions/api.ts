@@ -1,68 +1,52 @@
-import { liquidityPositions, liquidityPositionArgs, liquidityPositionsArgs, LiquidityPosition } from './'
+import { liquidityPositions, liquidityPositionsArgs, LiquidityPosition } from './'
 import getContract from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
-import { unscale } from '../../utils'
+import { unscale, unique } from '../../utils'
+import { PromiseType } from '@trustlessfi/utils'
+import { executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
 
-import { Accounting, Rewards } from '../../utils/typechain/'
-
-const fetchLiquidityPosition = async (data: liquidityPositionArgs): Promise<LiquidityPosition> => {
-  const accounting = getContract(data.Accounting, ProtocolContract.Accounting) as Accounting
-  const rewards = getContract(data.Rewards, ProtocolContract.Rewards) as Rewards
-
-  const [
-      owner,
-      poolID,
-      cumulativeLiquidity,
-      totalRewards,
-      lastBlockPositionIncreased,
-      liquidity,
-      lastTimeRewarded,
-      tickLower,
-      tickUpper
-  ] = await accounting.getPoolPosition(data.positionID)
-
-  const poolConfig = await rewards.poolConfigForPoolID(poolID)
-
-  return {
-    cumulativeLiquidity: cumulativeLiquidity.toString(),
-    id: data.positionID,
-    lastTimeRewarded: lastTimeRewarded.toNumber(),
-    lastBlockPositionIncreased: lastBlockPositionIncreased.toNumber(),
-    liquidity,
-    owner,
-    pool: poolConfig.pool,
-    tickLower,
-    tickUpper,
-    totalRewards: unscale(totalRewards),
-  } as LiquidityPosition
-}
+import { Accounting, Rewards, TrustlessMulticall } from '../../utils/typechain/'
 
 export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
-  console.log("start fetch liquidity positions")
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
+  const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
+  const multicall = getContract(args.Multicall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
 
   const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
 
-  const positions = await Promise.all(positionIDs.map(id => fetchLiquidityPosition({
-    Accounting: args.Accounting,
-    chainID: args.chainID,
-    positionID: id.toNumber(),
-    Rewards: args.Rewards
-  })))
-
-  const state = positions.reduce((agg: liquidityPositions, position) => {
-    agg.positions[position.id] = position
-    return agg
-  }, {
-    creating: false,
-    loading: false,
-    positions: {}
+  const { positions } = await executeMulticalls(multicall, {
+    positions: getDuplicateFuncMulticall(
+      accounting,
+      'getPoolPosition',
+      (result: any) => result as PromiseType<ReturnType<Accounting['getPoolPosition']>>,
+      Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
+    ),
   })
-  console.log("End fetch liquidity position")
 
-  return state
-}
+  const poolIDs: number[] = unique(Object.values(positions).map(position => position.poolID))
 
-export const addLiquidityToPosition = async (positionID: string, liquidityToAdd: number) => {
-  return {}
+  const { poolConfigs } = await executeMulticalls(multicall, {
+    poolConfigs: getDuplicateFuncMulticall(
+      rewards,
+      'poolConfigForPoolID',
+      (result: any) => result as PromiseType<ReturnType<Rewards['poolConfigForPoolID']>>,
+      Object.fromEntries(poolIDs.map(poolID => [poolID, [poolID]]))
+    ),
+  })
+
+  return Object.fromEntries(Object.entries(positions).map(([id, position]) => [
+    id,
+    {
+      cumulativeLiquidity: position.cumulativeLiquidity.toString(),
+      id: parseInt(id),
+      lastTimeRewarded: position.lastTimeRewarded.toNumber(),
+      lastBlockPositionIncreased: position.lastBlockPositionIncreased.toNumber(),
+      liquidity: position.liquidity,
+      owner: position.owner,
+      pool: poolConfigs[id]!.pool,
+      tickLower: position.tickLower,
+      tickUpper: position.tickUpper,
+      totalRewards: unscale(position.totalRewards),
+    }
+  ]))
 }

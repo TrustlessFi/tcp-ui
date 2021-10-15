@@ -28,10 +28,10 @@ export const getLiquidationsInfo = createAsyncThunk(
 
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
-    const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+    const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
     return (await executeMulticall(
-      tcpMulticall,
+      trustlessMulticall,
       liquidations,
       {
         twapDuration: rc.Number,

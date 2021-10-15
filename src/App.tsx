@@ -4,7 +4,7 @@ import Positions from './components/Positions'
 import Lend from './components/Lend'
 import Governance from './components/Governance'
 import ErrorBoundary from './components/library/ErrorBoundary'
-import LiquidityPositions from './components/LiquidityPositions'
+import Liquidity from './components/Liquidity'
 import { Switch, Route } from "react-router-dom"
 import { BrowserRouter as Router } from "react-router-dom"
 import LocalStorageManager from './components/utils/LocalStorageManager'
@@ -30,7 +30,7 @@ export enum Tab {
 const tabToRender: {[key in Tab]: ReactNode} = {
   Positions: <Positions />,
   Lend: <Lend />,
-  Liquidity: <LiquidityPositions />,
+  Liquidity: <Liquidity />,
   Governance: <Governance />,
 }
 
