@@ -2,10 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
-import getContract from '../../utils/getContract'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 
-import { TrustlessMulticall } from '../../utils/typechain'
+import { TrustlessMulticallViewOnly } from '../../utils/typechain'
 
 export type ethBalance = number
 
@@ -20,7 +20,7 @@ export type ethBalanceArgs = {
 export const fetchEthBalance = createAsyncThunk(
   'ethBalance/fetchEthBalance',
   async (args: ethBalanceArgs) => {
-    const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
+    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
     return unscale(await trustlessMulticall.getEthBalance(args.userAddress))
   }

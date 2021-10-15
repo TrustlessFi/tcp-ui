@@ -6,6 +6,7 @@ import { fetchPools } from './api'
 export interface getPoolsArgs {
   TrustlessMulticall: string
   ProtocolDataAggregator: string
+  userAddress: string
 }
 
 export interface poolTokenInfo {

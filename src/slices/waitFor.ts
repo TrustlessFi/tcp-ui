@@ -191,11 +191,11 @@ export const waitForEthBalance = getWaitFunction<ethBalanceArgs, ethBalance>(
 export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
   (state: RootState) => state.liquidityPositions,
   getLiquidityPositions,
-  [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards],
+  [FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards, ProtocolContract.TrustlessMulticall],
 )
 
 export const waitForPools = getWaitFunction<getPoolsArgs, poolsInfo>(
   (state: RootState) => state.pools,
   getPools,
-  [FetchNode.ChainID, FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator],
+  [FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall],
 )

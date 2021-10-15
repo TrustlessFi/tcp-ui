@@ -3,7 +3,7 @@ import { unscale, uint255Max, bnf } from '../../utils'
 import { TrustlessMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
-import getContract, { contract } from '../../utils/getContract'
+import getContract, { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
 
 interface tokenInfo {
@@ -44,10 +44,10 @@ export const tokenBalanceThunk = async (
   balancesList: {contract: ProtocolContract, address: string}[],
 ): Promise<balanceInfo> => {
   const token = contract(args.tokenAddress, erc20Artifact.abi)
-  const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+  const multicall = getMulticallContract(args.TrustlessMulticall)
 
   const { basicInfo, approvals, balances, userBalance } = await executeMulticalls(
-    trustlessMulticall,
+    multicall,
     {
       basicInfo: getMulticall(token, {
         name: rc.String,

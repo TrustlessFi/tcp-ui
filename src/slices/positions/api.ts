@@ -2,7 +2,7 @@ import { Position } from './'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
-import getContract from '../../utils/getContract'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import { getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 
@@ -12,7 +12,7 @@ import { ProtocolContract } from '../contracts'
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
-  const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+  const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
   const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 

@@ -18,6 +18,7 @@ import {
   Liquidations,
   Market,
   TrustlessMulticall,
+  TrustlessMulticallViewOnly,
   Prices,
   ProtocolDataAggregator,
   ProtocolLock,
@@ -81,6 +82,9 @@ const artifactLookup: {[key in ProtocolContract]: contractAbi} = {
 export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
   new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
 
+export const getMulticallContract = (address: string) =>
+  getContract(address, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+
 const getContract = (address: string, protocolContract: ProtocolContract, multicallViewOnly = false) => {
   const getAbi = (): abi => {
     if (protocolContract === ProtocolContract.TrustlessMulticall) {
@@ -90,11 +94,7 @@ const getContract = (address: string, protocolContract: ProtocolContract, multic
     }
   }
 
-  const contract = new Contract(
-    address,
-    getAbi(),
-    getProvider()
-  )
+  const contract = new Contract(address, getAbi(), getProvider())
 
   switch (protocolContract) {
     case ProtocolContract.Accounting:
