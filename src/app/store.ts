@@ -9,6 +9,7 @@ import transactionsReducer from '../slices/transactions'
 import walletReducer from '../slices/wallet'
 import systemDebtReducer from '../slices/systemDebt'
 import positionsEditorReducer from '../slices/positionsEditor'
+import liquidityPositionsEditorReducer from '../slices/liquidityPositionsEditor'
 import lendSelectionReducer from '../slices/lendSelection'
 import modalReducer from '../slices/modal'
 
@@ -36,6 +37,7 @@ export const store = configureStore({
     wallet: walletReducer,
     systemDebt: systemDebtReducer,
     positionsEditor: positionsEditorReducer,
+    liquidityPositionsEditor: liquidityPositionsEditorReducer,
     lendSelection: lendSelectionReducer,
     modal: modalReducer,
 

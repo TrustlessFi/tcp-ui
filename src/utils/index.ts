@@ -1,10 +1,4 @@
-import { Token } from '@uniswap/sdk-core';
 import { BigNumber, BigNumberish, utils } from "ethers";
-//import { BigNumber as UniswapBigNumber } from "../components/uniswap/node_modules/@ethersproject/bignumber"
-
-import { USDC, USDT } from '../components/uniswap/src/constants/tokens';
-import { LiquidityPosition } from '../slices/liquidityPositions';
-import { SerializedError } from '@reduxjs/toolkit'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
@@ -167,6 +161,9 @@ export const last = <T>(array: Array<T>): T => {
   enforce(array.length > 0, 'Last for empty array')
   return array[array.length - 1]
 }
+
+export const unique = <T>(array: Array<T>): Array<T> =>
+  array.filter((value: T, index: number) => array.indexOf(value) === index)
 
 
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T

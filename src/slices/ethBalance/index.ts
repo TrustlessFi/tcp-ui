@@ -20,9 +20,9 @@ export type ethBalanceArgs = {
 export const fetchEthBalance = createAsyncThunk(
   'ethBalance/fetchEthBalance',
   async (args: ethBalanceArgs) => {
-    const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
+    const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall) as TrustlessMulticall
 
-    return unscale(await tcpMulticall.getEthBalance(args.userAddress))
+    return unscale(await trustlessMulticall.getEthBalance(args.userAddress))
   }
 )
 

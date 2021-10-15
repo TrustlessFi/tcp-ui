@@ -12,14 +12,14 @@ import { ProtocolContract } from '../contracts'
 export const fetchPositions = async (args: positionsArgs) => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.HuePositionNFT, ProtocolContract.HuePositionNFT) as HuePositionNFT
-  const tcpMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+  const trustlessMulticall = getContract(args.TrustlessMulticall, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
   const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
   // fetch the positions
   const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
-  const { positions } = await executeMulticalls(tcpMulticall, {
+  const { positions } = await executeMulticalls(trustlessMulticall, {
     positions: getDuplicateFuncMulticall(
       accounting,
       'getPosition',

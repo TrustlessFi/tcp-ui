@@ -1,40 +1,29 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { Pool as UniswapPool, FeeAmount } from '@uniswap/v3-sdk'
-import { Token as UniswapToken, BigintIsh } from '@uniswap/sdk-core';
 
 import { sliceState, initialState } from '../'
-import { ChainID } from '@trustlessfi/addresses'
 import { fetchPools } from './api'
 
-export interface SerializedUniswapToken {
-  chainID: ChainID
-  address: string,
-  name: string,
-  symbol: string,
-  decimals: number,
+export interface getPoolsArgs {
+  TrustlessMulticall: string
+  ProtocolDataAggregator: string
 }
 
-export interface SerializedUniswapPool {
-  tokenA: SerializedUniswapToken
-  tokenB: SerializedUniswapToken
-  fee: FeeAmount
-  sqrtRatioX96: BigintIsh
-  liquidity: BigintIsh
+export interface poolTokenInfo {
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+}
+
+export interface poolInfo {
+  token0: poolTokenInfo
+  token1: poolTokenInfo
+  sqrtRatioX96: string
+  liquidity: string
   tickCurrent: number
 }
 
-export interface getPoolsArgs {
-    chainID: ChainID,
-    ProtocolDataAggregator: string
-}
-
-export interface poolArgs {
-    chainID: ChainID,
-    poolID: number,
-    Rewards: string
-}
-
-export type poolsInfo = {[key: string]: SerializedUniswapPool}
+export interface poolsInfo {[key: string]: poolInfo}
 
 export interface PoolsState extends sliceState<poolsInfo> {}
 
