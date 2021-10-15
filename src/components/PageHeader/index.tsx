@@ -18,11 +18,11 @@ import {
 } from 'carbon-components-react'
 import { Menu32, Close32 } from '@carbon/icons-react';
 import { Tab } from '../../App'
-import logo from '../../img/tcp-logo-white.svg'
-
 
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator';
+
+const logo = require('../../img/tcp-logo-white.svg')
 
 const PageHeader = () => {
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
@@ -94,7 +94,7 @@ const PageHeader = () => {
             </OverflowMenu>
           </div>
           <HeaderName href="/" prefix="" className='header_logo'>
-            <img src={logo} alt="tcp logo" width={32} height={32} style={{marginRight: 16}}/>
+            <img src={logo} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
             {smallViewport ? null : 'Trustless Currency Protocol'}
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
