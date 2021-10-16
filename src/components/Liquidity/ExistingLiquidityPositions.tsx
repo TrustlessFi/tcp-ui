@@ -42,9 +42,6 @@ const LiquidityPositionsTable = (
           ]}
         />
         <Center style={{padding: 24}}>
-          <Text>
-            You have no positions.
-          </Text>
           {createLiquidityPositionButton}
         </Center>
       </>

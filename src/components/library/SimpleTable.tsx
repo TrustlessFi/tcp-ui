@@ -17,7 +17,7 @@ export const TableHeaderOnly = ({headers}: {headers: string[]}) => (
   <Table>
     <TableHead>
       <TableRow>
-        {Object.keys(headers).map((header, index) => (
+        {headers.map((header, index) => (
           <TableHeader key={index}>{header}</TableHeader>
         ))}
       </TableRow>
