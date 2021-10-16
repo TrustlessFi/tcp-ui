@@ -5,7 +5,7 @@ import { ProtocolContract } from '../contracts'
 import getProvider from '../../utils/getProvider'
 import { zeroAddress, unique } from '../../utils/'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls, rc, getDuplicateContractMulticall, contractFunctionSelector } from '@trustlessfi/multicall'
+import { executeMulticalls, rc, getDuplicateContractMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
 
 import { ProtocolDataAggregator } from '../../utils/typechain/'
 
@@ -17,46 +17,63 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
     const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
+
     // TODO make this into it's own node and cache for 30 minutes
-    const poolAddresses = (await protocolDataAggregator.getIncentivizedPools()).map(config => config.pool)
+    const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
 
-    const calls = poolAddresses.map(pool => contractFunctionSelector(pool, 'token0')).concat(
-      poolAddresses.map(pool => contractFunctionSelector(pool, 'token1')))
+    const tokenCalls = poolConfigs.map(config => ['token0', 'token1'].map(func => contractFunctionSelector(config.pool, func))).flat()
+    const feeCalls = poolConfigs.map(config => contractFunctionSelector(config.pool, 'fee'))
 
-    const { tokenAddresses } = await executeMulticalls(
+    let totalRewardsPortion = 0
+    poolConfigs.map(config => totalRewardsPortion += config.rewardsPortion.toNumber())
+
+    const { poolInfo } = await executeMulticalls(
       trustlessMulticall,
       {
-        tokenAddresses: getDuplicateContractMulticall(
+        poolInfo: getDuplicateContractMulticall(
           new Contract(zeroAddress, poolArtifact.abi, provider),
-          Object.fromEntries(calls.map(call => [call, rc.String])),
+          {
+            ...Object.fromEntries(tokenCalls.map(tokenCall => [tokenCall, rc.String])),
+            ...Object.fromEntries(feeCalls.map(feeCall => [feeCall, rc.Number])),
+          }
+
         ),
       }
     )
 
-    const uniqueTokens = unique(Object.values(tokenAddresses))
+    const uniqueTokens =
+      unique(
+        Object.entries(poolInfo).map(([id, value]) =>
+          selectorToContractFunction(id).func === 'token0' || selectorToContractFunction(id).func === 'token1' ? null : value as string)
+        .filter(value => value !== null)) as string[]
 
     const { tokenSymbols } = await executeMulticalls(
       trustlessMulticall,
       {
         tokenSymbols: getDuplicateContractMulticall(
           new Contract(zeroAddress, erc20Artifact.abi, provider),
-          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address, 'symbol'), rc.String])),
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'symbol'), rc.String])),
         ),
       }
     )
 
-    return Object.fromEntries(poolAddresses.map(poolAddress => {
-      const token0Address = tokenAddresses[contractFunctionSelector(poolAddress, 'token0')]
-      const token1Address = tokenAddresses[contractFunctionSelector(poolAddress, 'token1')]
-      const token0Symbol = tokenSymbols[contractFunctionSelector(token0Address, 'symbol')]
-      const token1Symbol = tokenSymbols[contractFunctionSelector(token1Address, 'symbol')]
+    const result = Object.fromEntries(poolConfigs.map(poolConfig => {
+      const fee = poolInfo[contractFunctionSelector(poolConfig.pool, 'fee')] as number
+      const token0Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token0')] as string
+      const token1Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token1')] as string
+      const token0Symbol = tokenSymbols[contractFunctionSelector(token0Address as string, 'symbol')]
+      const token1Symbol = tokenSymbols[contractFunctionSelector(token1Address as string, 'symbol')]
 
       return [
-        poolAddress,
+        poolConfig.pool,
         {
+          fee,
+          rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
           token0: { address: token0Address, symbol: token0Symbol },
           token1: { address: token1Address, symbol: token1Symbol },
         }
       ]
     }))
+
+    return result
   }
