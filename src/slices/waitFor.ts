@@ -6,7 +6,7 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPools, getPoolsArgs, poolsInfo } from './pools'
+import { getPoolMetadata, getPoolMetadataArgs, poolsInfo } from './poolMetadata'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
 import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
@@ -194,8 +194,8 @@ export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs,
   [FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.Rewards, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForPools = getWaitFunction<getPoolsArgs, poolsInfo>(
-  (state: RootState) => state.pools,
-  getPools,
-  [FetchNode.UserAddress, ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall],
+export const waitForPoolMetadata = getWaitFunction<getPoolMetadataArgs, poolsInfo>(
+  (state: RootState) => state.poolMetadata,
+  getPoolMetadata,
+  [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall],
 )

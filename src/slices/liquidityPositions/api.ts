@@ -1,4 +1,4 @@
-import { liquidityPositions, liquidityPositionsArgs, LiquidityPosition } from './'
+import { liquidityPositions, liquidityPositionsArgs } from './'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 import { unscale, unique } from '../../utils'

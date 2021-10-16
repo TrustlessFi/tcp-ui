@@ -2,7 +2,7 @@ import { DataTableSkeleton, Button } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
-import { waitForLiquidityPositions, waitForPrices, waitForPools } from '../../slices/waitFor'
+import { waitForLiquidityPositions, waitForPrices, waitForPoolMetadata } from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
@@ -14,7 +14,7 @@ import { LiquidityPosition } from '../../slices/liquidityPositions'
 const LiquidityPositionsTable = () => {
   const dispatch = useAppDispatch()
 
-  const pools = waitForPools(selector, dispatch)
+  const pools = waitForPoolMetadata(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
