@@ -1,39 +1,28 @@
-import { BigNumber } from "ethers"
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { sliceState, initialState } from '../'
 import { fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
-import { ChainID } from '@trustlessfi/addresses'
 
 export interface LiquidityPosition {
-  // Core data
-  cumulativeLiquidity: string,
-  id: number,
-  lastTimeRewarded: number,
-  lastBlockPositionIncreased: number,
-  liquidity: BigNumber,
-  owner: string,
-  pool: string,
-  tickLower: number,
-  tickUpper: number,
-  totalRewards: number,
+  positionID: string
+  poolID: number
+  cumulativeLiquidity: string
+  lastTimeRewarded: number
+  lastBlockPositionIncreased: number
+  liquidity: string
+  owner: string
+  tickLower: number
+  tickUpper: number
+  totalRewards: string
 }
 
-export interface liquidityPositions { [key: number]: LiquidityPosition }
+export interface liquidityPositions { [id: string]: LiquidityPosition }
 
 export interface liquidityPositionsArgs {
   Accounting: string,
   TrustlessMulticall: string,
-  Rewards: string,
   userAddress: string
-}
-
-export interface liquidityPositionArgs {
-  Accounting: string,
-  chainID: ChainID,
-  Rewards: string
-  positionID: number,
 }
 
 export interface LiquidityPositionsState extends sliceState<liquidityPositions> {}
@@ -43,22 +32,12 @@ export const getLiquidityPositions = createAsyncThunk(
   async (data: liquidityPositionsArgs) => fetchLiquidityPositions(data),
 )
 
-/*
-export const addLiquidityToPositionThunk = createAsyncThunk(
-  'liquidityPositions/addLiquidityToPosition',
-  async (params: { positionID: string, liquidityToAdd: number }) => addLiquidityToPosition(params.positionID, params.liquidityToAdd)
-)
-*/
-
-// export { addLiquidityToPositionThunk as addLiquidityToPosition }
-
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
   initialState: initialState as LiquidityPositionsState,
   reducers: {},
   extraReducers: (builder) => {
     getGenericReducerBuilder(builder, getLiquidityPositions)
-    // getGenericReducerBuilder(builder, addLiquidityToPositionThunk)
   },
 })
 

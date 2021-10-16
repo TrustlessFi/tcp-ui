@@ -13,12 +13,12 @@ type row = {
   data: { [key in string]: any }
 }
 
-export const TableHeaderOnly = ({row}: {row: row}) => (
+export const TableHeaderOnly = ({headers}: {headers: string[]}) => (
   <Table>
     <TableHead>
       <TableRow>
-        {Object.keys(row.data).map((header) => (
-          <TableHeader key={header}>{header}</TableHeader>
+        {Object.keys(headers).map((header, index) => (
+          <TableHeader key={index}>{header}</TableHeader>
         ))}
       </TableRow>
     </TableHead>
