@@ -1,22 +1,24 @@
 import {
   NumberInput,
 } from 'carbon-components-react'
-import { onNumChange }  from '../../../utils/'
+import { onNumChange }  from '../../utils/'
 
 const PositionNumberInput = ({
   id,
   value,
   action,
+  showSteppers,
 }: {
-  id: string,
-  value: number,
+  id: string
+  value: number
   action: (value: number) => void
+  showSteppers: boolean
 }) => {
   const invalidText = <></>
   return (
     <div style={{display: 'inline-block', width: 167, marginTop: 8}} >
       <NumberInput
-        hideSteppers
+        hideSteppers={!showSteppers}
         id={id}
         invalidText={invalidText}
         min={0}
@@ -28,6 +30,10 @@ const PositionNumberInput = ({
       />
     </div>
   )
+}
+
+PositionNumberInput.defaultProps = {
+  showSteppers: false
 }
 
 export default PositionNumberInput
