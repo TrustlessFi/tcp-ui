@@ -16,18 +16,18 @@ import {
 } from 'carbon-components-react'
 import { ProtocolContract } from '../../slices/contracts'
 import { openModal } from '../../slices/modal'
-import { numDisplay, zeroIfNaN } from '../../utils/index';
-import { reason } from './library/ErrorMessage';
+import { numDisplay, zeroIfNaN } from '../../utils/index'
+import { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import { clearPositions } from '../../slices/positions'
 import { editorClosed } from '../../slices/positionsEditor'
-import PositionNumberInput from './library/PositionNumberInput';
-import LargeText from '../utils/LargeText';
-import PositionMetadata from './library/PositionMetadata';
-import Bold from '../utils/Bold';
-import ErrorMessage from './library/ErrorMessage';
-import InputPicker from '../Lend/library/InputPicker';
-import ApprovalButton from '../utils/ApprovalButton';
+import PositionNumberInput from '../library/PositionNumberInput'
+import LargeText from '../utils/LargeText'
+import PositionMetadata from '../library/PositionMetadata'
+import Bold from '../utils/Bold'
+import ErrorMessage from '../library/ErrorMessage'
+import InputPicker from '../Lend/library/InputPicker'
+import ApprovalButton from '../utils/ApprovalButton'
 
 enum CollateralChange {
   Increase = 'Increase',

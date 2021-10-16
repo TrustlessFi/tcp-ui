@@ -1,5 +1,5 @@
-import LargeText from '../../utils/LargeText'
-import { firstOrNull }  from '../../../utils/'
+import LargeText from '../utils/LargeText'
+import { firstOrNull }  from '../../utils/'
 
 export type reason = {
   message: string
