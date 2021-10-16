@@ -3,7 +3,7 @@ import { Contract } from 'ethers'
 import { getPoolMetadataArgs, poolsMetadata } from './'
 import { ProtocolContract } from '../contracts'
 import getProvider from '../../utils/getProvider'
-import { zeroAddress, unique } from '../../utils/'
+import { zeroAddress, unique, feeToFee} from '../../utils/'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
 
@@ -17,7 +17,6 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
     const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
     const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
-
 
     // TODO make this into it's own node and cache for 30 minutes
     const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
@@ -73,7 +72,7 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
       return [
         poolConfig.pool,
         {
-          fee,
+          fee: feeToFee(fee),
           rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
           poolID: poolIDs[poolConfig.pool],
           address: poolConfig.pool,

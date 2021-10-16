@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { fetchPoolMetadata } from './api'
 
@@ -11,7 +12,7 @@ export interface getPoolMetadataArgs {
 }
 
 export interface poolMetadata {
-  fee: number,
+  fee: Fee,
   rewardsPortion: number,
   poolID: number,
   address: string,
