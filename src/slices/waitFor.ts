@@ -6,15 +6,17 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPoolMetadata, getPoolMetadataArgs, poolsInfo } from './poolMetadata'
+import { getPoolMetadata, getPoolMetadataArgs, poolsMetadata } from './poolMetadata'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
 import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
 import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
 import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
 import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
+import { getRewardsInfo, rewardsArgs, rewardsInfo } from './rewards'
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
 import { ethBalance, ethBalanceArgs, fetchEthBalance } from './ethBalance'
+import { getPoolTicks, poolTickArgs, poolTickInfo } from './poolTicks'
 import { ProtocolContract, getGovernorContract, getProtocolDataAggregatorContract, getContractArgs, getContractThunk, getContractReturnType, getTrustlessMulticallContract, getSingleContractArgs } from './contracts'
 
 import { sliceState } from './'
@@ -23,8 +25,10 @@ enum FetchNode {
   ChainID,
   GovernorInfo,
   LiquidationsInfo,
+  RewardsInfo,
   MarketInfo,
   RatesInfo,
+  PoolMetadata,
   SDI,
   UserAddress,
 }
@@ -43,6 +47,10 @@ const getNodeFetch = (
       return {governorInfo: waitForGovernor(selector, dispatch)}
     case FetchNode.LiquidationsInfo:
       return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
+    case FetchNode.RewardsInfo:
+      return {rewardsInfo: waitForRewards(selector, dispatch)}
+    case FetchNode.PoolMetadata:
+      return {poolMetadata: waitForPoolMetadata(selector, dispatch)}
     case FetchNode.MarketInfo:
       return {marketInfo: waitForMarket(selector, dispatch)}
     case FetchNode.RatesInfo:
@@ -158,6 +166,12 @@ export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidation
   [ProtocolContract.Liquidations, ProtocolContract.TrustlessMulticall],
 )
 
+export const waitForRewards = getWaitFunction<rewardsArgs, rewardsInfo>(
+  (state: RootState) => state.rewards,
+  getRewardsInfo,
+  [ProtocolContract.Rewards, ProtocolContract.TrustlessMulticall],
+)
+
 export const waitForRates = getWaitFunction<ratesArgs, ratesInfo>(
   (state: RootState) => state.rates,
   getRatesInfo,
@@ -194,8 +208,14 @@ export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs,
   [FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForPoolMetadata = getWaitFunction<getPoolMetadataArgs, poolsInfo>(
+export const waitForPoolMetadata = getWaitFunction<getPoolMetadataArgs, poolsMetadata>(
   (state: RootState) => state.poolMetadata,
   getPoolMetadata,
   [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall, ProtocolContract.Rewards],
+)
+
+export const waitForPoolTicks = getWaitFunction<poolTickArgs, poolTickInfo>(
+  (state: RootState) => state.poolTicks,
+  getPoolTicks,
+  [FetchNode.RewardsInfo, FetchNode.PoolMetadata, ProtocolContract.Prices, ProtocolContract.TrustlessMulticall],
 )

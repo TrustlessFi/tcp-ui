@@ -1,6 +1,6 @@
 import { Contract } from 'ethers'
 
-import { getPoolMetadataArgs, poolsInfo } from './'
+import { getPoolMetadataArgs, poolsMetadata } from './'
 import { ProtocolContract } from '../contracts'
 import getProvider from '../../utils/getProvider'
 import { zeroAddress, unique } from '../../utils/'
@@ -12,7 +12,7 @@ import { ProtocolDataAggregator, Rewards } from '../../utils/typechain/'
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 
-export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<poolsInfo> => {
+export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<poolsMetadata> => {
     const provider = getProvider()
     const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
     const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
@@ -76,6 +76,7 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
           fee,
           rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
           poolID: poolIDs[poolConfig.pool],
+          address: poolConfig.pool,
           token0: { address: token0Address, symbol: token0Symbol },
           token1: { address: token1Address, symbol: token1Symbol },
         }

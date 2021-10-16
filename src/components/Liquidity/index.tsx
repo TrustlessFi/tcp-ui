@@ -27,7 +27,7 @@ const LiquidityPositions = () => {
       return (
         <>
           {closeButton}
-          <CreateLiquidityPosition poolID={liquidityPositionsEditor.poolID} />
+          <CreateLiquidityPosition poolAddress={liquidityPositionsEditor.poolAddress} />
         </>
       )
     case LiquidityPositionEditorStatus.Edit:

@@ -13,7 +13,7 @@ interface LiquidityPositionEditorClosedState {
 
 interface LiquidityPositionEditorCreateState {
   status: LiquidityPositionEditorStatus.Create
-  poolID: number
+  poolAddress: string
 }
 
 interface LiquidityPositionEditorEditState {
@@ -38,7 +38,7 @@ export const liquidityPositionsEditorSlice = createSlice({
   // TODO add to local storage
   initialState: getLocalStorage(name, initialState) as LiquidityPositionsEditorState,
   reducers: {
-    startCreate: (_state, action: PayloadAction<{ poolID: number}>) => {
+    startCreate: (_state, action: PayloadAction<{ poolAddress: string}>) => {
       return {
         status: LiquidityPositionEditorStatus.Create,
         ...action.payload

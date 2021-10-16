@@ -14,13 +14,14 @@ export interface poolMetadata {
   fee: number,
   rewardsPortion: number,
   poolID: number,
+  address: string,
   token0: { address: string, symbol: string }
   token1: { address: string, symbol: string }
 }
 
-export interface poolsInfo {[key: string]: poolMetadata}
+export interface poolsMetadata {[key: string]: poolMetadata}
 
-export interface PoolsState extends sliceState<poolsInfo> {}
+export interface PoolsState extends sliceState<poolsMetadata> {}
 
 export const getPoolMetadata = createAsyncThunk(
   'pools/getPoolMetadata',
