@@ -5,7 +5,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations, } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticall, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, getMulticall, rc } from '@trustlessfi/multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -22,20 +22,25 @@ export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 
 export const getLiquidationsInfo = createAsyncThunk(
   'liquidations/getLiquidationsInfo',
-
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
     const liquidations = getContract(args.Liquidations, ProtocolContract.Liquidations) as Liquidations
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
-    return (await executeMulticall(
+    const { liquidationsInfo } = await executeMulticalls(
       trustlessMulticall,
-      liquidations,
       {
-        twapDuration: rc.Number,
-        discoveryIncentive: rc.BigNumberUnscale,
-        liquidationIncentive: rc.BigNumberUnscale,
-      },
-    ))
+        liquidationsInfo: getMulticall(
+          liquidations,
+          {
+            twapDuration: rc.Number,
+            discoveryIncentive: rc.BigNumberUnscale,
+            liquidationIncentive: rc.BigNumberUnscale,
+          },
+        ),
+      }
+    )
+
+    return liquidationsInfo
   }
 )
 

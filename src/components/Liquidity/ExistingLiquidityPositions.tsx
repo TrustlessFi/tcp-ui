@@ -25,7 +25,7 @@ const LiquidityPositionsTable = (
   const createLiquidityPositionButton =
     <Button
       size="small"
-      onClick={() => dispatch(startCreate({ poolID: pool.poolID }))}>
+      onClick={() => dispatch(startCreate({ poolAddress: pool.address }))}>
       New Position
     </Button>
 

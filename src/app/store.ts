@@ -2,6 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 
 import positionsReducer from '../slices/positions'
 import poolMetadataReducer from '../slices/poolMetadata'
+import poolTicksReducer from '../slices/poolTicks'
 import liquidityPositionsReducer from '../slices/liquidityPositions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
@@ -17,6 +18,7 @@ import governorReducer from '../slices/governor'
 import liquidationsReducer from '../slices/liquidations'
 import marketReducer from '../slices/market'
 import pricesReducer from '../slices/prices'
+import rewardsReducer from '../slices/rewards'
 import ratesReducer from '../slices/rates'
 
 import ethBalanceReducer from '../slices/ethBalance'
@@ -30,6 +32,7 @@ export const store = configureStore({
   reducer: {
     positions: positionsReducer,
     poolMetadata: poolMetadataReducer,
+    poolTicks: poolTicksReducer,
     liquidityPositions: liquidityPositionsReducer,
     proposals: proposalsReducer,
     chainID: chainIDReducer,
@@ -45,6 +48,7 @@ export const store = configureStore({
     liquidations: liquidationsReducer,
     market: marketReducer,
     prices: pricesReducer,
+    rewards: rewardsReducer,
     rates: ratesReducer,
 
     ethBalance: ethBalanceReducer,
