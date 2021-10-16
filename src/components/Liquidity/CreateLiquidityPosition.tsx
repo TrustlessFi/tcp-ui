@@ -12,24 +12,24 @@ const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
 const TickSelector = ({
   tick,
   spacing,
+  inverted,
   priceUnit,
   min,
-  inverted,
   updateTick,
 }: {
   tick: number
   spacing: number
+  inverted: boolean
   priceUnit: string
   min: boolean
-  inverted: boolean
   updateTick: (newTick: number) => void
 }) => {
   return (
     <div>
       {min ? 'Min Price' : 'Max Price'}
-      <Button onClick={() => updateTick(tick - spacing)}>-</Button>
-      {tickToPriceDisplay(tick)}
-      <Button onClick={() => updateTick(tick + spacing)}>+</Button>
+      <Button onClick={() => updateTick(inverted ? tick + spacing : tick - spacing)}>-</Button>
+      {tickToPriceDisplay(inverted ? -tick : tick)}
+      <Button onClick={() => updateTick(inverted ? tick - spacing : tick + spacing)}>+</Button>
       {priceUnit}
     </div>
   )
@@ -69,6 +69,10 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     }
   })
 
+  const toggleInverted = () => setInverted(!inverted)
+
+  const updateLowerTick = (newTick: number) => setLowerTick(tick !== null && newTick < tick ? newTick : lowerTick)
+  const updateUpperTick = (newTick: number) => setUpperTick(tick !== null && newTick > tick ? newTick : upperTick)
 
   const priceUnit = pool === null ? '- per -' :
     (inverted ? pool.token0.symbol : pool.token1.symbol) +
@@ -79,33 +83,33 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     <div style={{position: 'relative'}}>
       <RelativeLoading show={poolTicks === null || poolMetadata === null} />
       <Button
-        onClick={() => setInverted(true)}
-        kind={inverted ? 'secondary' : 'primary'}
-        disabled={pool === null}>
+        small
+        onClick={toggleInverted}
+        kind={inverted ? 'secondary' : 'primary'}>
         {pool === null ? '-' : pool.token0.symbol}
       </Button>
       <Button
-        onClick={() => setInverted(false)}
-        kind={inverted ? 'primary' : 'secondary'}
-        disabled={pool === null}>
+        small
+        onClick={toggleInverted}
+        kind={inverted ? 'primary' : 'secondary'}>
         {pool === null ? '-' : pool.token1.symbol}
       </Button>
       {inverted ? price1 : price0} {priceUnit}
       <TickSelector
-        tick={lowerTick}
+        tick={inverted ? upperTick : lowerTick}
+        updateTick={inverted ? updateUpperTick : updateLowerTick}
+        inverted={inverted}
         spacing={spacing}
         priceUnit={priceUnit}
-        updateTick={(newTick: number) => setLowerTick(newTick < upperTick ? newTick : lowerTick)}
-        inverted={inverted}
         min
       />
       lower tick: {lowerTick}
       <TickSelector
-        tick={upperTick}
+        tick={inverted ? lowerTick : upperTick}
+        updateTick={inverted ? updateLowerTick : updateUpperTick}
+        inverted={inverted}
         spacing={spacing}
         priceUnit={priceUnit}
-        inverted={inverted}
-        updateTick={(newTick: number) => setUpperTick(newTick > lowerTick ? newTick : upperTick)}
       />
       upper tick: {upperTick}
     </div>
