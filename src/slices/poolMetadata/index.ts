@@ -5,6 +5,7 @@ import { fetchPoolMetadata } from './api'
 
 
 export interface getPoolMetadataArgs {
+  Rewards: string
   TrustlessMulticall: string
   ProtocolDataAggregator: string
 }
@@ -12,6 +13,7 @@ export interface getPoolMetadataArgs {
 export interface poolMetadata {
   fee: number,
   rewardsPortion: number,
+  poolID: number,
   token0: { address: string, symbol: string }
   token1: { address: string, symbol: string }
 }

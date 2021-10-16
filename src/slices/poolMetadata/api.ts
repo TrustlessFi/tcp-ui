@@ -5,9 +5,9 @@ import { ProtocolContract } from '../contracts'
 import getProvider from '../../utils/getProvider'
 import { zeroAddress, unique } from '../../utils/'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls, rc, getDuplicateContractMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
+import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
 
-import { ProtocolDataAggregator } from '../../utils/typechain/'
+import { ProtocolDataAggregator, Rewards } from '../../utils/typechain/'
 
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -15,6 +15,7 @@ import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/E
 export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<poolsInfo> => {
     const provider = getProvider()
     const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
+    const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
 
@@ -27,7 +28,7 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
     let totalRewardsPortion = 0
     poolConfigs.map(config => totalRewardsPortion += config.rewardsPortion.toNumber())
 
-    const { poolInfo } = await executeMulticalls(
+    const { poolInfo, poolIDs } = await executeMulticalls(
       trustlessMulticall,
       {
         poolInfo: getDuplicateContractMulticall(
@@ -36,7 +37,12 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
             ...Object.fromEntries(tokenCalls.map(tokenCall => [tokenCall, rc.String])),
             ...Object.fromEntries(feeCalls.map(feeCall => [feeCall, rc.Number])),
           }
-
+        ),
+        poolIDs: getDuplicateFuncMulticall(
+          rewards,
+          'poolIDForPool',
+          rc.Number,
+          Object.fromEntries(poolConfigs.map(config => [config.pool, [config.pool]]))
         ),
       }
     )
@@ -44,7 +50,7 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
     const uniqueTokens =
       unique(
         Object.entries(poolInfo).map(([id, value]) =>
-          selectorToContractFunction(id).func === 'token0' || selectorToContractFunction(id).func === 'token1' ? null : value as string)
+          selectorToContractFunction(id).func !== 'token0' && selectorToContractFunction(id).func !== 'token1' ? null : value as string)
         .filter(value => value !== null)) as string[]
 
     const { tokenSymbols } = await executeMulticalls(
@@ -69,11 +75,14 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
         {
           fee,
           rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
+          poolID: poolIDs[poolConfig.pool],
           token0: { address: token0Address, symbol: token0Symbol },
           token1: { address: token1Address, symbol: token1Symbol },
         }
       ]
     }))
+
+    console.log({result})
 
     return result
   }

@@ -197,5 +197,5 @@ export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs,
 export const waitForPoolMetadata = getWaitFunction<getPoolMetadataArgs, poolsInfo>(
   (state: RootState) => state.poolMetadata,
   getPoolMetadata,
-  [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall],
+  [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall, ProtocolContract.Rewards],
 )
