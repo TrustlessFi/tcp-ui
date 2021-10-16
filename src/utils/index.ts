@@ -1,4 +1,5 @@
 import { BigNumber, BigNumberish, utils } from "ethers";
+import { TickMath, nearestUsableTick } from '@uniswap/v3-sdk'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
@@ -244,3 +245,28 @@ export const getE18PriceForSqrtX96Price = (sqrtPriceX96: BigNumber) => {
   let sqrtPriceE18 = sqrtPriceX96.mul(ONE).div(Q96)
   return sqrtPriceE18.mul(sqrtPriceE18).div(ONE)
 }
+
+export enum Fee {
+  LOW = 500,
+  DEFAULT = 3000,
+  HIGH = 10000,
+}
+
+export const getSpaceForFee = (fee: Fee) => {
+  switch (fee) {
+    case Fee.LOW:
+      return 10
+    case Fee.DEFAULT:
+      return 60
+    case Fee.HIGH:
+      return 200
+  }
+}
+
+export const feeToFee = (fee: number): Fee => {
+  if (fee in Fee) return fee as Fee
+  else throw 'invalid fee: ' + fee
+}
+
+export const tickToPrice = (tick: number): number =>
+  unscale(getE18PriceForSqrtX96Price(bnf(TickMath.getSqrtRatioAtTick(tick).toString())))
