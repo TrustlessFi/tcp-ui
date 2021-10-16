@@ -12,6 +12,10 @@ export const sleepS = (seconds: number) => {
 export const log = (input: { base: number; val: number }) =>
   Math.log(input.val) / Math.log(input.base)
 
+export const ONE = BigNumber.from('1000000000000000000')
+
+export const Q96 = BigNumber.from(BigInt(2**96))
+
 export const bnf = (val: BigNumberish) => BigNumber.from(val)
 
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
@@ -234,4 +238,9 @@ export const equalStrings = (a: string, b: string) => {
 
 export const equalStringsCaseInsensitive = (a: string, b: string) => {
   return equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
+}
+
+export const getE18PriceForSqrtX96Price = (sqrtPriceX96: BigNumber) => {
+  let sqrtPriceE18 = sqrtPriceX96.mul(ONE).div(Q96)
+  return sqrtPriceE18.mul(sqrtPriceE18).div(ONE)
 }

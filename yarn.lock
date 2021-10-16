@@ -3816,30 +3816,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/v3-periphery@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@uniswap/v3-periphery@npm:1.0.0"
+"@uniswap/v3-periphery@npm:^1.0.1, @uniswap/v3-periphery@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "@uniswap/v3-periphery@npm:1.2.1"
   dependencies:
     "@openzeppelin/contracts": 3.4.1-solc-0.7-2
     "@uniswap/lib": ^4.0.1-alpha
     "@uniswap/v2-core": 1.0.1
     "@uniswap/v3-core": 1.0.0
     base64-sol: 1.0.1
-  checksum: 9b3aa631ce12b324ab09aa42712e8434ab6f55f9e87a97fb4a80da084c28c175cc682a8f30dd04f7eb602e385753e236a983053763579a07aa0ebf65971172cd
+    hardhat-watcher: ^2.1.1
+  checksum: 9dc6fb66b91404f4881876f4ebe6789d745299d535b02849a63861faeb5e63131f97d6d0306ef1f4f8b03d7a5c5f3c70e424b42b39b0d171b42cfd93cc89f6a0
   languageName: node
   linkType: hard
 
-"@uniswap/v3-sdk@npm:3.3.2":
-  version: 3.3.2
-  resolution: "@uniswap/v3-sdk@npm:3.3.2"
+"@uniswap/v3-sdk@npm:^3.5.1-optimism-regensis":
+  version: 3.5.1
+  resolution: "@uniswap/v3-sdk@npm:3.5.1"
   dependencies:
     "@ethersproject/abi": ^5.0.12
     "@ethersproject/solidity": ^5.0.9
     "@uniswap/sdk-core": ^3.0.1
-    "@uniswap/v3-periphery": 1.0.0
+    "@uniswap/v3-periphery": ^1.1.1
+    "@uniswap/v3-staker": 1.0.0
     tiny-invariant: ^1.1.0
     tiny-warning: ^1.0.3
-  checksum: 25e94c109200aa35b46b01ae5a2a6239a64946d72d4b236ebf0b52ff69b30bd993683082cbd9fa8bec1d0c29edd2a66c95c42031d624d3cafc30254a63550f53
+  checksum: 196ad3cdc17673203ea16c684fe4371fe3dcab106be4f1d3adb999b4381b24dd109baa16c47fcf0b3ae286fcb2ec4624dcff9e634cd12ef2258d033e99f6843f
+  languageName: node
+  linkType: hard
+
+"@uniswap/v3-staker@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@uniswap/v3-staker@npm:1.0.0"
+  dependencies:
+    "@openzeppelin/contracts": 3.4.1-solc-0.7-2
+    "@uniswap/v3-core": 1.0.0
+    "@uniswap/v3-periphery": ^1.0.1
+  checksum: 5a68e59f33d4761956ad735c8ce5ea6e566076bd260ea0a0bb4b3a0db237719e39f21a22eb0a5a231141efdf0154bfe03f690612d632898f33192b4442c888b3
   languageName: node
   linkType: hard
 
@@ -6749,7 +6762,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.4.1":
+"chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.4.1, chokidar@npm:^3.4.3":
   version: 3.5.2
   resolution: "chokidar@npm:3.5.2"
   dependencies:
@@ -10560,6 +10573,17 @@ fsevents@^1.2.7:
     ajv: ^6.12.3
     har-schema: ^2.0.0
   checksum: b998a7269ca560d7f219eedc53e2c664cd87d487e428ae854a6af4573fc94f182fe9d2e3b92ab968249baec7ebaf9ead69cf975c931dc2ab282ec182ee988280
+  languageName: node
+  linkType: hard
+
+"hardhat-watcher@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "hardhat-watcher@npm:2.1.1"
+  dependencies:
+    chokidar: ^3.4.3
+  peerDependencies:
+    hardhat: ^2.0.0
+  checksum: 1bd2e5b136c189260b9c38995e264eb76ee4b510abae79fe9193ced4817d01c5568eb1944bb9b83628448d927c689c3aa9aed6205ff7e6ad17aa6f14b77a2031
   languageName: node
   linkType: hard
 
@@ -18707,7 +18731,7 @@ resolve@^2.0.0-next.3:
     "@typescript-eslint/eslint-plugin": ^4.29.0
     "@typescript-eslint/parser": ^4.29.0
     "@uniswap/sdk-core": ^3.0.1
-    "@uniswap/v3-sdk": 3.3.2
+    "@uniswap/v3-sdk": ^3.5.1-optimism-regensis
     "@web3-react/core": ^6.1.9
     "@web3-react/fortmatic-connector": ^6.1.6
     "@web3-react/injected-connector": ^6.0.7
