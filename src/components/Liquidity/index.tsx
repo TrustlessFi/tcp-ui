@@ -1,28 +1,43 @@
 import CreateLiquidityPosition from './CreateLiquidityPosition'
 import UpdateLiquidityPosition from './UpdateLiquidityPosition'
-import ExistingPositions from './ExistingPositions'
+import ExistingLiquidityPositions from './ExistingLiquidityPositions'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Button,
 } from 'carbon-components-react'
-import { editorClosed } from '../../slices/liquidityPositionsEditor'
+import { close, LiquidityPositionEditorStatus } from '../../slices/liquidityPositionsEditor'
+
 
 const LiquidityPositions = () => {
   const dispatch = useAppDispatch()
   const liquidityPositionsEditor = selector(state => state.liquidityPositionsEditor)
 
-  if (!liquidityPositionsEditor.open) return <ExistingPositions />
-
-  return (
-    <>
-      <div style={{marginBottom: 32}}>
-        <Button onClick={() => dispatch(editorClosed())}>Go Back</Button>
-      </div>
-      {(liquidityPositionsEditor.status.creating
-      ? <CreateLiquidityPosition />
-      : <UpdateLiquidityPosition id={liquidityPositionsEditor.status.positionID} />)}
-    </>
+  const closeButton = (
+    <div style={{marginBottom: 32}}>
+      <Button onClick={() => dispatch(close())}>Go Back</Button>
+    </div>
   )
+
+  const status = liquidityPositionsEditor.status
+
+  switch(status) {
+    case LiquidityPositionEditorStatus.Closed:
+      return <ExistingLiquidityPositions />
+    case LiquidityPositionEditorStatus.Create:
+      return (
+        <>
+          {closeButton}
+          <CreateLiquidityPosition poolID={liquidityPositionsEditor.poolID} />
+        </>
+      )
+    case LiquidityPositionEditorStatus.Edit:
+      return (
+        <>
+          {closeButton}
+          <UpdateLiquidityPosition positionID={liquidityPositionsEditor.positionID} />
+        </>
+      )
+  }
 }
 
 export default LiquidityPositions

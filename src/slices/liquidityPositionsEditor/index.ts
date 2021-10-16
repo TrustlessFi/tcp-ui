@@ -1,42 +1,61 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { getLocalStorage } from '../../utils'
 
-interface editorStatus {
-  positionID: number,
-  creating: boolean,
+export enum LiquidityPositionEditorStatus {
+  Closed,
+  Create,
+  Edit,
 }
 
-export interface LiquidityPositionsEditorState {
-  open: boolean,
-  status: editorStatus,
+interface LiquidityPositionEditorClosedState {
+  status: LiquidityPositionEditorStatus.Closed
 }
+
+interface LiquidityPositionEditorCreateState {
+  status: LiquidityPositionEditorStatus.Create
+  poolID: number
+}
+
+interface LiquidityPositionEditorEditState {
+  status: LiquidityPositionEditorStatus.Edit
+  positionID: string
+}
+
+type LiquidityPositionsEditorState =
+  LiquidityPositionEditorClosedState |
+  LiquidityPositionEditorCreateState |
+  LiquidityPositionEditorEditState
 
 const initialState: LiquidityPositionsEditorState = {
-  open: false,
-  status: {
-    positionID: 0,
-    creating: false,
-  },
+  status: LiquidityPositionEditorStatus.Closed
 }
 
 const name = 'liquidityPositionsEditor'
 
-// TODO add to local storage
 
 export const liquidityPositionsEditorSlice = createSlice({
   name,
+  // TODO add to local storage
   initialState: getLocalStorage(name, initialState) as LiquidityPositionsEditorState,
   reducers: {
-    editorOpened: (state, action: PayloadAction<editorStatus>) => {
-      state.open = true
-      state.status = action.payload
+    startCreate: (_state, action: PayloadAction<{ poolID: number}>) => {
+      return {
+        status: LiquidityPositionEditorStatus.Create,
+        ...action.payload
+      }
     },
-    editorClosed: (state) => {
-      state.open = false
+    startEdit: (_state, action: PayloadAction<{ positionID: string}>) => {
+      return {
+        status: LiquidityPositionEditorStatus.Edit,
+        ...action.payload
+      }
+    },
+    close: (_state) => {
+      return initialState
     }
   }
 })
 
-export const { editorOpened, editorClosed } = liquidityPositionsEditorSlice.actions
+export const { startCreate, startEdit, close } = liquidityPositionsEditorSlice.actions
 
 export default liquidityPositionsEditorSlice.reducer

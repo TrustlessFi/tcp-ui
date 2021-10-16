@@ -21,17 +21,16 @@ const ExistingPositionsTable = () => {
     return (
       <div style={{position: 'relative'}}>
         <RelativeLoading show={userAddress !== null} />
-        <TableHeaderOnly row={{
-          key: 'key',
-          data: {
-            'Position ID': '',
-            'Debt': '',
-            'Collateral': '',
-            'Collateralization Ratio': '',
-            'Rewards': '',
-            '': ''
-          },
-        }} />
+        <TableHeaderOnly headers=
+          {[
+            'Position ID',
+            'Debt',
+            'Collateral',
+            'Collateralization Ratio',
+            'Rewards',
+            '',
+          ]}
+        />
         <Center>
           <div style={{margin: 32}}>
             <ConnectWalletButton />
