@@ -97,11 +97,15 @@ const ExistingLiquidityPositions = () => {
 
   return (
     <AppTile title="Uniswap Reward Positions">
-      {Object.values(pools).map(pool => (
-        <LiquidityPositionsTable
-          pool={pool}
-          liquidityPositions={Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)}
-        />
+      {Object.values(pools).sort((a, b) => a.poolID - b.poolID).map(pool => (
+        <>
+          <h4>{pool.token0.symbol}:{pool.token1.symbol} {pool.fee / 10000}%</h4>
+          <h5>{pool.rewardsPortion}% of TCP Liquidity rewards</h5>
+          <LiquidityPositionsTable
+            pool={pool}
+            liquidityPositions={Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)}
+          />
+        </>
       ))}
     </AppTile>
   )
