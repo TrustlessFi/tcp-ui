@@ -1,10 +1,12 @@
 import { Button } from 'carbon-components-react'
+import { Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPoolMetadata, waitForPoolTicks } from '../../slices/waitFor'
 import { numDisplay, getSpaceForFee, tickToPrice } from '../../utils'
 import { nearestUsableTick } from '@uniswap/v3-sdk'
 import RelativeLoading from '../library/RelativeLoading';
+import { Row, Col } from 'react-flexbox-grid'
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -25,13 +27,37 @@ const TickSelector = ({
   updateTick: (newTick: number) => void
 }) => {
   return (
-    <div>
-      {min ? 'Min Price' : 'Max Price'}
-      <Button onClick={() => updateTick(inverted ? tick + spacing : tick - spacing)}>-</Button>
-      {tickToPriceDisplay(inverted ? -tick : tick)}
-      <Button onClick={() => updateTick(inverted ? tick - spacing : tick + spacing)}>+</Button>
-      {priceUnit}
-    </div>
+    <Row middle="xs" center="xs">
+      <Col xs>
+        <Button
+          small
+          hasIconOnly
+          kind="secondary"
+          renderIcon={Add16}
+          onClick={() => updateTick(inverted ? tick + spacing : tick - spacing)}
+        />
+      </Col>
+      <Col xs>
+        <Row>
+          {min ? 'Min Price' : 'Max Price'}
+        </Row>
+        <Row>
+          {tickToPriceDisplay(inverted ? -tick : tick)}
+        </Row>
+        <Row>
+          {priceUnit}
+        </Row>
+      </Col>
+      <Col xs>
+        <Button
+          small
+          hasIconOnly
+          kind="secondary"
+          renderIcon={Add16}
+          onClick={() => updateTick(inverted ? tick - spacing : tick + spacing)}
+        />
+      </Col>
+    </Row>
   )
 }
 
@@ -61,9 +87,10 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const isDataLoadedRef = useRef(false)
 
   useEffect(() => {
-    if (!isDataLoadedRef.current && nextLowest !== 0 && nextLowest !== null && nextHighest !== null) {
+    if (!isDataLoadedRef.current && tick !== null && nextLowest !== null && nextHighest !== null) {
       isDataLoadedRef.current = true
 
+      setInverted(tick < 0)
       setLowerTick(nextLowest)
       setUpperTick(nextHighest)
     }
@@ -82,36 +109,44 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   return (
     <div style={{position: 'relative'}}>
       <RelativeLoading show={poolTicks === null || poolMetadata === null} />
-      <Button
-        small
-        onClick={toggleInverted}
-        kind={inverted ? 'secondary' : 'primary'}>
-        {pool === null ? '-' : pool.token0.symbol}
-      </Button>
-      <Button
-        small
-        onClick={toggleInverted}
-        kind={inverted ? 'primary' : 'secondary'}>
-        {pool === null ? '-' : pool.token1.symbol}
-      </Button>
-      {inverted ? price1 : price0} {priceUnit}
-      <TickSelector
-        tick={inverted ? upperTick : lowerTick}
-        updateTick={inverted ? updateUpperTick : updateLowerTick}
-        inverted={inverted}
-        spacing={spacing}
-        priceUnit={priceUnit}
-        min
-      />
-      lower tick: {lowerTick}
-      <TickSelector
-        tick={inverted ? lowerTick : upperTick}
-        updateTick={inverted ? updateLowerTick : updateUpperTick}
-        inverted={inverted}
-        spacing={spacing}
-        priceUnit={priceUnit}
-      />
-      upper tick: {upperTick}
+      <Row top="xs" center="xs">
+        <Button
+          small
+          onClick={toggleInverted}
+          kind={inverted ? 'secondary' : 'primary'}>
+          {pool === null ? '-' : pool.token0.symbol}
+        </Button>
+        <Button
+          small
+          onClick={toggleInverted}
+          kind={inverted ? 'primary' : 'secondary'}>
+          {pool === null ? '-' : pool.token1.symbol}
+        </Button>
+      </Row>
+      <Row middle="xs" center="xs">
+        <Col xs>
+          <TickSelector
+            tick={inverted ? upperTick : lowerTick}
+            updateTick={inverted ? updateUpperTick : updateLowerTick}
+            inverted={inverted}
+            spacing={spacing}
+            priceUnit={priceUnit}
+            min
+          />
+        </Col>
+        <Col xs>
+          {inverted ? price1 : price0} {priceUnit}
+        </Col>
+        <Col xs>
+          <TickSelector
+            tick={inverted ? lowerTick : upperTick}
+            updateTick={inverted ? updateLowerTick : updateUpperTick}
+            inverted={inverted}
+            spacing={spacing}
+            priceUnit={priceUnit}
+          />
+        </Col>
+      </Row>
     </div>
   )
 }
