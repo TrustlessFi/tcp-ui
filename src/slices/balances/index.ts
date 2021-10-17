@@ -1,9 +1,8 @@
 import { sliceState } from '../'
 import { unscale, uint255Max, bnf } from '../../utils'
-import { TrustlessMulticallViewOnly } from '../../utils/typechain/'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract } from '../contracts'
-import getContract, { getMulticallContract, contract } from '../../utils/getContract'
+import { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
 
 export interface tokenInfo {

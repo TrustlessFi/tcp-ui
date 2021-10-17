@@ -27,7 +27,7 @@ export const initialState: sliceState<any> = {
   }
 }
 
-const getInitialStateCopy = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
+export const getInitialStateCopy = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
 
 export const getState = <T>(value: T | null): sliceState<T> => {
   const state = getInitialStateCopy<T>()

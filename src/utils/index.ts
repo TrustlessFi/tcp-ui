@@ -137,9 +137,7 @@ export const timeS = () => Math.floor(timeMS() / 1000)
 export const getLocalStorage = (key: string, defaultValue: any = null) => {
   const rawValue = localStorage.getItem(key)
 
-  if (rawValue === null) {
-    return defaultValue
-  }
+  if (rawValue === null) return defaultValue
 
   const sliceStateWithExpiration = JSON.parse(rawValue)
 

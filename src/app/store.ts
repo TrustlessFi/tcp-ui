@@ -2,7 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 
 import positionsReducer from '../slices/positions'
 import poolMetadataReducer from '../slices/poolMetadata'
-import poolTicksReducer from '../slices/poolTicks'
+import poolCurrentDataReducer from '../slices/poolCurrentData'
 import liquidityPositionsReducer from '../slices/liquidityPositions'
 import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
@@ -32,7 +32,7 @@ export const store = configureStore({
   reducer: {
     positions: positionsReducer,
     poolMetadata: poolMetadataReducer,
-    poolTicks: poolTicksReducer,
+    poolCurrentData: poolCurrentDataReducer,
     liquidityPositions: liquidityPositionsReducer,
     proposals: proposalsReducer,
     chainID: chainIDReducer,

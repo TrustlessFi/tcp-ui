@@ -2,7 +2,8 @@ import { Button } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { startCreate, startEdit } from '../../slices/liquidityPositionsEditor'
-import { waitForLiquidityPositions, waitForPoolMetadata } from '../../slices/waitFor'
+import { clearPoolCurrentData } from '../../slices/poolCurrentData'
+import { waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf } from '../../utils/'
 import { poolMetadata } from '../../slices/poolMetadata'
@@ -57,7 +58,10 @@ const LiquidityPositionsTable = (
         'Rewards': '~546 TCP',
         '': 'claim'
       },
-      onClick: () => dispatch(startEdit({ positionID: lqPos.positionID, }))
+      onClick: () => {
+        dispatch(clearPoolCurrentData(pool.address))
+        dispatch(startEdit({ positionID: lqPos.positionID, }))
+      }
     }
   ))
   return (
@@ -73,7 +77,7 @@ const LiquidityPositionsTable = (
 const ExistingLiquidityPositions = () => {
   const dispatch = useAppDispatch()
 
-  const pools = waitForPoolMetadata(selector, dispatch)
+  const pools = waitForPoolsMetadata(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
@@ -97,7 +101,7 @@ const ExistingLiquidityPositions = () => {
     <AppTile title="Uniswap Reward Positions">
       {Object.values(pools).sort((a, b) => a.poolID - b.poolID).map(pool => (
         <>
-          <h4>{pool.token0.info.symbol}:{pool.token1.info.symbol} {pool.fee / 10000}%</h4>
+          <h4>{pool.token0.symbol}:{pool.token1.symbol} {pool.fee / 10000}%</h4>
           <h5>{pool.rewardsPortion}% of TCP Liquidity rewards</h5>
           <LiquidityPositionsTable
             pool={pool}

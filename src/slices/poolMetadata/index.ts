@@ -2,21 +2,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { tokenInfo, approval } from '../balances'
+import { tokenInfo } from '../balances'
 import { fetchPoolMetadata } from './api'
 
-
-export interface getPoolMetadataArgs {
+export interface getPoolsMetadataArgs {
   Rewards: string
   TrustlessMulticall: string
   ProtocolDataAggregator: string
   userAddress: string
-}
-
-interface tokenData {
-  info: tokenInfo
-  rewardsApproval: approval
-  userBalance: number
 }
 
 export interface poolMetadata {
@@ -24,18 +17,17 @@ export interface poolMetadata {
   rewardsPortion: number
   poolID: number
   address: string
-  sqrtPriceX96: string
-  token0: tokenData
-  token1: tokenData
+  token0: tokenInfo
+  token1: tokenInfo
 }
 
 export interface poolsMetadata {[key: string]: poolMetadata}
 
 export interface PoolsState extends sliceState<poolsMetadata> {}
 
-export const getPoolMetadata = createAsyncThunk(
+export const getPoolsMetadata = createAsyncThunk(
   'pools/getPoolMetadata',
-  async (args: getPoolMetadataArgs) => await fetchPoolMetadata(args),
+  async (args: getPoolsMetadataArgs) => await fetchPoolMetadata(args),
 )
 
 export const poolsSlice = createSlice({
@@ -43,7 +35,7 @@ export const poolsSlice = createSlice({
   initialState: initialState as PoolsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getPoolMetadata)
+    builder = getGenericReducerBuilder(builder, getPoolsMetadata)
   },
 })
 
