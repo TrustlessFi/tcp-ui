@@ -108,8 +108,20 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
   const toggleInverted = () => setInverted(!inverted)
 
-  const updateLowerTick = (newTick: number) => setLowerTick(tick !== null && newTick < tick ? newTick : lowerTick)
-  const updateUpperTick = (newTick: number) => setUpperTick(tick !== null && newTick > tick ? newTick : upperTick)
+  const updateLowerTick = (newTick: number) => {
+    if (tick === null || tick <= newTick) return
+    setLowerTick(newTick)
+    token0AdjustedLast
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), sqrtPriceX96ToTick(instantPrice!), newTick, upperTick)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), sqrtPriceX96ToTick(instantPrice!), newTick, upperTick)))
+  }
+  const updateUpperTick = (newTick: number) => {
+    if (tick === null || tick >= newTick) return
+    setUpperTick(newTick)
+    token0AdjustedLast
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), sqrtPriceX96ToTick(instantPrice!), lowerTick, newTick)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), sqrtPriceX96ToTick(instantPrice!), lowerTick, newTick)))
+  }
   const updateToken0Amount = (amount0: number) => {
     if (isNaN(amount0)) return
     setToken0AdjustedLast(true)
