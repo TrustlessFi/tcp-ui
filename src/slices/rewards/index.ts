@@ -9,6 +9,7 @@ import { executeMulticalls, getMulticall, rc } from '@trustlessfi/multicall'
 
 export type rewardsInfo = {
   twapDuration: number,
+  liquidationPenalty: number,
 }
 
 export type rewardsArgs = {
@@ -30,7 +31,10 @@ export const getRewardsInfo = createAsyncThunk(
       {
         rewardsInfo: getMulticall(
           rewards,
-          { twapDuration: rc.Number }
+          {
+            twapDuration: rc.Number,
+            liquidationPenalty: rc.BigNumberUnscale,
+          }
         ),
       }
     )

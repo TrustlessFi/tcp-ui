@@ -2,7 +2,7 @@ import { Button } from 'carbon-components-react'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPoolMetadata, waitForPoolTicks } from '../../slices/waitFor'
+import { waitForPoolMetadata, waitForPoolTicks, waitForRewards } from '../../slices/waitFor'
 import { numDisplay, getSpaceForFee, tickToPrice } from '../../utils'
 import { nearestUsableTick } from '@uniswap/v3-sdk'
 import PositionNumberInput from '../library/PositionNumberInput'
@@ -49,6 +49,7 @@ TickSelector.defaultProps = {min: false}
 const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const dispatch = useAppDispatch()
 
+  const rewardsInfo = waitForRewards(selector, dispatch)
   const poolTicks = waitForPoolTicks(selector, dispatch)
   const poolMetadata = waitForPoolMetadata(selector, dispatch)
 
@@ -81,6 +82,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     }
   })
 
+  
+
   const displaySymbol = (value: string) => {
     if (value.toLowerCase() === 'weth') return 'Eth'
     if (value.length === 0) return value
@@ -91,6 +94,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
 
   const poolName = pool === null ? '-' : token0Symbol + ':' + token1Symbol
+  const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
 
   const toggleInverted = () => setInverted(!inverted)
 
@@ -152,8 +156,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         />
         {token1Symbol}.
         <div />
-        If the {poolName} price moves outside of this liquidity range, I could lose <Bold>{numDisplay(123.34)}%</Bold> of
-        my position value to liquidators.
+        If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
+        more of my position to liquidators.
       </LargeText>
     </div>
   )
