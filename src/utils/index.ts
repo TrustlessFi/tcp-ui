@@ -330,21 +330,34 @@ export const getAmountsForLiquidity = (
 }
 
 export const getAmount1ForAmount0 = (amount0: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
-  const priceA = tickToSqrtPriceX96(lowerTick)
-  const priceB = tickToSqrtPriceX96(upperTick)
+  enforce(lowerTick < currentTick, 'Get Amount 1: tick error lower')
+  enforce(currentTick < upperTick, 'Get Amount 1: tick error upper')
+  const price = tickToSqrtPriceX96(currentTick)
+  let priceA = tickToSqrtPriceX96(lowerTick)
+  let priceB = tickToSqrtPriceX96(upperTick)
 
-  const liquidity = maxLiquidityForAmount0(priceA, priceB, amount0)
+  if (priceA > priceB) [priceA, priceB] = [priceB, priceA]
 
-  const amounts = getAmountsForLiquidity(currentTick, lowerTick, upperTick, liquidity)
-  return amounts.amount1
+  const numerator = price.sub(priceA).mul(amount0)
+
+  const denominator1 = Q96.mul(Q96).div(price)
+  const denominator2 = Q96.mul(Q96).div(priceB)
+
+  return numerator.div(denominator1.sub(denominator2))
 }
 
 export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
-  const priceA = tickToSqrtPriceX96(lowerTick)
-  const priceB = tickToSqrtPriceX96(upperTick)
+  const price = tickToSqrtPriceX96(currentTick)
+  let priceLower = tickToSqrtPriceX96(lowerTick)
+  let priceUpper = tickToSqrtPriceX96(upperTick)
+  if (priceLower > priceUpper) [priceLower, priceUpper] = [priceUpper, priceLower]
 
-  const liquidity = maxLiquidityForAmount1(priceA, priceB, amount1)
+  enforce(priceLower < price, 'Get Amount 0: tick error lower')
+  enforce(currentTick < upperTick, 'Get Amount 0: tick error upper')
 
-  const amounts = getAmountsForLiquidity(currentTick, lowerTick, upperTick, liquidity)
-  return amounts.amount0
+  const numerator1 = Q96.mul(Q96).div(price)
+  const numerator2 = Q96.mul(Q96).div(priceUpper)
+  const denominator = price.sub(priceLower)
+
+  return (numerator1.sub(numerator2)).mul(amount1).div(denominator)
 }
