@@ -1,4 +1,5 @@
-import { BigNumber, BigNumberish, utils } from "ethers";
+import { BigNumber, BigNumberish, utils } from "ethers"
+import JSBI from "jsbi"
 import { TickMath, nearestUsableTick } from '@uniswap/v3-sdk'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
@@ -270,9 +271,11 @@ export const feeToFee = (fee: number): Fee => {
   else throw 'invalid fee: ' + fee
 }
 
-export const tickToSqrtX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtTick(tick).toString())
+export const tickToSqrtPriceX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtTick(tick).toString())
 
-export const tickToPrice = (tick: number): number => unscale(getE18PriceForSqrtX96Price(tickToSqrtX96(tick)))
+export const sqrtPriceX96ToTick = (sqrtPriceX96: string) => TickMath.getTickAtSqrtRatio(JSBI.BigInt(sqrtPriceX96))
+
+export const tickToPrice = (tick: number): number => unscale(getE18PriceForSqrtX96Price(tickToSqrtPriceX96(tick)))
 
 export const maxLiquidityForAmount0 = (sqrtRatioAX96: BigNumber, sqrtRatioBX96: BigNumber, amount0: BigNumber) => {
   if (sqrtRatioAX96.gt(sqrtRatioBX96)) [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
@@ -309,9 +312,9 @@ export const getAmountsForLiquidity = (
 ): {amount0: BigNumber, amount1: BigNumber} => {
   const result = {amount0: BigNumber.from(0), amount1: BigNumber.from(0)}
 
-  const currentPrice = tickToSqrtX96(currentTick)
-  let priceA = tickToSqrtX96(lowerTick)
-  let priceB = tickToSqrtX96(upperTick)
+  const currentPrice = tickToSqrtPriceX96(currentTick)
+  let priceA = tickToSqrtPriceX96(lowerTick)
+  let priceB = tickToSqrtPriceX96(upperTick)
 
   if (priceA > priceB) [priceA, priceB] = [priceB, priceA]
 
@@ -327,8 +330,8 @@ export const getAmountsForLiquidity = (
 }
 
 export const getAmount1ForAmount0 = (amount0: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
-  const priceA = tickToSqrtX96(lowerTick)
-  const priceB = tickToSqrtX96(upperTick)
+  const priceA = tickToSqrtPriceX96(lowerTick)
+  const priceB = tickToSqrtPriceX96(upperTick)
 
   const liquidity = maxLiquidityForAmount0(priceA, priceB, amount0)
 
@@ -337,8 +340,8 @@ export const getAmount1ForAmount0 = (amount0: BigNumber, currentTick: number, lo
 }
 
 export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
-  const priceA = tickToSqrtX96(lowerTick)
-  const priceB = tickToSqrtX96(upperTick)
+  const priceA = tickToSqrtPriceX96(lowerTick)
+  const priceB = tickToSqrtPriceX96(upperTick)
 
   const liquidity = maxLiquidityForAmount1(priceA, priceB, amount1)
 

@@ -3,11 +3,11 @@ import { Contract } from 'ethers'
 import { getPoolMetadataArgs, poolsMetadata } from './'
 import { ProtocolContract } from '../contracts'
 import getProvider from '../../utils/getProvider'
-import { zeroAddress, unique, feeToFee} from '../../utils/'
+import { zeroAddress, unique, feeToFee, PromiseType } from '../../utils/'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
 
-import { ProtocolDataAggregator, Rewards } from '../../utils/typechain/'
+import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '../../utils/typechain/'
 
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -23,18 +23,30 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
 
     const tokenCalls = poolConfigs.map(config => ['token0', 'token1'].map(func => contractFunctionSelector(config.pool, func))).flat()
     const feeCalls = poolConfigs.map(config => contractFunctionSelector(config.pool, 'fee'))
+    const slot0Calls = poolConfigs.map(config => contractFunctionSelector(config.pool, 'slot0'))
 
     let totalRewardsPortion = 0
     poolConfigs.map(config => totalRewardsPortion += config.rewardsPortion.toNumber())
 
-    const { poolInfo, poolIDs } = await executeMulticalls(
+    const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
+
+    const { poolInfo, poolIDs, sqrtPriceX96s } = await executeMulticalls(
       trustlessMulticall,
       {
         poolInfo: getDuplicateContractMulticall(
-          new Contract(zeroAddress, poolArtifact.abi, provider),
+          poolContract,
           {
             ...Object.fromEntries(tokenCalls.map(tokenCall => [tokenCall, rc.String])),
             ...Object.fromEntries(feeCalls.map(feeCall => [feeCall, rc.Number])),
+          }
+        ),
+        sqrtPriceX96s: getDuplicateContractMulticall(
+          poolContract,
+          {
+            ...Object.fromEntries(slot0Calls.map(call => [
+              call,
+              rc.BigNumberToString,
+            ])),
           }
         ),
         poolIDs: getDuplicateFuncMulticall(
@@ -64,6 +76,7 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
 
     const result = Object.fromEntries(poolConfigs.map(poolConfig => {
       const fee = poolInfo[contractFunctionSelector(poolConfig.pool, 'fee')] as number
+      const sqrtPriceX96 = sqrtPriceX96s[contractFunctionSelector(poolConfig.pool, 'slot0')] as string
       const token0Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token0')] as string
       const token1Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token1')] as string
       const token0Symbol = tokenSymbols[contractFunctionSelector(token0Address as string, 'symbol')]
@@ -76,13 +89,12 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
           rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
           poolID: poolIDs[poolConfig.pool],
           address: poolConfig.pool,
+          sqrtPriceX96,
           token0: { address: token0Address, symbol: token0Symbol },
           token1: { address: token1Address, symbol: token1Symbol },
         }
       ]
     }))
-
-    console.log({result})
 
     return result
   }

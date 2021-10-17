@@ -3,7 +3,17 @@ import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPoolMetadata, waitForPoolTicks, waitForRewards } from '../../slices/waitFor'
-import { numDisplay, getSpaceForFee, tickToPrice } from '../../utils'
+import {
+  numDisplay,
+  getSpaceForFee,
+  tickToPrice,
+  getAmount1ForAmount0,
+  getAmount0ForAmount1,
+  sqrtPriceX96ToTick,
+  bnf,
+  mnt,
+  unscale
+} from '../../utils'
 import { nearestUsableTick } from '@uniswap/v3-sdk'
 import PositionNumberInput from '../library/PositionNumberInput'
 import RelativeLoading from '../library/RelativeLoading'
@@ -54,6 +64,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const poolMetadata = waitForPoolMetadata(selector, dispatch)
 
   const pool = poolMetadata !== null ? poolMetadata[poolAddress] : null
+  const instantPrice = pool !== null ? pool.sqrtPriceX96 : null
   const tick = poolTicks !== null ? poolTicks[poolAddress] : null
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
@@ -69,6 +80,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const [upperTick, setUpperTick] = useState(0)
   const [token0Amount, setToken0Amount] = useState(0)
   const [token1Amount, setToken1Amount] = useState(0)
+  const [token0AdjustedLast, setToken0AdjustedLast] = useState(true)
 
   const isDataLoadedRef = useRef(false)
 
@@ -81,8 +93,6 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       setUpperTick(nextHighest)
     }
   })
-
-  
 
   const displaySymbol = (value: string) => {
     if (value.toLowerCase() === 'weth') return 'Eth'
@@ -100,6 +110,18 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
   const updateLowerTick = (newTick: number) => setLowerTick(tick !== null && newTick < tick ? newTick : lowerTick)
   const updateUpperTick = (newTick: number) => setUpperTick(tick !== null && newTick > tick ? newTick : upperTick)
+  const updateToken0Amount = (amount0: number) => {
+    if (isNaN(amount0)) return
+    setToken0AdjustedLast(true)
+    setToken0Amount(amount0)
+    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), sqrtPriceX96ToTick(instantPrice!), lowerTick, upperTick)))
+  }
+  const updateToken1Amount = (amount1: number) => {
+    if (isNaN(amount1)) return
+    setToken0AdjustedLast(false)
+    setToken1Amount(amount1)
+    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), sqrtPriceX96ToTick(instantPrice!), lowerTick, upperTick)))
+  }
 
   const priceUnit =
     (inverted ? token0Symbol : token1Symbol) +
@@ -145,13 +167,13 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         {priceUnit}, by depositing
         <PositionNumberInput
           id="token0Input"
-          action={(value: number) => setToken0Amount(value)}
+          action={updateToken0Amount}
           value={token0Amount}
         />
         {token0Symbol} and
         <PositionNumberInput
           id="token1Input"
-          action={(value: number) => setToken1Amount(value)}
+          action={updateToken1Amount}
           value={token1Amount}
         />
         {token1Symbol}.

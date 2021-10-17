@@ -3121,13 +3121,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/multicall@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@trustlessfi/multicall@npm:0.3.1"
+"@trustlessfi/multicall@npm:^0.3.4":
+  version: 0.3.4
+  resolution: "@trustlessfi/multicall@npm:0.3.4"
   dependencies:
     "@trustlessfi/utils": ^0.2.1
     ethers: ^5.4.7
-  checksum: bb7814a0991f26378907fdcb268fb880cc6b9956e17f85cb27d370586eaa9a6fa57fe2ac64942662edc81949b0015b7384c81d650ee612b4485bcb5d7db362ce
+  checksum: bdf4bcb33bdf727aa6321a703e11d2240e95db93e3d64a335211e42614c6db5d009d2a77897bb539593cd6dbf786b79e0935a8ed7dd816f5dce08b85c40dc380
   languageName: node
   linkType: hard
 
@@ -18714,7 +18714,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/react": ^12.0.0
     "@testing-library/user-event": ^13.2.1
     "@trustlessfi/addresses": ^0.2.4
-    "@trustlessfi/multicall": ^0.3.1
+    "@trustlessfi/multicall": ^0.3.4
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.36.1
     "@types/carbon__colors": ^0.0.1
@@ -18771,6 +18771,7 @@ resolve@^2.0.0-next.3:
     jest-circus: 26.6.0
     jest-resolve: 26.6.0
     jest-watch-typeahead: 0.6.1
+    jsbi: ^3.2.5
     mini-css-extract-plugin: 0.11.3
     optimize-css-assets-webpack-plugin: 5.0.4
     pnp-webpack-plugin: 1.6.4
