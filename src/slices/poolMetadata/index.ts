@@ -12,10 +12,11 @@ export interface getPoolMetadataArgs {
 }
 
 export interface poolMetadata {
-  fee: Fee,
-  rewardsPortion: number,
-  poolID: number,
-  address: string,
+  fee: Fee
+  rewardsPortion: number
+  poolID: number
+  address: string
+  sqrtPriceX96: string
   token0: { address: string, symbol: string }
   token1: { address: string, symbol: string }
 }
