@@ -51,7 +51,6 @@ export const poolCurrentDataSlice = createSlice({
   reducers: {
     clearPoolCurrentData: (state, action: PayloadAction<string>) => {
       const poolToRemove = action.payload
-      if (!state[poolToRemove]) return
       return Object.fromEntries(Object.keys(state).filter(pool => pool !== poolToRemove).map(pool => [pool, state[pool]]))
     },
   },
