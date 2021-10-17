@@ -241,6 +241,8 @@ export const equalStringsCaseInsensitive = (a: string, b: string) => {
   return equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
 }
 
+
+// ======================= UNISWAP ============================
 export const getE18PriceForSqrtX96Price = (sqrtPriceX96: BigNumber) => {
   let sqrtPriceE18 = sqrtPriceX96.mul(ONE).div(Q96)
   return sqrtPriceE18.mul(sqrtPriceE18).div(ONE)
@@ -268,5 +270,78 @@ export const feeToFee = (fee: number): Fee => {
   else throw 'invalid fee: ' + fee
 }
 
-export const tickToPrice = (tick: number): number =>
-  unscale(getE18PriceForSqrtX96Price(bnf(TickMath.getSqrtRatioAtTick(tick).toString())))
+export const tickToSqrtX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtTick(tick).toString())
+
+export const tickToPrice = (tick: number): number => unscale(getE18PriceForSqrtX96Price(tickToSqrtX96(tick)))
+
+export const maxLiquidityForAmount0 = (sqrtRatioAX96: BigNumber, sqrtRatioBX96: BigNumber, amount0: BigNumber) => {
+  if (sqrtRatioAX96.gt(sqrtRatioBX96)) [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
+
+  const numerator = amount0.mul(sqrtRatioAX96).mul(sqrtRatioBX96)
+  const denominator = Q96.mul(sqrtRatioBX96.sub(sqrtRatioAX96))
+
+  return numerator.div(denominator)
+}
+
+export const maxLiquidityForAmount1 = (sqrtRatioAX96: BigNumber, sqrtRatioBX96: BigNumber, amount1: BigNumber) => {
+  if (sqrtRatioAX96.gt(sqrtRatioBX96)) [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
+
+  return (amount1.mul(Q96)).div(sqrtRatioBX96.sub(sqrtRatioAX96))
+}
+
+export const getAmount0ForLiquidity = (priceA: BigNumber, priceB: BigNumber, liquidity: BigNumber) => {
+  if (priceA > priceB) [priceA, priceB] = [priceB, priceA]
+
+  return liquidity.mul(Q96).mul(priceB.sub(priceA)).div(priceB).div(priceA)
+}
+
+export const getAmount1ForLiquidity = (priceA: BigNumber, priceB: BigNumber, liquidity: BigNumber) => {
+  if (priceA > priceB) [priceA, priceB] = [priceB, priceA]
+
+  return liquidity.mul(priceB.sub(priceA)).div(Q96)
+}
+
+export const getAmountsForLiquidity = (
+  currentTick: number,
+  lowerTick: number,
+  upperTick: number,
+  liquidity: BigNumber
+): {amount0: BigNumber, amount1: BigNumber} => {
+  const result = {amount0: BigNumber.from(0), amount1: BigNumber.from(0)}
+
+  const currentPrice = tickToSqrtX96(currentTick)
+  let priceA = tickToSqrtX96(lowerTick)
+  let priceB = tickToSqrtX96(upperTick)
+
+  if (priceA > priceB) [priceA, priceB] = [priceB, priceA]
+
+  if (currentPrice.lte(priceA)) {
+    result.amount0 = getAmount0ForLiquidity(priceA, priceB, liquidity)
+  } else if (currentPrice.lt(priceB)) {
+    result.amount0 = getAmount0ForLiquidity(currentPrice, priceB, liquidity)
+    result.amount1 = getAmount1ForLiquidity(priceA, currentPrice, liquidity)
+  } else {
+    result.amount1 = getAmount1ForLiquidity(priceA, priceB, liquidity)
+  }
+  return result
+}
+
+export const getAmount1ForAmount0 = (amount0: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
+  const priceA = tickToSqrtX96(lowerTick)
+  const priceB = tickToSqrtX96(upperTick)
+
+  const liquidity = maxLiquidityForAmount0(priceA, priceB, amount0)
+
+  const amounts = getAmountsForLiquidity(currentTick, lowerTick, upperTick, liquidity)
+  return amounts.amount1
+}
+
+export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lowerTick: number, upperTick: number) => {
+  const priceA = tickToSqrtX96(lowerTick)
+  const priceB = tickToSqrtX96(upperTick)
+
+  const liquidity = maxLiquidityForAmount1(priceA, priceB, amount1)
+
+  const amounts = getAmountsForLiquidity(currentTick, lowerTick, upperTick, liquidity)
+  return amounts.amount0
+}
