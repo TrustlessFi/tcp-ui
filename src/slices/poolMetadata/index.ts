@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
+import { tokenInfo, approval } from '../balances'
 import { fetchPoolMetadata } from './api'
 
 
@@ -9,6 +10,13 @@ export interface getPoolMetadataArgs {
   Rewards: string
   TrustlessMulticall: string
   ProtocolDataAggregator: string
+  userAddress: string
+}
+
+interface tokenData {
+  info: tokenInfo
+  rewardsApproval: approval
+  userBalance: number
 }
 
 export interface poolMetadata {
@@ -17,8 +25,8 @@ export interface poolMetadata {
   poolID: number
   address: string
   sqrtPriceX96: string
-  token0: { address: string, symbol: string }
-  token1: { address: string, symbol: string }
+  token0: tokenData
+  token1: tokenData
 }
 
 export interface poolsMetadata {[key: string]: poolMetadata}

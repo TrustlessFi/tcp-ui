@@ -11,6 +11,7 @@ import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '../../utils/type
 
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { uint255Max , bnf } from '../../utils/index';
 
 export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<poolsMetadata> => {
     const provider = getProvider()
@@ -58,30 +59,66 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
       }
     )
 
+    const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider)
+
     const uniqueTokens =
       unique(
         Object.entries(poolInfo).map(([id, value]) =>
           selectorToContractFunction(id).func !== 'token0' && selectorToContractFunction(id).func !== 'token1' ? null : value as string)
         .filter(value => value !== null)) as string[]
 
-    const { tokenSymbols } = await executeMulticalls(
+    const tokenInfo = await executeMulticalls(
       trustlessMulticall,
       {
-        tokenSymbols: getDuplicateContractMulticall(
-          new Contract(zeroAddress, erc20Artifact.abi, provider),
+        symbol: getDuplicateContractMulticall(
+          tokenContract,
           Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'symbol'), rc.String])),
         ),
-      }
+        name: getDuplicateContractMulticall(
+          tokenContract,
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'name'), rc.String])),
+        ),
+        decimals: getDuplicateContractMulticall(
+          tokenContract,
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'decimals'), rc.Number])),
+        ),
+        balance: getDuplicateContractMulticall(
+          tokenContract,
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'balanceOf'), rc.BigNumberUnscale])),
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'balanceOf'), [args.userAddress]])),
+        ),
+        approval: getDuplicateContractMulticall(
+          tokenContract,
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'allowance'), rc.BigNumberToString])),
+          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'allowance'), [args.userAddress, args.Rewards]])),
+        ),
+      },
     )
 
     const result = Object.fromEntries(poolConfigs.map(poolConfig => {
       const fee = poolInfo[contractFunctionSelector(poolConfig.pool, 'fee')] as number
       const sqrtPriceX96 = sqrtPriceX96s[contractFunctionSelector(poolConfig.pool, 'slot0')] as string
+
       const token0Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token0')] as string
       const token1Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token1')] as string
-      const token0Symbol = tokenSymbols[contractFunctionSelector(token0Address as string, 'symbol')]
-      const token1Symbol = tokenSymbols[contractFunctionSelector(token1Address as string, 'symbol')]
 
+      const token0Symbol = tokenInfo.symbol[contractFunctionSelector(token0Address, 'symbol')]
+      const token1Symbol = tokenInfo.symbol[contractFunctionSelector(token1Address, 'symbol')]
+
+      const token0Name = tokenInfo.name[contractFunctionSelector(token0Address, 'name')]
+      const token1Name = tokenInfo.name[contractFunctionSelector(token1Address, 'name')]
+
+      const token0Decimals = tokenInfo.decimals[contractFunctionSelector(token0Address, 'decimals')]
+      const token1Decimals = tokenInfo.decimals[contractFunctionSelector(token1Address, 'decimals')]
+
+      const token0Balance = tokenInfo.balance[contractFunctionSelector(token0Address, 'balance')]
+      const token1Balance = tokenInfo.balance[contractFunctionSelector(token1Address, 'balance')]
+
+      const token0Approval = tokenInfo.approval[contractFunctionSelector(token0Address, 'allowance')]
+      const token1Approval = tokenInfo.approval[contractFunctionSelector(token1Address, 'allowance')]
+
+      // TODO split out pricesqrt price, rewards approval, prices.twappedtick and user balance into something that only
+      //  loads on opening a particular pool, so all of this can be cached
       return [
         poolConfig.pool,
         {
@@ -90,8 +127,34 @@ export const fetchPoolMetadata = async (args: getPoolMetadataArgs): Promise<pool
           poolID: poolIDs[poolConfig.pool],
           address: poolConfig.pool,
           sqrtPriceX96,
-          token0: { address: token0Address, symbol: token0Symbol },
-          token1: { address: token1Address, symbol: token1Symbol },
+          token0: {
+            info: {
+              address: token0Address,
+              name: token0Name,
+              symbol: token0Symbol,
+              decimals: token0Decimals,
+            },
+            rewardsApproval: {
+              allowance: token0Approval,
+              approving: false,
+              approved: bnf(token0Approval).gt(uint255Max)
+            },
+            userBalance: token0Balance,
+          },
+          token1: {
+            info: {
+              address: token1Address,
+              name: token1Name,
+              symbol: token1Symbol,
+              decimals: token1Decimals,
+            },
+            rewardsApproval: {
+              allowance: token1Approval,
+              approving: false,
+              approved: bnf(token1Approval).gt(uint255Max)
+            },
+            userBalance: token1Balance,
+          },
         }
       ]
     }))

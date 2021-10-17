@@ -100,8 +100,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     return value.substr(0, 1).toUpperCase() + value.substr(1).toLowerCase()
   }
 
-  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.symbol)
-  const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
+  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.info.symbol)
+  const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.info.symbol)
 
   const poolName = pool === null ? '-' : token0Symbol + ':' + token1Symbol
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)

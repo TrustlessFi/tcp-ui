@@ -9,8 +9,7 @@ import { poolMetadata } from '../../slices/poolMetadata'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
-import ConnectWalletButton from '../utils/ConnectWalletButton';
-import Text from '../utils/Text';
+import ConnectWalletButton from '../utils/ConnectWalletButton'
 
 const LiquidityPositionsTable = (
   {
@@ -33,14 +32,13 @@ const LiquidityPositionsTable = (
     return (
       <>
         <TableHeaderOnly headers={[
-            'Position ID',
-            'Liquidity',
-            'Tick Lower',
-            'Tick Upper',
-            'Rewards',
-            '',
-          ]}
-        />
+          'Position ID',
+          'Liquidity',
+          'Tick Lower',
+          'Tick Upper',
+          'Rewards',
+          '',
+        ]} />
         <Center style={{padding: 24}}>
           {createLiquidityPositionButton}
         </Center>
@@ -99,7 +97,7 @@ const ExistingLiquidityPositions = () => {
     <AppTile title="Uniswap Reward Positions">
       {Object.values(pools).sort((a, b) => a.poolID - b.poolID).map(pool => (
         <>
-          <h4>{pool.token0.symbol}:{pool.token1.symbol} {pool.fee / 10000}%</h4>
+          <h4>{pool.token0.info.symbol}:{pool.token1.info.symbol} {pool.fee / 10000}%</h4>
           <h5>{pool.rewardsPortion}% of TCP Liquidity rewards</h5>
           <LiquidityPositionsTable
             pool={pool}

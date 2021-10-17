@@ -6,7 +6,7 @@ import { ProtocolContract } from '../contracts'
 import getContract, { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
 
-interface tokenInfo {
+export interface tokenInfo {
   address: string,
   name: string,
   symbol: string,
@@ -15,9 +15,9 @@ interface tokenInfo {
 
 type balances = { [key in ProtocolContract]?: number }
 
-export type approval = {
-  allowance: string,
-  approving: boolean,
+export interface approval {
+  allowance: string
+  approving: boolean
   approved: boolean
 }
 
