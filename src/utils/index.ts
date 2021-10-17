@@ -1,6 +1,6 @@
 import { BigNumber, BigNumberish, utils } from "ethers"
 import JSBI from "jsbi"
-import { TickMath, nearestUsableTick } from '@uniswap/v3-sdk'
+import { TickMath } from '@uniswap/v3-sdk'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
