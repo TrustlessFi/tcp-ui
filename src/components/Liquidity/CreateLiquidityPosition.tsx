@@ -2,14 +2,13 @@ import { Button } from 'carbon-components-react'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPoolMetadata, waitForPoolTicks, waitForRewards } from '../../slices/waitFor'
+import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata } from '../../slices/waitFor'
 import {
   numDisplay,
   getSpaceForFee,
   tickToPrice,
   getAmount1ForAmount0,
   getAmount0ForAmount1,
-  sqrtPriceX96ToTick,
   bnf,
   mnt,
   unscale
@@ -60,12 +59,12 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const dispatch = useAppDispatch()
 
   const rewardsInfo = waitForRewards(selector, dispatch)
-  const poolTicks = waitForPoolTicks(selector, dispatch)
-  const poolMetadata = waitForPoolMetadata(selector, dispatch)
+  const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+  const poolMetadata = waitForPoolsMetadata(selector, dispatch)
 
   const pool = poolMetadata !== null ? poolMetadata[poolAddress] : null
-  const instantPrice = pool !== null ? pool.sqrtPriceX96 : null
-  const tick = poolTicks !== null ? poolTicks[poolAddress] : null
+  const instantTick = poolCurrentData !== null ? poolCurrentData.instantTick : null
+  const tick = poolCurrentData !== null ? poolCurrentData.twapTick : null
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
@@ -100,8 +99,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     return value.substr(0, 1).toUpperCase() + value.substr(1).toLowerCase()
   }
 
-  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.info.symbol)
-  const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.info.symbol)
+  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.symbol)
+  const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
 
   const poolName = pool === null ? '-' : token0Symbol + ':' + token1Symbol
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
@@ -112,27 +111,27 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     if (tick === null || tick <= newTick) return
     setLowerTick(newTick)
     token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), sqrtPriceX96ToTick(instantPrice!), newTick, upperTick)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), sqrtPriceX96ToTick(instantPrice!), newTick, upperTick)))
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, newTick, upperTick)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, newTick, upperTick)))
   }
   const updateUpperTick = (newTick: number) => {
     if (tick === null || tick >= newTick) return
     setUpperTick(newTick)
     token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), sqrtPriceX96ToTick(instantPrice!), lowerTick, newTick)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), sqrtPriceX96ToTick(instantPrice!), lowerTick, newTick)))
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, lowerTick, newTick)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, lowerTick, newTick)))
   }
   const updateToken0Amount = (amount0: number) => {
     if (isNaN(amount0)) return
     setToken0AdjustedLast(true)
     setToken0Amount(amount0)
-    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), sqrtPriceX96ToTick(instantPrice!), lowerTick, upperTick)))
+    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), instantTick!, lowerTick, upperTick)))
   }
   const updateToken1Amount = (amount1: number) => {
     if (isNaN(amount1)) return
     setToken0AdjustedLast(false)
     setToken1Amount(amount1)
-    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), sqrtPriceX96ToTick(instantPrice!), lowerTick, upperTick)))
+    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, lowerTick, upperTick)))
   }
 
   const priceUnit =
@@ -142,7 +141,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
   return (
     <div style={{position: 'relative'}}>
-      <RelativeLoading show={poolTicks === null || poolMetadata === null} />
+      <RelativeLoading show={poolCurrentData === null || poolMetadata === null || rewardsInfo === null} />
       <div style={{marginBottom: 16}}>
         <Button
           small

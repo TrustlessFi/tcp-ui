@@ -6,7 +6,7 @@ import { getMarketInfo, marketArgs, marketInfo } from './market'
 import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
 import { balanceInfo } from './balances'
 import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPoolMetadata, getPoolMetadataArgs, poolsMetadata } from './poolMetadata'
+import { getPoolsMetadata, getPoolsMetadataArgs, poolsMetadata } from './poolMetadata'
 import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
 import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
 import { getPositions, positionsInfo, positionsArgs } from './positions'
@@ -16,7 +16,8 @@ import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liqui
 import { getRewardsInfo, rewardsArgs, rewardsInfo } from './rewards'
 import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
 import { ethBalance, ethBalanceArgs, fetchEthBalance } from './ethBalance'
-import { getPoolTicks, poolTickArgs, poolTickInfo } from './poolTicks'
+import { getPoolCurrentDataThunk, poolCurrentDataArgs, poolCurrentInfo } from './poolCurrentData'
+
 import { ProtocolContract, getGovernorContract, getProtocolDataAggregatorContract, getContractArgs, getContractThunk, getContractReturnType, getTrustlessMulticallContract, getSingleContractArgs } from './contracts'
 
 import { sliceState } from './'
@@ -28,7 +29,7 @@ enum FetchNode {
   RewardsInfo,
   MarketInfo,
   RatesInfo,
-  PoolMetadata,
+  PoolsMetadata,
   SDI,
   UserAddress,
 }
@@ -49,8 +50,8 @@ const getNodeFetch = (
       return {liquidationsInfo: waitForLiquidations(selector, dispatch)}
     case FetchNode.RewardsInfo:
       return {rewardsInfo: waitForRewards(selector, dispatch)}
-    case FetchNode.PoolMetadata:
-      return {poolMetadata: waitForPoolMetadata(selector, dispatch)}
+    case FetchNode.PoolsMetadata:
+      return {PoolsMetadata: waitForPoolsMetadata(selector, dispatch)}
     case FetchNode.MarketInfo:
       return {marketInfo: waitForMarket(selector, dispatch)}
     case FetchNode.RatesInfo:
@@ -73,17 +74,18 @@ const getNodeFetch = (
   }
 }
 
-const getWaitFunction = <Args extends {}, Value>(
+const getWaitFunction = <Args extends {}, Value, AdditionalData extends {}>(
   stateSelector: (state: RootState) => sliceState<Value>,
   thunk: (args: Args) => AsyncThunkAction<Value | null, Args, {}>,
   fetchNodes: (FetchNode | ProtocolContract) [],
+  additionalData?: AdditionalData,
 ) => (
   selector: AppSelector,
   dispatch: AppDispatch
 ) => {
   const state = selector(stateSelector)
 
-  let inputArgs = {}
+  let inputArgs = additionalData === undefined ? {} : {...additionalData}
   fetchNodes.map(fetchNode => {
     const fetchedNode = getNodeFetch(fetchNode, selector, dispatch)
     inputArgs = {...inputArgs, ...fetchedNode}
@@ -91,131 +93,138 @@ const getWaitFunction = <Args extends {}, Value>(
 
   if (Object.values(inputArgs).includes(null)) return null
 
-  const error = state.data.error
-  if (error !== null) {
-    console.error(error.message)
+  if (state !== undefined && state.data.error !== null) {
+    console.error(state.data.error.message)
     throw state.data.error
   }
 
-  if (state.data.value === null && !stateSelector(store.getState()).loading) {
+  if (state === undefined || state.data.value === null && !stateSelector(store.getState()).loading) {
     dispatch(thunk(inputArgs as NonNullable<Args>))
   }
 
-  return state.data.value
+  return state === undefined ? null : state.data.value
 }
 
 /// ============================ Get Contracts Logic =======================================
-export const waitForGovernorContract = getWaitFunction<getSingleContractArgs, getContractReturnType>(
+export const waitForGovernorContract = getWaitFunction(
   (state: RootState) => state.contracts[ProtocolContract.Governor],
   getGovernorContract,
   [FetchNode.ChainID],
 )
 
-export const waitForTrustlessMulticallContract = getWaitFunction<getSingleContractArgs, getContractReturnType>(
+export const waitForTrustlessMulticallContract = getWaitFunction(
   (state: RootState) => state.contracts[ProtocolContract.TrustlessMulticall],
   getTrustlessMulticallContract,
   [FetchNode.ChainID],
 )
 
-export const waitForProtocolDataAggregator = getWaitFunction<getSingleContractArgs, getContractReturnType>(
+export const waitForProtocolDataAggregator = getWaitFunction(
   (state: RootState) => state.contracts[ProtocolContract.ProtocolDataAggregator],
   getProtocolDataAggregatorContract,
   [FetchNode.ChainID],
 )
 
-export const getContractWaitFunction = (protocolContract: ProtocolContract) => getWaitFunction<getContractArgs, getContractReturnType>(
+export const getContractWaitFunction = (protocolContract: ProtocolContract) => getWaitFunction(
   (state: RootState) => state.contracts[protocolContract],
   getContractThunk(protocolContract),
   [ProtocolContract.Governor]
 )
 
+export const getPoolCurrentDataWaitFunction = (poolAddress: string) => getWaitFunction(
+  (state: RootState) => state.poolCurrentData[poolAddress],
+  getPoolCurrentDataThunk(poolAddress),
+  [
+    ProtocolContract.Rewards,
+    ProtocolContract.Prices,
+    ProtocolContract.TrustlessMulticall,
+    FetchNode.UserAddress,
+    FetchNode.RewardsInfo,
+    FetchNode.PoolsMetadata,
+  ],
+  {poolAddress},
+)
+
 /// ============================ Get Info Logic =======================================
-export const waitForGovernor = getWaitFunction<governorArgs, governorInfo>(
+export const waitForGovernor = getWaitFunction(
   (state: RootState) => state.governor,
   getGovernorInfo,
   [ProtocolContract.Governor],
 )
 
-export const waitForPrices = getWaitFunction<pricesArgs, pricesInfo>(
+export const waitForPrices = getWaitFunction(
   (state: RootState) => state.prices,
   getPricesInfo,
   [ProtocolContract.Prices, FetchNode.LiquidationsInfo, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForMarket = getWaitFunction<marketArgs, marketInfo>(
+export const waitForMarket = getWaitFunction(
   (state: RootState) => state.market,
   getMarketInfo,
   [ProtocolContract.Market, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForPositions = getWaitFunction<positionsArgs, positionsInfo>(
+export const waitForPositions = getWaitFunction(
   (state: RootState) => state.positions,
   getPositions,
   [FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo, ProtocolContract.Accounting, ProtocolContract.HuePositionNFT, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForProposals = getWaitFunction<proposalsArgs, proposalsInfo>(
+export const waitForProposals = getWaitFunction(
   (state: RootState) => state.proposals,
   getProposals,
   [ProtocolContract.TcpGovernorAlpha, FetchNode.UserAddress],
 )
 
-export const waitForLiquidations = getWaitFunction<liquidationsArgs, liquidationsInfo>(
+export const waitForLiquidations = getWaitFunction(
   (state: RootState) => state.liquidations,
   getLiquidationsInfo,
   [ProtocolContract.Liquidations, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForRewards = getWaitFunction<rewardsArgs, rewardsInfo>(
+export const waitForRewards = getWaitFunction(
   (state: RootState) => state.rewards,
   getRewardsInfo,
   [ProtocolContract.Rewards, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForRates = getWaitFunction<ratesArgs, ratesInfo>(
+export const waitForRates = getWaitFunction(
   (state: RootState) => state.rates,
   getRatesInfo,
   [ProtocolContract.Rates, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForSDI = getWaitFunction<systemDebtArgs, systemDebtInfo>(
+export const waitForSDI = getWaitFunction(
   (state: RootState) => state.systemDebt,
   getSystemDebtInfo,
   [ProtocolContract.Accounting],
 )
 
-export const waitForHueBalance = getWaitFunction<hueBalanceArgs, balanceInfo>(
+export const waitForHueBalance = getWaitFunction(
   (state: RootState) => state.hueBalance,
   getHueBalance,
   [ProtocolContract.Hue, FetchNode.UserAddress, ProtocolContract.TrustlessMulticall, ProtocolContract.Market, ProtocolContract.Accounting],
 )
 
-export const waitForLendHueBalance = getWaitFunction<lendHueBalanceArgs, balanceInfo>(
+export const waitForLendHueBalance = getWaitFunction(
   (state: RootState) => state.lendHueBalance,
   getLendHueBalance,
   [ProtocolContract.LendHue, FetchNode.UserAddress, ProtocolContract.Market, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForEthBalance = getWaitFunction<ethBalanceArgs, ethBalance>(
+export const waitForEthBalance = getWaitFunction(
   (state: RootState) => state.ethBalance,
   fetchEthBalance,
   [FetchNode.UserAddress, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForLiquidityPositions = getWaitFunction<liquidityPositionsArgs, liquidityPositions>(
+export const waitForLiquidityPositions = getWaitFunction(
   (state: RootState) => state.liquidityPositions,
   getLiquidityPositions,
   [FetchNode.UserAddress, ProtocolContract.Accounting, ProtocolContract.TrustlessMulticall],
 )
 
-export const waitForPoolMetadata = getWaitFunction<getPoolMetadataArgs, poolsMetadata>(
+export const waitForPoolsMetadata = getWaitFunction(
   (state: RootState) => state.poolMetadata,
-  getPoolMetadata,
+  getPoolsMetadata,
   [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall, ProtocolContract.Rewards, FetchNode.UserAddress],
-)
-
-export const waitForPoolTicks = getWaitFunction<poolTickArgs, poolTickInfo>(
-  (state: RootState) => state.poolTicks,
-  getPoolTicks,
-  [FetchNode.RewardsInfo, FetchNode.PoolMetadata, ProtocolContract.Prices, ProtocolContract.TrustlessMulticall],
 )
