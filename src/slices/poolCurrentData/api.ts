@@ -21,15 +21,11 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<p
     const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
-    console.log("here 1", {args})
-
     enforce(args.PoolsMetadata.hasOwnProperty(args.poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + args.poolAddress)
     const pool = args.PoolsMetadata[args.poolAddress]
     const poolContract = new Contract(args.poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
     const token0Contract = new Contract(pool.token0.address, erc20Artifact.abi, provider) as ERC20
     const token1Contract = new Contract(pool.token1.address, erc20Artifact.abi, provider) as ERC20
-
-    console.log("here 2")
 
     const currentData = await executeMulticalls(
       trustlessMulticall,

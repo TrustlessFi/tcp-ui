@@ -1,24 +1,23 @@
 import { AppDispatch, store, RootState } from '../app/store'
 import { AsyncThunkAction } from '@reduxjs/toolkit'
 import { AppSelector } from '../app/hooks'
-import { getGovernorInfo, governorInfo, governorArgs } from './governor'
-import { getMarketInfo, marketArgs, marketInfo } from './market'
-import { getRatesInfo, ratesInfo, ratesArgs } from './rates'
-import { balanceInfo } from './balances'
-import { getHueBalance, hueBalanceArgs } from './balances/hueBalance'
-import { getPoolsMetadata, getPoolsMetadataArgs, poolsMetadata } from './poolMetadata'
-import { getLendHueBalance, lendHueBalanceArgs } from './balances/lendHueBalance'
-import { getLiquidityPositions, liquidityPositionsArgs, liquidityPositions } from './liquidityPositions'
-import { getPositions, positionsInfo, positionsArgs } from './positions'
-import { getProposals, proposalsInfo, proposalsArgs } from './proposals'
-import { getSystemDebtInfo, systemDebtInfo, systemDebtArgs } from './systemDebt'
-import { getLiquidationsInfo, liquidationsArgs, liquidationsInfo } from './liquidations'
-import { getRewardsInfo, rewardsArgs, rewardsInfo } from './rewards'
-import { getPricesInfo, pricesInfo, pricesArgs } from './prices'
-import { ethBalance, ethBalanceArgs, fetchEthBalance } from './ethBalance'
-import { getPoolCurrentDataThunk, poolCurrentDataArgs, poolCurrentInfo } from './poolCurrentData'
+import { getGovernorInfo } from './governor'
+import { getMarketInfo } from './market'
+import { getRatesInfo } from './rates'
+import { getHueBalance } from './balances/hueBalance'
+import { getPoolsMetadata } from './poolMetadata'
+import { getLendHueBalance } from './balances/lendHueBalance'
+import { getLiquidityPositions } from './liquidityPositions'
+import { getPositions } from './positions'
+import { getProposals } from './proposals'
+import { getSystemDebtInfo } from './systemDebt'
+import { getLiquidationsInfo } from './liquidations'
+import { getRewardsInfo } from './rewards'
+import { getPricesInfo } from './prices'
+import { fetchEthBalance } from './ethBalance'
+import { getPoolCurrentData } from './poolCurrentData'
 
-import { ProtocolContract, getGovernorContract, getProtocolDataAggregatorContract, getContractArgs, getContractThunk, getContractReturnType, getTrustlessMulticallContract, getSingleContractArgs } from './contracts'
+import { ProtocolContract, getGovernorContract, getProtocolDataAggregatorContract, getContractThunk, getTrustlessMulticallContract } from './contracts'
 
 import { sliceState } from './'
 
@@ -132,7 +131,7 @@ export const getContractWaitFunction = (protocolContract: ProtocolContract) => g
 
 export const getPoolCurrentDataWaitFunction = (poolAddress: string) => getWaitFunction(
   (state: RootState) => state.poolCurrentData[poolAddress],
-  getPoolCurrentDataThunk(poolAddress),
+  getPoolCurrentData,
   [
     ProtocolContract.Rewards,
     ProtocolContract.Prices,
