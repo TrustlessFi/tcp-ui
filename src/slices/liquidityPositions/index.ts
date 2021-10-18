@@ -35,10 +35,16 @@ export const getLiquidityPositions = createAsyncThunk(
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
   initialState: initialState as LiquidityPositionsState,
-  reducers: {},
+  reducers: {
+    clearLiquidityPositions: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     getGenericReducerBuilder(builder, getLiquidityPositions)
   },
 })
+
+export const { clearLiquidityPositions } = liquidityPositionsSlice.actions
 
 export default liquidityPositionsSlice.reducer

@@ -3,6 +3,7 @@ import { getLocalStorage, assertUnreachable } from '../../utils'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
+import { clearLiquidityPositions } from '../liquidityPositions'
 import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
@@ -291,7 +292,7 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearHueBalance())
           break
         case TransactionType.CreateLiquidityPosition:
-          // TODO add data clearing for create liquidity position
+          dispatch(clearLiquidityPositions())
           break
       default:
         assertUnreachable(type)

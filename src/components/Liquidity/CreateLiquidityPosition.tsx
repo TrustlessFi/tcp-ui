@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
 import { approvePoolToken } from '../../slices/poolCurrentData'
-import { tokenMetadata } from '../../slices/poolMetadata'
+import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
 import { openModal } from '../../slices/modal'
 import {
