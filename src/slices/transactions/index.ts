@@ -251,7 +251,7 @@ export const waitForTransaction = createAsyncThunk(
       return
     }
 
-    let txInfo = getTxInfo({
+    const txInfo = getTxInfo({
       hash: tx.hash,
       userAddress,
       nonce: tx.nonce,
