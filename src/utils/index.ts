@@ -213,7 +213,12 @@ export const parseMetamaskError = (error: any): string[] => {
   }
 
   return ['Unknown metamask error']
+
 }
+
+export const upperCaseWord = (word: string) => word.length === 0
+  ? word
+  : word.substr(0, 1).toUpperCase() + word.substr(1).toLowerCase()
 
 const zeroThroughF = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', ]
 

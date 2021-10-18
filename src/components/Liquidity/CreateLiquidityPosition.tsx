@@ -2,7 +2,7 @@ import { Button } from 'carbon-components-react'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction } from '../../slices/waitFor'
+import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
 import { approvePoolToken } from '../../slices/poolCurrentData'
 import { tokenMetadata } from '../../slices/poolMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
@@ -14,7 +14,8 @@ import {
   getAmount0ForAmount1,
   bnf,
   mnt,
-  unscale
+  unscale,
+  upperCaseWord,
 } from '../../utils'
 import { nearestUsableTick } from '@uniswap/v3-sdk'
 import PositionNumberInput from '../library/PositionNumberInput'
@@ -23,6 +24,10 @@ import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { ProtocolContract } from '../../slices/contracts/index';
 import GenericApprovalButton from '../utils/GenericApprovalButton';
+import { reason } from '../library/ErrorMessage';
+import ConnectWalletButton from '../utils/ConnectWalletButton';
+import PositionMetadata from '../library/PositionMetadata';
+import ErrorMessage from '../library/ErrorMessage';
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -65,6 +70,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
   const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
+  const userEthBalance = waitForEthBalance(selector, dispatch)
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
@@ -101,11 +107,10 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     }
   })
 
-  const displaySymbol = (value: string) => {
-    if (value.toLowerCase() === 'weth') return 'Eth'
-    if (value.length === 0) return value
-    return value.substr(0, 1).toUpperCase() + value.substr(1).toLowerCase()
-  }
+  const token0IsWeth = pool === null ? false : pool.token0.symbol.toLowerCase() === 'weth'
+  const token1IsWeth = pool === null ? false : pool.token1.symbol.toLowerCase() === 'weth'
+
+  const displaySymbol = (value: string) => value.toLowerCase() === 'weth' ? 'Eth' : upperCaseWord(value)
 
   const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.symbol)
   const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
@@ -158,7 +163,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         key={token.address}
         style={{marginRight: 16}}
         approval={tokenData.rewardsApproval}
-        tokenSymbol={token.symbol}
+        tokenSymbol={tokenIndex === 0 ? token0Symbol : token1Symbol}
         onApprove={() => dispatch(approvePoolToken({
           tokenAddress: token.address,
           Rewards: rewardsAddress,
@@ -169,6 +174,35 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       />
     )
   }
+
+  const userToken0Balance =
+    token0IsWeth
+    ? (userEthBalance === null ? 0 : userEthBalance)
+    : (poolCurrentData === null ? 0 : poolCurrentData.token0.userBalance)
+
+  const userToken1Balance =
+    token1IsWeth
+    ? (userEthBalance === null ? 0 : userEthBalance)
+    : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
+
+  const failures: {[key in string]: reason} = {
+    noop: {
+      message: '',
+      failing: isNaN(token0Amount) || token0Amount === 0 || isNaN(token1Amount) || token1Amount === 0,
+      silent: true
+    },
+    insufficientToken0: {
+      message: 'Not enough ' + token0Symbol + '.',
+      failing: token0Amount > userToken0Balance,
+    },
+    insufficientToken1: {
+      message: 'Not enough ' + token1Symbol + '.',
+      failing: token1Amount > userToken1Balance,
+    },
+  }
+
+  const failureReasons: reason[] = Object.values(failures)
+  const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
   const token0ApprovalButton = getApprovalButton(0, pool?.token0, poolCurrentData?.token0)
   const token1ApprovalButton = getApprovalButton(1, pool?.token1, poolCurrentData?.token1)
@@ -232,8 +266,31 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         more of my position to liquidators.
       </LargeText>
       <div />
+      <div style={{marginTop: 36, marginBottom: 30}}>
+        <PositionMetadata items={[
+          {
+            title: 'New Wallet ' + token0Symbol + ' Balance',
+            value: numDisplay(userToken0Balance - token0Amount),
+            failing: userToken0Balance - token0Amount < 0,
+          },{
+            title: 'New Wallet ' + token1Symbol + ' Balance',
+            value: numDisplay(userToken1Balance - token1Amount),
+            failing: userToken1Balance - token1Amount < 0,
+          }
+        ]} />
+      </div>
       {token0ApprovalButton}
       {token1ApprovalButton}
+      <div style={{marginTop: 32, marginBottom: 32}}>
+        {userAddress === null ? (
+          <ConnectWalletButton />
+        ) : (
+          <Button onClick={() => alert('clicked create position')} disabled={isFailing}>
+            Create Liquidity Position
+          </Button>
+        )}
+      </div>
+      <ErrorMessage reasons={failureReasons} />
     </div>
   )
 }
