@@ -2,7 +2,7 @@ import { Contract } from 'ethers'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
-import { poolsMetadata } from '../poolMetadata'
+import { poolsMetadata } from '../poolsMetadata'
 import { approval, approveToken } from '../balances'
 
 import { getInitialStateCopy } from '../'

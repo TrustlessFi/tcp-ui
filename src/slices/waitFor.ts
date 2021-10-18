@@ -5,7 +5,7 @@ import { getGovernorInfo } from './governor'
 import { getMarketInfo } from './market'
 import { getRatesInfo } from './rates'
 import { getHueBalance } from './balances/hueBalance'
-import { getPoolsMetadata } from './poolMetadata'
+import { getPoolsMetadata } from './poolsMetadata'
 import { getLendHueBalance } from './balances/lendHueBalance'
 import { getLiquidityPositions } from './liquidityPositions'
 import { getPositions } from './positions'
@@ -223,7 +223,7 @@ export const waitForLiquidityPositions = getWaitFunction(
 )
 
 export const waitForPoolsMetadata = getWaitFunction(
-  (state: RootState) => state.poolMetadata,
+  (state: RootState) => state.poolsMetadata,
   getPoolsMetadata,
   [ProtocolContract.ProtocolDataAggregator, ProtocolContract.TrustlessMulticall, ProtocolContract.Rewards, FetchNode.UserAddress],
 )

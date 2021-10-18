@@ -9,6 +9,7 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
+import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
 import { lendSelectionSlice, LendSelectionState } from '../../slices/lendSelection'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
@@ -17,6 +18,7 @@ type slicesState =
   TransactionState |
   PositionsEditorState |
   ProtocolContractsState |
+  poolsMetadata |
   liquidationsInfo |
   marketInfo |
   pricesInfo |
@@ -71,6 +73,11 @@ export const slicesToPersist: persistedSlices = {
   },
 
   // Slices with loadable state
+  [poolsMetadataSlice.name]: {
+    slice: poolsMetadataSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.poolsMetadata.data.value
+  },
   [liquidationsSlice.name]: {
     slice: liquidationsSlice,
     ttl: LONG_EXPIRATION,
