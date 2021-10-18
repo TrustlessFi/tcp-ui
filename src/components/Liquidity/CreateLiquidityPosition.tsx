@@ -3,6 +3,9 @@ import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction } from '../../slices/waitFor'
+import { approvePoolToken } from '../../slices/poolCurrentData'
+import { tokenMetadata } from '../../slices/poolMetadata'
+import { tokenData } from '../../slices/poolCurrentData'
 import {
   numDisplay,
   getSpaceForFee,
@@ -19,6 +22,7 @@ import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { ProtocolContract } from '../../slices/contracts/index';
+import GenericApprovalButton from '../utils/GenericApprovalButton';
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -59,6 +63,8 @@ TickSelector.defaultProps = {min: false}
 const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const dispatch = useAppDispatch()
 
+  const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
+  const userAddress = selector(state => state.wallet.address)
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
@@ -136,21 +142,36 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, lowerTick, upperTick)))
   }
 
-  /*
-  const token0ApprovalButton =
-    poolCurrentData === null || rewards === null || pool === null || pool.token0.symbol.toLowerCase() === 'weth'
-      ? null
-      : (
-          <GenericApprovalButton
-            token={poolCurrentData.token0.address}
-            approvee={rewards}
-            approval={poolCurrentData.token0.rewardsApproval}
-            tokenSymbol={pool.token0.symbol}
-            onApprove={}
-          />
-        )
+  const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
+    if (
+      token === undefined
+      || tokenData === undefined
+      || rewardsAddress === null
+      || userAddress === null
+      || pool === null
+      || token.symbol.toLowerCase() === 'weth') return null
 
-  */
+      console.log({rewardsApproval: tokenData.rewardsApproval})
+
+    return (
+      <GenericApprovalButton
+        key={token.address}
+        style={{marginRight: 16}}
+        approval={tokenData.rewardsApproval}
+        tokenSymbol={token.symbol}
+        onApprove={() => dispatch(approvePoolToken({
+          tokenAddress: token.address,
+          Rewards: rewardsAddress,
+          tokenIndex,
+          poolAddress,
+          userAddress,
+        }))}
+      />
+    )
+  }
+
+  const token0ApprovalButton = getApprovalButton(0, pool?.token0, poolCurrentData?.token0)
+  const token1ApprovalButton = getApprovalButton(1, pool?.token1, poolCurrentData?.token1)
 
   const priceUnit =
     (inverted ? token0Symbol : token1Symbol) +
@@ -210,6 +231,9 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
         more of my position to liquidators.
       </LargeText>
+      <div />
+      {token0ApprovalButton}
+      {token1ApprovalButton}
     </div>
   )
 }

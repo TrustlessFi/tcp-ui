@@ -1,4 +1,5 @@
 import { approval } from '../../slices/balances'
+import React, { CSSProperties, ReactNode } from "react";
 import { Button } from 'carbon-components-react'
 
 const GenericApprovalButton = ({
@@ -6,28 +7,23 @@ const GenericApprovalButton = ({
   disabled,
   tokenSymbol,
   onApprove,
+  style,
 }: {
-  token: string,
-  approvee: string,
   approval: approval,
   disabled?: boolean,
   tokenSymbol: string,
   onApprove: () => void,
+  style?: CSSProperties,
 }) => {
-  const approvalLabels = {
-    waiting: 'Approve ' + tokenSymbol,
-    approving: 'Approving ' + tokenSymbol + '...',
-    approved: 'Approved ' + tokenSymbol,
-  }
+  const waitingLabel = 'Approve ' + tokenSymbol
+  const approvingLabel = 'Approving ' + tokenSymbol + '...'
+  const approvedLabel = 'Approved ' + tokenSymbol
 
-  const nullButton = <Button disabled>{approvalLabels.waiting}</Button>
+  if (disabled === true) return <Button disabled style={style}>{waitingLabel}</Button>
+  if (approval.approving) return <Button disabled style={style}>{approvingLabel}</Button>
+  if (approval.approved) return <Button disabled style={style}>{approvedLabel}</Button>
 
-  if (disabled === true) return nullButton
-
-  if (approval.approving) return <Button disabled>{approvalLabels.approving}</Button>
-  if (approval.approved) return <Button disabled>{approvalLabels.approved}</Button>
-
-  return <Button onClick={onApprove}>{approvalLabels.waiting}</Button>
+  return <Button onClick={onApprove} style={style}>{waitingLabel}</Button>
 }
 
 export default GenericApprovalButton
