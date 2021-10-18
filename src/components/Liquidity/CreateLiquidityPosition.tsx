@@ -159,8 +159,6 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       || pool === null
       || token.symbol.toLowerCase() === 'weth') return null
 
-      console.log({rewardsApproval: tokenData.rewardsApproval})
-
     return (
       <GenericApprovalButton
         key={token.address}

@@ -56,8 +56,8 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<p
         allowances: getCustomMulticall(
           tokenContract,
           {
-            [token0AllowanceSelector]: rc.String,
-            [token1AllowanceSelector]: rc.String,
+            [token0AllowanceSelector]: rc.BigNumberToString,
+            [token1AllowanceSelector]: rc.BigNumberToString,
           }
         )
       }
