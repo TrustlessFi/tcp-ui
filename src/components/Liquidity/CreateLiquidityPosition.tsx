@@ -94,8 +94,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const nextHighest = tick === null ? null : nearestTick > tick ? nearestTick : nearestTick + spacing
 
   const [inverted, setInverted] = useState(false)
-  const [lowerTick, setLowerTick] = useState(0)
-  const [upperTick, setUpperTick] = useState(0)
+  const [tickLower, setTickLower] = useState(0)
+  const [tickUpper, setTickUpper] = useState(0)
   const [token0Amount, setToken0Amount] = useState(0)
   const [token1Amount, setToken1Amount] = useState(0)
   const [token0AdjustedLast, setToken0AdjustedLast] = useState(true)
@@ -107,8 +107,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       isDataLoadedRef.current = true
 
       setInverted(tick < 0)
-      setLowerTick(nextLowest)
-      setUpperTick(nextHighest)
+      setTickLower(nextLowest)
+      setTickUpper(nextHighest)
     }
   })
 
@@ -127,29 +127,29 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
   const updateLowerTick = (newTick: number) => {
     if (tick === null || tick <= newTick) return
-    setLowerTick(newTick)
+    setTickLower(newTick)
     token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, newTick, upperTick)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, newTick, upperTick)))
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, newTick, tickUpper)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, newTick, tickUpper)))
   }
   const updateUpperTick = (newTick: number) => {
     if (tick === null || tick >= newTick) return
-    setUpperTick(newTick)
+    setTickUpper(newTick)
     token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, lowerTick, newTick)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, lowerTick, newTick)))
+      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, tickLower, newTick)))
+      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, tickLower, newTick)))
   }
   const updateToken0Amount = (amount0: number) => {
     if (isNaN(amount0)) return
     setToken0AdjustedLast(true)
     setToken0Amount(amount0)
-    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), instantTick!, lowerTick, upperTick)))
+    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), instantTick!, tickLower, tickUpper)))
   }
   const updateToken1Amount = (amount1: number) => {
     if (isNaN(amount1)) return
     setToken0AdjustedLast(false)
     setToken1Amount(amount1)
-    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, lowerTick, upperTick)))
+    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, tickLower, tickUpper)))
   }
 
   const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
@@ -234,8 +234,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         token1Decimals: pool!.token1.decimals,
         token1IsWeth,
         fee: pool!.fee,
-        tickLower: lowerTick,
-        tickUpper: upperTick,
+        tickLower,
+        tickUpper,
         amount0Desired,
         amount0Min,
         amount1Desired,
@@ -273,14 +273,14 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         <div />
         I want to provide liquidity between the prices of
         <TickSelector
-          tick={inverted ? upperTick : lowerTick}
+          tick={inverted ? tickUpper : tickLower}
           updateTick={inverted ? updateUpperTick : updateLowerTick}
           inverted={inverted}
           spacing={spacing}
         />
         and
         <TickSelector
-          tick={inverted ? lowerTick : upperTick}
+          tick={inverted ? tickLower : tickUpper}
           updateTick={inverted ? updateLowerTick : updateUpperTick}
           inverted={inverted}
           spacing={spacing}
