@@ -1,22 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
-import { balanceState, tokenBalanceThunk } from '../'
+import { balanceState, tokenBalanceThunk, approveToken } from '../'
 import { ProtocolContract } from '../../contracts'
 import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
 import { Hue } from '../../../utils/typechain'
 import { uint256Max } from '../../../utils'
-import {
-  getTxInfo,
-  TransactionStatus,
-  TransactionType,
-  transactionCreated,
-  transactionSucceeded,
-  transactionFailed
-} from '../../transactions'
-import {
-  addNotification,
-} from '../../notifications'
+import { TransactionType, } from '../../transactions'
 
 export type hueBalanceArgs = {
   Hue: string
@@ -48,31 +38,12 @@ export const approveHue = createAsyncThunk(
   'hueBalance/approveHue',
   async (args: hueApproveArgs, {dispatch}) => {
     const provider = getProvider()
+    // TODO pull from data
     const userAddress = await provider.getSigner().getAddress()
 
     const hue = getContract(args.Hue, ProtocolContract.Hue) as Hue
-    const tx = await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
 
-    const txInfo = getTxInfo({
-      hash: tx.hash,
-      userAddress,
-      nonce: tx.nonce,
-      type: TransactionType.ApproveHue,
-      status: TransactionStatus.Pending,
-    })
-
-    dispatch(transactionCreated(txInfo))
-
-    const receipt = await provider.waitForTransaction(tx.hash)
-    const succeeded = receipt.status === 1
-
-    if (succeeded) {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
-      dispatch(transactionSucceeded(tx.hash))
-    } else {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
-      dispatch(transactionFailed(tx.hash))
-    }
+    await approveToken(hue, args.spenderAddress, TransactionType.ApproveHue, userAddress, dispatch)
   }
 )
 

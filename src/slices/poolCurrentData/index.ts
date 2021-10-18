@@ -1,3 +1,4 @@
+import { Contract } from 'ethers'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
@@ -6,6 +7,11 @@ import { approval } from '../balances'
 
 import { getInitialStateCopy } from '../'
 import { fetchPoolCurrentData } from './api'
+
+import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { ERC20 } from '../../utils/typechain'
+import getProvider from '../../utils/getProvider';
+import { uint256Max } from '../../utils/index';
 
 interface tokenData {
   address: string
@@ -32,9 +38,25 @@ export interface poolCurrentDataArgs {
   poolAddress: string
 }
 
+export interface approveTokenArgs {
+  tokenIndex: 0 | 1
+  tokenAddress: string
+  Rewards: string
+}
+
 export const getPoolCurrentData = createAsyncThunk(
   'poolCurrentData/getCurrentData',
   async (args: poolCurrentDataArgs) => await fetchPoolCurrentData(args),
+)
+
+export const approveToken = createAsyncThunk(
+  'poolCurrentData/approveToken',
+  async (args: approveTokenArgs): Promise<void> => {
+    const provider = getProvider()
+    const token = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
+    const tx = await token.connect(provider.getSigner()).approve(args.Rewards, uint256Max)
+
+  }
 )
 
 export const poolCurrentDataSlice = createSlice({

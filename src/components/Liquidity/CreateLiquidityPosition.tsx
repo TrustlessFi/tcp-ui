@@ -3,8 +3,6 @@ import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction } from '../../slices/waitFor'
-import { poolMetadata } from '../../slices/poolMetadata'
-import GenericApprovalButton from '../utils/GenericApprovalButton'
 import {
   numDisplay,
   getSpaceForFee,
@@ -64,7 +62,6 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
-  const rewards = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
 
   const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 

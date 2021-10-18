@@ -5,6 +5,23 @@ import { ProtocolContract } from '../contracts'
 import { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
 
+import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import getProvider from '../../utils/getProvider';
+import { uint256Max } from '../../utils'
+import {
+  getTxInfo,
+  TransactionStatus,
+  TransactionType,
+  transactionCreated,
+  transactionSucceeded,
+  transactionFailed
+} from '../transactions'
+import {
+  addNotification,
+} from '../notifications'
+
+import { ERC20 } from '../../utils/typechain'
+
 export interface tokenInfo {
   address: string,
   name: string,
@@ -35,6 +52,38 @@ export interface balanceArgs {
   tokenAddress: string,
   userAddress: string,
   TrustlessMulticall: string,
+}
+
+export const approveToken = async (
+  token: ERC20,
+  spender: string,
+  txType: TransactionType,
+  userAddress: string,
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+) => {
+    const provider = getProvider()
+    const tx = await token.connect(provider.getSigner()).approve(spender, uint256Max)
+
+    const txInfo = getTxInfo({
+      hash: tx.hash,
+      userAddress,
+      nonce: tx.nonce,
+      type: txType,
+      status: TransactionStatus.Pending,
+    })
+
+    dispatch(transactionCreated(txInfo))
+
+    const receipt = await provider.waitForTransaction(tx.hash)
+    const succeeded = receipt.status === 1
+
+    if (succeeded) {
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
+      dispatch(transactionSucceeded(tx.hash))
+    } else {
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(transactionFailed(tx.hash))
+    }
 }
 
 export const tokenBalanceThunk = async (
