@@ -1,17 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { sliceState, getState, getGenericReducerBuilder } from '../'
+import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
 import { poolsMetadata } from '../poolMetadata'
-import getContract, { getMulticallContract } from '../../utils/getContract'
 import { approval } from '../balances'
 
-import { Prices } from "../../utils/typechain"
-import { ProtocolContract } from '../contracts'
-import { getLocalStorage } from '../../utils'
-import { rc, executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
-import { initialState, getInitialStateCopy } from '../'
+import { getInitialStateCopy } from '../'
 import { fetchPoolCurrentData } from './api'
-import { zeroAddress } from '../../utils/index';
 
 interface tokenData {
   address: string

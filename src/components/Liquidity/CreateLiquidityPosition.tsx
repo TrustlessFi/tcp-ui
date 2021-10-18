@@ -2,7 +2,7 @@ import { Button } from 'carbon-components-react'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , getTokenMetadataWaitFunction } from '../../slices/waitFor'
+import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction } from '../../slices/waitFor'
 import { poolMetadata } from '../../slices/poolMetadata'
 import GenericApprovalButton from '../utils/GenericApprovalButton'
 import {
@@ -21,7 +21,6 @@ import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { ProtocolContract } from '../../slices/contracts/index';
-import { first } from '../../utils/index';
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -59,24 +58,22 @@ const TickSelector = ({
 
 TickSelector.defaultProps = {min: false}
 
-const CreateLiquidityPosition = ({ poolAddress, poolMetadata }: { poolAddress: string, poolMetadata: poolMetadata }) => {
+const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const dispatch = useAppDispatch()
 
-  const derp: (string | null)[] = [null]
-  const [derp0] = derp
-
   const rewardsInfo = waitForRewards(selector, dispatch)
-  const poolCurrentDataWaitFunction = getPoolCurrentDataWaitFunction(poolAddress)
-  const [poolCurrentData] = poolCurrentDataWaitFunction(selector, dispatch)
-  const [token0Metadata, token1Metadata] = getTokenMetadataWaitFunction([poolMetadata.token0, poolMetadata.token1])(selector, dispatch)
+  const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
+  const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
   const rewards = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
+
+  const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 
   const instantTick = poolCurrentData !== null ? poolCurrentData.instantTick : null
   const tick = poolCurrentData !== null ? poolCurrentData.twapTick : null
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
-  const spacing = getSpaceForFee(poolMetadata === null ? 0 : poolMetadata.fee)
+  const spacing = getSpaceForFee(pool === null ? 0 : pool.fee)
   const nearestTick = nearestUsableTick(tick === null ? 0 : tick, spacing)
 
   const nextLowest = tick === null ? null : nearestTick < tick ? nearestTick : nearestTick - spacing
@@ -107,7 +104,7 @@ const CreateLiquidityPosition = ({ poolAddress, poolMetadata }: { poolAddress: s
     return value.substr(0, 1).toUpperCase() + value.substr(1).toLowerCase()
   }
 
-  const token0Symbol = token0Metadata === null ?  '-' : displaySymbol(token0Metadata.symbol)
+  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.symbol)
   const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
 
   const poolName = pool === null ? '-' : token0Symbol + ':' + token1Symbol
@@ -142,6 +139,7 @@ const CreateLiquidityPosition = ({ poolAddress, poolMetadata }: { poolAddress: s
     setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, lowerTick, upperTick)))
   }
 
+  /*
   const token0ApprovalButton =
     poolCurrentData === null || rewards === null || pool === null || pool.token0.symbol.toLowerCase() === 'weth'
       ? null
@@ -155,6 +153,7 @@ const CreateLiquidityPosition = ({ poolAddress, poolMetadata }: { poolAddress: s
           />
         )
 
+  */
 
   const priceUnit =
     (inverted ? token0Symbol : token1Symbol) +
@@ -163,7 +162,7 @@ const CreateLiquidityPosition = ({ poolAddress, poolMetadata }: { poolAddress: s
 
   return (
     <div style={{position: 'relative'}}>
-      <RelativeLoading show={poolCurrentData === null || poolMetadata === null || rewardsInfo === null} />
+      <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
       <div style={{marginBottom: 16}}>
         <Button
           small
