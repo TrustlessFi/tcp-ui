@@ -103,8 +103,10 @@ export interface txCreateLiquidityPositionArgs {
   type: TransactionType.CreateLiquidityPosition
   token0: string
   token0Decimals: number
+  token0IsWeth: boolean
   token1: string
   token1Decimals: number
+  token1IsWeth: boolean
   fee: number
   tickLower: number
   tickUpper: number
@@ -197,19 +199,27 @@ const executeTransaction = async (
 
       const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
 
+      const amount0Desired = bnf(mnt(args.amount0Desired, args.token0Decimals))
+      const amount1Desired = bnf(mnt(args.amount1Desired, args.token1Decimals))
+
+      const ethCount = (args.token0IsWeth ? amount0Desired : bnf(0)).add(args.token1IsWeth ? amount1Desired : bnf(0))
+
       return await rewards.connect(provider.getSigner()).createLiquidityPosition({
         token0: args.token0,
         token1: args.token1,
         fee: args.fee,
         tickLower: args.tickLower,
         tickUpper: args.tickUpper,
-        amount0Desired: bnf(mnt(args.amount0Desired, args.token0Decimals)),
+        amount0Desired,
         amount0Min: bnf(mnt(args.amount0Min, args.token0Decimals)),
-        amount1Desired: bnf(mnt(args.amount1Desired, args.token1Decimals)),
+        amount1Desired,
         amount1Min: bnf(mnt(args.amount1Min, args.token1Decimals)),
         deadline: BigNumber.from(blockTime).add(DEFAULT_TRANSACTION_TIMEOUT),
         recipient: zeroAddress,
-      }, UIID)
+      },
+      UIID,
+      {value: ethCount}
+    )
 
     default:
       assertUnreachable(type)
