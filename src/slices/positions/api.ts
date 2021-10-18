@@ -3,10 +3,10 @@ import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
+import { getDuplicateFuncMulticall, executeMulticalls } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 
-import { Accounting, HuePositionNFT, TrustlessMulticallViewOnly } from '../../utils/typechain'
+import { Accounting, HuePositionNFT } from '../../utils/typechain'
 import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {
@@ -34,7 +34,7 @@ export const fetchPositions = async (args: positionsArgs) => {
     let positionDebt = position.debt
 
     // calcuate estimated position debt
-    const debtExchangeRate  = scale(args.sdi.debtExchangeRate)
+    const debtExchangeRate = scale(args.sdi.debtExchangeRate)
     if (!position.startDebtExchangeRate.eq(0) && !position.startDebtExchangeRate.eq(debtExchangeRate)) {
       positionDebt = positionDebt.mul(debtExchangeRate).div(position.startDebtExchangeRate)
     }

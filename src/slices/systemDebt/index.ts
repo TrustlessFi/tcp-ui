@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { sliceState, getState, getGenericReducerBuilder } from '../'
+import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
@@ -40,7 +40,7 @@ const name = 'systemDebt'
 
 export const systemDebtSlice = createSlice({
   name,
-  initialState: getState<systemDebtInfo>(getLocalStorage(name, null)) as SystemDebtState,
+  initialState: getStateWithValue<systemDebtInfo>(getLocalStorage(name, null)) as SystemDebtState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getSystemDebtInfo)

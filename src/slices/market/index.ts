@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getState, getGenericReducerBuilder } from '../'
+import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Market } from "../../utils/typechain/"
 import { ProtocolContract } from '../contracts'
@@ -59,7 +59,7 @@ const name = 'market'
 
 export const marketSlice = createSlice({
   name,
-  initialState: getState<marketInfo>(getLocalStorage(name, null)) as MarketState,
+  initialState: getStateWithValue<marketInfo>(getLocalStorage(name, null)) as MarketState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getMarketInfo)

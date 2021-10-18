@@ -1,9 +1,17 @@
+import { Contract } from 'ethers'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import { tokenInfo } from '../balances'
-import { fetchPoolMetadata } from './api'
+import getProvider from '../../utils/getProvider';
+import { ProtocolContract } from '../contracts/index';
+import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
+import getContract, { getMulticallContract } from '../../utils/getContract'
+
+import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '../../utils/typechain/'
+import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import { zeroAddress } from '../../utils/index';
 
 export interface getPoolsMetadataArgs {
   Rewards: string
@@ -17,26 +25,78 @@ export interface poolMetadata {
   rewardsPortion: number
   poolID: number
   address: string
-  token0: tokenInfo
-  token1: tokenInfo
+  token0: string
+  token1: string
 }
 
 export interface poolsMetadata {[key: string]: poolMetadata}
 
-export interface PoolsState extends sliceState<poolsMetadata> {}
+export interface PoolsMetadataState extends sliceState<poolsMetadata> {}
+
 
 export const getPoolsMetadata = createAsyncThunk(
-  'pools/getPoolMetadata',
-  async (args: getPoolsMetadataArgs) => await fetchPoolMetadata(args),
+  'poolsMetadata/getPoolMetadata',
+  async (args: getPoolsMetadataArgs): Promise<poolsMetadata> => {
+    const provider = getProvider()
+    const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
+    const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
+    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+
+    // TODO make this into it's own node and cache for 30 minutes
+    const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
+
+    const tokenCalls = poolConfigs.map(config => ['token0', 'token1'].map(func => contractFunctionSelector(config.pool, func))).flat()
+    const feeCalls = poolConfigs.map(config => contractFunctionSelector(config.pool, 'fee'))
+
+    let totalRewardsPortion = 0
+    poolConfigs.map(config => totalRewardsPortion += config.rewardsPortion.toNumber())
+
+    const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
+
+    const { poolInfo, poolIDs } = await executeMulticalls(
+      trustlessMulticall,
+      {
+        poolInfo: getDuplicateContractMulticall(
+          poolContract,
+          {
+            ...Object.fromEntries(tokenCalls.map(tokenCall => [tokenCall, rc.String])),
+            ...Object.fromEntries(feeCalls.map(feeCall => [feeCall, rc.Number])),
+          }
+        ),
+        poolIDs: getDuplicateFuncMulticall(
+          rewards,
+          'poolIDForPool',
+          rc.Number,
+          Object.fromEntries(poolConfigs.map(config => [config.pool, [config.pool]]))
+        ),
+      }
+    )
+
+    return Object.fromEntries(poolConfigs.map(poolConfig =>
+      [
+        poolConfig.pool,
+        {
+          fee: poolInfo[contractFunctionSelector(poolConfig.pool, 'fee')] as number,
+          rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
+          poolID: poolIDs[poolConfig.pool],
+          address: poolConfig.pool,
+          token0: poolInfo[contractFunctionSelector(poolConfig.pool, 'token0')] as string,
+          token1: poolInfo[contractFunctionSelector(poolConfig.pool, 'token1')] as string,
+        }
+      ]
+    ))
+  }
 )
 
-export const poolsSlice = createSlice({
-  name: 'pools',
-  initialState: initialState as PoolsState,
+const name = 'poolsMetadata'
+
+export const poolsMetadataSlice = createSlice({
+  name,
+  initialState: initialState as PoolsMetadataState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPoolsMetadata)
   },
 })
 
-export default poolsSlice.reducer
+export default poolsMetadataSlice.reducer
