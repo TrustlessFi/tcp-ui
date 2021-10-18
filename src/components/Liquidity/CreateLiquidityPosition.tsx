@@ -6,6 +6,7 @@ import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , 
 import { approvePoolToken } from '../../slices/poolCurrentData'
 import { tokenMetadata } from '../../slices/poolMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
+import { openModal } from '../../slices/modal'
 import {
   numDisplay,
   getSpaceForFee,
@@ -28,6 +29,7 @@ import { reason } from '../library/ErrorMessage';
 import ConnectWalletButton from '../utils/ConnectWalletButton';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
+import { TransactionType } from '../../slices/transactions/index';
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -68,6 +70,7 @@ TickSelector.defaultProps = {min: false}
 const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const dispatch = useAppDispatch()
 
+  const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
   const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
   const userEthBalance = waitForEthBalance(selector, dispatch)
@@ -212,6 +215,38 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     ' per ' +
     (inverted ? token1Symbol : token0Symbol)
 
+
+  const openCreateLiquidityPositionDialog = () => {
+    const amount0Desired = token0Amount
+    // TODO tighter or custom range
+    const amount0Min = amount0Desired * 0.95
+    const amount1Desired = token1Amount
+    // TODO tighter or custom range
+    const amount1Min = amount0Desired * 0.95
+
+    dispatch(openModal({
+      args: {
+        type: TransactionType.CreateLiquidityPosition,
+        token0: poolCurrentData!.token0.address,
+        token0Decimals: pool!.token0.decimals,
+        token1: poolCurrentData!.token1.address,
+        token1Decimals: pool!.token1.decimals,
+        fee: pool!.fee,
+        tickLower: lowerTick,
+        tickUpper: upperTick,
+        amount0Desired,
+        amount0Min,
+        amount1Desired,
+        amount1Min,
+        TrustlessMulticall: trustlessMulticallAddress!,
+        Rewards: rewardsAddress!,
+      },
+      token0Symbol,
+      token1Symbol,
+    }))
+  }
+
+
   return (
     <div style={{position: 'relative'}}>
       <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
@@ -285,7 +320,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         {userAddress === null ? (
           <ConnectWalletButton />
         ) : (
-          <Button onClick={() => alert('clicked create position')} disabled={isFailing}>
+          <Button onClick={openCreateLiquidityPositionDialog} disabled={isFailing}>
             Create Liquidity Position
           </Button>
         )}
