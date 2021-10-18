@@ -16,6 +16,7 @@ import { scale, timeMS } from '../../utils'
 import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'
 import { v4 as uid } from 'uuid'
 import { enforce, mnt, parseMetamaskError } from '../../utils'
+import { zeroAddress , bnf } from '../../utils/index';
 
 export enum TransactionType {
   CreatePosition,
@@ -184,7 +185,6 @@ const executeTransaction = async (
         UIID,
         { value: (args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0) }
       )
-
     case TransactionType.Lend:
       return await getMarket(args.Market).connect(provider.getSigner()).lend(scale(args.count))
 
@@ -203,12 +203,12 @@ const executeTransaction = async (
         fee: args.fee,
         tickLower: args.tickLower,
         tickUpper: args.tickUpper,
-        amount0Desired: args.amount0Desired,
-        amount0Min: args.amount0Min,
-        amount1Desired: args.amount1Desired,
-        amount1Min: args.amount1Min,
+        amount0Desired: bnf(mnt(args.amount0Desired, args.token0Decimals)),
+        amount0Min: bnf(mnt(args.amount0Min, args.token0Decimals)),
+        amount1Desired: bnf(mnt(args.amount1Desired, args.token1Decimals)),
+        amount1Min: bnf(mnt(args.amount1Min, args.token1Decimals)),
         deadline: BigNumber.from(blockTime).add(DEFAULT_TRANSACTION_TIMEOUT),
-        recipient: ''
+        recipient: zeroAddress,
       }, UIID)
 
     default:
