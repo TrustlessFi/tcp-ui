@@ -1,6 +1,5 @@
 import { useAppSelector as selector } from '../../app/hooks'
 import { Copy16, Launch16, Checkmark16 } from '@carbon/icons-react'
-import Center from '../library/Center'
 import SmallLink from '../library/SmallLink'
 import NetworkIndicator from '../library/NetworkIndicator'
 import ExplorerLink from '../utils/ExplorerLink'

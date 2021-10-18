@@ -97,7 +97,7 @@ const getWaitFunction = <Args extends {}, Value, AdditionalData extends {}>(
     throw state.data.error
   }
 
-  if (state === undefined || state.data.value === null && !stateSelector(store.getState()).loading) {
+  if (state === undefined || (state.data.value === null && !stateSelector(store.getState()).loading)) {
     dispatch(thunk(inputArgs as NonNullable<Args>))
   }
 

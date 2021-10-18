@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk, approveToken } from '../'
 import { ProtocolContract } from '../../contracts'

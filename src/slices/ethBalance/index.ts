@@ -2,10 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
-import getContract, { getMulticallContract } from '../../utils/getContract'
-import { ProtocolContract } from '../contracts'
-
-import { TrustlessMulticallViewOnly } from '../../utils/typechain'
+import { getMulticallContract } from '../../utils/getContract'
 
 export type ethBalance = number
 

@@ -1,9 +1,8 @@
-import { AsyncThunk } from '@reduxjs/toolkit'
 import { ProtocolContract } from '../../slices/contracts'
 import { balanceInfo } from '../../slices/balances'
 import { waitForHueBalance, waitForLendHueBalance, getContractWaitFunction } from '../../slices/waitFor'
-import { approveHue, hueApproveArgs } from '../../slices/balances/hueBalance'
-import { approveLendHue, lendHueApproveArgs } from '../../slices/balances/lendHueBalance'
+import { approveHue } from '../../slices/balances/hueBalance'
+import { approveLendHue } from '../../slices/balances/lendHueBalance'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button } from 'carbon-components-react'
 

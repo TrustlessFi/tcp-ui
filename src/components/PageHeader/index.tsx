@@ -1,22 +1,22 @@
 import { MouseEvent } from 'react'
 import { withRouter, useHistory, useLocation } from 'react-router'
-import { useEffect, useState, useRef, CSSProperties } from 'react'
+import { useEffect, useState, CSSProperties } from 'react'
 import {
   Header,
   HeaderContainer,
   HeaderName,
   HeaderNavigation,
-  HeaderMenu,
-  HeaderMenuButton,
+  // HeaderMenu,
+  // HeaderMenuButton,
   HeaderMenuItem,
   OverflowMenu,
-  OverflowMenuItem,
-  SideNav,
-  SideNavItems,
-  HeaderSideNavItems,
+  // OverflowMenuItem,
+  // SideNav,
+  // SideNavItems,
+  // HeaderSideNavItems,
   Button,
 } from 'carbon-components-react'
-import { Menu32, Close32 } from '@carbon/icons-react';
+import { Menu32 } from '@carbon/icons-react';
 import { Tab } from '../../App'
 
 import Wallet from './Wallet'

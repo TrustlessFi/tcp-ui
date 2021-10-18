@@ -279,7 +279,7 @@ const getModalContent = (
   throw new Error('AppModal: Should not get here' )
 }
 
-const AppModal = ({}: {}) => {
+const AppModal = () => {
   const dispatch = useAppDispatch()
   const modalState = selector(state => state.modal)
 

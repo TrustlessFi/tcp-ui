@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Launch16 } from '@carbon/icons-react';
-import Center from '../library/Center';
 import SmallLink from '../library/SmallLink'
 import { getTxHash, clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { getSortedUserTxs } from '../utils'

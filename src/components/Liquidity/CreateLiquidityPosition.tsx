@@ -49,17 +49,19 @@ const TickSelector = ({
     {tickToPriceDisplay(inverted ? -tick : tick)}
     <Button
       style={{marginLeft: 8}}
-      small
+      size="sm"
       hasIconOnly
       kind="secondary"
       renderIcon={Subtract16}
+      iconDescription="reduce amount"
       onClick={() => updateTick(inverted ? tick + spacing : tick - spacing)}
     />
     <Button
-      small
+      size="sm"
       hasIconOnly
       kind="secondary"
       renderIcon={Add16}
+      iconDescription="increase amount"
       onClick={() => updateTick(inverted ? tick - spacing : tick + spacing)}
     />
   </span>
@@ -252,13 +254,13 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
       <div style={{marginBottom: 16}}>
         <Button
-          small
+          size="sm"
           onClick={toggleInverted}
           kind={inverted ? 'secondary' : 'primary'}>
           {token0Symbol}
         </Button>
         <Button
-          small
+          size="sm"
           onClick={toggleInverted}
           kind={inverted ? 'primary' : 'secondary'}>
           {token1Symbol}
