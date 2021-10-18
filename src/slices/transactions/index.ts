@@ -99,18 +99,20 @@ export interface txWithdrawArgs {
 }
 
 export interface txCreateLiquidityPositionArgs {
-  type: TransactionType.CreateLiquidityPosition,
-  token0: string,
-  token1: string,
-  fee: number,
-  tickLower: number,
-  tickUpper: number,
-  amount0Desired: BigNumber,
-  amount0Min: BigNumber,
-  amount1Desired: BigNumber,
-  amount1Min: BigNumber,
-  TrustlessMulticall: string,
-  Rewards: string,
+  type: TransactionType.CreateLiquidityPosition
+  token0: string
+  token0Decimals: number
+  token1: string
+  token1Decimals: number
+  fee: number
+  tickLower: number
+  tickUpper: number
+  amount0Desired: number
+  amount0Min: number
+  amount1Desired: number
+  amount1Min: number
+  TrustlessMulticall: string
+  Rewards: string
 }
 
 export type TransactionArgs =

@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Modal,
 } from 'carbon-components-react'
-import { modalData, closeModal, createPositionModalData, updatePositionModalData, lendModalData } from '../../slices/modal'
+import { modalData, closeModal, createPositionModalData, updatePositionModalData, lendModalData, createLiquidityPositionModalData } from '../../slices/modal'
 import { TransactionType, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { numDisplay, assertUnreachable } from '../../utils'
 import LargeText from '../utils/LargeText'
@@ -13,12 +13,28 @@ import { waitForTransaction } from '../../slices/transactions'
 import ExplorerLink from '../utils/ExplorerLink'
 
 const getModalPreview = (data: NonNullable<modalData>) => {
+  const getDisplayFromUpdateItems = (items: {title: string, value: string}[]) =>
+    <>
+      {items.map((item, index) =>
+        <div key={index}>
+          <LargeText>
+            {item.title + ': '}
+          </LargeText>
+          <Text>
+            {item.value}
+          </Text>
+        </div>
+      )}
+      </>
+
+
+
   const type = data.args.type
   switch(type) {
     case TransactionType.CreatePosition:
       data = data as createPositionModalData
 
-      const items = [
+      return getDisplayFromUpdateItems([
         {
           title: 'Collateral',
           value: numDisplay(data.args.collateralCount, 2) + ' Eth',
@@ -32,20 +48,7 @@ const getModalPreview = (data: NonNullable<modalData>) => {
           title: 'Liquidation Price',
           value: numDisplay(data.liquidationPrice, 2) + ' Hue/Eth',
         }
-      ]
-
-      const preview = items.map((item, index) =>
-        <div key={index}>
-          <LargeText>
-            {item.title + ': '}
-          </LargeText>
-          <Text>
-            {item.value}
-          </Text>
-        </div>
-      )
-
-      return <>{preview}</>
+      ])
 
     case TransactionType.UpdatePosition:
       data = data as updatePositionModalData
@@ -53,7 +56,7 @@ const getModalPreview = (data: NonNullable<modalData>) => {
       const collateralIncrease = data.args.collateralIncrease
       const debtIncrease = data.args.debtIncrease
 
-      const updateItems = [
+      return getDisplayFromUpdateItems([
         {
           title: collateralIncrease > 0 ? 'Collateral Increase' : 'Collateral Decrease',
           value: numDisplay(Math.abs(collateralIncrease), 2) + ' Eth',
@@ -73,20 +76,17 @@ const getModalPreview = (data: NonNullable<modalData>) => {
           title: 'Liquidation Price',
           value: numDisplay(data.liquidationPrice, 2) + ' Hue/Eth',
         }
-      ]
+      ])
 
-      const updatePreview = updateItems.map((item, index) =>
-        <div key={index}>
-          <LargeText>
-            {item.title + ': '}
-          </LargeText>
-          <Text>
-            {item.value}
-          </Text>
-        </div>
-      )
-
-      return <>{updatePreview}</>
+    case TransactionType.CreateLiquidityPosition:
+      data = data as createLiquidityPositionModalData
+      return getDisplayFromUpdateItems([{
+        title: data.token0Symbol,
+        value: numDisplay(data.args.amount0Desired),
+      },{
+        title: data.token1Symbol,
+        value: numDisplay(data.args.amount1Desired),
+      }])
 
     case TransactionType.Lend:
     case TransactionType.Withdraw:
@@ -109,6 +109,7 @@ const getModalPreview = (data: NonNullable<modalData>) => {
 const getVerb = (data: NonNullable<modalData>) => {
   const type = data.args.type
   switch(type) {
+    case TransactionType.CreateLiquidityPosition:
     case TransactionType.CreatePosition:
       return 'Create'
     case TransactionType.UpdatePosition:
@@ -125,6 +126,7 @@ const getVerb = (data: NonNullable<modalData>) => {
 const getShortName = (data: NonNullable<modalData>) => {
   const type = data.args.type
   switch(type) {
+    case TransactionType.CreateLiquidityPosition:
     case TransactionType.CreatePosition:
       return 'Creating a Position'
     case TransactionType.UpdatePosition:
@@ -148,6 +150,17 @@ const getMediumName = (data: NonNullable<modalData>) => {
         + ' Eth of collateral and '
         + numDisplay(data.args.debtCount, 2)
         + ' Hue of debt.'
+
+    case TransactionType.CreateLiquidityPosition:
+      return [
+        'Creating a position with',
+        data.args.amount0Desired,
+        (data as createLiquidityPositionModalData).token0Symbol,
+        'and',
+        data.args.amount1Desired,
+        (data as createLiquidityPositionModalData).token1Symbol,
+        '.'
+      ]
 
     case TransactionType.UpdatePosition:
 
