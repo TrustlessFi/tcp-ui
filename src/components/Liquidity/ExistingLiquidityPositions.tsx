@@ -56,8 +56,8 @@ const LiquidityPositionsTable = (
       data: {
         'Position ID': lqPos.positionID,
         'Liquidity': lqPos.liquidity,
-        'Tick Lower': lqPos.tickUpper,
-        'Tick Upper': lqPos.tickLower,
+        'Tick Lower': lqPos.tickLower,
+        'Tick Upper': lqPos.tickUpper,
         'Rewards': '~546 TCP',
         '': 'claim'
       },
