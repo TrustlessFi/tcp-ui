@@ -16,16 +16,16 @@ import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/inter
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { uint255Max , bnf , enforce, sqrtPriceX96ToTick } from '../../utils'
 
-export const fetchPoolCurrentData = async (args: poolCurrentDataArgs, poolAddress: string): Promise<poolCurrentInfo> => {
+export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<poolCurrentInfo> => {
     const provider = getProvider()
     const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
     console.log("here 1", {args})
 
-    enforce(args.PoolsMetadata.hasOwnProperty(poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + poolAddress)
-    const pool = args.PoolsMetadata[poolAddress]
-    const poolContract = new Contract(poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
+    enforce(args.PoolsMetadata.hasOwnProperty(args.poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + args.poolAddress)
+    const pool = args.PoolsMetadata[args.poolAddress]
+    const poolContract = new Contract(args.poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
     const token0Contract = new Contract(pool.token0.address, erc20Artifact.abi, provider) as ERC20
     const token1Contract = new Contract(pool.token1.address, erc20Artifact.abi, provider) as ERC20
 
@@ -41,7 +41,7 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs, poolAddres
         tickTwapped: getMulticall(
           prices,
           { calculateInstantTwappedTick: rc.Number },
-          { calculateInstantTwappedTick: [poolAddress, args.rewardsInfo.twapDuration]},
+          { calculateInstantTwappedTick: [args.poolAddress, args.rewardsInfo.twapDuration]},
         ),
         token0Data: getMulticall(
           token0Contract,

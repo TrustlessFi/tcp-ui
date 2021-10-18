@@ -38,12 +38,10 @@ export interface poolCurrentDataArgs {
   poolAddress: string
 }
 
-export const getPoolCurrentDataThunk = (poolAddress: string) => {
-  return createAsyncThunk(
-    'poolCurrentData/getCurrentData',
-    async (args: poolCurrentDataArgs) => await fetchPoolCurrentData(args, poolAddress),
-  )
-}
+export const getPoolCurrentData = createAsyncThunk(
+  'poolCurrentData/getCurrentData',
+  async (args: poolCurrentDataArgs) => await fetchPoolCurrentData(args),
+)
 
 export const poolCurrentDataSlice = createSlice({
   name: 'poolCurrentData' ,
@@ -55,19 +53,18 @@ export const poolCurrentDataSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    const thunk = getPoolCurrentDataThunk(zeroAddress)
     builder
-      .addCase(thunk.pending, (state, action) => {
+      .addCase(getPoolCurrentData.pending, (state, action) => {
         const poolAddress = action.meta.arg.poolAddress
         const initialState = getInitialStateCopy<poolCurrentInfo>()
         initialState.loading = true
         return {...state, [poolAddress]: initialState}
       })
-      .addCase(thunk.rejected, (state, action) => {
+      .addCase(getPoolCurrentData.rejected, (state, action) => {
         const poolAddress = action.meta.arg.poolAddress
         state[poolAddress].data.error = action.error
       })
-      .addCase(thunk.fulfilled, (state, action) => {
+      .addCase(getPoolCurrentData.fulfilled, (state, action) => {
         const poolAddress = action.meta.arg.poolAddress
         state[poolAddress].loading = false
         state[poolAddress].data.value = action.payload

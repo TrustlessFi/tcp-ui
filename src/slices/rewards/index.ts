@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getState, getGenericReducerBuilder } from '../'
+import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Rewards, } from '../../utils/typechain'
@@ -49,7 +49,7 @@ const name = 'rewards'
 // TODO add to local storage
 export const rewardsSlice = createSlice({
   name,
-  initialState: getState<rewardsInfo>(getLocalStorage(name, null)) as RewardsState,
+  initialState: getStateWithValue<rewardsInfo>(getLocalStorage(name, null)) as RewardsState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getRewardsInfo)
