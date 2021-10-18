@@ -8,6 +8,8 @@ import {
   executeMulticalls,
   rc,
   getMulticall,
+  getCustomMulticall,
+  getFullSelector,
 } from '@trustlessfi/multicall'
 
 import { Prices, UniswapV3Pool, ERC20 } from '../../utils/typechain/'
@@ -15,6 +17,7 @@ import { Prices, UniswapV3Pool, ERC20 } from '../../utils/typechain/'
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { uint255Max , bnf , enforce, sqrtPriceX96ToTick } from '../../utils'
+import { zeroAddress , unscale } from '../../utils/index';
 
 export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<poolCurrentInfo> => {
     const provider = getProvider()
@@ -24,8 +27,12 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<p
     enforce(args.PoolsMetadata.hasOwnProperty(args.poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + args.poolAddress)
     const pool = args.PoolsMetadata[args.poolAddress]
     const poolContract = new Contract(args.poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
-    const token0Contract = new Contract(pool.token0.address, erc20Artifact.abi, provider) as ERC20
-    const token1Contract = new Contract(pool.token1.address, erc20Artifact.abi, provider) as ERC20
+    const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider) as ERC20
+
+    const token0UserBalanceSelector = getFullSelector(tokenContract, pool.token0.address, 'balanceOf', [args.userAddress])
+    const token1UserBalanceSelector = getFullSelector(tokenContract, pool.token1.address, 'balanceOf', [args.userAddress])
+    const token0AllowanceSelector = getFullSelector(tokenContract, pool.token0.address, 'allowance', [args.userAddress, args.Rewards])
+    const token1AllowanceSelector = getFullSelector(tokenContract, pool.token1.address, 'allowance', [args.userAddress, args.Rewards])
 
     const currentData = await executeMulticalls(
       trustlessMulticall,
@@ -39,19 +46,27 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<p
           { calculateInstantTwappedTick: rc.Number },
           { calculateInstantTwappedTick: [args.poolAddress, args.rewardsInfo.twapDuration]},
         ),
-        token0Data: getMulticall(
-          token0Contract,
-          { balanceOf: rc.BigNumberUnscale, allowance: rc.BigNumberToString },
-          { balanceOf: [args.userAddress], allowance: [args.userAddress, args.Rewards]}
+        balances: getCustomMulticall(
+          tokenContract,
+          {
+            [token0UserBalanceSelector]: rc.BigNumber,
+            [token1UserBalanceSelector]: rc.BigNumber,
+          }
         ),
-        token1Data: getMulticall(
-          token1Contract,
-          { balanceOf: rc.BigNumberUnscale, allowance: rc.BigNumberToString },
-          { balanceOf: [args.userAddress], allowance: [args.userAddress, args.Rewards]}
-        ),
+        allowances: getCustomMulticall(
+          tokenContract,
+          {
+            [token0AllowanceSelector]: rc.String,
+            [token1AllowanceSelector]: rc.String,
+          }
+        )
       }
     )
-    console.log("here 3")
+
+    const token0UserBalance = unscale(currentData.balances[token0UserBalanceSelector], pool.token0.decimals)
+    const token1UserBalance = unscale(currentData.balances[token1UserBalanceSelector], pool.token1.decimals)
+    const token0Allowance = currentData.allowances[token0AllowanceSelector]
+    const token1Allowance = currentData.allowances[token1AllowanceSelector]
 
     return {
       instantTick: sqrtPriceX96ToTick(currentData.sqrtPriceX96Instant.slot0),
@@ -59,20 +74,20 @@ export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<p
       token0: {
         address: pool.token0.address,
         rewardsApproval: {
-          allowance: currentData.token0Data.allowance,
+          allowance: token0Allowance,
           approving: false,
-          approved: bnf(currentData.token0Data.allowance).gt(uint255Max) ,
+          approved: bnf(token0Allowance).gt(uint255Max),
         },
-        userBalance: currentData.token0Data.balanceOf,
+        userBalance: token0UserBalance,
       },
       token1: {
         address: pool.token1.address,
         rewardsApproval: {
-          allowance: currentData.token1Data.allowance,
+          allowance: token1Allowance,
           approving: false,
-          approved: bnf(currentData.token1Data.allowance).gt(uint255Max) ,
+          approved: bnf(token1Allowance).gt(uint255Max),
         },
-        userBalance: currentData.token1Data.balanceOf,
+        userBalance: token1UserBalance,
       }
     }
   }
