@@ -110,8 +110,8 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     }
   })
 
-  const token0IsWeth = pool === null ? false : pool.token0.symbol.toLowerCase() === 'weth'
-  const token1IsWeth = pool === null ? false : pool.token1.symbol.toLowerCase() === 'weth'
+  const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
+  const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
 
   const displaySymbol = (value: string) => value.toLowerCase() === 'weth' ? 'Eth' : upperCaseWord(value)
 
@@ -229,8 +229,10 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         type: TransactionType.CreateLiquidityPosition,
         token0: poolCurrentData!.token0.address,
         token0Decimals: pool!.token0.decimals,
+        token0IsWeth,
         token1: poolCurrentData!.token1.address,
         token1Decimals: pool!.token1.decimals,
+        token1IsWeth,
         fee: pool!.fee,
         tickLower: lowerTick,
         tickUpper: upperTick,
