@@ -3121,13 +3121,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/multicall@npm:^0.4.3":
-  version: 0.4.3
-  resolution: "@trustlessfi/multicall@npm:0.4.3"
+"@trustlessfi/multicall@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "@trustlessfi/multicall@npm:0.4.4"
   dependencies:
     "@trustlessfi/utils": ^0.2.1
     ethers: ^5.4.7
-  checksum: 528c4d57a9f679f27f7ca6f973df5b7d305da7c10e6b7a0657160dde1338df79c60c3453f2a170fcc808c64fff35df8537cd5b37139261f7b281409102e3557c
+  checksum: 86370d1334af8c92f8e8b51d6c5d61cd9fa1b51dce1cdcd3c271b7ead3ed809c624f1a358269f47ae7247068f7e31f1bbfd77fff82816203c8b010f0d0ee4310
   languageName: node
   linkType: hard
 
@@ -18714,7 +18714,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/react": ^12.0.0
     "@testing-library/user-event": ^13.2.1
     "@trustlessfi/addresses": ^0.2.4
-    "@trustlessfi/multicall": ^0.4.3
+    "@trustlessfi/multicall": ^0.4.4
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.36.1
     "@types/carbon__colors": ^0.0.1

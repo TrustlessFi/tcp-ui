@@ -23,7 +23,6 @@ export interface RewardsState extends sliceState<rewardsInfo> {}
 export const getRewardsInfo = createAsyncThunk(
   'rewards/getRewardsInfo',
   async (args: rewardsArgs): Promise<rewardsInfo> => {
-    console.log("get rewrds indo")
     const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
     const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
 
@@ -39,15 +38,15 @@ export const getRewardsInfo = createAsyncThunk(
           }
         ),
       }
-    )
+    ) 
 
     return rewardsInfo
   }
 )
 
+// TODO add to local storage
 const name = 'rewards'
 
-// TODO add to local storage
 export const rewardsSlice = createSlice({
   name,
   initialState: getStateWithValue<rewardsInfo>(getLocalStorage(name, null)) as RewardsState,

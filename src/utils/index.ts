@@ -169,6 +169,8 @@ export const last = <T>(array: Array<T>): T => {
 export const unique = <T>(array: Array<T>): Array<T> =>
   array.filter((value: T, index: number) => array.indexOf(value) === index)
 
+export const arrayToObject = (array: Array<unknown>) =>
+  Object.fromEntries(array.map((value, index) => [index, value]))
 
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 // type PromiseType = PromiseType<typeof promisedOne> // => number

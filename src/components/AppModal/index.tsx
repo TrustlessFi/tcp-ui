@@ -160,7 +160,7 @@ const getMediumName = (data: NonNullable<modalData>) => {
         data.args.amount1Desired,
         (data as createLiquidityPositionModalData).token1Symbol,
         '.'
-      ]
+      ].join(' ')
 
     case TransactionType.UpdatePosition:
 
