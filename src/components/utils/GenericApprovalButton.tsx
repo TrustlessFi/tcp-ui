@@ -1,5 +1,5 @@
 import { approval } from '../../slices/balances'
-import React, { CSSProperties, ReactNode } from "react";
+import { CSSProperties } from "react";
 import { Button } from 'carbon-components-react'
 
 const GenericApprovalButton = ({

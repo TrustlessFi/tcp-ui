@@ -1,7 +1,7 @@
 import { Tag, TagTypeName } from 'carbon-components-react';
 import { useAppSelector as selector } from '../../app/hooks'
 import { ChainID, chainIDToName } from '@trustlessfi/addresses'
-import { CSSProperties, ReactNode } from 'react';
+import { CSSProperties } from 'react';
 
 
 const getColor: {[key in ChainID]: TagTypeName} = {

@@ -227,30 +227,28 @@ const zeroThroughF = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b
 export const isTxHash = (hash: string) => {
   if (hash.length !== 66) return false
   if (hash.substr(0, 2) !== '0x' ) return false
-  if (hash.toLowerCase().substr(2).split('').filter(letter => zeroThroughF.includes(letter)).length != 64) return false
+  if (hash.toLowerCase().substr(2).split('').filter(letter => zeroThroughF.includes(letter)).length !== 64) return false
   return true
 }
 
 export const xor = (a: boolean, b: boolean) => ( a || b ) && !( a && b )
 
 
-export const equalArrays = (a: any[], b: any[]) => {
-  if (a.length !== b.length) return false
-  return a.filter((aItem, index) => aItem !== b[index] ).length === 0
-}
+export const equalArrays = (a: any[], b: any[]) =>
+  a.length !== b.length
+    ? false
+    : a.filter((aItem, index) => aItem !== b[index] ).length === 0
 
-export const equalStrings = (a: string, b: string) => {
-  return equalArrays(a.split(''), b.split(''))
-}
+export const equalStrings = (a: string, b: string) =>
+  equalArrays(a.split(''), b.split(''))
 
-export const equalStringsCaseInsensitive = (a: string, b: string) => {
-  return equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
-}
+export const equalStringsCaseInsensitive = (a: string, b: string) =>
+  equalArrays(a.toLowerCase().split(''), b.toLowerCase().split(''))
 
 
 // ======================= UNISWAP ============================
 export const getE18PriceForSqrtX96Price = (sqrtPriceX96: BigNumber) => {
-  let sqrtPriceE18 = sqrtPriceX96.mul(ONE).div(Q96)
+  const sqrtPriceE18 = sqrtPriceX96.mul(ONE).div(Q96)
   return sqrtPriceE18.mul(sqrtPriceE18).div(ONE)
 }
 
@@ -273,7 +271,7 @@ export const getSpaceForFee = (fee: Fee) => {
 
 export const feeToFee = (fee: number): Fee => {
   if (fee in Fee) return fee as Fee
-  else throw 'invalid fee: ' + fee
+  else throw new Error('invalid fee: ' + fee)
 }
 
 export const tickToSqrtPriceX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtTick(tick).toString())

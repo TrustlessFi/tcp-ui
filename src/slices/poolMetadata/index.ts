@@ -3,7 +3,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { tokenInfo } from '../balances'
 import getProvider from '../../utils/getProvider';
 import { ProtocolContract } from '../contracts/index';
 import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'

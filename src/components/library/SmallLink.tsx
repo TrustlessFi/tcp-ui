@@ -1,5 +1,5 @@
-import React, { CSSProperties, ReactNode } from "react";
-import { Button, Link } from 'carbon-components-react'
+import React, { CSSProperties } from "react";
+import { Link } from 'carbon-components-react'
 import { CarbonIconType } from '@carbon/icons-react'
 
 const SmallLink = ({

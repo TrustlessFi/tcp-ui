@@ -237,7 +237,7 @@ export const waitForTransaction = createAsyncThunk(
     try {
       dispatch(modalWaitingForMetamask())
       tx = await executeTransaction(args, provider)
-      if (tx === undefined) throw 'Transaction undefined.'
+      if (tx === undefined) throw new Error('Transaction undefined.')
     } catch (e) {
       const txInfo = getTxInfo({
         userAddress,

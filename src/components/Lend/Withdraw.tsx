@@ -1,7 +1,6 @@
 import { useState } from "react"
 import {
   Button,
-  TextAreaSkeleton,
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'

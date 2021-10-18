@@ -1,5 +1,4 @@
 import { TransactionInfo, TransactionState, getTxNonce } from '../../slices/transactions'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { AppDispatch } from '../../app/store'
 import { clearEthBalance } from '../../slices/ethBalance'
 import { clearPositions } from '../../slices/positions'
