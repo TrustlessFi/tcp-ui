@@ -188,6 +188,17 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     ? (userEthBalance === null ? 0 : userEthBalance)
     : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
 
+
+  const token0NeedsToBeApproved =
+    poolCurrentData === null || token0IsWeth
+      ? false
+      : token0Amount > 0 && !poolCurrentData.token0.rewardsApproval.approved
+  const token1NeedsToBeApproved =
+    poolCurrentData === null || token0IsWeth
+      ? false
+      : token1Amount > 0 && !poolCurrentData.token1.rewardsApproval.approved
+
+
   const failures: {[key in string]: reason} = {
     noop: {
       message: '',
@@ -201,6 +212,14 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     insufficientToken1: {
       message: 'Not enough ' + token1Symbol + '.',
       failing: token1Amount > userToken1Balance,
+    },
+    token0NotApproved: {
+      message: 'You must approve ' + token0Symbol,
+      failing: token0NeedsToBeApproved,
+    },
+    token1NotApproved: {
+      message: 'You must approve ' + token1Symbol,
+      failing: token1NeedsToBeApproved,
     },
   }
 
