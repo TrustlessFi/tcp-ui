@@ -94,7 +94,7 @@ const PageHeader = () => {
             </OverflowMenu>
           </div>
           <HeaderName href="/" prefix="" className='header_logo'>
-            <img src={logo} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
+            <img src={logo.default} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
             {smallViewport ? null : 'Trustless Currency Protocol'}
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
