@@ -27,6 +27,8 @@ yarn-error.log*
 
 *.swp
 
+src/utils/localHardhatAddresses.json
+
 # yarn v3
 .pnp.*
 .yarn/*
