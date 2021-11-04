@@ -27,7 +27,6 @@ yarn-error.log*
 
 *.swp
 
-
 # yarn v3
 .pnp.*
 .yarn/*
