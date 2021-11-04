@@ -3114,10 +3114,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "@trustlessfi/addresses@npm:0.2.4"
-  checksum: 50d47c88e74579db88aa35aa8f774894f93199d2b8b821e510b2992f861e7025ec7a5572afdc0841c0cc914d223c03f2ed22a4f2f6f2d7ab97d17199d7dcd084
+"@trustlessfi/addresses@npm:^0.3.5":
+  version: 0.3.5
+  resolution: "@trustlessfi/addresses@npm:0.3.5"
+  dependencies:
+    "@trustlessfi/utils": ^0.2.2
+    "@types/node": ^16.11.6
+  checksum: fb2c26384601b0e331c7e900880ec5333ef6fb14944fc80cc76dfc1a4a20899f53cb781175a92eb3923489ca76b22559cb97157e07deda102f4d234db5b3fb4f
   languageName: node
   linkType: hard
 
@@ -3144,6 +3147,15 @@ __metadata:
   dependencies:
     ethers: ^5.4.7
   checksum: 7a230e72826f57fd6350072b2d19a48237d044efb4fb94999fb0d3e78734d87040daea999ac72518e047bc71491848d210ed18409fb44e4c13b5a163f0d9871a
+  languageName: node
+  linkType: hard
+
+"@trustlessfi/utils@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@trustlessfi/utils@npm:0.2.2"
+  dependencies:
+    ethers: ^5.4.7
+  checksum: 8ba97fae2c51cea0006f6d4266acca4938fc304d71c16e39da2a0ce3ff8522ba6cf7bf48c354bfe98661c7a60f0effdc7c95643f95c9fa824be660c30e2e2263
   languageName: node
   linkType: hard
 
@@ -3390,6 +3402,13 @@ __metadata:
   version: 16.10.2
   resolution: "@types/node@npm:16.10.2"
   checksum: 83c1c3c68e7500103908c3f16094e458879c840a719c15b6ea577f81fe1f24a1b3473bb6c8e8091fe79a82543ca7639c6b1088fcf80292ec091d1d1c9504a87e
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.11.6":
+  version: 16.11.6
+  resolution: "@types/node@npm:16.11.6"
+  checksum: 6e19634766ff589d3d2f361c2196b671f8f133cdadc5ad347a621c360d8994b6c4fbccfb2ad9c60c588c593831a96497c9c6b77d2b7e91be723384b94f6368e7
   languageName: node
   linkType: hard
 
@@ -18720,7 +18739,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.14.1
     "@testing-library/react": ^12.0.0
     "@testing-library/user-event": ^13.2.1
-    "@trustlessfi/addresses": ^0.2.4
+    "@trustlessfi/addresses": ^0.3.5
     "@trustlessfi/multicall": ^0.4.4
     "@trustlessfi/typechain": ^0.4.1
     "@types/carbon-components": ^10.27.1

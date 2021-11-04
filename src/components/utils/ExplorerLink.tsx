@@ -1,17 +1,19 @@
 import { useAppSelector as selector } from '../../app/hooks'
 import { CSSProperties } from 'react';
 import { ChainID } from '@trustlessfi/addresses'
+import { assertUnreachable } from '@trustlessfi/utils'
 import { CarbonIconType } from '@carbon/icons-react'
-import { assertUnreachable, xor } from '../../utils'
+
+import { xor } from '../../utils'
 import SmallLink from '../library/SmallLink';
 
 
 const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
   switch (chainID) {
-    case ChainID.Hardhat:
-      return 'https://etherscan.io/tx/' + txHash
     case ChainID.Rinkeby:
       return 'https://rinkeby.etherscan.io/tx/' + txHash
+    case ChainID.Hardhat:
+      return 'https://etherscan.io/tx/' + txHash
     default:
       assertUnreachable(chainID)
   }
@@ -19,10 +21,10 @@ const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
 
 const getEtherscanAddressLink = (address: string, chainID: ChainID) => {
   switch (chainID) {
-    case ChainID.Hardhat:
-      return 'https://etherscan.io/address/' + address
     case ChainID.Rinkeby:
       return 'https://rinkeby.etherscan.io/address/' + address
+    case ChainID.Hardhat:
+      return 'https://etherscan.io/address/' + address
     default:
       assertUnreachable(chainID)
   }
