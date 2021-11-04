@@ -23,7 +23,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
-    "@trustlessfi/addresses": "^0.2.4",
+    "@trustlessfi/addresses": "^0.3.6",
     "@trustlessfi/multicall": "^0.4.4",
     "@trustlessfi/typechain": "^0.4.1",
     "@types/carbon-components": "^10.27.1",
