@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers"
-import { TcpGovernorAlpha } from "../../utils/typechain"
+import { TcpGovernorAlpha } from '@trustlessfi/typechain'
 import { unscale, zeroAddress } from "../../utils"
 import { Proposal, ProposalState, proposalsInfo } from "./"
 import { ProtocolContract } from '../contracts'

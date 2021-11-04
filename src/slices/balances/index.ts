@@ -20,7 +20,7 @@ import {
   addNotification,
 } from '../notifications'
 
-import { ERC20 } from '../../utils/typechain'
+import { ERC20 } from '@trustlessfi/typechain'
 
 export interface tokenInfo {
   address: string,

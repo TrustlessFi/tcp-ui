@@ -3,7 +3,7 @@ import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
-import { Accounting } from "../../utils/typechain/Accounting";
+import { Accounting } from '@trustlessfi/typechain';
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 

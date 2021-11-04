@@ -3,7 +3,7 @@ import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import { liquidationsInfo } from '../liquidations'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
-import { Prices } from "../../utils/typechain"
+import { Prices } from '@trustlessfi/typechain'
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { getMulticall, rc, executeMulticalls } from '@trustlessfi/multicall'

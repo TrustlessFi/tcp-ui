@@ -29,7 +29,7 @@ import {
   TcpTimelock,
   Hue,
   HuePositionNFT,
-} from "./typechain"
+} from "@trustlessfi/typechain"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "./artifacts/contracts/core/storage/Accounting.sol/Accounting.json"

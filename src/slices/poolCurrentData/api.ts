@@ -12,7 +12,7 @@ import {
   getFullSelector,
 } from '@trustlessfi/multicall'
 
-import { Prices, UniswapV3Pool, ERC20 } from '../../utils/typechain/'
+import { Prices, UniswapV3Pool, ERC20 } from '@trustlessfi/typechain'
 
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'

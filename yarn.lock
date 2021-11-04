@@ -3131,6 +3131,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trustlessfi/typechain@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@trustlessfi/typechain@npm:0.4.1"
+  checksum: 87f47038445eb56c391200957c7aea2d04920e3f4fb0e5b748ba16498863279959c7104b5f228c20ed89595edd3d52c6ea76fabc4c9c73acb08aedadb2b0b423
+  languageName: node
+  linkType: hard
+
 "@trustlessfi/utils@npm:^0.2.1":
   version: 0.2.1
   resolution: "@trustlessfi/utils@npm:0.2.1"
@@ -18715,6 +18722,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/user-event": ^13.2.1
     "@trustlessfi/addresses": ^0.2.4
     "@trustlessfi/multicall": ^0.4.4
+    "@trustlessfi/typechain": ^0.4.1
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.36.1
     "@types/carbon__colors": ^0.0.1

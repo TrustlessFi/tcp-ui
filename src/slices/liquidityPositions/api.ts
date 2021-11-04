@@ -4,7 +4,8 @@ import { ProtocolContract } from '../contracts'
 import { PromiseType } from '@trustlessfi/utils'
 import { executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
 
-import { Accounting } from '../../utils/typechain/'
+
+import { Accounting } from '@trustlessfi/typechain'
 
 export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
   const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting

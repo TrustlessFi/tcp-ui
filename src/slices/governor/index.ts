@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { ChainID } from '@trustlessfi/addresses'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
-import { Governor } from "../../utils/typechain/Governor"
+
+import { Governor } from '@trustlessfi/typechain'
 import { ProtocolContract } from '../contracts/';
 import getContract from '../../utils/getContract'
 

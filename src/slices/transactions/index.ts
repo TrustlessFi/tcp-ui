@@ -11,7 +11,7 @@ import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
-import { Market, Rewards } from '../../utils/typechain'
+import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'

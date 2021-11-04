@@ -6,7 +6,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { getDuplicateFuncMulticall, executeMulticalls } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 
-import { Accounting, HuePositionNFT } from '../../utils/typechain'
+import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
 import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {

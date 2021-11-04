@@ -10,7 +10,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 
-import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '../../utils/typechain/'
+import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '@trustlessfi/typechain/'
 import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { zeroAddress, unique } from '../../utils'
 

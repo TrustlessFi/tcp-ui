@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
-import { Liquidations, } from '../../utils/typechain'
+import { Liquidations } from '@trustlessfi/typechain'
 import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticalls, getMulticall, rc } from '@trustlessfi/multicall'

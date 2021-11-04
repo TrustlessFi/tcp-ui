@@ -5,7 +5,7 @@ import { ProtocolContract } from '../../contracts'
 import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
 import { uint256Max } from '../../../utils'
-import { LendHue } from '../../../utils/typechain'
+import { LendHue } from '@trustlessfi/typechain'
 import {
   TransactionType,
 } from '../../transactions'

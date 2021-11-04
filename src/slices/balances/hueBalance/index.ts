@@ -4,7 +4,7 @@ import { balanceState, tokenBalanceThunk, approveToken } from '../'
 import { ProtocolContract } from '../../contracts'
 import getProvider from '../../../utils/getProvider';
 import getContract from '../../../utils/getContract';
-import { Hue } from '../../../utils/typechain'
+import { Hue } from '@trustlessfi/typechain'
 import { uint256Max } from '../../../utils'
 import { TransactionType, } from '../../transactions'
 

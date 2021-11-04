@@ -1,5 +1,5 @@
 import { getAddress, TcpRootContract, ProtocolID, TrustlessMulticallRootContract } from '@trustlessfi/addresses'
-import { Governor } from "../../utils/typechain"
+import { Governor } from '@trustlessfi/typechain'
 import { getContractArgs, ProtocolContract, getContractReturnType, getSingleContractArgs } from './'
 
 import getProvider from '../../utils/getProvider'
