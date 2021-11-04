@@ -7,7 +7,7 @@ import { assertUnreachable } from '../../utils'
 import { Contract } from 'ethers'
 import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
 
-import governorArtifact from '../../utils/artifacts/contracts/core/governance/Governor.sol/Governor.json'
+import governorArtifact from '@trustlessfi/artifacts/dist/contracts/core/governance/Governor.sol/Governor.json'
 
 export const executeGetGovernor = async (args: getSingleContractArgs) =>
   getAddress(args.chainID, 'TCP', 'Governor', localHardhatAddresses)

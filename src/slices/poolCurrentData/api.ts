@@ -14,8 +14,8 @@ import {
 
 import { Prices, UniswapV3Pool, ERC20 } from '@trustlessfi/typechain'
 
-import poolArtifact from '../../utils/artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
-import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { uint255Max , bnf , enforce, sqrtPriceX96ToTick } from '../../utils'
 import { zeroAddress , unscale } from '../../utils/index';
 

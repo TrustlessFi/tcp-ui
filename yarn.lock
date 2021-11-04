@@ -3124,6 +3124,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@trustlessfi/artifacts@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@trustlessfi/artifacts@npm:0.1.0"
+  checksum: c61c0c17b9d987872d4ae3dae024757d9ab2400dcfa3dffc2d4e6839873e50ea34608e9eb0f0a06a93f9f871f108eb68853f7b2e6cf1e9cab9a8ba0d7555403f
+  languageName: node
+  linkType: hard
+
 "@trustlessfi/multicall@npm:^0.4.4":
   version: 0.4.4
   resolution: "@trustlessfi/multicall@npm:0.4.4"
@@ -18740,6 +18747,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/react": ^12.0.0
     "@testing-library/user-event": ^13.2.1
     "@trustlessfi/addresses": ^0.3.6
+    "@trustlessfi/artifacts": ^0.1.0
     "@trustlessfi/multicall": ^0.4.4
     "@trustlessfi/typechain": ^0.4.1
     "@types/carbon-components": ^10.27.1

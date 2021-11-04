@@ -8,7 +8,7 @@ import { approval, approveToken } from '../balances'
 import { getInitialStateCopy } from '../'
 import { fetchPoolCurrentData } from './api'
 
-import erc20Artifact from '../../utils/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ERC20 } from '@trustlessfi/typechain'
 import getProvider from '../../utils/getProvider'
 import { TransactionType } from '../transactions'
