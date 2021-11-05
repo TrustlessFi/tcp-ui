@@ -194,7 +194,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       ? false
       : token0Amount > 0 && !poolCurrentData.token0.rewardsApproval.approved
   const token1NeedsToBeApproved =
-    poolCurrentData === null || token0IsWeth
+    poolCurrentData === null || token1IsWeth
       ? false
       : token1Amount > 0 && !poolCurrentData.token1.rewardsApproval.approved
 
