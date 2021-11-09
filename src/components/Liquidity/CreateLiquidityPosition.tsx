@@ -79,6 +79,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+  const chainID = selector(state => state.chainID.chainID)
 
   const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 
@@ -241,7 +242,11 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
     const amount0Min = amount0Desired * 0.95
     const amount1Desired = token1Amount
     // TODO tighter or custom range
-    const amount1Min = amount0Desired * 0.95
+    const amount1Min = amount1Desired * 0.95
+
+    if(!chainID) {
+      return
+    }
 
     dispatch(openModal({
       args: {
@@ -253,6 +258,7 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
         token1Decimals: pool!.token1.decimals,
         token1IsWeth,
         fee: pool!.fee,
+        chainID,
         tickLower,
         tickUpper,
         amount0Desired,

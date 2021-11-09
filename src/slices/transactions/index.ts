@@ -14,10 +14,11 @@ import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modal
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
-import { DEFAULT_TRANSACTION_TIMEOUT, UIID } from '../../constants'
+import { UIID } from '../../constants'
 import { v4 as uid } from 'uuid'
-import { enforce, mnt, parseMetamaskError } from '../../utils'
+import { enforce, getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
 import { zeroAddress , bnf } from '../../utils/index';
+import { ChainID } from '@trustlessfi/addresses'
 
 export enum TransactionType {
   CreatePosition,
@@ -101,6 +102,7 @@ export interface txWithdrawArgs {
 }
 
 export interface txCreateLiquidityPositionArgs {
+  chainID: ChainID
   type: TransactionType.CreateLiquidityPosition
   token0: string
   token0Decimals: number
@@ -205,6 +207,8 @@ const executeTransaction = async (
 
       const ethCount = (args.token0IsWeth ? amount0Desired : bnf(0)).add(args.token1IsWeth ? amount1Desired : bnf(0))
 
+      const transactionTimeout = getDefaultTransactionTimeout(args.chainID);
+
       return await rewards.connect(provider.getSigner()).createLiquidityPosition({
         token0: args.token0,
         token1: args.token1,
@@ -215,7 +219,7 @@ const executeTransaction = async (
         amount0Min: bnf(mnt(args.amount0Min, args.token0Decimals)),
         amount1Desired,
         amount1Min: bnf(mnt(args.amount1Min, args.token1Decimals)),
-        deadline: BigNumber.from(blockTime).add(DEFAULT_TRANSACTION_TIMEOUT),
+        deadline: BigNumber.from(blockTime).add(transactionTimeout),
         recipient: zeroAddress,
       },
       UIID,

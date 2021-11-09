@@ -1,4 +1,5 @@
 import { BigNumber, BigNumberish, utils } from "ethers"
+import { ChainID } from '@trustlessfi/addresses'
 import JSBI from "jsbi"
 import { TickMath } from '@uniswap/v3-sdk'
 
@@ -106,6 +107,9 @@ export const numDisplay = (
   if (isNaN(val) || !isFinite(val)) return "-"
   return addCommas(roundToXDecimals(val, decimals))
 }
+
+// ======================= Transactions =========================
+export const getDefaultTransactionTimeout = (chainID: ChainID) => chainID === ChainID.Hardhat ? 60 * 2000 : 60 * 20
 
 // ======================= Constants ============================
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
