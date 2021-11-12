@@ -1,6 +1,7 @@
 import { MouseEvent } from 'react'
 import { withRouter, useHistory, useLocation } from 'react-router'
 import { useEffect, useState, CSSProperties } from 'react'
+import { Row, Col } from 'react-flexbox-grid'
 import {
   Header,
   HeaderContainer,
@@ -22,7 +23,8 @@ import { Tab } from '../../App'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator';
 
-const logo = require('../../img/tcp-logo-white.svg')
+const logo = require('../../img/tcp_logo_white.svg')
+const logo_name = require('../../img/tcp_logo_name_white.svg')
 
 const PageHeader = () => {
   const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
@@ -79,7 +81,9 @@ const PageHeader = () => {
     )
   })
 
-  const smallViewport = windowWidth < 650
+  const smallViewport = windowWidth < 800
+  const iconSize = 28
+  const iconMarginHorizontal = 12
 
   return (
     <HeaderContainer
@@ -93,9 +97,15 @@ const PageHeader = () => {
               {tabsAsButtons}
             </OverflowMenu>
           </div>
-          <HeaderName href="/" prefix="" className='header_logo'>
-            <img src={logo.default} alt="logo" width={32} height={32} style={{marginRight: 16}}/>
-            {smallViewport ? null : 'Trustless Currency Protocol'}
+          <HeaderName href="/" prefix="" className='header_logo' >
+            <div style={{marginRight: iconMarginHorizontal, marginLeft: iconMarginHorizontal}}>
+              <Row middle="xs">
+                { smallViewport
+                  ? <img src={logo.default} alt="logo" width={iconSize} height={iconSize} />
+                  : <img src={logo_name.default} alt="logo" height={iconSize} />
+                }
+              </Row>
+            </div>
           </HeaderName>
           <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
             {tabs}
