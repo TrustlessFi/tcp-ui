@@ -6,7 +6,7 @@ import { Proposal as IProposal, ProposalState } from '../../slices/proposals';
 import Proposal from './Proposal';
 import Center from '../library/Center';
 import { ListItem, UnorderedList } from 'carbon-components-react';
-import { AppTag } from '../library/AppTag';
+import { AppTag, IconMap } from '../library/AppTag';
 import { useDispatch } from 'react-redux';
 
 // 3 ways to modify what proposals you see in the governance tab:
@@ -45,20 +45,6 @@ const stateList = [
 
 const orderStates = (state: ProposalState): number => stateList.indexOf(state);
 
-// TODO: update icon values for carbon and add icon as optional prop to AppTags
-// const displaySortIcon = (option: SortOption): IconName => {
-//   switch(option) {
-//     case SortOption.IDDescending:
-//       return 'sort-numerical-desc'
-//     case SortOption.IDAscending:
-//       return 'sort-numerical'
-//     case SortOption.StateDescending:
-//       return 'sort-desc'
-//     case SortOption.StateAscending:
-//       return 'sort-asc'
-//   }
-// }
-
 const defaultSelectedStates: {[key in ProposalState]: boolean} = {
   Pending: true,
   Active: true,
@@ -81,6 +67,7 @@ const ProposalsContainer: FunctionComponent = () => {
   const [ statusSortOption, updateStatusSortOption ] = useState<SortOption>(SortOption.IDDescending);
 
   const proposalsState = waitForProposals(useAppSelector, dispatch);
+  
   const [ displayedProposals, updateDisplayedProposals ] = useState<IProposal[]>([]);
 
   useEffect(() => {
@@ -235,8 +222,18 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
           <AppTag name="None" color="blue" selected={noneSelected} onClick={() => setAll(false)} />
         </div>
         <div>
-          <AppTag name="Sort By ID" selected={isIDSort(statusSortOption)} onClick={() => toggleSort(SortType.ID)} />
-          <AppTag name="Sort By State" selected={isStateSort(statusSortOption)} onClick={() => toggleSort(SortType.State)} />
+          <AppTag
+            name="Sort By ID"
+            selected={isIDSort(statusSortOption)}
+            onClick={() => toggleSort(SortType.ID)}
+            icon={statusSortOption === SortOption.IDAscending ? IconMap.ArrowUp16 : IconMap.ArrowDown16}
+          />
+          <AppTag
+            name="Sort By State"
+            selected={isStateSort(statusSortOption)}
+            onClick={() => toggleSort(SortType.State)}
+            icon={statusSortOption === SortOption.StateAscending ? IconMap.ArrowUp16 : IconMap.ArrowDown16}
+          />
         </div>
       </div>
       <div>
