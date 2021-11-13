@@ -6,10 +6,6 @@ In the project root, run:
 
 `yarn`
 
-Then in `src/components/uniswap`, run the following:
-
-`yarn && yarn compile-contract-types && yarn graphql-codegen && yarn i18n:extract`
-
 ## Available Scripts
 
 In the project directory, you can run:
