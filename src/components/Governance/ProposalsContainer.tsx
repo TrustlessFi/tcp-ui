@@ -58,18 +58,18 @@ const defaultSelectedStates: {[key in ProposalState]: boolean} = {
 
 const ProposalsContainer: FunctionComponent = () => {
   const dispatch = useDispatch()
-  const [ selectedStates, updateSelectedStates ] = useState<{[key in ProposalState]: boolean}>(defaultSelectedStates);
+  const [ selectedStates, setSelectedStates ] = useState<{[key in ProposalState]: boolean}>(defaultSelectedStates);
   // options filtering
-  const [ defaultSelected, updateDefaultSelected ] = useState<boolean>(true);
-  const [ allSelected, updateAllSelected ] = useState<boolean>(false);
-  const [ noneSelected, updateNoneSelected ] = useState<boolean>(false);
+  const [ defaultSelected, setDefaultSelected ] = useState<boolean>(true);
+  const [ allSelected, setAllSelected ] = useState<boolean>(false);
+  const [ noneSelected, setNoneSelected ] = useState<boolean>(false);
   // sorting
-  const [ statusSortOption, updateStatusSortOption ] = useState<SortOption>(SortOption.IDDescending);
+  const [ statusSortOption, setStatusSortOption ] = useState<SortOption>(SortOption.IDDescending);
 
   const proposalsState = waitForProposals(useAppSelector, dispatch);
   
   const [ quorum, setQuorum ] = useState<number>(0);
-  const [ displayedProposals, updateDisplayedProposals ] = useState<IProposal[]>([]);
+  const [ displayedProposals, setDisplayedProposals ] = useState<IProposal[]>([]);
 
   useEffect(() => {
     const quorum = proposalsState?.quorum;
@@ -94,7 +94,7 @@ const ProposalsContainer: FunctionComponent = () => {
             return orderStates(b.proposal.state) - orderStates(a.proposal.state);
         }
       })
-      updateDisplayedProposals(sortedProposals);
+      setDisplayedProposals(sortedProposals);
     }
   }, [selectedStates, statusSortOption, proposalsState]);
 
@@ -104,22 +104,22 @@ const ProposalsContainer: FunctionComponent = () => {
     const isAllSelected = !Object.entries(selectedStates).filter(entry => !entry[1]).length;
     const isDefaultSelected = Object.entries(selectedStates).every(entry => entry[1] === defaultSelectedStates[entry[0] as ProposalState]);
     if (isNoneSelected) {
-      updateAllSelected(false);
-      updateNoneSelected(true);
-      updateDefaultSelected(false);
+      setAllSelected(false);
+      setNoneSelected(true);
+      setDefaultSelected(false);
     } else if (isAllSelected) {
-      updateAllSelected(true);
-      updateNoneSelected(false);
-      updateDefaultSelected(false);
+      setAllSelected(true);
+      setNoneSelected(false);
+      setDefaultSelected(false);
     } else if (isDefaultSelected) {
-      updateAllSelected(false);
-      updateNoneSelected(false);
-      updateDefaultSelected(true);
+      setAllSelected(false);
+      setNoneSelected(false);
+      setDefaultSelected(true);
     } else {
       // some other combination, due to tag filtering
-      updateAllSelected(false);
-      updateNoneSelected(false);
-      updateDefaultSelected(false);
+      setAllSelected(false);
+      setNoneSelected(false);
+      setDefaultSelected(false);
     }
   }, [selectedStates]);
 
@@ -129,12 +129,12 @@ const ProposalsContainer: FunctionComponent = () => {
     for (const label in selectedStates) {
       newSelectedStates[label as ProposalState] = selected;
     }
-    updateSelectedStates(newSelectedStates);
+    setSelectedStates(newSelectedStates);
   };
 
   // options filtering
   const setDefault = (): void => {
-    updateSelectedStates(defaultSelectedStates);
+    setSelectedStates(defaultSelectedStates);
   };
 
   // type filtering
@@ -143,16 +143,16 @@ const ProposalsContainer: FunctionComponent = () => {
       ...selectedStates,
       [state]: !selectedStates[state],
     };
-    updateSelectedStates(newselectedStates);
+    setSelectedStates(newselectedStates);
   };
 
   // sorting
   const toggleSort = (sortType: SortType): void => {
     if (sortType === SortType.ID) {
-      updateStatusSortOption(switchIDSort(statusSortOption));
+      setStatusSortOption(switchIDSort(statusSortOption));
     }
     if (sortType === SortType.State) {
-      updateStatusSortOption(switchStateSort(statusSortOption));
+      setStatusSortOption(switchStateSort(statusSortOption));
     }
   };
 
