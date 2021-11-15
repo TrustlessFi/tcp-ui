@@ -41,7 +41,10 @@ export interface Proposal {
   voted: boolean
 }
 
-export interface proposalsInfo { [key: number]: Proposal }
+export interface proposalsInfo {
+  quorum: number,
+  proposals: {[key in number]: Proposal}
+}
 
 export type proposalsArgs = {
   TcpGovernorAlpha: string

@@ -1,6 +1,5 @@
 import { Proposal, proposalsInfo, ProposalState } from "../slices/proposals";
-import { timeS, days, hours, randomInRange, enforce } from '../utils'
-import { Contract } from 'ethers'
+import { timeS, hours, randomInRange, enforce } from '../utils'
 
 
 const addresses = [
@@ -165,5 +164,8 @@ const getProposalsFixture = (blockNumber: number, blockTimestamp: number): Propo
 
 export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: number): proposalsInfo => {
   const proposals = getProposalsFixture(blockNumber, blockTimestamp);
-  return Object.assign({}, proposals);
+  return {
+    quorum: 900,
+    proposals,
+  };
 };
