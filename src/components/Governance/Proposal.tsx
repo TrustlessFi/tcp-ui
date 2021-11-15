@@ -6,9 +6,11 @@ import ProgressBar from '../library/ProgressBar';
 
 interface ProposalProps {
   proposal: IProposal;
+  quorum: number;
 }
 
-const Proposal: FunctionComponent<ProposalProps> = ({ proposal }) => {
+// TO DO: Add Description
+const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
   const { proposal: p } = proposal;
   const { forVotes, againstVotes } = p;
   const totalVotes = forVotes + againstVotes;
@@ -24,8 +26,9 @@ const Proposal: FunctionComponent<ProposalProps> = ({ proposal }) => {
             />
           </div>
         </div>
-        <div style={{ width: '25%' }}>
+        <div style={{ width: '25%', display: 'flex', flexDirection: 'column' }}>
           <ProgressBar label="Sentiment" amount={forVotes} max={totalVotes} />
+          <ProgressBar label="Quorum Progress" amount={forVotes} max={quorum} />
         </div>
     </Tile>
   );

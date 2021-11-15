@@ -68,7 +68,15 @@ const ProposalsContainer: FunctionComponent = () => {
 
   const proposalsState = waitForProposals(useAppSelector, dispatch);
   
+  const [ quorum, setQuorum ] = useState<number>(0);
   const [ displayedProposals, updateDisplayedProposals ] = useState<IProposal[]>([]);
+
+  useEffect(() => {
+    const quorum = proposalsState?.quorum;
+    if (quorum) {
+      setQuorum(quorum);
+    }
+  }, [proposalsState]);
 
   useEffect(() => {
     const proposals = proposalsState?.proposals && Object.values(proposalsState.proposals);
@@ -164,6 +172,7 @@ const ProposalsContainer: FunctionComponent = () => {
     );
   }
 
+  const proposalsTotal = proposalsState?.proposals && Object.values(proposalsState.proposals).length || 0;
   return (
     <>
       <ProposalsHeader
@@ -171,7 +180,7 @@ const ProposalsContainer: FunctionComponent = () => {
         defaultSelected={defaultSelected}
         noneSelected={noneSelected}
         proposalsShown={displayedProposals.length}
-        proposalsTotal={(proposalsState && Object.values(proposalsState).length) || 0}
+        proposalsTotal={proposalsTotal}
         setAll={setAll}
         setDefault={setDefault}
         selectedStates={selectedStates}
@@ -179,7 +188,7 @@ const ProposalsContainer: FunctionComponent = () => {
         toggleSort={toggleSort}
         toggleTag={toggleTag}
       />
-      <ProposalsList displayedProposals={displayedProposals} />
+      <ProposalsList displayedProposals={displayedProposals} quorum={quorum}/>
     </>
   );
 }
@@ -254,9 +263,10 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
 
 interface ProposalsListProps {
   displayedProposals: IProposal[] | null;
+  quorum: number;
 }
 
-const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposals }) => {
+const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposals, quorum }) => {
   if (displayedProposals && !displayedProposals.length) {
     return null;
   }
@@ -265,7 +275,7 @@ const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposa
     <UnorderedList>
       {displayedProposals && displayedProposals.map(proposal =>
       <ListItem key={proposal.proposal.id}>
-        <Proposal proposal={proposal} />
+        <Proposal proposal={proposal} quorum={quorum}/>
       </ListItem>
       )}
     </UnorderedList>
