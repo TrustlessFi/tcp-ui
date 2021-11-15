@@ -1,7 +1,4 @@
 import React, { FunctionComponent } from 'react';
-import { Tile } from 'carbon-components-react';
-import { Proposal as IProposal, ProposalState } from '../../slices/proposals';
-import { AppTag } from '../library/AppTag';
 
 interface ProgressBarProps {
   label: string;

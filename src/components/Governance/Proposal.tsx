@@ -12,8 +12,7 @@ interface ProposalProps {
 // TO DO: Add Description
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
   const { proposal: p } = proposal;
-  const { forVotes, againstVotes } = p;
-  const totalVotes = forVotes + againstVotes;
+  const totalVotes = p.forVotes + p.againstVotes;
   return (
     <Tile style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
@@ -27,8 +26,8 @@ const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
           </div>
         </div>
         <div style={{ width: '25%', display: 'flex', flexDirection: 'column' }}>
-          <ProgressBar label="Sentiment" amount={forVotes} max={totalVotes} />
-          <ProgressBar label="Quorum Progress" amount={forVotes} max={quorum} />
+          <ProgressBar label="Sentiment" amount={p.forVotes} max={totalVotes} />
+          <ProgressBar label="Quorum Progress" amount={p.forVotes} max={quorum} />
         </div>
     </Tile>
   );
