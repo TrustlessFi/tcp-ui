@@ -84,12 +84,16 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
 export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
   const tcpGovernorAlpha = getContract(args.TcpGovernorAlpha, ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
 
-  const rawProposalData = await (tcpGovernorAlpha as TcpGovernorAlpha).getAllProposals(args.userAddress)
+  const [rawProposalData, quorumVotes] = await Promise.all([
+    (tcpGovernorAlpha as TcpGovernorAlpha).getAllProposals(args.userAddress),
+    (tcpGovernorAlpha as TcpGovernorAlpha).quorumVotes(),
+  ]);
   const haveUserAddress = args.userAddress !== zeroAddress
 
   let _proposals = rawProposalData._proposals
   let _states = rawProposalData._proposalStates
   let _receipts = rawProposalData._receipts
+  let _quorum = quorumVotes
 
   let _votingPower = new Array(_proposals.length).fill(0)
 
@@ -119,11 +123,14 @@ export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo |
     proposals.push(rawProposalToProposal(rawProposal))
   }
 
-  const returnProposals = {} as proposalsInfo
+  const returnProposals: {[key in number]: Proposal} = {}
   for (let i = 0; i < proposals.length; i++) {
     const proposal = proposals[i]
     returnProposals[proposal.proposal.id] = proposal
   }
 
-  return returnProposals
+  return {
+    quorum: unscale(_quorum),
+    proposals: returnProposals,
+  }
 }

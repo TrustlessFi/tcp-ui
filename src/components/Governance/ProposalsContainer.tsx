@@ -71,7 +71,7 @@ const ProposalsContainer: FunctionComponent = () => {
   const [ displayedProposals, updateDisplayedProposals ] = useState<IProposal[]>([]);
 
   useEffect(() => {
-    const proposals = proposalsState && Object.values(proposalsState);
+    const proposals = proposalsState?.proposals && Object.values(proposalsState.proposals);
     if (proposals && proposals.length) {
       const filteredProposals = proposals.filter(proposal => proposal.proposal && selectedStates[proposal.proposal.state as ProposalState]);
       const sortedProposals = filteredProposals.sort((a, b) => {

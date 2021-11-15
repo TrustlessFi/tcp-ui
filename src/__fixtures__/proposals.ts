@@ -164,5 +164,8 @@ const getProposalsFixture = (blockNumber: number, blockTimestamp: number): Propo
 
 export const getProposalsInfoFixture = (blockNumber: number, blockTimestamp: number): proposalsInfo => {
   const proposals = getProposalsFixture(blockNumber, blockTimestamp);
-  return Object.assign({}, proposals);
+  return {
+    quorum: 900,
+    proposals,
+  };
 };
