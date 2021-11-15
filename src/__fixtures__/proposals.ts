@@ -1,6 +1,5 @@
 import { Proposal, proposalsInfo, ProposalState } from "../slices/proposals";
-import { timeS, days, hours, randomInRange, enforce } from '../utils'
-import { Contract } from 'ethers'
+import { timeS, hours, randomInRange, enforce } from '../utils'
 
 
 const addresses = [

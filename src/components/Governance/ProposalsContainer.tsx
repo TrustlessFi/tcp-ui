@@ -226,7 +226,7 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
             name="Sort By ID"
             selected={isIDSort(statusSortOption)}
             onClick={() => toggleSort(SortType.ID)}
-            icon={statusSortOption === SortOption.IDAscending ? IconMap.ArrowUp16 : IconMap.ArrowDown16}
+            icon={statusSortOption === SortOption.IDDescending ? IconMap.ArrowUp16 : IconMap.ArrowDown16}
           />
           <AppTag
             name="Sort By State"
@@ -242,7 +242,6 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
             <AppTag
               name={state}
               key={state}
-              color="cyan"
               selected={selectedStates[state]}
               onClick={() => toggleTag(state)}
             />

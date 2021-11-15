@@ -16,7 +16,7 @@ interface AppTagProps {
   color?: TagTypeName;
   icon?: IconMap;
   name: string;
-  onClick: () => void;
+  onClick?: () => void;
   selected?: boolean
 }
 
