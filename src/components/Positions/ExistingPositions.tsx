@@ -1,4 +1,5 @@
 import { Button } from 'carbon-components-react'
+import React, { FunctionComponent, MouseEventHandler } from 'react';
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
@@ -50,8 +51,23 @@ const ExistingPositionsTable = () => {
     )
   }
 
+  const getOnRewardsClick = (positionID: number) => (e: any) => {
+    alert('claim rewrads for position id ' + positionID  + ' clicked')
+    console.log({e})
+    e.stopPropagation()
+  }
+
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
+
+    const rewardsButton = (
+      <Button
+        small
+        onClick={getOnRewardsClick(position.id)}>
+        Claim {numDisplay(position.approximateRewards)} TCP
+      </Button>
+    )
+
     return {
       key: position.id,
       data: {
@@ -59,8 +75,7 @@ const ExistingPositionsTable = () => {
         'Debt': numDisplay(position.debtCount, 2) + ' Hue',
         'Collateral': numDisplay(position.collateralCount, 2) + ' Eth',
         'Collateralization Ratio': numDisplay(collateralization * 100, 0) + '%',
-        'Rewards': '~546 TCP',
-        '': 'claim'
+        'Approximate Rewards': rewardsButton,
       },
       onClick: () => dispatch(editorOpened({
         positionID: position.id,
