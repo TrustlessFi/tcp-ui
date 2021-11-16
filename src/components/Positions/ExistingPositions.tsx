@@ -1,5 +1,4 @@
 import { Button } from 'carbon-components-react'
-import React, { FunctionComponent, MouseEventHandler } from 'react';
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
@@ -8,8 +7,8 @@ import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
 import { numDisplay } from '../../utils'
-import ConnectWalletButton from '../utils/ConnectWalletButton';
-import Text from '../utils/Text';
+import ConnectWalletButton from '../utils/ConnectWalletButton'
+import Text from '../utils/Text'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
@@ -63,6 +62,7 @@ const ExistingPositionsTable = () => {
     const rewardsButton = (
       <Button
         small
+        disabled={position.approximateRewards === 0}
         onClick={getOnRewardsClick(position.id)}>
         Claim {numDisplay(position.approximateRewards)} TCP
       </Button>
