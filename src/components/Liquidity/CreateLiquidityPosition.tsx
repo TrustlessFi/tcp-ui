@@ -1,8 +1,10 @@
 import { Button } from 'carbon-components-react'
+import { useParams } from "react-router";
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useState, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
+import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { approvePoolToken } from '../../slices/poolCurrentData'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
@@ -19,6 +21,7 @@ import {
   upperCaseWord,
 } from '../../utils'
 import { nearestUsableTick } from '@uniswap/v3-sdk'
+import BackButton from '../library/BackButton'
 import PositionNumberInput from '../library/PositionNumberInput'
 import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
@@ -30,6 +33,10 @@ import ConnectWalletButton from '../utils/ConnectWalletButton';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
+
+interface MatchParams {
+  poolAddress: string
+}
 
 // TODO put into utils?
 const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
@@ -69,9 +76,11 @@ const TickSelector = ({
 
 TickSelector.defaultProps = {min: false}
 
-const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
+const CreateLiquidityPosition = () => {
   const dispatch = useAppDispatch()
 
+  const { poolAddress }: MatchParams = useParams()
+  
   const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
   const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
@@ -81,10 +90,10 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
   const chainID = selector(state => state.chainID.chainID)
 
-  const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
+  const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
 
-  const instantTick = poolCurrentData !== null ? poolCurrentData.instantTick : null
-  const tick = poolCurrentData !== null ? poolCurrentData.twapTick : null
+  const instantTick = poolCurrentData ? poolCurrentData.instantTick : null
+  const tick = poolCurrentData ? poolCurrentData.twapTick : null
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
@@ -112,6 +121,18 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
       setTickUpper(nextHighest)
     }
   })
+
+  useEffect(() => {
+    if(poolAddress) {
+      startCreate({ poolAddress })
+    }
+  }, [poolAddress])
+
+  console.log(poolAddress, poolCurrentData)
+
+  if(!poolAddress || !poolCurrentData) {
+    return <span />
+  }
 
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
@@ -275,85 +296,88 @@ const CreateLiquidityPosition = ({ poolAddress }: { poolAddress: string }) => {
 
 
   return (
-    <div style={{position: 'relative'}}>
-      <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
-      <div style={{marginBottom: 16}}>
-        <Button
-          size="sm"
-          onClick={toggleInverted}
-          kind={inverted ? 'secondary' : 'primary'}>
-          {token0Symbol}
-        </Button>
-        <Button
-          size="sm"
-          onClick={toggleInverted}
-          kind={inverted ? 'primary' : 'secondary'}>
-          {token1Symbol}
-        </Button>
-      </div>
-      <LargeText>
-        The current price for the
-        {' '}{poolName}{' '}
-        pool is {inverted ? price1 : price0} {priceUnit}.
-        <div />
-        I want to provide liquidity between the prices of
-        <TickSelector
-          tick={inverted ? tickUpper : tickLower}
-          updateTick={inverted ? updateUpperTick : updateLowerTick}
-          inverted={inverted}
-          spacing={spacing}
-        />
-        and
-        <TickSelector
-          tick={inverted ? tickLower : tickUpper}
-          updateTick={inverted ? updateLowerTick : updateUpperTick}
-          inverted={inverted}
-          spacing={spacing}
-        />
-        {priceUnit}, by depositing
-        <PositionNumberInput
-          id="token0Input"
-          action={updateToken0Amount}
-          value={token0Amount}
-        />
-        {token0Symbol} and
-        <PositionNumberInput
-          id="token1Input"
-          action={updateToken1Amount}
-          value={token1Amount}
-        />
-        {token1Symbol}.
-        <div />
-        If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
-        more of my position to liquidators.
-      </LargeText>
-      <div />
-      <div style={{marginTop: 36, marginBottom: 30}}>
-        <PositionMetadata items={[
-          {
-            title: 'New Wallet ' + token0Symbol + ' Balance',
-            value: numDisplay(userToken0Balance - token0Amount),
-            failing: userToken0Balance - token0Amount < 0,
-          },{
-            title: 'New Wallet ' + token1Symbol + ' Balance',
-            value: numDisplay(userToken1Balance - token1Amount),
-            failing: userToken1Balance - token1Amount < 0,
-          }
-        ]} />
-      </div>
-      {token0ApprovalButton}
-      {token1ApprovalButton}
-      <div style={{marginTop: 32, marginBottom: 32}}>
-        {userAddress === null ? (
-          <ConnectWalletButton />
-        ) : (
-          <Button onClick={openCreateLiquidityPositionDialog} disabled={isFailing}>
-            Create Liquidity Position
+    <>
+      <BackButton />
+      <div style={{position: 'relative'}}>
+        <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
+        <div style={{marginBottom: 16}}>
+          <Button
+            size="sm"
+            onClick={toggleInverted}
+            kind={inverted ? 'secondary' : 'primary'}>
+            {token0Symbol}
           </Button>
-        )}
+          <Button
+            size="sm"
+            onClick={toggleInverted}
+            kind={inverted ? 'primary' : 'secondary'}>
+            {token1Symbol}
+          </Button>
+        </div>
+        <LargeText>
+          The current price for the
+          {' '}{poolName}{' '}
+          pool is {inverted ? price1 : price0} {priceUnit}.
+          <div />
+          I want to provide liquidity between the prices of
+          <TickSelector
+            tick={inverted ? tickUpper : tickLower}
+            updateTick={inverted ? updateUpperTick : updateLowerTick}
+            inverted={inverted}
+            spacing={spacing}
+          />
+          and
+          <TickSelector
+            tick={inverted ? tickLower : tickUpper}
+            updateTick={inverted ? updateLowerTick : updateUpperTick}
+            inverted={inverted}
+            spacing={spacing}
+          />
+          {priceUnit}, by depositing
+          <PositionNumberInput
+            id="token0Input"
+            action={updateToken0Amount}
+            value={token0Amount}
+          />
+          {token0Symbol} and
+          <PositionNumberInput
+            id="token1Input"
+            action={updateToken1Amount}
+            value={token1Amount}
+          />
+          {token1Symbol}.
+          <div />
+          If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
+          more of my position to liquidators.
+        </LargeText>
+        <div />
+        <div style={{marginTop: 36, marginBottom: 30}}>
+          <PositionMetadata items={[
+            {
+              title: 'New Wallet ' + token0Symbol + ' Balance',
+              value: numDisplay(userToken0Balance - token0Amount),
+              failing: userToken0Balance - token0Amount < 0,
+            },{
+              title: 'New Wallet ' + token1Symbol + ' Balance',
+              value: numDisplay(userToken1Balance - token1Amount),
+              failing: userToken1Balance - token1Amount < 0,
+            }
+          ]} />
+        </div>
+        {token0ApprovalButton}
+        {token1ApprovalButton}
+        <div style={{marginTop: 32, marginBottom: 32}}>
+          {userAddress === null ? (
+            <ConnectWalletButton />
+          ) : (
+            <Button onClick={openCreateLiquidityPositionDialog} disabled={isFailing}>
+              Create Liquidity Position
+            </Button>
+          )}
+        </div>
+        <ErrorMessage reasons={failureReasons} />
       </div>
-      <ErrorMessage reasons={failureReasons} />
-    </div>
+    </>
   )
 }
 

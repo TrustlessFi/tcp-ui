@@ -1,7 +1,8 @@
 import { Button } from 'carbon-components-react'
+import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { startCreate, startEdit } from '../../slices/liquidityPositionsEditor'
+import { startEdit } from '../../slices/liquidityPositionsEditor'
 import { clearPoolCurrentData } from '../../slices/poolCurrentData'
 import { waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
@@ -21,13 +22,16 @@ const LiquidityPositionsTable = (
     liquidityPositions: LiquidityPosition[],
   }) => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const createLiquidityPositionButton =
     <Button
       size="small"
-      onClick={() => {
+      href={`/liquidity/new/${pool.address}`}
+      onClick={(e) => {
         dispatch(clearPoolCurrentData(pool.address))
-        dispatch(startCreate({ poolAddress: pool.address }))
+        history.push(`/liquidity/new/${pool.address}`)
+        e.preventDefault()
       }}>
       New Position
     </Button>
@@ -63,7 +67,7 @@ const LiquidityPositionsTable = (
       },
       onClick: () => {
         dispatch(clearPoolCurrentData(pool.address))
-        dispatch(startEdit({ positionID: lqPos.positionID, }))
+        history.push(`/liquidity/${lqPos.positionID}`)
       }
     }
   ))

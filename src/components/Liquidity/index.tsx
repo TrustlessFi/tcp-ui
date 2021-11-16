@@ -1,43 +1,23 @@
 import CreateLiquidityPosition from './CreateLiquidityPosition'
 import UpdateLiquidityPosition from './UpdateLiquidityPosition'
 import ExistingLiquidityPositions from './ExistingLiquidityPositions'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import {
-  Button,
-} from 'carbon-components-react'
-import { close, LiquidityPositionEditorStatus } from '../../slices/liquidityPositionsEditor'
-
+import { useAppSelector as selector } from '../../app/hooks'
+import { Switch, Route } from 'react-router-dom'
 
 const LiquidityPositions = () => {
-  const dispatch = useAppDispatch()
-  const liquidityPositionsEditor = selector(state => state.liquidityPositionsEditor)
-
-  const closeButton = (
-    <div style={{marginBottom: 32}}>
-      <Button onClick={() => dispatch(close())}>Go Back</Button>
-    </div>
-  )
-
-  const status = liquidityPositionsEditor.status
-
-  switch(status) {
-    case LiquidityPositionEditorStatus.Closed:
-      return <ExistingLiquidityPositions />
-    case LiquidityPositionEditorStatus.Create:
-      return (
-        <>
-          {closeButton}
-          <CreateLiquidityPosition poolAddress={liquidityPositionsEditor.poolAddress} />
-        </>
-      )
-    case LiquidityPositionEditorStatus.Edit:
-      return (
-        <>
-          {closeButton}
-          <UpdateLiquidityPosition positionID={liquidityPositionsEditor.positionID} />
-        </>
-      )
-  }
+  return (
+    <Switch>
+      <Route exact path='/liquidity'>
+        <ExistingLiquidityPositions />
+      </Route>
+      <Route path='/liquidity/new/:poolAddress'>
+        <CreateLiquidityPosition />
+      </Route>
+      <Route path='/liquidity/:positionID'>
+        <UpdateLiquidityPosition />
+      </Route>
+    </Switch>
+  );
 }
 
 export default LiquidityPositions

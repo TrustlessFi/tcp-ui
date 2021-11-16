@@ -272,6 +272,8 @@ export const getSpaceForFee = (fee: Fee) => {
       return 60
     case Fee.HIGH:
       return 200
+    default:
+      return 10
   }
 }
 

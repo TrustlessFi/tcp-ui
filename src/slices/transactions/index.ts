@@ -28,6 +28,7 @@ export enum TransactionType {
   ApproveHue,
   ApproveLendHue,
   CreateLiquidityPosition,
+  UpdateLiquidityPosition,
 }
 
 export enum TransactionStatus {
@@ -121,8 +122,23 @@ export interface txCreateLiquidityPositionArgs {
   Rewards: string
 }
 
+export interface txUpdateLiquidityPositionArgs {
+  chainID: ChainID
+  type: TransactionType.UpdateLiquidityPosition
+  positionID: number
+  collateralChange: number
+  debtChange: number
+  Rewards: string
+  TrustlessMulticall: string
+}
+
 export type TransactionArgs =
-  txCreatePositionArgs | txUpdatePositionArgs | txLendArgs | txWithdrawArgs | txCreateLiquidityPositionArgs
+  txCreatePositionArgs |
+  txUpdatePositionArgs |
+  txLendArgs |
+  txWithdrawArgs |
+  txCreateLiquidityPositionArgs |
+  txUpdateLiquidityPositionArgs
 
 export type TransactionState = {[key in string]: TransactionInfo}
 
@@ -142,6 +158,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
       return 'Approved'
     case TransactionType.CreateLiquidityPosition:
       return 'Liquidity Position Created'
+    case TransactionType.UpdateLiquidityPosition:
+      return 'Liquidity Position Updated'
     default:
       assertUnreachable(type)
   }
@@ -163,27 +181,48 @@ export const getTxNamePresentTense = (type: TransactionType) => {
       return 'Approving'
     case TransactionType.CreateLiquidityPosition:
       return 'Creating Liquidity Position'
+    case TransactionType.UpdateLiquidityPosition:
+      return 'Updating Liquidity Position'
     default:
       assertUnreachable(type)
   }
   return ''
 }
 
+const getDeadline = async (chainID: ChainID, multicallAddress: string) => {
+  const trustlessMulticall = getMulticallContract(multicallAddress)
+  const transactionTimeout = getDefaultTransactionTimeout(chainID);
+
+  const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
+
+  return BigNumber.from(blockTime).add(transactionTimeout)
+}
+
 const executeTransaction = async (
   args: TransactionArgs,
   provider: ethers.providers.Web3Provider,
 ): Promise<ContractTransaction> => {
-  const getMarket = (address: string) => getContract(address, ProtocolContract.Market) as Market
+  const getMarket = (address: string) => 
+    getContract(address, ProtocolContract.Market)
+      .connect(provider.getSigner()) as Market
+
+  const getRewards = (address: string) =>
+    getContract(address, ProtocolContract.Rewards)
+      .connect(provider.getSigner()) as Rewards
+
   const type = args.type
+
+  let deadline
+  let rewards
 
   switch(type) {
     case TransactionType.CreatePosition:
-      return await getMarket(args.Market).connect(provider.getSigner()).createPosition(scale(args.debtCount), UIID, {
+      return await getMarket(args.Market).createPosition(scale(args.debtCount), UIID, {
         value: scale(args.collateralCount)
       })
 
     case TransactionType.UpdatePosition:
-      return await getMarket(args.Market).connect(provider.getSigner()).adjustPosition(
+      return await getMarket(args.Market).adjustPosition(
         args.positionID,
         mnt(args.debtIncrease),
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
@@ -191,25 +230,22 @@ const executeTransaction = async (
         { value: (args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0) }
       )
     case TransactionType.Lend:
-      return await getMarket(args.Market).connect(provider.getSigner()).lend(scale(args.count))
+      return await getMarket(args.Market).lend(scale(args.count))
 
     case TransactionType.Withdraw:
-      return await getMarket(args.Market).connect(provider.getSigner()).unlend(scale(args.count))
+      return await getMarket(args.Market).unlend(scale(args.count))
 
     case TransactionType.CreateLiquidityPosition:
-      const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-      const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
-
-      const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
+      rewards = getRewards(args.Rewards)
 
       const amount0Desired = bnf(mnt(args.amount0Desired, args.token0Decimals))
       const amount1Desired = bnf(mnt(args.amount1Desired, args.token1Decimals))
 
       const ethCount = (args.token0IsWeth ? amount0Desired : bnf(0)).add(args.token1IsWeth ? amount1Desired : bnf(0))
 
-      const transactionTimeout = getDefaultTransactionTimeout(args.chainID);
+      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
 
-      return await rewards.connect(provider.getSigner()).createLiquidityPosition({
+      return await rewards.createLiquidityPosition({
         token0: args.token0,
         token1: args.token1,
         fee: args.fee,
@@ -219,12 +255,32 @@ const executeTransaction = async (
         amount0Min: bnf(mnt(args.amount0Min, args.token0Decimals)),
         amount1Desired,
         amount1Min: bnf(mnt(args.amount1Min, args.token1Decimals)),
-        deadline: BigNumber.from(blockTime).add(transactionTimeout),
         recipient: zeroAddress,
+        deadline
       },
       UIID,
       {value: ethCount}
     )
+
+    case TransactionType.UpdateLiquidityPosition:
+      break
+      /*rewards = getRewards(args.Rewards)
+
+      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
+
+      if(args.debtChange < 0 || args.collateralChange < 0) {
+        return await rewards.decreaseLiquidityPosition({
+          tokenId: args.positionID,
+          deadline,
+        }, UIID, {
+        });
+      } else {
+        return await rewards.increaseLiquidityPosition({
+          tokenId: args.positionID,
+          deadline,
+        }, UIID, {
+        });
+      }*/
 
     default:
       assertUnreachable(type)
@@ -297,6 +353,8 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.CreateLiquidityPosition:
           dispatch(clearLiquidityPositions())
+          break
+        case TransactionType.UpdateLiquidityPosition:
           break
       default:
         assertUnreachable(type)

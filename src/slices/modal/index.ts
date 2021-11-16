@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { txCreatePositionArgs, txUpdatePositionArgs, txCreateLiquidityPositionArgs, txLendArgs, txWithdrawArgs } from '../transactions'
+import {
+  txCreatePositionArgs,
+  txUpdatePositionArgs,
+  txCreateLiquidityPositionArgs,
+  txUpdateLiquidityPositionArgs,
+  txLendArgs,
+  txWithdrawArgs
+} from '../transactions'
 
 export enum ModalStage {
   Closed,
@@ -29,6 +36,10 @@ export interface createLiquidityPositionModalData {
   token0Symbol: string
   token1Symbol: string
   // TODO add more items to liquidity preview ?
+}
+
+export interface updateLiquidityPositionModalData {
+  args: txUpdateLiquidityPositionArgs
 }
 
 export interface lendModalData {

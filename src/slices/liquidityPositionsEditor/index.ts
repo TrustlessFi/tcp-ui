@@ -9,6 +9,7 @@ export enum LiquidityPositionEditorStatus {
 
 interface LiquidityPositionEditorClosedState {
   status: LiquidityPositionEditorStatus.Closed
+  poolAddress?: string
 }
 
 interface LiquidityPositionEditorCreateState {
@@ -19,6 +20,7 @@ interface LiquidityPositionEditorCreateState {
 interface LiquidityPositionEditorEditState {
   status: LiquidityPositionEditorStatus.Edit
   positionID: string
+  poolAddress?: string
 }
 
 type LiquidityPositionsEditorState =
