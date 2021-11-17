@@ -9,12 +9,14 @@ import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, wait
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
 import PositionMetadata from '../library/PositionMetadata'
+import PositionMetadata2 from '../library/PositionMetadata2'
 import RelativeLoading from '../library/RelativeLoading'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import { ProtocolContract } from '../../slices/contracts'
-import ConnectWalletButton from '../utils/ConnectWalletButton';
+import ConnectWalletButton from '../utils/ConnectWalletButton'
+import { Row, Col } from 'react-flexbox-grid'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -40,6 +42,8 @@ const CreatePosition = () => {
     marketContract === null ||
     userEthBalance === null
 
+
+
   const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
   const collateralizationDisplay = dataNull ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
@@ -50,6 +54,8 @@ const CreatePosition = () => {
 
   const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
+
+  const ethPriceDisplay = dataNull ? '-' : numDisplay(priceInfo.ethPrice, 0)
 
   const failures: {[key in string]: reason} = dataNull ? {} : {
     noCollateral: {
@@ -92,59 +98,82 @@ const CreatePosition = () => {
     }))
   }
 
+
+  const metadataItems = [
+    {
+      title: 'Hue/Eth Current Price',
+      value: ethPriceDisplay,
+      failing: false,
+    },{
+      title: 'Hue/Eth Liquidation Price',
+      value: liquidationPriceDisplay,
+      failing: dataNull ? false : liquidationPrice >= priceInfo.ethPrice,
+    },{
+      title: 'Collateralization Ratio',
+      value: collateralizationDisplay,
+      failing: dataNull ? false : failures.undercollateralized.failing,
+    },
+  ]
+
+  const paragraphDivider = <div style={{height: 32}} />
+
+
   return (
     <div style={{position: 'relative'}}>
       <RelativeLoading show={userAddress !== null && dataNull} />
-      <LargeText>
-        I want to create a position with
-        <PositionNumberInput
-          id="collateralInput"
-          action={(value: number) => setCollateralCount(value)}
-          value={collateralCount}
-        />
-        Eth of Collateral and
-        <PositionNumberInput
-          id="debtInput"
-          action={(value: number) => setDebtCount(value)}
-          value={debtCount}
-        />
-        Hue of debt with a {interestRateDisplay} interest rate that will vary due to market forces.
-      </LargeText>
-      <div style={{marginTop: 36, marginBottom: 30}}>
-        <PositionMetadata items={[
-          {
-            title: 'Min position size',
-            value: (dataNull ? '-' : numDisplay(market.minPositionSize)) + ' Hue',
-            failing: dataNull ? false : failures.notBigEnough.failing,
-          },{
-            title: 'Collateralization Ratio',
-            value: collateralizationDisplay,
-            failing: dataNull ? false : failures.undercollateralized.failing,
-          },{
-            title: 'New Wallet Eth Balance',
-            value: dataNull ? '-' : numDisplay(userEthBalance - collateralCount),
-            failing: dataNull ? false : failures.insufficientEth.failing,
-          },{
-            title: 'New Wallet Hue Balance',
-            value: dataNull ? '-' : numDisplay(hueBalance.userBalance + debtCount)
-          },
-        ]} />
-      </div>
-      <LargeText>
-        Eth is currently <Bold>{dataNull ? '-' : numDisplay(priceInfo.ethPrice, 0)}</Bold> Hue.
-        If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
-        I could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of my position value in Eth to liquidators.
-      </LargeText>
-      <div style={{marginTop: 32, marginBottom: 32}}>
-        {userAddress === null ? (
-          <ConnectWalletButton />
-        ) : (
-          <Button onClick={openCreatePositionDialog} disabled={isFailing}>
-            Create Position
-          </Button>
-        )}
-      </div>
-      <ErrorMessage reasons={failureReasons} />
+      <Row middle='xs'>
+        <Col xs={4}>
+          <div style={{marginBottom: 8}}>
+            Collateral Eth
+          </div>
+          <div style={{marginBottom: 8}}>
+            <PositionNumberInput
+              id="collateralInput"
+              action={(value: number) => setCollateralCount(value)}
+              value={collateralCount}
+            />
+          </div>
+          <div style={{marginBottom: 8}}>
+            Borrow Hue
+          </div>
+          <div>
+            <PositionNumberInput
+              id="debtInput"
+              action={(value: number) => setDebtCount(value)}
+              value={debtCount}
+            />
+          </div>
+          <PositionMetadata2 items={metadataItems} />
+          <div style={{marginTop: 8, marginBottom: 8}}>
+            {userAddress === null ? (
+              <ConnectWalletButton />
+            ) : (
+              <Button onClick={openCreatePositionDialog} disabled={isFailing}>
+                Confirm Position in Metamask
+              </Button>
+            )}
+          </div>
+          <div style={{marginTop: 8}}>
+            <ErrorMessage reasons={failureReasons} />
+          </div>
+        </Col>
+        <Col xs={8}>
+          <LargeText>
+            You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
+            {paragraphDivider}
+            You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
+            In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
+            The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
+            to maintain liquidation incentives
+            {paragraphDivider}
+            Hue debt currently carries a {interestRateDisplay} interest rate
+              that will vary due to market forces.
+            The price of Eth is currently {ethPriceDisplay} Hue. If the price of Eth falls
+            below <Bold>{liquidationPriceDisplay}</Bold> Hue you could
+            lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
+          </LargeText>
+        </Col>
+      </Row>
     </div>
   )
 }

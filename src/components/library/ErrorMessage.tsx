@@ -14,9 +14,11 @@ const ErrorMessage = ({
 }) => {
   const reason = firstOrNull(reasons.filter((reason) => reason.failing && reason.silent !== true))
 
-  if (reason === null) return null
-
-  return <LargeText color='#FA4D56'>{reason.message}</LargeText>
+  return (
+    <div style={{height: 32}}>
+      <LargeText color='#FA4D56'>{reason === null ? ' ' : reason.message}</LargeText>
+    </div>
+  )
 }
 
 export default ErrorMessage
