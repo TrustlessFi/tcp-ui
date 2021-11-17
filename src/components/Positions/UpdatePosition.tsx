@@ -19,6 +19,7 @@ import { ProtocolContract } from '../../slices/contracts'
 import { openModal } from '../../slices/modal'
 import { numDisplay, zeroIfNaN } from '../../utils/index'
 import { reason } from '../library/ErrorMessage'
+import Breadcrumbs from '../library/Breadcrumbs'
 import { TransactionType } from '../../slices/transactions'
 import { clearPositions } from '../../slices/positions'
 import { editorClosed } from '../../slices/positionsEditor'
@@ -162,6 +163,7 @@ const UpdatePosition = () => {
 
   return (
     <>
+      <Breadcrumbs items={[{ text: 'Positions', href: '/' }, 'Update']} />
       <LargeText>
         Position #{positionID} has {numDisplay(position.collateralCount, 2)} Eth of Collateral
         and {numDisplay(position.debtCount, 2)} Hue of debt.

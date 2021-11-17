@@ -6,6 +6,7 @@ import { displaySymbol, getPoolName, tickToPriceDisplay } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo'
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates'
 import InputPicker from '../Lend/library/InputPicker'
+import Breadcrumbs from '../library/Breadcrumbs'
 import LargeText from '../utils/LargeText'
 import PositionNumberInput from '../library/PositionNumberInput'
 
@@ -59,44 +60,47 @@ const UpdateLiquidityPosition = () => {
   const displayLower = tickToPriceDisplay((inverted ? position?.tickLower : position?.tickUpper) || 0)
 
   return (
-    <LargeText>
-      The current price for the {getPoolName(pool)} pool is {inverted ? price1 : price0} {priceUnit}.
-      <br />
-      Liquidity position #{position?.positionID} is providing liquidity between {displayLower} and {displayUpper} {priceUnit}.
-      <br />
-      I want to
-      <InputPicker
-        options={ChangeType}
-        initialValue={ChangeType.Increase}
-        onChange ={(option: ChangeType) => setChangeType(option)}
-      />
-      liquidity by
-      {changeType === ChangeType.Increase ? (
-        <>
-          <PositionNumberInput
-            id='amount0Input'
-            action={(value: number) => updateToken0Amount(value)}
-            value={token0Amount}
-          />
-          Eth and
-          <PositionNumberInput
-            id='amount1Input'
-            action={(value: number) => updateToken1Amount(value)}
-            value={token1Amount}
-          />
-          Hue.
-        </>
-      ) : (
-        <>
-          <PositionNumberInput
-            id='decreasePercentageInput'
-            action={(value: number) => setDecreasePercentage(value)}
-            value={decreasePercentage}
-          />
-          %
-        </>
-      )}
-    </LargeText>
+    <>
+      <Breadcrumbs items={[{ text: 'Liquidity', href: '/liquidity' }, 'Update']} />
+      <LargeText>
+        The current price for the {getPoolName(pool)} pool is {inverted ? price1 : price0} {priceUnit}.
+        <br />
+        Liquidity position #{position?.positionID} is providing liquidity between {displayLower} and {displayUpper} {priceUnit}.
+        <br />
+        I want to
+        <InputPicker
+          options={ChangeType}
+          initialValue={ChangeType.Increase}
+          onChange ={(option: ChangeType) => setChangeType(option)}
+        />
+        liquidity by
+        {changeType === ChangeType.Increase ? (
+          <>
+            <PositionNumberInput
+              id='amount0Input'
+              action={(value: number) => updateToken0Amount(value)}
+              value={token0Amount}
+            />
+            Eth and
+            <PositionNumberInput
+              id='amount1Input'
+              action={(value: number) => updateToken1Amount(value)}
+              value={token1Amount}
+            />
+            Hue.
+          </>
+        ) : (
+          <>
+            <PositionNumberInput
+              id='decreasePercentageInput'
+              action={(value: number) => setDecreasePercentage(value)}
+              value={decreasePercentage}
+            />
+            %
+          </>
+        )}
+      </LargeText>
+    </>
   )
 }
 

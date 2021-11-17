@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
 import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
-import PositionMetadata from '../library/PositionMetadata'
+import Breadcrumbs from '../library/Breadcrumbs'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import RelativeLoading from '../library/RelativeLoading'
 import PositionNumberInput from '../library/PositionNumberInput'
@@ -120,6 +120,7 @@ const CreatePosition = () => {
 
   return (
     <div style={{position: 'relative'}}>
+      <Breadcrumbs items={[{ text: 'Positions', href: '/' }, 'New']} />
       <RelativeLoading show={userAddress !== null && dataNull} />
       <Row middle='xs'>
         <Col xs={4}>

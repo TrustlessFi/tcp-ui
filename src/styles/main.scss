@@ -167,3 +167,20 @@ svg.danger_icon {
     }
   }
 }
+
+.bx--breadcrumb {
+  .bx--breadcrumb-item:last-child {
+    cursor: default;
+    
+    .bx--link {
+      color: #A8A8A8;
+
+      &:hover {
+        color: #A8A8A8;
+        text-decoration: none;
+      }
+    }
+  }
+
+  margin-bottom: 1rem;
+}

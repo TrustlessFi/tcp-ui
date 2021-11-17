@@ -18,7 +18,7 @@ import {
 } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
-import BackButton from '../library/BackButton'
+import Breadcrumbs from '../library/Breadcrumbs'
 import PositionNumberInput from '../library/PositionNumberInput'
 import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
@@ -250,7 +250,7 @@ const CreateLiquidityPosition = () => {
 
   return (
     <>
-      <BackButton />
+      <Breadcrumbs items={[{ text: 'Liquidity', href: '/liquidity' }, 'New']} />
       <div style={{position: 'relative'}}>
         <RelativeLoading show={poolCurrentData === null || pool === null || rewardsInfo === null} />
         <div style={{marginBottom: 16}}>
