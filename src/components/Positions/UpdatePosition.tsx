@@ -1,5 +1,5 @@
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useState } from "react"
+import { useParams } from 'react-router';
 import {
   waitForLiquidations,
   waitForRates,
@@ -14,6 +14,7 @@ import {
   TextAreaSkeleton,
   Button,
 } from 'carbon-components-react'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { ProtocolContract } from '../../slices/contracts'
 import { openModal } from '../../slices/modal'
 import { numDisplay, zeroIfNaN } from '../../utils/index'
@@ -39,8 +40,15 @@ enum DebtChange {
   Payback = 'Payback',
 }
 
-const UpdatePosition = ({ id }: { id: number }) => {
+interface MatchParams {
+  positionID: string
+}
+
+const UpdatePosition = () => {
+  const params: MatchParams = useParams()
   const dispatch = useAppDispatch()
+
+  const positionID = Number(params.positionID)
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
@@ -79,7 +87,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
     positions === null
   ) return <TextAreaSkeleton />
 
-  const position = positions[id]
+  const position = positions[positionID]
   const increaseCollateral = collateralChange === CollateralChange.Increase
   const increaseDebt = debtChange === DebtChange.Borrow
 
@@ -140,7 +148,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
     dispatch(openModal({
       args: {
         type: TransactionType.UpdatePosition,
-        positionID: id,
+        positionID,
         debtIncrease,
         collateralIncrease,
         Market: marketContract,
@@ -155,7 +163,7 @@ const UpdatePosition = ({ id }: { id: number }) => {
   return (
     <>
       <LargeText>
-        Position #{id} has {numDisplay(position.collateralCount, 2)} Eth of Collateral
+        Position #{positionID} has {numDisplay(position.collateralCount, 2)} Eth of Collateral
         and {numDisplay(position.debtCount, 2)} Hue of debt.
         <div />
         I want to

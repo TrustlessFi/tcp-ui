@@ -1,4 +1,5 @@
 import { Button } from 'carbon-components-react'
+import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { editorOpened } from '../../slices/positionsEditor'
@@ -12,6 +13,7 @@ import Text from '../utils/Text'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const positions = waitForPositions(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
@@ -77,10 +79,13 @@ const ExistingPositionsTable = () => {
         'Collateralization Ratio': numDisplay(collateralization * 100, 0) + '%',
         'Approximate Rewards': rewardsButton,
       },
-      onClick: () => dispatch(editorOpened({
-        positionID: position.id,
-        creating: false,
-      }))
+      onClick: () => {
+        dispatch(editorOpened({
+          positionID: position.id,
+          creating: false,
+        }))
+        history.push(`/positions/${position.id}`)
+      }
     }
   })
 

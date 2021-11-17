@@ -44,11 +44,11 @@ function App() {
             {Object.values(Tab).map((tab, index) => {
               const path = '/' + tab.toLowerCase()
               const paths = index === 0 ? ['/', path] : [path]
-              return (
-                <Route exact={index === 0} path={paths} key={index}>
+              return paths.map(path => (
+                <Route exact={path === '/'} path={path} key={path}>
                   {tabToRender[tab]}
                 </Route>
-              )
+              ))
             })}
           </Switch>
         </div>
