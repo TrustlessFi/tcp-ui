@@ -3,6 +3,7 @@ import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend'
 import Governance from './components/Governance'
+import Transactions from './components/Transactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
 import { Switch, Route } from "react-router-dom"
@@ -24,6 +25,7 @@ export enum Tab {
   Lend = 'Lend',
   Liquidity = 'Liquidity',
   Governance = 'Governance',
+  Transactions = 'Transactions',
 }
 
 const tabToRender: {[key in Tab]: ReactNode} = {
@@ -31,6 +33,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Lend: <Lend />,
   Liquidity: <Liquidity />,
   Governance: <Governance />,
+  Transactions: <Transactions />,
 }
 
 function App() {

@@ -8,9 +8,10 @@ export interface ProviderData {
 export interface WalletState {
   address: string | null,
   connecting: boolean,
+  waitingForMetamask: boolean,
 }
 
-const initialState: WalletState = { address: null, connecting: false }
+const initialState: WalletState = { address: null, connecting: false, waitingForMetamask: false }
 
 export const walletSlice = createSlice({
   name: 'wallet',
@@ -26,10 +27,22 @@ export const walletSlice = createSlice({
     connectionFailed: (state) => {
       state.connecting = false
     },
+    waitingForMetamask: (state) => {
+      state.waitingForMetamask = true
+    },
+    metamaskComplete: (state) => {
+      state.waitingForMetamask = false
+    },
   },
   extraReducers: () => {},
 })
 
-export const { connecting, connected, connectionFailed } = walletSlice.actions
+export const {
+  connecting,
+  connected,
+  connectionFailed,
+  waitingForMetamask,
+  metamaskComplete
+} = walletSlice.actions
 
 export default walletSlice.reducer

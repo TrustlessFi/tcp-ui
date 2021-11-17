@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { getLocalStorage, assertUnreachable } from '../../utils'
+import { waitingForMetamask, metamaskComplete } from '../wallet'
+import History from 'react-router-dom'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
@@ -139,12 +141,12 @@ export type TransactionArgs =
   txCreateLiquidityPositionArgs |
   txUpdateLiquidityPositionArgs
 
-export type TransactionState =
-  {
-    waitingForMetamask: boolean
-    txs: {[key in string]: TransactionInfo}
-  }
+export interface TransactionData {
+  args: TransactionArgs,
+  openTxTab: () => void,
+}
 
+export type TransactionState = {[key in string]: TransactionInfo}
 
 export const getTxNamePastTense = (type: TransactionType) => {
   switch(type) {
@@ -316,7 +318,9 @@ const executeTransaction = async (
 
 export const waitForTransaction = createAsyncThunk(
   'transactions/waitForTransaction',
-  async (args: TransactionArgs, {dispatch}): Promise<void> => {
+  async (data: TransactionData, {dispatch}): Promise<void> => {
+    const args = data.args
+
     const provider = getProvider()
     const userAddress = await provider.getSigner().getAddress()
 
@@ -333,7 +337,7 @@ export const waitForTransaction = createAsyncThunk(
 
       console.error("failureMessages" + parseMetamaskError(e).join(', '))
       dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
-      dispatch(metamaskFailure())
+      dispatch(metamaskComplete())
       return
     }
 
@@ -346,10 +350,14 @@ export const waitForTransaction = createAsyncThunk(
     })
 
     dispatch(transactionCreated(txInfo))
+    console.log("before push Transactions")
+    data.openTxTab()
+    console.log("after push Transactions")
 
     const receipt = await provider.waitForTransaction(tx.hash)
-    const succeeded = receipt.status === 1
+    dispatch(metamaskComplete())
 
+    const succeeded = receipt.status === 1
     if (succeeded) {
       dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
       dispatch(transactionSucceeded(tx.hash))
@@ -358,6 +366,7 @@ export const waitForTransaction = createAsyncThunk(
       dispatch(transactionFailed(tx.hash))
     }
 
+    // Kick off side-effects to reload relevant data
     if (succeeded) {
       const type = args.type
 
@@ -393,33 +402,26 @@ export const transactionsSlice = createSlice({
     clearUserTransactions: (state, action: PayloadAction<string>) => {
       return {
         waitingForMetamask: state.waitingForMetamask,
-        txs: Object.fromEntries(Object.values(state.txs).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx])),
+        txs: Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx])),
       }
-    },
-    waitingForMetamask: (state) => {
-      state.waitingForMetamask = true
-    },
-    metamaskFailure: (state) => {
-      state.waitingForMetamask = false
     },
     transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
       const txInfo = action.payload
       const hash = getTxHash(txInfo)
       console.log("transactionCreated", {hash})
-      state.txs[hash] = txInfo
-      state.waitingForMetamask = false
+      state[hash] = txInfo
     },
     transactionSucceeded: (state, action: PayloadAction<string>) => {
       const hash = action.payload
       console.log("transactionSucceeded", {hash})
-      if (state.txs.hasOwnProperty(hash)) {
-        state.txs[hash].status = TransactionStatus.Success
+      if (state.hasOwnProperty(hash)) {
+        state[hash].status = TransactionStatus.Success
       }
     },
     transactionFailed: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      if (state.txs.hasOwnProperty(hash)) {
-        state.txs[hash].status = TransactionStatus.Failure
+      if (state.hasOwnProperty(hash)) {
+        state[hash].status = TransactionStatus.Failure
       }
     },
   },
@@ -430,8 +432,6 @@ export const {
   transactionCreated,
   transactionSucceeded,
   transactionFailed,
-  waitingForMetamask,
-  metamaskFailure,
 } = transactionsSlice.actions
 
 export default transactionsSlice.reducer
