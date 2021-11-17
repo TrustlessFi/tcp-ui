@@ -94,14 +94,19 @@ const ExistingPositionsTable = () => {
 
 const ExistingPositions = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
+
   const createPositionButton =
     <Button
       size="small"
-      onClick={() => dispatch(editorOpened({
-        positionID: 0,
-        creating: true,
-      }))}
-     >
+      onClick={() => {
+        dispatch(editorOpened({
+          positionID: 0,
+          creating: true,
+        }))
+        history.push('/positions/new')
+      }}
+    >
       New Position
     </Button>
 
