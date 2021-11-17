@@ -331,7 +331,7 @@ export const waitForTransaction = createAsyncThunk(
         status: TransactionStatus.Failure,
       })
 
-      console.error({failureMessages: parseMetamaskError(e)})
+      console.error("failureMessages" + parseMetamaskError(e).join(', '))
       dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
       dispatch(metamaskFailure())
       return

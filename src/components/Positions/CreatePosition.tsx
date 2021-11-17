@@ -22,10 +22,8 @@ import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import { ProtocolContract } from '../../slices/contracts'
-import ConnectWalletButton from '../utils/ConnectWalletButton'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import { Row, Col } from 'react-flexbox-grid'
-import { waitForTransaction } from '../../slices/transactions/index';
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -156,12 +154,16 @@ const CreatePosition = () => {
         <Col xs={8}>
           <LargeText>
             You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
+
             {paragraphDivider}
+
             You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
             In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
             The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
             to maintain liquidation incentives.
+
             {paragraphDivider}
+
             Hue debt currently carries a {interestRateDisplay} interest rate
               that will vary due to market forces.
             The price of Eth is currently {ethPriceDisplay} Hue. If the price of Eth falls

@@ -82,7 +82,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
   }
 
   const explorerLink = isTxHash(hash)
-    ? <ExplorerLink txHash={hash}>View on Explorer</ExplorerLink>
+    ? <Row><ExplorerLink txHash={hash}>View on Explorer</ExplorerLink></Row>
     : null
 
   useEffect(() => {
@@ -126,22 +126,20 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
             <NotificationIcon status={data.status} />
           </Col>
           <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-            <NotificationText large>{title}</NotificationText>
+            <Row>
+              <NotificationText large>{title}</NotificationText>
+            </Row>
             {explorerLink}
+            {(data.status === TransactionStatus.Failure
+                ? <Row>
+                    <NotificationText>
+                      See console for more information.
+                    </NotificationText>
+                  </Row>
+                : null
+            )}
           </Col>
         </Row>
-        {(
-          data.status === TransactionStatus.Failure
-            ?
-              <Row>
-                <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
-                  <NotificationText>
-                    See console for more information.
-                  </NotificationText>
-                </Col>
-              </Row>
-            : null
-        )}
       </Col>
       <div style={{
         width: loadingBarWidth,
