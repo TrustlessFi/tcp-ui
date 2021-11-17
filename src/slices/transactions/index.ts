@@ -9,7 +9,6 @@ import { clearHueBalance } from '../balances/hueBalance'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
-import { modalWaitingForMetamask, modalWaitingForCompletion, modalSuccess, modalFailure } from '../modal';
 
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -140,7 +139,11 @@ export type TransactionArgs =
   txCreateLiquidityPositionArgs |
   txUpdateLiquidityPositionArgs
 
-export type TransactionState = {[key in string]: TransactionInfo}
+export type TransactionState =
+  {
+    waitingForMetamask: boolean
+    txs: {[key in string]: TransactionInfo}
+  }
 
 
 export const getTxNamePastTense = (type: TransactionType) => {
@@ -160,6 +163,29 @@ export const getTxNamePastTense = (type: TransactionType) => {
       return 'Liquidity Position Created'
     case TransactionType.UpdateLiquidityPosition:
       return 'Liquidity Position Updated'
+    default:
+      assertUnreachable(type)
+  }
+  return ''
+}
+
+export const getTxFailureTitle = (type: TransactionType) => {
+  switch(type) {
+    case TransactionType.CreatePosition:
+      return 'Position Creation Failed'
+    case TransactionType.UpdatePosition:
+      return 'Position Update Failed'
+    case TransactionType.Lend:
+      return 'Hue Lend Failed'
+    case TransactionType.Withdraw:
+      return 'Hue Withdrawak Failed'
+    case TransactionType.ApproveHue:
+    case TransactionType.ApproveLendHue:
+      return 'Approval Failed'
+    case TransactionType.CreateLiquidityPosition:
+      return 'Liquidity Position Creation Failed'
+    case TransactionType.UpdateLiquidityPosition:
+      return 'Liquidity Position Update Failed'
     default:
       assertUnreachable(type)
   }
@@ -202,7 +228,7 @@ const executeTransaction = async (
   args: TransactionArgs,
   provider: ethers.providers.Web3Provider,
 ): Promise<ContractTransaction> => {
-  const getMarket = (address: string) => 
+  const getMarket = (address: string) =>
     getContract(address, ProtocolContract.Market)
       .connect(provider.getSigner()) as Market
 
@@ -294,11 +320,10 @@ export const waitForTransaction = createAsyncThunk(
     const provider = getProvider()
     const userAddress = await provider.getSigner().getAddress()
 
-    let tx: ContractTransaction | undefined
+    let tx: ContractTransaction
     try {
-      dispatch(modalWaitingForMetamask())
+      dispatch(waitingForMetamask())
       tx = await executeTransaction(args, provider)
-      if (tx === undefined) throw new Error('Transaction undefined.')
     } catch (e) {
       const txInfo = getTxInfo({
         userAddress,
@@ -306,9 +331,9 @@ export const waitForTransaction = createAsyncThunk(
         status: TransactionStatus.Failure,
       })
 
-      const failureMessages = parseMetamaskError(e)
-      dispatch(modalWaitingForCompletion(getTxHash(txInfo)))
-      dispatch(modalFailure({ hash: getTxHash(txInfo), messages: failureMessages}))
+      console.error({failureMessages: parseMetamaskError(e)})
+      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(metamaskFailure())
       return
     }
 
@@ -320,18 +345,15 @@ export const waitForTransaction = createAsyncThunk(
       status: TransactionStatus.Pending,
     })
 
-    dispatch(modalWaitingForCompletion(tx.hash))
     dispatch(transactionCreated(txInfo))
 
     const receipt = await provider.waitForTransaction(tx.hash)
     const succeeded = receipt.status === 1
 
     if (succeeded) {
-      dispatch(modalSuccess(tx.hash))
       dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
       dispatch(transactionSucceeded(tx.hash))
     } else {
-      dispatch(modalFailure({ hash: tx.hash, messages: []}))
       dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
       dispatch(transactionFailed(tx.hash))
     }
@@ -366,26 +388,38 @@ const name = 'transactions'
 
 export const transactionsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, {}) as TransactionState,
+  initialState: getLocalStorage(name, {waitingForMetamask: false, txs: {}}) as TransactionState,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
-      return Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx]))
+      return {
+        waitingForMetamask: state.waitingForMetamask,
+        txs: Object.fromEntries(Object.values(state.txs).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx])),
+      }
+    },
+    waitingForMetamask: (state) => {
+      state.waitingForMetamask = true
+    },
+    metamaskFailure: (state) => {
+      state.waitingForMetamask = false
     },
     transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
       const txInfo = action.payload
       const hash = getTxHash(txInfo)
-      state[hash] = txInfo
+      console.log("transactionCreated", {hash})
+      state.txs[hash] = txInfo
+      state.waitingForMetamask = false
     },
     transactionSucceeded: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      if (state.hasOwnProperty(hash)) {
-        state[hash].status = TransactionStatus.Success
+      console.log("transactionSucceeded", {hash})
+      if (state.txs.hasOwnProperty(hash)) {
+        state.txs[hash].status = TransactionStatus.Success
       }
     },
     transactionFailed: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      if (state.hasOwnProperty(hash)) {
-        state[hash].status = TransactionStatus.Failure
+      if (state.txs.hasOwnProperty(hash)) {
+        state.txs[hash].status = TransactionStatus.Failure
       }
     },
   },
@@ -396,6 +430,8 @@ export const {
   transactionCreated,
   transactionSucceeded,
   transactionFailed,
+  waitingForMetamask,
+  metamaskFailure,
 } = transactionsSlice.actions
 
 export default transactionsSlice.reducer

@@ -8,7 +8,6 @@ import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { approvePoolToken } from '../../slices/poolCurrentData'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
-import { openModal } from '../../slices/modal'
 import {
   numDisplay,
   getSpaceForFee,
@@ -30,6 +29,7 @@ import ConnectWalletButton from '../utils/ConnectWalletButton';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
+import CreateTransactionButton from '../utils/CreateTransactionButton';
 
 interface MatchParams {
   poolAddress: string
@@ -74,7 +74,7 @@ const CreateLiquidityPosition = () => {
   const dispatch = useAppDispatch()
 
   const { poolAddress }: MatchParams = useParams()
-  
+
   const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
   const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
@@ -209,44 +209,12 @@ const CreateLiquidityPosition = () => {
     ' per ' +
     (inverted ? token1Symbol : token0Symbol)
 
-
-  const openCreateLiquidityPositionDialog = () => {
-    const amount0Desired = token0Amount
-    // TODO tighter or custom range
-    const amount0Min = amount0Desired * 0.95
-    const amount1Desired = token1Amount
-    // TODO tighter or custom range
-    const amount1Min = amount1Desired * 0.95
-
-    if(!chainID) {
-      return
-    }
-
-    dispatch(openModal({
-      args: {
-        type: TransactionType.CreateLiquidityPosition,
-        token0: poolCurrentData!.token0.address,
-        token0Decimals: pool!.token0.decimals,
-        token0IsWeth,
-        token1: poolCurrentData!.token1.address,
-        token1Decimals: pool!.token1.decimals,
-        token1IsWeth,
-        fee: pool!.fee,
-        chainID,
-        tickLower,
-        tickUpper,
-        amount0Desired,
-        amount0Min,
-        amount1Desired,
-        amount1Min,
-        TrustlessMulticall: trustlessMulticallAddress!,
-        Rewards: rewardsAddress!,
-      },
-      token0Symbol,
-      token1Symbol,
-    }))
-  }
-
+  const amount0Desired = token0Amount
+  // TODO tighter or custom range
+  const amount0Min = amount0Desired * 0.95
+  const amount1Desired = token1Amount
+  // TODO tighter or custom range
+  const amount1Min = amount1Desired * 0.95
 
   return (
     <>
@@ -320,13 +288,28 @@ const CreateLiquidityPosition = () => {
         {token0ApprovalButton}
         {token1ApprovalButton}
         <div style={{marginTop: 32, marginBottom: 32}}>
-          {userAddress === null ? (
-            <ConnectWalletButton />
-          ) : (
-            <Button onClick={openCreateLiquidityPositionDialog} disabled={isFailing}>
-              Create Liquidity Position
-            </Button>
-          )}
+          <CreateTransactionButton
+            disabled={isFailing}
+            txArgs={{
+              type: TransactionType.CreateLiquidityPosition,
+              token0: poolCurrentData!.token0.address,
+              token0Decimals: pool!.token0.decimals,
+              token0IsWeth,
+              token1: poolCurrentData!.token1.address,
+              token1Decimals: pool!.token1.decimals,
+              token1IsWeth,
+              fee: pool!.fee,
+              chainID: chainID!,
+              tickLower,
+              tickUpper,
+              amount0Desired,
+              amount0Min,
+              amount1Desired,
+              amount1Min,
+              TrustlessMulticall: trustlessMulticallAddress!,
+              Rewards: rewardsAddress!,
+            }}
+          />
         </div>
         <ErrorMessage reasons={failureReasons} />
       </div>

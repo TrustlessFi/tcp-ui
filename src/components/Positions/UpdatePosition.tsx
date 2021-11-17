@@ -16,7 +16,6 @@ import {
 } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { ProtocolContract } from '../../slices/contracts'
-import { openModal } from '../../slices/modal'
 import { numDisplay, zeroIfNaN } from '../../utils/index'
 import { reason } from '../library/ErrorMessage'
 import Breadcrumbs from '../library/Breadcrumbs'
@@ -146,6 +145,7 @@ const UpdatePosition = () => {
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
   const openUpdatePositionDialog = () => {
+    /*
     dispatch(openModal({
       args: {
         type: TransactionType.UpdatePosition,
@@ -159,6 +159,7 @@ const UpdatePosition = () => {
       ethPrice: priceInfo.ethPrice,
       liquidationPrice,
     }))
+    */
   }
 
   return (

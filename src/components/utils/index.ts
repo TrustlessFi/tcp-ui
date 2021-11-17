@@ -9,7 +9,7 @@ export const getSortedUserTxs = (userAddress: string | null, txs: TransactionSta
   if (userAddress === null) return []
   if (txs === null) return []
 
-  return Object.values(txs)
+  return Object.values(txs.txs)
       .filter(tx => tx.userAddress === userAddress)
       .sort((a, b) => getTxNonce(a) - getTxNonce(b))
 }

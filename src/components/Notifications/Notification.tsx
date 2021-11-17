@@ -8,7 +8,7 @@ import ExplorerLink from '../utils/ExplorerLink'
 import { assertUnreachable, timeMS, isTxHash } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { getTxHash } from '../../slices/transactions'
-import { getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
+import { getTxFailureTitle, getTxNamePresentTense } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch } from '../../app/hooks';
 
@@ -103,7 +103,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
   }
 
   const title = data.status === TransactionStatus.Failure
-    ? getTxNamePastTense(data.type)
+    ? getTxFailureTitle(data.type)
     : getTxNamePresentTense(data.type)
 
   return (
@@ -130,6 +130,18 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
             {explorerLink}
           </Col>
         </Row>
+        {(
+          data.status === TransactionStatus.Failure
+            ?
+              <Row>
+                <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
+                  <NotificationText>
+                    See console for more information.
+                  </NotificationText>
+                </Col>
+              </Row>
+            : null
+        )}
       </Col>
       <div style={{
         width: loadingBarWidth,

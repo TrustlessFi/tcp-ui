@@ -5,8 +5,15 @@ import {
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForEthBalance, waitForMarket, waitForRates, waitForPrices, waitForLiquidations , getContractWaitFunction } from '../../slices/waitFor'
-import { openModal } from '../../slices/modal'
+import {
+  waitForHueBalance,
+  waitForEthBalance,
+  waitForMarket,
+  waitForRates,
+  waitForPrices,
+  waitForLiquidations,
+  getContractWaitFunction
+} from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
 import Breadcrumbs from '../library/Breadcrumbs'
 import PositionMetadata2 from '../library/PositionMetadata2'
@@ -16,7 +23,9 @@ import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import { ProtocolContract } from '../../slices/contracts'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
+import CreateTransactionButton from '../utils/CreateTransactionButton'
 import { Row, Col } from 'react-flexbox-grid'
+import { waitForTransaction } from '../../slices/transactions/index';
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -41,8 +50,6 @@ const CreatePosition = () => {
     rates === null ||
     marketContract === null ||
     userEthBalance === null
-
-
 
   const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
   const collateralizationDisplay = dataNull ? '-%' : numDisplay(collateralization * 100, 0) + '%'
@@ -85,20 +92,6 @@ const CreatePosition = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  const openCreatePositionDialog = () => {
-    dispatch(openModal({
-      args: {
-        type: TransactionType.CreatePosition,
-        collateralCount,
-        debtCount,
-        Market: marketContract!,
-      },
-      ethPrice: priceInfo!.ethPrice,
-      liquidationPrice,
-    }))
-  }
-
-
   const metadataItems = [
     {
       title: 'Hue/Eth Current Price',
@@ -116,7 +109,6 @@ const CreatePosition = () => {
   ]
 
   const paragraphDivider = <div style={{height: 32}} />
-
 
   return (
     <div style={{position: 'relative'}}>
@@ -146,13 +138,16 @@ const CreatePosition = () => {
           </div>
           <PositionMetadata2 items={metadataItems} />
           <div style={{marginTop: 8, marginBottom: 8}}>
-            {userAddress === null ? (
-              <ConnectWalletButton />
-            ) : (
-              <Button onClick={openCreatePositionDialog} disabled={isFailing}>
-                Confirm Position in Metamask
-              </Button>
-            )}
+            <CreateTransactionButton
+              title="Confirm Position in Metamask"
+              disabled={isFailing}
+              txArgs={{
+                type: TransactionType.CreatePosition,
+                collateralCount,
+                debtCount,
+                Market: marketContract!,
+              }}
+            />
           </div>
           <div style={{marginTop: 8}}>
             <ErrorMessage reasons={failureReasons} />
@@ -165,7 +160,7 @@ const CreatePosition = () => {
             You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
             In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
             The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
-            to maintain liquidation incentives
+            to maintain liquidation incentives.
             {paragraphDivider}
             Hue debt currently carries a {interestRateDisplay} interest rate
               that will vary due to market forces.

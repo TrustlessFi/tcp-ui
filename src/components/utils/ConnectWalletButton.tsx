@@ -13,7 +13,7 @@ const ConnectWalletButton = ({
   const wallet = selector(state => state.wallet)
 
   const text = wallet.connecting
-    ? 'Confirm in Metamask'
+    ? 'Waiting for User in Metamask...'
     : (wallet.address !== null
         ? 'Connected'
         : 'Connect a Wallet')
@@ -27,9 +27,13 @@ const ConnectWalletButton = ({
     }
   }
 
-  return (mini
-    ? <Button onClick={onClick} size="small">{text}</Button>
-    : <Button onClick={onClick}>{text}</Button>
+  return (
+    <Button
+      onClick={onClick}
+      disabled={wallet.connecting}
+      size={mini ? 'small' : 'default'}>
+      {text}
+    </Button>
   )
 }
 

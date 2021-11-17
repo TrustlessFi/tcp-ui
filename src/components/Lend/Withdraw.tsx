@@ -5,7 +5,6 @@ import {
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
-import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import { LendBorrowOption } from './'
@@ -13,7 +12,6 @@ import InputPicker from './library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata from '../library/PositionMetadata'
 import ErrorMessage from '../library/ErrorMessage'
-import { TransactionType } from '../../slices/transactions'
 import { ProtocolContract } from '../../slices/contracts'
 import { selectionMade } from '../../slices/lendSelection'
 import { getAPR } from './library'
@@ -21,6 +19,8 @@ import ApprovalButton from '../utils/ApprovalButton'
 import { zeroIfNaN } from '../../utils/index';
 import ConnectWalletButton from '../utils/ConnectWalletButton';
 import RelativeLoading from '../library/RelativeLoading';
+import { TransactionType } from '../../slices/transactions/index';
+import CreateTransactionButton from '../utils/CreateTransactionButton';
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
@@ -76,13 +76,9 @@ const Withdraw = () => {
   const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * market.valueOfLendTokensInHue
 
   const openWithdrawDialog = () => {
-    dispatch(openModal({
-      args: {
-        type: TransactionType.Withdraw,
-        count: convertHueToLendHue(amount),
-        Market: marketContract!,
-      },
-    }))
+    /*
+    dispatch(openModal())
+    */
   }
 
   return (
@@ -136,11 +132,15 @@ const Withdraw = () => {
         approvalLabels={{waiting: 'Approve Withdraw', approving: 'Approve in Metamask...', approved: 'Withdraw Approved'}}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
-        {userAddress === null ? <ConnectWalletButton /> :
-          <Button disabled={isFailing} onClick={openWithdrawDialog}>
-            Withdraw
-          </Button>
-        }
+        <CreateTransactionButton
+          title="Withdraw"
+          disabled={isFailing || amount === 0}
+          txArgs={{
+            type: TransactionType.Withdraw,
+            count: convertHueToLendHue(amount),
+            Market: marketContract!,
+          }}
+        />
       </div>
       <div>
         <ErrorMessage reasons={failureReasons} />

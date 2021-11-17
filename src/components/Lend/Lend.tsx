@@ -5,7 +5,6 @@ import {
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
-import { openModal } from '../../slices/modal'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import { LendBorrowOption } from './'
@@ -18,9 +17,10 @@ import { TransactionType } from '../../slices/transactions/index'
 import { ProtocolContract } from '../../slices/contracts/index'
 import { getAPR } from './library'
 import ApprovalButton from '../utils/ApprovalButton'
-import { zeroIfNaN } from '../../utils/index';
-import ConnectWalletButton from '../utils/ConnectWalletButton';
-import RelativeLoading from '../library/RelativeLoading';
+import { zeroIfNaN } from '../../utils/index'
+import ConnectWalletButton from '../utils/ConnectWalletButton'
+import CreateTransactionButton from '../utils/CreateTransactionButton'
+import RelativeLoading from '../library/RelativeLoading'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -74,16 +74,6 @@ const Lend = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
 
-  const openLendDialog = () => {
-    dispatch(openModal({
-      args: {
-        type: TransactionType.Lend,
-        count: amount,
-        Market: marketContract!,
-      },
-    }))
-  }
-
   return (
     <>
       <div style={{position: 'relative'}}>
@@ -131,11 +121,15 @@ const Lend = () => {
         approvalLabels={{waiting: 'Approve Lend', approving: 'Approve in Metamask...', approved: 'Lend Approved'}}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
-        {userAddress === null ? <ConnectWalletButton /> :
-          <Button disabled={isFailing || amount === 0} onClick={openLendDialog}>
-            Lend
-          </Button>
-        }
+        <CreateTransactionButton
+          title="Lend"
+          disabled={isFailing || amount === 0}
+          txArgs={{
+            type: TransactionType.Lend,
+            count: amount,
+            Market: marketContract!,
+          }}
+        />
       </div>
       <div>
         <ErrorMessage reasons={failureReasons} />
