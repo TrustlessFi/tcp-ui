@@ -1,7 +1,7 @@
 import { Button } from 'carbon-components-react'
 import { useParams } from "react-router";
 import { Subtract16, Add16 } from '@carbon/icons-react';
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
@@ -12,15 +12,12 @@ import { openModal } from '../../slices/modal'
 import {
   numDisplay,
   getSpaceForFee,
-  tickToPrice,
-  getAmount1ForAmount0,
-  getAmount0ForAmount1,
-  bnf,
-  mnt,
-  unscale,
-  upperCaseWord,
+  tickToPriceDisplay,
+  displaySymbol,
+  getPoolName,
 } from '../../utils'
-import { nearestUsableTick } from '@uniswap/v3-sdk'
+import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
+import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
 import BackButton from '../library/BackButton'
 import PositionNumberInput from '../library/PositionNumberInput'
 import RelativeLoading from '../library/RelativeLoading'
@@ -37,9 +34,6 @@ import { TransactionType } from '../../slices/transactions/index';
 interface MatchParams {
   poolAddress: string
 }
-
-// TODO put into utils?
-const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
 
 const TickSelector = ({
   tick,
@@ -92,43 +86,32 @@ const CreateLiquidityPosition = () => {
 
   const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
 
-  const instantTick = poolCurrentData ? poolCurrentData.instantTick : null
   const tick = poolCurrentData ? poolCurrentData.twapTick : null
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
   const spacing = getSpaceForFee(pool === null ? 0 : pool.fee)
-  const nearestTick = nearestUsableTick(tick === null ? 0 : tick, spacing)
 
-  const nextLowest = tick === null ? null : nearestTick < tick ? nearestTick : nearestTick - spacing
-  const nextHighest = tick === null ? null : nearestTick > tick ? nearestTick : nearestTick + spacing
+  const {
+    inverted, setInverted,
+    tickLower, setTickLower,
+    tickUpper, setTickUpper
+  } = usePoolDisplayInfo(pool, tick)
 
-  const [inverted, setInverted] = useState(false)
-  const [tickLower, setTickLower] = useState(0)
-  const [tickUpper, setTickUpper] = useState(0)
-  const [token0Amount, setToken0Amount] = useState(0)
-  const [token1Amount, setToken1Amount] = useState(0)
-  const [token0AdjustedLast, setToken0AdjustedLast] = useState(true)
-
-  const isDataLoadedRef = useRef(false)
-
-  useEffect(() => {
-    if (!isDataLoadedRef.current && tick !== null && nextLowest !== null && nextHighest !== null) {
-      isDataLoadedRef.current = true
-
-      setInverted(tick < 0)
-      setTickLower(nextLowest)
-      setTickUpper(nextHighest)
-    }
-  })
+  const {
+      token0Amount,
+      token1Amount,
+      updateLowerTick,
+      updateUpperTick,
+      updateToken0Amount,
+      updateToken1Amount
+  } = useLiquidityPositionUpdates(tickLower, setTickLower, tickUpper, setTickUpper, poolCurrentData, tick)
 
   useEffect(() => {
     if(poolAddress) {
       startCreate({ poolAddress })
     }
   }, [poolAddress])
-
-  console.log(poolAddress, poolCurrentData)
 
   if(!poolAddress || !poolCurrentData) {
     return <span />
@@ -137,42 +120,12 @@ const CreateLiquidityPosition = () => {
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
 
-  const displaySymbol = (value: string) => value.toLowerCase() === 'weth' ? 'Eth' : upperCaseWord(value)
-
-  const token0Symbol = pool === null ?  '-' : displaySymbol(pool.token0.symbol)
-  const token1Symbol = pool === null ?  '-' : displaySymbol(pool.token1.symbol)
-
-  const poolName = pool === null ? '-' : token0Symbol + ':' + token1Symbol
+  const token0Symbol = displaySymbol(pool?.token0.symbol)
+  const token1Symbol = displaySymbol(pool?.token1.symbol)
+  const poolName = getPoolName(pool)
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
 
   const toggleInverted = () => setInverted(!inverted)
-
-  const updateLowerTick = (newTick: number) => {
-    if (tick === null || tick <= newTick) return
-    setTickLower(newTick)
-    token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, newTick, tickUpper)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, newTick, tickUpper)))
-  }
-  const updateUpperTick = (newTick: number) => {
-    if (tick === null || tick >= newTick) return
-    setTickUpper(newTick)
-    token0AdjustedLast
-      ? setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(token0Amount)), instantTick!, tickLower, newTick)))
-      : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, tickLower, newTick)))
-  }
-  const updateToken0Amount = (amount0: number) => {
-    if (isNaN(amount0)) return
-    setToken0AdjustedLast(true)
-    setToken0Amount(amount0)
-    setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), instantTick!, tickLower, tickUpper)))
-  }
-  const updateToken1Amount = (amount1: number) => {
-    if (isNaN(amount1)) return
-    setToken0AdjustedLast(false)
-    setToken1Amount(amount1)
-    setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, tickLower, tickUpper)))
-  }
 
   const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
     if (

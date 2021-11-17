@@ -2,6 +2,7 @@ import { BigNumber, BigNumberish, utils } from "ethers"
 import { ChainID } from '@trustlessfi/addresses'
 import JSBI from "jsbi"
 import { TickMath } from '@uniswap/v3-sdk'
+import { poolMetadata } from '../slices/poolsMetadata'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
@@ -287,6 +288,27 @@ export const tickToSqrtPriceX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtT
 export const sqrtPriceX96ToTick = (sqrtPriceX96: string) => TickMath.getTickAtSqrtRatio(JSBI.BigInt(sqrtPriceX96))
 
 export const tickToPrice = (tick: number): number => unscale(getE18PriceForSqrtX96Price(tickToSqrtPriceX96(tick)))
+
+export const tickToPriceDisplay = (tick: number) => numDisplay(tickToPrice(tick))
+
+export const displaySymbol = (value?: string) => {
+  if(!value) {
+    return ''
+  }
+
+  return value.toLowerCase() === 'weth' ? 'Eth' : upperCaseWord(value)
+}
+
+export const getPoolName = (pool?: poolMetadata | null) => {
+  if(!pool) {
+    return '-'
+  }
+
+  const token0Symbol = displaySymbol(pool.token0.symbol)
+  const token1Symbol = displaySymbol(pool.token1.symbol)
+
+  return `${token0Symbol}:${token1Symbol}`
+}
 
 export const maxLiquidityForAmount0 = (sqrtRatioAX96: BigNumber, sqrtRatioBX96: BigNumber, amount0: BigNumber) => {
   if (sqrtRatioAX96.gt(sqrtRatioBX96)) [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
