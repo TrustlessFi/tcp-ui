@@ -136,7 +136,9 @@ export const seconds = (seconds: number) => seconds
 
 export const timeMS = () => Date.now()
 
-export const timeS = () => Math.floor(timeMS() / 1000)
+export const msToS = (ms: number) => Math.floor(ms / 1000)
+
+export const timeS = () => msToS(timeMS())
 
 // ======================= Local Storage ============================
 export const getLocalStorage = (key: string, defaultValue: any = null) => {

@@ -44,6 +44,7 @@ export type TransactionInfo = {
   userAddress: string
   type: TransactionType
   status: TransactionStatus
+  startTimeMS: number
 }
 
 export interface txCreatePositionArgs {
@@ -314,6 +315,7 @@ export const waitForTransaction = createAsyncThunk(
       hash: tx.hash,
       nonce: tx.nonce,
       userAddress,
+      startTimeMS: timeMS(),
       type: args.type,
       status: TransactionStatus.Pending,
     }))

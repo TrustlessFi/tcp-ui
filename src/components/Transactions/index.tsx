@@ -5,7 +5,7 @@ import { clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxName
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
-import { getSortedUserTxs } from '../utils/index';
+import { getSortedUserTxs, UserTxSortOption } from '../utils'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../utils/ExplorerLink'
 
 const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus} = {
@@ -20,13 +20,20 @@ const Transactions = () => {
   const chainID = selector(state => state.chainID)
   const userAddress = selector(state => state.wallet.address)
   const transactions = selector(state => state.transactions)
-  const txs = getSortedUserTxs(userAddress, transactions)
+  const txs = getSortedUserTxs(userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
+
+  console.log({txs})
+
+  const getDateTimeString = (timeInMS: number) => {
+    const date = (new Date(timeInMS))
+    return [date.toDateString(), date.toLocaleTimeString()].join(' ')
+  }
 
   const table =
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Title', 'Status', 'Start Time']} />
+          <TableHeaderOnly headers={['Nonce', 'Title', 'Status', 'Start Time']} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -43,9 +50,10 @@ const Transactions = () => {
         txs.map(tx => ({
         key: tx.hash,
         data: {
+          'Nonce': tx.nonce,
           'Title': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]}/>,
-          'Start Time': '',
+          'Start Time': getDateTimeString(tx.startTimeMS),
         },
         onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
       }))

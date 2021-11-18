@@ -7,7 +7,7 @@ import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '
 
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import getProvider from '../../utils/getProvider';
-import { uint256Max } from '../../utils'
+import { uint256Max, timeS } from '../../utils'
 import {
   TransactionStatus,
   TransactionType,
@@ -67,6 +67,7 @@ export const approveToken = async (
       hash: tx.hash,
       userAddress,
       nonce: tx.nonce,
+      startTimeMS: timeS(),
       type: txType,
       status: TransactionStatus.Pending,
     }
