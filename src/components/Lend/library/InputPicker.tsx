@@ -2,15 +2,18 @@ import {
   Dropdown,
   OnChangeData,
 } from 'carbon-components-react'
+import { useEffect, useState, CSSProperties } from 'react'
 
 const InputPicker = <T extends string, TEnumValue extends string>({
   options,
   onChange,
   initialValue,
+  style,
 }:{
   options: { [key in T]: TEnumValue }
   onChange: (value: TEnumValue) => void
   initialValue: TEnumValue,
+  style?: CSSProperties,
 }) => {
   return (
     <div style={{display: 'inline-block', width: 146, marginTop: 8}} >
@@ -27,7 +30,7 @@ const InputPicker = <T extends string, TEnumValue extends string>({
         initialSelectedItem={initialValue}
         label='Lend/Borrow options'
         titleText={<> </>}
-        style={{marginLeft: 8, marginRight: 8}}
+        style={style === undefined ? {marginLeft: 8, marginRight: 8} : style}
       />
     </div>
   )

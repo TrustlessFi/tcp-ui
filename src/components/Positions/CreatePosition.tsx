@@ -1,7 +1,4 @@
 import { useState } from "react"
-import {
-  Button,
-} from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
