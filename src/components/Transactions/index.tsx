@@ -1,4 +1,4 @@
-import { Button } from 'carbon-components-react'
+import { Button, InlineLoading, InlineLoadingStatus } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
@@ -7,6 +7,12 @@ import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getSortedUserTxs } from '../utils/index';
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../utils/ExplorerLink'
+
+const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus} = {
+  [TransactionStatus.Pending]: 'active',
+  [TransactionStatus.Failure]: 'error',
+  [TransactionStatus.Success]: 'finished',
+}
 
 const Transactions = () => {
   const dispatch = useAppDispatch()
@@ -20,7 +26,7 @@ const Transactions = () => {
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Title', 'Status']} />
+          <TableHeaderOnly headers={['Title', 'Status', 'Start Time']} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -38,7 +44,8 @@ const Transactions = () => {
         key: tx.hash,
         data: {
           'Title': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
-          'Status': tx.status,
+          'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]}/>,
+          'Start Time': '',
         },
         onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
       }))

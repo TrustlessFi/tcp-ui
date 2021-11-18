@@ -8,7 +8,6 @@ import {
   Modal,
 } from 'carbon-components-react'
 import { abbreviateAddress } from '../../utils'
-import RecentTransactions from './RecentTransactions'
 import Text from '../utils/Text';
 import { useState } from "react";
 import LargeText from '../utils/LargeText';
@@ -44,7 +43,6 @@ const WalletModal = ({open, onRequestClose}: {open: boolean, onRequestClose: () 
         </CopyToClipboard>
         <ExplorerLink address={address} icon={Launch16}>View on Explorer</ExplorerLink>
         <hr />
-        <RecentTransactions />
       </div>
     </Modal>
   )
