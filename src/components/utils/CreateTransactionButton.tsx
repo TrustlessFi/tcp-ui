@@ -19,14 +19,13 @@ const CreateTransactionButton = ({
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const transactions = selector(state => state.transactions)
   const waitingForMetamask = selector(state => state.wallet.waitingForMetamask)
   const userAddress = selector(state => state.wallet.address)
 
   if (userAddress === null) return <ConnectWalletButton />
 
   const buttonDisplay =
-    transactions.waitingForMetamask
+    waitingForMetamask
     ? 'Waiting for Metamask Confirmation...'
     : (title === undefined
       ? 'Confirm in Metamask'

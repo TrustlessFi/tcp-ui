@@ -29,6 +29,7 @@ import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../Lend/library/InputPicker'
 import ApprovalButton from '../utils/ApprovalButton'
+import CreateTransactionButton from '../utils/CreateTransactionButton';
 
 enum CollateralChange {
   Increase = 'Increase',
@@ -64,6 +65,7 @@ const UpdatePosition = () => {
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const hueContract = getContractWaitFunction(ProtocolContract.Hue)(selector, dispatch)
   const positions = waitForPositions(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
@@ -82,6 +84,7 @@ const UpdatePosition = () => {
     market === null ||
     rates === null ||
     marketContract === null ||
+    hueContract === null ||
     userEthBalance === null ||
     userAddress === null ||
     positions === null
@@ -143,24 +146,6 @@ const UpdatePosition = () => {
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-
-  const openUpdatePositionDialog = () => {
-    /*
-    dispatch(openModal({
-      args: {
-        type: TransactionType.UpdatePosition,
-        positionID,
-        debtIncrease,
-        collateralIncrease,
-        Market: marketContract,
-      },
-      collateralization,
-      minCollateralization: market.collateralizationRequirement,
-      ethPrice: priceInfo.ethPrice,
-      liquidationPrice,
-    }))
-    */
-  }
 
   return (
     <>
@@ -239,9 +224,17 @@ const UpdatePosition = () => {
         />
       </div>
       <div style={{marginTop: 32, marginBottom: 32}}>
-        <Button onClick={openUpdatePositionDialog} disabled={isFailing}>
-          Update Position
-        </Button>
+        <CreateTransactionButton
+          title="Update Position"
+          disabled={isFailing}
+          txArgs={{
+            type: TransactionType.UpdatePosition,
+            positionID,
+            debtIncrease,
+            collateralIncrease,
+            Market: marketContract,
+          }}
+        />
       </div>
       <ErrorMessage reasons={failureReasons} />
     </>
