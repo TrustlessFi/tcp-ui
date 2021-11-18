@@ -1,7 +1,7 @@
 import { Button } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getTxHash, clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
@@ -35,19 +35,24 @@ const Transactions = () => {
       )
     : <SimpleTable rows={
         txs.map(tx => ({
-        key: getTxHash(tx),
+        key: tx.hash,
         data: {
           'Title': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
           'Status': tx.status,
         },
-        onClick: () => window.open(getEtherscanTxLink(getTxHash(tx), chainID.chainID!), '_blank'),
+        onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
       }))
     } />
 
   const clearTransactionsButton =
     userAddress === null || txs.length === 0
     ? null
-    : <Button onClick={() => dispatch(clearUserTransactions(userAddress))}>Clear all</Button>
+    : <Button
+        small
+        kind="tertiary"
+        onClick={() => dispatch(clearUserTransactions(userAddress))}>
+        Clear all
+      </Button>
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 

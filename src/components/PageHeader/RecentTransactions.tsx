@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Launch16 } from '@carbon/icons-react';
 import SmallLink from '../library/SmallLink'
-import { getTxHash, clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
 import { getSortedUserTxs } from '../utils'
 import { Row, Col } from 'react-flexbox-grid'
 import LargeText from '../utils/LargeText';
@@ -23,10 +23,10 @@ const RecentTransactions = () => {
   if (sortedUserTxs.length === 0) return null
 
   const txLinks = sortedUserTxs.map(tx =>
-    <Row key={getTxHash(tx)} style={{marginRight: '12px'}} middle='xs'>
+    <Row key={tx.hash} style={{marginRight: '12px'}} middle='xs'>
       <Col xs={11}>
         <ExplorerLink
-          txHash={getTxHash(tx)}
+          txHash={tx.hash}
           style={{marginRight: 'auto'}}
           icon={Launch16}>
           {tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type)}

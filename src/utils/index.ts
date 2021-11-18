@@ -134,7 +134,7 @@ export const hours = (hours: number)     => hours * minutes(60)
 export const minutes = (minutes: number) => minutes * seconds(60)
 export const seconds = (seconds: number) => seconds
 
-export const timeMS = () => (new Date().getTime())
+export const timeMS = () => Date.now()
 
 export const timeS = () => Math.floor(timeMS() / 1000)
 

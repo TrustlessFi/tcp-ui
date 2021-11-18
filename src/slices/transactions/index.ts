@@ -1,7 +1,7 @@
+import History from 'react-router-dom'
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { getLocalStorage, assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
-import History from 'react-router-dom'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
@@ -38,39 +38,9 @@ export enum TransactionStatus {
   Failure,
 }
 
-export const getTxInfo = (txInfo: {
-  hash?: string,
-  nonce?: number,
-  userAddress: string,
-  type: TransactionType,
-  status: TransactionStatus
-}): TransactionInfo => ({
-  hash: txInfo.hash === undefined ? { uid: uid() } : { hash: txInfo.hash },
-  nonce: txInfo.nonce === undefined ? { uid: timeMS() } : { nonce: txInfo.nonce },
-  userAddress: txInfo.userAddress,
-  type: txInfo.type,
-  status: txInfo.status,
-})
-
-export const getTxHash = (txInfo: TransactionInfo): string => {
-  if (txInfo.hash.hash !== undefined) return txInfo.hash.hash
-
-  enforce(txInfo.hash.uid !== undefined, 'TransactionSlice: Both hash and uid undefined')
-
-  return txInfo.hash.uid!
-}
-
-export const getTxNonce = (txInfo: TransactionInfo): number => {
-  if (txInfo.nonce.nonce !== undefined) return txInfo.nonce.nonce
-
-  enforce(txInfo.nonce.uid !== undefined, 'TransactionSlice: Both nonce and uid undefined')
-
-  return txInfo.nonce.uid!
-}
-
 export type TransactionInfo = {
-  hash: { hash ?: string, uid?: string }
-  nonce: { nonce ?: number, uid?: number }
+  hash: string
+  nonce: number
   userAddress: string
   type: TransactionType
   status: TransactionStatus
@@ -142,8 +112,9 @@ export type TransactionArgs =
   txUpdateLiquidityPositionArgs
 
 export interface TransactionData {
-  args: TransactionArgs,
-  openTxTab: () => void,
+  args: TransactionArgs
+  openTxTab: () => void
+  userAddress: string
 }
 
 export type TransactionState = {[key in string]: TransactionInfo}
@@ -320,49 +291,53 @@ export const waitForTransaction = createAsyncThunk(
   'transactions/waitForTransaction',
   async (data: TransactionData, {dispatch}): Promise<void> => {
     const args = data.args
+    const userAddress = data.userAddress
 
     const provider = getProvider()
-    const userAddress = await provider.getSigner().getAddress()
 
     let tx: ContractTransaction
     try {
       dispatch(waitingForMetamask())
       tx = await executeTransaction(args, provider)
     } catch (e) {
-      const txInfo = getTxInfo({
-        userAddress,
-        type: args.type,
-        status: TransactionStatus.Failure,
-      })
-
       console.error("failureMessages" + parseMetamaskError(e).join(', '))
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(addNotification({
+        type: args.type,
+        userAddress,
+        status: TransactionStatus.Failure,
+      }))
       dispatch(metamaskComplete())
       return
     }
 
-    const txInfo = getTxInfo({
+    dispatch(transactionCreated({
       hash: tx.hash,
-      userAddress,
       nonce: tx.nonce,
+      userAddress,
       type: args.type,
       status: TransactionStatus.Pending,
-    })
-
-    dispatch(transactionCreated(txInfo))
-    console.log("before push Transactions")
+    }))
     data.openTxTab()
-    console.log("after push Transactions")
 
     const receipt = await provider.waitForTransaction(tx.hash)
     dispatch(metamaskComplete())
 
     const succeeded = receipt.status === 1
     if (succeeded) {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
+      dispatch(addNotification({
+        type: args.type,
+        userAddress,
+        status: TransactionStatus.Success,
+        hash: tx.hash,
+      }))
       dispatch(transactionSucceeded(tx.hash))
     } else {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
+      dispatch(addNotification({
+        type: args.type,
+        userAddress,
+        status: TransactionStatus.Failure,
+        hash: tx.hash,
+      }))
       dispatch(transactionFailed(tx.hash))
     }
 
@@ -397,23 +372,21 @@ const name = 'transactions'
 
 export const transactionsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, {waitingForMetamask: false, txs: {}}) as TransactionState,
+  initialState: getLocalStorage(name, {}) as TransactionState,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
-      return {
-        waitingForMetamask: state.waitingForMetamask,
-        txs: Object.fromEntries(Object.values(state).filter(tx => tx.userAddress !== action.payload).map(tx => [tx.hash, tx])),
-      }
+      const userAddress = action.payload
+      return Object.fromEntries(
+               Object.values(state)
+                 .filter(tx => tx.userAddress !== userAddress)
+                   .map(tx => [tx.hash, tx]))
     },
     transactionCreated: (state, action: PayloadAction<TransactionInfo>) => {
       const txInfo = action.payload
-      const hash = getTxHash(txInfo)
-      console.log("transactionCreated", {hash})
-      state[hash] = txInfo
+      state[txInfo.hash] = txInfo
     },
     transactionSucceeded: (state, action: PayloadAction<string>) => {
       const hash = action.payload
-      console.log("transactionSucceeded", {hash})
       if (state.hasOwnProperty(hash)) {
         state[hash].status = TransactionStatus.Success
       }

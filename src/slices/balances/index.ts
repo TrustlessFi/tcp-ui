@@ -9,7 +9,6 @@ import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import getProvider from '../../utils/getProvider';
 import { uint256Max } from '../../utils'
 import {
-  getTxInfo,
   TransactionStatus,
   TransactionType,
   transactionCreated,
@@ -64,13 +63,13 @@ export const approveToken = async (
     const provider = getProvider()
     const tx = await token.connect(provider.getSigner()).approve(spender, uint256Max)
 
-    const txInfo = getTxInfo({
+    const txInfo = {
       hash: tx.hash,
       userAddress,
       nonce: tx.nonce,
       type: txType,
       status: TransactionStatus.Pending,
-    })
+    }
 
     dispatch(transactionCreated(txInfo))
 

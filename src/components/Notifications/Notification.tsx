@@ -7,7 +7,6 @@ import { getOpacityTransition } from '../utils'
 import ExplorerLink from '../utils/ExplorerLink'
 import { assertUnreachable, timeMS, isTxHash } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
-import { getTxHash } from '../../slices/transactions'
 import { getTxFailureTitle, getTxNamePresentTense } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch } from '../../app/hooks';
@@ -51,7 +50,7 @@ const NotificationText = ({large, children}: {large?: boolean, children: ReactNo
 const NOTIFICATION_DURATION_SECONDS = 12
 const FADE_OUT_MS = 300
 
-const Notification = ({ data, }: { data: notificationInfo, }) => {
+const Notification = ({ notif }: { notif: notificationInfo, }) => {
   const dispatch = useAppDispatch()
 
   const iconWidth = 56
@@ -59,7 +58,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
   const paddingRight = 40
 
   const calculateLoadingBarWidth = () => {
-    const duration = timeMS() - data.startTimeMS
+    const duration = timeMS() - notif.startTimeMS
     const portion = duration / (NOTIFICATION_DURATION_SECONDS * 1000)
     return (1 - portion) * totalWidth
   }
@@ -68,9 +67,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
   const [ visible, setVisible ] = useState(true)
   const closeCalled = useRef(false)
 
-  const endTime = data.startTimeMS + (NOTIFICATION_DURATION_SECONDS * 1000)
-
-  const hash = getTxHash(data)
+  const endTime = notif.startTimeMS + (NOTIFICATION_DURATION_SECONDS * 1000)
 
   const close = () => {
     if (closeCalled.current) return
@@ -78,12 +75,18 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
 
     clearInterval()
     setVisible(false)
-    setTimeout(() => dispatch(notificationClosed(getTxHash(data))), FADE_OUT_MS)
+    setTimeout(() => dispatch(notificationClosed(notif.uid)), FADE_OUT_MS)
   }
 
-  const explorerLink = isTxHash(hash)
-    ? <Row><ExplorerLink txHash={hash}>View on Explorer</ExplorerLink></Row>
-    : null
+  const explorerLink = notif.hash === undefined
+    ? null
+    : (
+      <Row>
+        <ExplorerLink txHash={notif.hash}>
+          View on Explorer
+        </ExplorerLink>
+      </Row>
+    )
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -98,13 +101,13 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
   })
 
   if (timeMS() > endTime + FADE_OUT_MS) {
-    dispatch(notificationClosed(getTxHash(data)))
+    dispatch(notificationClosed(notif.uid))
     return null
   }
 
-  const title = data.status === TransactionStatus.Failure
-    ? getTxFailureTitle(data.type)
-    : getTxNamePresentTense(data.type)
+  const title = notif.status === TransactionStatus.Failure
+    ? getTxFailureTitle(notif.type)
+    : getTxNamePresentTense(notif.type)
 
   return (
     <div style={{
@@ -123,14 +126,14 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
       <Col>
         <Row middle='xs' style={{paddingRight}}>
           <Col style={{paddingLeft: 16, width: iconWidth}}>
-            <NotificationIcon status={data.status} />
+            <NotificationIcon status={notif.status} />
           </Col>
           <Col style={{width: (totalWidth - iconWidth) - paddingRight}}>
             <Row>
               <NotificationText large>{title}</NotificationText>
             </Row>
             {explorerLink}
-            {(data.status === TransactionStatus.Failure
+            {(notif.status === TransactionStatus.Failure
                 ? <Row>
                     <NotificationText>
                       See console for more information.
@@ -145,7 +148,7 @@ const Notification = ({ data, }: { data: notificationInfo, }) => {
         width: loadingBarWidth,
         display: visible ? 'block' : 'none',
         height: 3,
-        backgroundColor: statusColor(data.status),
+        backgroundColor: statusColor(notif.status),
         position: 'absolute',
         bottom: 0,
         left: 0,

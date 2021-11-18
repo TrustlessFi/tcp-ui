@@ -1,4 +1,4 @@
-import { TransactionInfo, TransactionState, getTxNonce } from '../../slices/transactions'
+import { TransactionInfo, TransactionState } from '../../slices/transactions'
 import { AppDispatch } from '../../app/store'
 import { clearEthBalance } from '../../slices/ethBalance'
 import { clearPositions } from '../../slices/positions'
@@ -11,7 +11,7 @@ export const getSortedUserTxs = (userAddress: string | null, txs: TransactionSta
 
   return Object.values(txs)
       .filter(tx => tx.userAddress === userAddress)
-      .sort((a, b) => getTxNonce(a) - getTxNonce(b))
+      .sort((a, b) => a.nonce - b.nonce)
 }
 
 export const getOpacityTransition = (durationSeconds: number) => {

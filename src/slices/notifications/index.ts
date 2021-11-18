@@ -1,12 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TransactionInfo } from '../transactions'
-import { timeMS } from '../../utils'
-import { getLocalStorage } from '../../utils'
-import { TransactionStatus, getTxNonce } from '../transactions'
-import { getTxHash } from '../transactions'
+import { v4 as getUid } from 'uuid'
+import { getLocalStorage, timeMS } from '../../utils'
+import { TransactionStatus, TransactionType } from '../transactions'
 
-export interface notificationInfo extends TransactionInfo {
-  startTimeMS: number
+export interface notificationArgs {
+  hash?: string
+  status: TransactionStatus
+  userAddress: string
+  type: TransactionType
+}
+
+export interface notificationInfo extends notificationArgs {
+  startTimeMS: number,
+  uid: string,
 }
 
 export type NotificationState = {[key in string]: notificationInfo}
@@ -19,15 +25,14 @@ export const notificationsSlice = createSlice({
   name,
   initialState: getLocalStorage(name, initialState) as NotificationState,
   reducers: {
-    addNotification: (state, action: PayloadAction<TransactionInfo>) => {
-      const tx = action.payload
-      if (tx.status !== TransactionStatus.Pending) {
-        state[getTxNonce(tx)] = { ...action.payload, startTimeMS: timeMS() }
-      }
+    addNotification: (state, action: PayloadAction<notificationArgs>) => {
+      const args = action.payload
+      const uid = getUid()
+      state[uid] = { ...args, startTimeMS: timeMS(), uid }
     },
     notificationClosed: (state, action: PayloadAction<string>) => {
-      const hash = action.payload
-      return Object.fromEntries(Object.values(state).filter(notif => getTxHash(notif) !== hash).map(notif => [notif.hash, notif]))
+      const uid = action.payload
+      return Object.fromEntries(Object.values(state).filter(notif => notif.uid !== uid).map(notif => [notif.uid, notif]))
     },
   }
 })

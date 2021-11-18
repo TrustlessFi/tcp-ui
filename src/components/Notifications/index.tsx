@@ -1,5 +1,4 @@
 import { useAppSelector as selector } from '../../app/hooks'
-import { getTxNonce, getTxHash } from '../../slices/transactions'
 
 import Notification from './Notification'
 
@@ -9,21 +8,13 @@ const Notifications = () => {
 
   if (userAddress === null || allNotifications.length === 0) return null
 
-  const renderedNotifications =
-    Object.values(allNotifications)
-      .sort((a, b) => getTxNonce(a) - getTxNonce(b))
-      .filter(notification => notification.userAddress === userAddress)
-      .map(notification => {
-        return (
-          <Notification
-            key={getTxHash(notification)}
-            data={notification}
-          />
-        )
-      })
   return (
     <div style={{ position: 'absolute', right: 16, top: 16 }}>
-      {renderedNotifications}
+      {Object.values(allNotifications)
+        .sort((a, b) => a.startTimeMS - b.startTimeMS)
+        .filter(notif => notif.userAddress === userAddress)
+        .map(notif => <Notification key={notif.uid} notif={notif} /> )
+      }
     </div>
   )
 }

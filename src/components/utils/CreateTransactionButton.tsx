@@ -39,7 +39,7 @@ const CreateTransactionButton = ({
 
   return (
     <Button
-      onClick={() => dispatch(waitForTransaction({args: txArgs, openTxTab}))}
+      onClick={() => dispatch(waitForTransaction({args: txArgs, openTxTab, userAddress}))}
       disabled={waitingForMetamask || disabled === true}>
       {buttonDisplay}
     </Button>
