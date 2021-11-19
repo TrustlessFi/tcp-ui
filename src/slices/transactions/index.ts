@@ -29,6 +29,7 @@ export enum TransactionType {
   CreateLiquidityPosition,
   IncreaseLiquidityPosition,
   DecreaseLiquidityPosition,
+  ClaimAllPositionRewards,
 }
 
 export enum TransactionStatus {
@@ -114,6 +115,12 @@ export interface txDecreaseLiquidityPositionArgs {
   TrustlessMulticall: string
 }
 
+export interface txClaimPositionRewards {
+  type: TransactionType.ClaimAllPositionRewards
+  positionIDs: number[]
+  Market: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -121,7 +128,8 @@ export type TransactionArgs =
   txWithdrawArgs |
   txCreateLiquidityPositionArgs |
   txIncreaseLiquidityPositionArgs |
-  txDecreaseLiquidityPositionArgs
+  txDecreaseLiquidityPositionArgs |
+  txClaimPositionRewards
 
 export interface TransactionData {
   args: TransactionArgs
@@ -149,6 +157,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
     case TransactionType.IncreaseLiquidityPosition:
     case TransactionType.DecreaseLiquidityPosition:
       return 'Liquidity Position Updated'
+    case TransactionType.ClaimAllPositionRewards:
+      return 'Rewards Claimed'
     default:
       assertUnreachable(type)
   }
@@ -173,6 +183,8 @@ export const getTxFailureTitle = (type: TransactionType) => {
     case TransactionType.IncreaseLiquidityPosition:
     case TransactionType.DecreaseLiquidityPosition:
       return 'Liquidity Position Update Failed'
+    case TransactionType.ClaimAllPositionRewards:
+      return 'Claim Rewards Failed'
     default:
       assertUnreachable(type)
   }
@@ -197,6 +209,8 @@ export const getTxNamePresentTense = (type: TransactionType) => {
     case TransactionType.IncreaseLiquidityPosition:
     case TransactionType.DecreaseLiquidityPosition:
       return 'Updating Liquidity Position'
+    case TransactionType.ClaimAllPositionRewards:
+      return 'Claiming Rewards'
     default:
       assertUnreachable(type)
   }
@@ -301,13 +315,15 @@ const executeTransaction = async (
       console.log(args)
 
       return await rewards.decreaseLiquidityPosition({
-        deadline,
         amount0Min: scale(args.amount0Min),
         amount1Min: scale(args.amount1Min),
         tokenId: args.positionID,
         liquidity: scale(args.liquidity),
-      }, UIID, {
-      })
+        deadline,
+      }, UIID)
+
+    case TransactionType.ClaimAllPositionRewards:
+      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
 
     default:
       assertUnreachable(type)
@@ -326,8 +342,11 @@ export const waitForTransaction = createAsyncThunk(
     let tx: ContractTransaction
     try {
       dispatch(waitingForMetamask())
+      console.log("about to execute")
       tx = await executeTransaction(args, provider)
+      console.log("executed")
     } catch (e) {
+      console.log("caught error: ", {e})
       console.error("failureMessages: " + parseMetamaskError(e).join(', '))
       dispatch(addNotification({
         type: args.type,
@@ -391,6 +410,9 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.IncreaseLiquidityPosition:
         case TransactionType.DecreaseLiquidityPosition:
+          break
+        case TransactionType.ClaimAllPositionRewards:
+          dispatch(clearPositions())
           break
       default:
         assertUnreachable(type)
