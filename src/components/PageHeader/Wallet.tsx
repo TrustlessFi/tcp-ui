@@ -10,6 +10,7 @@ import { getSortedUserTxs } from '../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getWalletConnectedFunction } from '../utils/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
+import { clearEphemeralStorage } from '../utils/LocalStorageManager'
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
@@ -37,7 +38,7 @@ const Wallet = () => {
       if (currentChainID === null) {
         dispatch(chainIDFound(chainID))
       } else {
-        window.localStorage.clear()
+        clearEphemeralStorage()
         window.location.reload()
       }
     }

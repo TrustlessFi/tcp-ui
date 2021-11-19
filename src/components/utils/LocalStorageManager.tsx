@@ -44,7 +44,7 @@ const MEDIUM_EXPIRATION = minutes(5)
 const LONG_EXPIRATION = minutes(30)
 
 export const slicesToPersist: persistedSlices = {
-
+  
   // Simple slices
   [contractsSlice.name]: {
     slice: contractsSlice,
@@ -116,6 +116,16 @@ const LocalStorageManager = () => {
     localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>
+}
+
+const permanentLocalStorage: string[] = [
+  transactionsSlice.name,
+]
+
+export const clearEphemeralStorage = () => {
+  Object.keys(slicesToPersist)
+    .filter(sliceName => !permanentLocalStorage.includes(sliceName))
+    .map(sliceName => localStorage.removeItem(sliceName))
 }
 
 export default LocalStorageManager
