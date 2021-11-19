@@ -11,10 +11,12 @@ import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getWalletConnectedFunction } from '../utils/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
 import { clearEphemeralStorage } from '../utils/LocalStorageManager'
+import { getChainIDFromState } from '../../slices/chainID/index';
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
   const address = selector(state => state.wallet.address)
+  const chainID = getChainIDFromState(selector(state => state.chainID))
   const txs = selector(state => state.transactions)
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
@@ -63,7 +65,7 @@ const Wallet = () => {
   })
 
   const countPendingTxs =
-    getSortedUserTxs(address, txs)
+    getSortedUserTxs(chainID, address, txs)
       .filter(tx => tx.status === TransactionStatus.Pending)
       .length
 

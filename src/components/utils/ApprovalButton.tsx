@@ -5,6 +5,7 @@ import { approveHue } from '../../slices/balances/hueBalance'
 import { approveLendHue } from '../../slices/balances/lendHueBalance'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button } from 'carbon-components-react'
+import { getChainIDFromState } from '../../slices/chainID'
 
 type approvalLabels = {
   waiting: string,
@@ -26,8 +27,9 @@ const ApprovalButton = ({
   const dispatch = useAppDispatch()
 
   let balanceInfo: balanceInfo | null
-  let tokenAddress = getContractWaitFunction(token)(selector, dispatch)
-  let contractAddress = getContractWaitFunction(protocolContract)(selector, dispatch)
+  const tokenAddress = getContractWaitFunction(token)(selector, dispatch)
+  const contractAddress = getContractWaitFunction(protocolContract)(selector, dispatch)
+  const chainID = getChainIDFromState(selector(state => state.chainID))
 
   switch(token) {
     case ProtocolContract.Hue:
@@ -55,6 +57,7 @@ const ApprovalButton = ({
     balanceInfo.approval[protocolContract] === undefined ||
     contractAddress === null ||
     tokenAddress === null ||
+    chainID === null ||
     disabled
   ) return nullButton
 
@@ -73,11 +76,11 @@ const ApprovalButton = ({
   const execute = () => {
     switch(token) {
       case ProtocolContract.Hue:
-        dispatch(approveHue({Hue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
+        dispatch(approveHue({Hue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress!, chainID}))
         break
 
       case ProtocolContract.LendHue:
-        dispatch(approveLendHue({LendHue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress! }))
+        dispatch(approveLendHue({LendHue: tokenAddress!, spender: protocolContract, spenderAddress: contractAddress!, chainID}))
         break
 
       default:

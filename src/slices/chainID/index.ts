@@ -11,6 +11,9 @@ const initialState: ChainIDState = {
   unknownChainID: null,
 }
 
+export const getChainIDFromState = (state: ChainIDState) =>  
+  state.chainID !== null ? state.chainID : state.unknownChainID
+
 const name = 'chainID'
 
 export const chainIDSlice = createSlice({

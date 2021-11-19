@@ -4,6 +4,7 @@ import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/t
 import { ProtocolContract } from '../contracts'
 import { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
+import { ChainID } from '@trustlessfi/addresses'
 
 import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import getProvider from '../../utils/getProvider';
@@ -58,7 +59,8 @@ export const approveToken = async (
   spender: string,
   txType: TransactionType,
   userAddress: string,
-  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>,
+  chainID: ChainID,
 ) => {
     const provider = getProvider()
     const tx = await token.connect(provider.getSigner()).approve(spender, uint256Max)
@@ -70,6 +72,7 @@ export const approveToken = async (
       startTimeMS: timeS(),
       type: txType,
       status: TransactionStatus.Pending,
+      chainID,
     }
 
     dispatch(transactionCreated(txInfo))

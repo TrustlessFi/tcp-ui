@@ -13,6 +13,7 @@ import { ERC20 } from '@trustlessfi/typechain'
 import getProvider from '../../utils/getProvider'
 import { TransactionType } from '../transactions'
 import { uint256Max } from '../../utils/index';
+import { ChainID } from '@trustlessfi/addresses'
 
 export interface tokenData {
   address: string
@@ -45,6 +46,7 @@ export interface approveTokenArgs {
   poolAddress: string
   userAddress: string
   Rewards: string
+  chainID: ChainID
 }
 
 export const getPoolCurrentData = createAsyncThunk(
@@ -59,7 +61,7 @@ export const approvePoolToken = createAsyncThunk(
 
     const token = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
-    await approveToken(token, args.Rewards, TransactionType.ApproveLendHue, args.userAddress, dispatch)
+    await approveToken(token, args.Rewards, TransactionType.ApproveLendHue, args.userAddress, dispatch, args.chainID)
   }
 )
 

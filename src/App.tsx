@@ -3,7 +3,7 @@ import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend'
 import Governance from './components/Governance'
-import Transactions from './components/Transactions'
+import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
 import { Switch, Route } from "react-router-dom"
@@ -33,7 +33,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Lend: <Lend />,
   Liquidity: <Liquidity />,
   Governance: <Governance />,
-  Transactions: <Transactions />,
+  Transactions: <RecentTransactions />,
 }
 
 function App() {
