@@ -72,13 +72,7 @@ const Wallet = () => {
       .filter(tx => tx.status === TransactionStatus.Pending)
       .length
 
-  const modal =
-    <WalletModal
-      open={isWalletModalOpen}
-      onRequestClose={() => setIsWalletModalOpen(false)}
-    />
-
-  const button =
+  return (
     address !== null && chainID !== null
       ? (countPendingTxs > 0
           ? <Button
@@ -98,12 +92,6 @@ const Wallet = () => {
             </Button>
         )
       : <ConnectWalletButton small />
-
-  return (
-    <>
-      {button}
-      {isWalletModalOpen ? modal : null}
-    </>
   )
 }
 
