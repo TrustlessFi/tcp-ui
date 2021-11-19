@@ -344,11 +344,8 @@ export const waitForTransaction = createAsyncThunk(
     let tx: ContractTransaction
     try {
       dispatch(waitingForMetamask())
-      console.log("about to execute")
       tx = await executeTransaction(args, provider)
-      console.log("executed")
     } catch (e) {
-      console.log("caught error: ", {e})
       console.error("failureMessages: " + parseMetamaskError(e).join(', '))
       dispatch(addNotification({
         type: args.type,
