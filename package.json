@@ -13,7 +13,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@trustlessfi/addresses": "^0.3.8",
-    "@trustlessfi/artifacts": "^0.1.0",
+    "@trustlessfi/artifacts": "^0.1.1",
     "@trustlessfi/multicall": "^0.4.4",
     "@trustlessfi/typechain": "^0.6.1",
     "@types/carbon-components": "^10.27.1",
