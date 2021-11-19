@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react"
+import { useHistory } from 'react-router-dom'
 import MetaMaskOnboarding from "@metamask/onboarding"
 import { Button, InlineLoading } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
-import WalletModal from './WalletModal'
 import { getSortedUserTxs } from '../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getWalletConnectedFunction } from '../utils/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
 import { clearEphemeralStorage } from '../utils/LocalStorageManager'
 import { getChainIDFromState } from '../../slices/chainID/index';
+import { getEtherscanAddressLink } from '../utils/ExplorerLink';
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
   const address = selector(state => state.wallet.address)
   const chainID = getChainIDFromState(selector(state => state.chainID))
   const txs = selector(state => state.transactions)
+
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   const walletConnected = getWalletConnectedFunction(dispatch)
@@ -76,15 +79,21 @@ const Wallet = () => {
     />
 
   const button =
-    address !== null
+    address !== null && chainID !== null
       ? (countPendingTxs > 0
-          ? <Button size="small" onClick={() => setIsWalletModalOpen(true)} style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
+          ? <Button
+              size="small"
+              onClick={() => history.push('/transactions/')}
+              style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
               <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
                 {countPendingTxs} Pending
               </div>
               <InlineLoading />
             </Button>
-          : <Button kind="secondary" size="small" onClick={() => setIsWalletModalOpen(true)}>
+          : <Button
+              kind="secondary"
+              size="small"
+              onClick={() => window.open(getEtherscanAddressLink(address, chainID), '_blank')}>
               {abbreviateAddress(address)}
             </Button>
         )
