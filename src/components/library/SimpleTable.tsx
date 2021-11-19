@@ -29,15 +29,15 @@ const SimpleTable = ({rows}: {rows: row[]}) => rows.length === 0 ? null : (
   <Table>
     <TableHead>
       <TableRow>
-        {Object.keys(rows[0].data).map((header) => (
-          <TableHeader key={header}>{header}</TableHeader>
+        {Object.keys(rows[0].data).map((header, index) => (
+          <TableHeader key={index}>{header}</TableHeader>
         ))}
       </TableRow>
     </TableHead>
     <TableBody>
       {rows.map((row) => (
         <TableRow key={row.key} onClick={row.onClick} style={{cursor: 'pointer'}}>
-          {Object.values(row.data).map((value, idx) => <TableCell key={row.key.toString() + idx.toString()}>{value}</TableCell>)}
+          {Object.values(row.data).map((value, index) => <TableCell key={row.key.toString() + index.toString()}>{value}</TableCell>)}
         </TableRow>
       ))}
     </TableBody>
