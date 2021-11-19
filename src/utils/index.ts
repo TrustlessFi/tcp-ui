@@ -111,6 +111,7 @@ export const numDisplay = (
 
 // ======================= Transactions =========================
 export const getDefaultTransactionTimeout = (chainID: ChainID) => chainID === ChainID.Hardhat ? 60 * 2000 : 60 * 20
+export const SLIPPAGE_TOLERANCE = 0.05
 
 // ======================= Constants ============================
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935'

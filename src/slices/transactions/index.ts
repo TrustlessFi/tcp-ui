@@ -1,4 +1,3 @@
-import History from 'react-router-dom'
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { getLocalStorage, assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
@@ -14,10 +13,9 @@ import { ProtocolContract } from '../contracts'
 
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { scale, timeMS } from '../../utils'
+import { scale, SLIPPAGE_TOLERANCE } from '../../utils'
 import { UIID } from '../../constants'
-import { v4 as uid } from 'uuid'
-import { enforce, getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
+import { getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
 import { zeroAddress , bnf } from '../../utils/index';
 import { ChainID } from '@trustlessfi/addresses'
 
@@ -29,7 +27,8 @@ export enum TransactionType {
   ApproveHue,
   ApproveLendHue,
   CreateLiquidityPosition,
-  UpdateLiquidityPosition,
+  IncreaseLiquidityPosition,
+  DecreaseLiquidityPosition,
 }
 
 export enum TransactionStatus {
@@ -94,12 +93,23 @@ export interface txCreateLiquidityPositionArgs {
   Rewards: string
 }
 
-export interface txUpdateLiquidityPositionArgs {
+export interface txIncreaseLiquidityPositionArgs {
   chainID: ChainID
-  type: TransactionType.UpdateLiquidityPosition
+  type: TransactionType.IncreaseLiquidityPosition
   positionID: number
-  collateralChange: number
-  debtChange: number
+  amount0Change: number
+  amount1Change: number
+  Rewards: string
+  TrustlessMulticall: string
+}
+
+export interface txDecreaseLiquidityPositionArgs {
+  chainID: ChainID
+  type: TransactionType.DecreaseLiquidityPosition
+  positionID: number
+  amount0Min: number
+  amount1Min: number
+  liquidity: number
   Rewards: string
   TrustlessMulticall: string
 }
@@ -110,7 +120,8 @@ export type TransactionArgs =
   txLendArgs |
   txWithdrawArgs |
   txCreateLiquidityPositionArgs |
-  txUpdateLiquidityPositionArgs
+  txIncreaseLiquidityPositionArgs |
+  txDecreaseLiquidityPositionArgs
 
 export interface TransactionData {
   args: TransactionArgs
@@ -135,7 +146,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
       return 'Approved'
     case TransactionType.CreateLiquidityPosition:
       return 'Liquidity Position Created'
-    case TransactionType.UpdateLiquidityPosition:
+    case TransactionType.IncreaseLiquidityPosition:
+    case TransactionType.DecreaseLiquidityPosition:
       return 'Liquidity Position Updated'
     default:
       assertUnreachable(type)
@@ -158,7 +170,8 @@ export const getTxFailureTitle = (type: TransactionType) => {
       return 'Approval Failed'
     case TransactionType.CreateLiquidityPosition:
       return 'Liquidity Position Creation Failed'
-    case TransactionType.UpdateLiquidityPosition:
+    case TransactionType.IncreaseLiquidityPosition:
+    case TransactionType.DecreaseLiquidityPosition:
       return 'Liquidity Position Update Failed'
     default:
       assertUnreachable(type)
@@ -181,7 +194,8 @@ export const getTxNamePresentTense = (type: TransactionType) => {
       return 'Approving'
     case TransactionType.CreateLiquidityPosition:
       return 'Creating Liquidity Position'
-    case TransactionType.UpdateLiquidityPosition:
+    case TransactionType.IncreaseLiquidityPosition:
+    case TransactionType.DecreaseLiquidityPosition:
       return 'Updating Liquidity Position'
     default:
       assertUnreachable(type)
@@ -262,25 +276,38 @@ const executeTransaction = async (
       {value: ethCount}
     )
 
-    case TransactionType.UpdateLiquidityPosition:
-      break
-      /*rewards = getRewards(args.Rewards)
+    case TransactionType.IncreaseLiquidityPosition:
+      rewards = getRewards(args.Rewards)
 
       deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
 
-      if(args.debtChange < 0 || args.collateralChange < 0) {
-        return await rewards.decreaseLiquidityPosition({
-          tokenId: args.positionID,
-          deadline,
-        }, UIID, {
-        });
-      } else {
-        return await rewards.increaseLiquidityPosition({
-          tokenId: args.positionID,
-          deadline,
-        }, UIID, {
-        });
-      }*/
+      console.log(args)
+
+      return await rewards.increaseLiquidityPosition({
+        tokenId: args.positionID,
+        amount0Desired: scale(args.amount0Change),
+        amount0Min: scale(args.amount0Change * (1 - SLIPPAGE_TOLERANCE)),
+        amount1Desired: scale(args.amount1Change),
+        amount1Min: scale(args.amount1Change * (2 - SLIPPAGE_TOLERANCE)),
+        deadline,
+      }, UIID, {
+      });
+    
+    case TransactionType.DecreaseLiquidityPosition:
+      rewards = getRewards(args.Rewards)
+
+      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
+
+      console.log(args)
+
+      return await rewards.decreaseLiquidityPosition({
+        deadline,
+        amount0Min: scale(args.amount0Min),
+        amount1Min: scale(args.amount1Min),
+        tokenId: args.positionID,
+        liquidity: scale(args.liquidity),
+      }, UIID, {
+      });
 
     default:
       assertUnreachable(type)
@@ -362,7 +389,8 @@ export const waitForTransaction = createAsyncThunk(
         case TransactionType.CreateLiquidityPosition:
           dispatch(clearLiquidityPositions())
           break
-        case TransactionType.UpdateLiquidityPosition:
+        case TransactionType.IncreaseLiquidityPosition:
+        case TransactionType.DecreaseLiquidityPosition:
           break
       default:
         assertUnreachable(type)

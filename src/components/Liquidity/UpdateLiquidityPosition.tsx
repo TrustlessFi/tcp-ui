@@ -1,13 +1,18 @@
 import { useState } from 'react'
-import { useParams } from 'react-router';
+import { useParams } from 'react-router'
+import { Percent, Token } from '@uniswap/sdk-core'
+import { FeeAmount, Pool, Position, TickMath } from '@uniswap/v3-sdk'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
-import { displaySymbol, getPoolName, tickToPriceDisplay } from '../../utils'
+import { getContractWaitFunction, getPoolCurrentDataWaitFunction, waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
+import { bnf, displaySymbol, getPoolName, SLIPPAGE_TOLERANCE, tickToPriceDisplay } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo'
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates'
 import InputPicker from '../Lend/library/InputPicker'
 import Breadcrumbs from '../library/Breadcrumbs'
 import LargeText from '../utils/LargeText'
+import { TransactionArgs, TransactionType, txDecreaseLiquidityPositionArgs, txIncreaseLiquidityPositionArgs } from '../../slices/transactions';
+import { ProtocolContract } from '../../slices/contracts';
+import CreateTransactionButton from '../utils/CreateTransactionButton'
 import PositionNumberInput from '../library/PositionNumberInput'
 
 enum ChangeType {
@@ -22,6 +27,11 @@ interface MatchParams {
 const UpdateLiquidityPosition = () => {
   const params: MatchParams = useParams()
   const dispatch = useAppDispatch();
+
+  const chainID = selector(state => state.chainID.chainID)
+
+  const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
+  const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
 
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
@@ -58,6 +68,49 @@ const UpdateLiquidityPosition = () => {
 
   const displayUpper = tickToPriceDisplay((inverted ? position?.tickUpper : position?.tickLower) || 0)
   const displayLower = tickToPriceDisplay((inverted ? position?.tickLower : position?.tickUpper) || 0)
+
+  let txArgs = {
+    chainID: chainID!,
+    positionID: Number(position?.positionID),
+    TrustlessMulticall: trustlessMulticallAddress!,
+    Rewards: rewardsAddress!,
+  }
+
+  if(changeType === ChangeType.Increase && chainID && pool && poolCurrentData) {
+    txArgs = {
+      ...txArgs,
+      type: TransactionType.IncreaseLiquidityPosition,
+      amount0Change: token0Amount,
+      amount1Change: token1Amount,
+    } as txIncreaseLiquidityPositionArgs
+  } else if(chainID && pool && poolCurrentData) {
+    const token0 = new Token(chainID, pool.token0.address, pool.token0.decimals)
+    const token1 = new Token(chainID, pool.token1.address, pool.token1.decimals)
+    const uniswapPool = new Pool(
+      token0,
+      token1,
+      pool.fee as unknown as FeeAmount,
+      TickMath.getSqrtRatioAtTick(poolCurrentData.twapTick),
+      position.liquidity,
+      poolCurrentData.twapTick
+    )
+    const uniswapPosition = new Position({
+      pool: uniswapPool,
+      liquidity: bnf(position.liquidity).mul(decreasePercentage || 0).div(100).toString(),
+      tickLower,
+      tickUpper,
+    })
+
+    const { amount0: amount0Min, amount1: amount1Min } = uniswapPosition.burnAmountsWithSlippage(new Percent(SLIPPAGE_TOLERANCE * 100, 100))
+
+    txArgs = {
+      ...txArgs,
+      type: TransactionType.DecreaseLiquidityPosition,
+      liquidity: Number(uniswapPosition.liquidity.toString()),
+      amount0Min: Number(String(amount0Min)),
+      amount1Min: Number(String(amount1Min)),
+    } as txDecreaseLiquidityPositionArgs
+  }
 
   return (
     <>
@@ -98,6 +151,13 @@ const UpdateLiquidityPosition = () => {
             />
             %
           </>
+        )}
+        <br />
+        {position && (
+          <CreateTransactionButton
+            disabled={false}
+            txArgs={txArgs as TransactionArgs}
+          />
         )}
       </LargeText>
     </>

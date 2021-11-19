@@ -1,7 +1,7 @@
 import { Button } from 'carbon-components-react'
 import { useParams } from "react-router";
 import { Subtract16, Add16 } from '@carbon/icons-react';
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
@@ -25,7 +25,6 @@ import Bold from '../utils/Bold'
 import { ProtocolContract } from '../../slices/contracts/index';
 import GenericApprovalButton from '../utils/GenericApprovalButton';
 import { reason } from '../library/ErrorMessage';
-import ConnectWalletButton from '../utils/ConnectWalletButton';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
