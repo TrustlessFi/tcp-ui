@@ -13,10 +13,10 @@ import { ProtocolContract } from '../contracts'
 
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { scale, SLIPPAGE_TOLERANCE } from '../../utils'
+import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
 import { getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
-import { zeroAddress , bnf } from '../../utils/index';
+import { zeroAddress , bnf } from '../../utils/index'
 import { ChainID } from '@trustlessfi/addresses'
 
 export enum TransactionType {
@@ -205,7 +205,7 @@ export const getTxNamePresentTense = (type: TransactionType) => {
 
 const getDeadline = async (chainID: ChainID, multicallAddress: string) => {
   const trustlessMulticall = getMulticallContract(multicallAddress)
-  const transactionTimeout = getDefaultTransactionTimeout(chainID);
+  const transactionTimeout = getDefaultTransactionTimeout(chainID)
 
   const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
 
@@ -291,8 +291,8 @@ const executeTransaction = async (
         amount1Min: scale(args.amount1Change * (2 - SLIPPAGE_TOLERANCE)),
         deadline,
       }, UIID, {
-      });
-    
+      })
+
     case TransactionType.DecreaseLiquidityPosition:
       rewards = getRewards(args.Rewards)
 
@@ -307,7 +307,7 @@ const executeTransaction = async (
         tokenId: args.positionID,
         liquidity: scale(args.liquidity),
       }, UIID, {
-      });
+      })
 
     default:
       assertUnreachable(type)
@@ -328,7 +328,7 @@ export const waitForTransaction = createAsyncThunk(
       dispatch(waitingForMetamask())
       tx = await executeTransaction(args, provider)
     } catch (e) {
-      console.error("failureMessages" + parseMetamaskError(e).join(', '))
+      console.error("failureMessages: " + parseMetamaskError(e).join(', '))
       dispatch(addNotification({
         type: args.type,
         userAddress,

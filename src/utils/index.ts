@@ -185,6 +185,7 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 
 
 export const parseMetamaskError = (error: any): string[] => {
+  const metamaskError = error
   if (error.hasOwnProperty('error')) error = error.error
 
   if (error.hasOwnProperty('data')) {
@@ -224,6 +225,7 @@ export const parseMetamaskError = (error: any): string[] => {
     }
   }
 
+  console.error({metamaskError})
   return ['Unknown metamask error']
 
 }
