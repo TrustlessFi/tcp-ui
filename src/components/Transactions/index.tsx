@@ -6,6 +6,7 @@ import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../utils'
+import Text from '../utils/Text'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../utils/ExplorerLink'
 
 const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus} = {
@@ -31,7 +32,7 @@ const Transactions = () => {
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Nonce', 'Title', 'Status', 'Start Time']} />
+          <TableHeaderOnly headers={['Nonce', 'Transaction', 'Start Time', 'Status',]} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -49,9 +50,9 @@ const Transactions = () => {
         key: tx.hash,
         data: {
           'Nonce': tx.nonce,
-          'Title': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
-          'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]}/>,
+          'Transaction': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
           'Start Time': getDateTimeString(tx.startTimeMS),
+          'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
         },
         onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
       }))
