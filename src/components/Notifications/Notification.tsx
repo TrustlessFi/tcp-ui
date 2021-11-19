@@ -57,13 +57,6 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
   const totalWidth = 400
   const paddingRight = 40
 
-  const calculateLoadingBarWidth = () => {
-    const duration = timeMS() - notif.startTimeMS
-    const portion = duration / (NOTIFICATION_DURATION_SECONDS * 1000)
-    return (1 - portion) * totalWidth
-  }
-
-  const [ loadingBarWidth, setLoadingBarWidth ] = useState(calculateLoadingBarWidth())
   const [ visible, setVisible ] = useState(true)
   const closeCalled = useRef(false)
 
@@ -91,11 +84,7 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const currentTimeMS = timeMS()
-      if (currentTimeMS > endTime) {
-        close()
-      } else {
-        setLoadingBarWidth(calculateLoadingBarWidth())
-      }
+      if (currentTimeMS > endTime) close()
     }, (NOTIFICATION_DURATION_SECONDS * 1000) / 250)
     return () => clearInterval(interval)
   })
@@ -144,15 +133,6 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
           </Col>
         </Row>
       </Col>
-      <div style={{
-        width: loadingBarWidth,
-        display: visible ? 'block' : 'none',
-        height: 3,
-        backgroundColor: statusColor(notif.status),
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-      }} />
       <Close24 aria-label="close" onClick={close} style={{
         position: 'absolute',
         top: 8,

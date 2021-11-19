@@ -372,12 +372,6 @@ export const waitForTransaction = createAsyncThunk(
 
     const succeeded = receipt.status === 1
     if (succeeded) {
-      dispatch(addNotification({
-        type: args.type,
-        userAddress,
-        status: TransactionStatus.Success,
-        hash: tx.hash,
-      }))
       dispatch(transactionSucceeded(tx.hash))
     } else {
       dispatch(addNotification({
