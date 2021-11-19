@@ -85,7 +85,7 @@ const Wallet = () => {
               {abbreviateAddress(address)}
             </Button>
         )
-      : <ConnectWalletButton mini />
+      : <ConnectWalletButton small />
 
   return (
     <>

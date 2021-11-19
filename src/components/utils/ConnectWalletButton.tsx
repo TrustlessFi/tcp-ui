@@ -4,9 +4,9 @@ import { connectWallet } from '../utils/WalletConnection'
 import { Button } from 'carbon-components-react'
 
 const ConnectWalletButton = ({
-  mini
+  small
 }: {
-  mini?: boolean,
+  small?: boolean,
 }) => {
   const dispatch = useAppDispatch()
 
@@ -31,7 +31,7 @@ const ConnectWalletButton = ({
     <Button
       onClick={onClick}
       disabled={wallet.connecting}
-      size={mini ? 'small' : 'default'}>
+      small={small}>
       {text}
     </Button>
   )

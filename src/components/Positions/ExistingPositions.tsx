@@ -10,6 +10,10 @@ import RelativeLoading from '../library/RelativeLoading'
 import { numDisplay } from '../../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import Text from '../utils/Text'
+import CreateTransactionButton from '../utils/CreateTransactionButton';
+import { TransactionType } from '../../slices/transactions/index';
+import { getContractWaitFunction } from '../../slices/waitFor';
+import { ProtocolContract } from '../../slices/contracts/index';
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
@@ -18,8 +22,9 @@ const ExistingPositionsTable = () => {
   const positions = waitForPositions(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
 
-  if (positions === null || priceInfo === null || positions === null) {
+  if (positions === null || priceInfo === null || positions === null || marketContract === null) {
     return (
       <div style={{position: 'relative'}}>
         <RelativeLoading show={userAddress !== null} />
@@ -29,8 +34,7 @@ const ExistingPositionsTable = () => {
             'Debt',
             'Collateral',
             'Collateralization Ratio',
-            'Rewards',
-            '',
+            'Approximate Rewards',
           ]}
         />
         <Center>
@@ -52,23 +56,8 @@ const ExistingPositionsTable = () => {
     )
   }
 
-  const getOnRewardsClick = (positionID: number) => (e: any) => {
-    alert('claim rewrads for position id ' + positionID  + ' clicked')
-    console.log({e})
-    e.stopPropagation()
-  }
-
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
-
-    const rewardsButton = (
-      <Button
-        small
-        disabled={position.approximateRewards === 0}
-        onClick={getOnRewardsClick(position.id)}>
-        Claim {numDisplay(position.approximateRewards)} TCP
-      </Button>
-    )
 
     return {
       key: position.id,
@@ -77,7 +66,7 @@ const ExistingPositionsTable = () => {
         'Debt': numDisplay(position.debtCount, 2) + ' Hue',
         'Collateral': numDisplay(position.collateralCount, 2) + ' Eth',
         'Collateralization Ratio': numDisplay(collateralization * 100, 0) + '%',
-        'Approximate Rewards': rewardsButton,
+        'Approximate Rewards': numDisplay(position.approximateRewards) + " TCP"
       },
       onClick: () => {
         dispatch(editorOpened({
@@ -96,22 +85,43 @@ const ExistingPositions = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const createPositionButton =
-    <Button
-      size="small"
-      onClick={() => {
-        dispatch(editorOpened({
-          positionID: 0,
-          creating: true,
-        }))
-        history.push('/positions/new')
-      }}
-    >
-      New Position
-    </Button>
+  const positions = waitForPositions(selector, dispatch)
+  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+
+  const positionsIDsWithRewards =
+    positions === null
+    ? []
+    : Object.values(positions).filter(position => position.approximateRewards !== 0).map(position => position.id)
+
+  const rightElement =
+    <>
+      <CreateTransactionButton
+        small
+        style={{marginRight: 8}}
+        title="Claim All Rewards"
+        disabled={positionsIDsWithRewards.length === 0 || marketContract === null}
+        showDisabledInsteadOfConnectWallet={true}
+        txArgs={{
+          type: TransactionType.ClaimAllPositionRewards,
+          positionIDs: positionsIDsWithRewards,
+          Market: marketContract!,
+        }}
+      />
+      <Button
+        size="small"
+        onClick={() => {
+          dispatch(editorOpened({
+            positionID: 0,
+            creating: true,
+          }))
+          history.push('/positions/new')
+        }}>
+        New Position
+      </Button>
+    </>
 
   return (
-    <AppTile title="Positions" rightElement={createPositionButton}>
+    <AppTile title="Positions" rightElement={rightElement}>
       <ExistingPositionsTable />
     </AppTile>
   )

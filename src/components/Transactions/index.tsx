@@ -22,8 +22,6 @@ const Transactions = () => {
   const transactions = selector(state => state.transactions)
   const txs = getSortedUserTxs(userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
 
-  console.log({txs})
-
   const getDateTimeString = (timeInMS: number) => {
     const date = (new Date(timeInMS))
     return [date.toDateString(), date.toLocaleTimeString()].join(' ')
