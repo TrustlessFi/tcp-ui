@@ -15,7 +15,7 @@
     "@trustlessfi/addresses": "^0.3.8",
     "@trustlessfi/artifacts": "^0.1.0",
     "@trustlessfi/multicall": "^0.4.4",
-    "@trustlessfi/typechain": "^0.4.1",
+    "@trustlessfi/typechain": "^0.6.1",
     "@types/carbon-components": "^10.27.1",
     "@types/carbon-components-react": "^7.46.1",
     "@types/carbon__colors": "^10.31.0",
@@ -56,7 +56,7 @@
     "react-svg-loader": "^3.0.3",
     "sass": "^1.43.4",
     "svg-react-loader": "^0.4.6",
-    "typescript": "~4.4.4",
+    "typescript": "^4.5.2",
     "uuid": "^8.3.2"
   },
   "resolutions": {

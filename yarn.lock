@@ -2072,7 +2072,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/providers@npm:5.5.0":
+"@ethersproject/providers@npm:5.5.0, @ethersproject/providers@npm:^5.5.0":
   version: 5.5.0
   resolution: "@ethersproject/providers@npm:5.5.0"
   dependencies:
@@ -3053,10 +3053,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/typechain@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@trustlessfi/typechain@npm:0.4.1"
-  checksum: 87f47038445eb56c391200957c7aea2d04920e3f4fb0e5b748ba16498863279959c7104b5f228c20ed89595edd3d52c6ea76fabc4c9c73acb08aedadb2b0b423
+"@trustlessfi/typechain@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@trustlessfi/typechain@npm:0.6.1"
+  dependencies:
+    "@ethersproject/abi": ^5.5.0
+    "@ethersproject/providers": ^5.5.0
+    ethers: ^5.5.1
+  checksum: ddb5683d06d52d4766716e1667383da87a581af39709de423bac8c25925cf2f3f2fccff8cb6d9191f8720ef0ccd29c2eca60f9b05365428dfb9afb73d3917cac
   languageName: node
   linkType: hard
 
@@ -18590,7 +18594,7 @@ resolve@^2.0.0-next.3:
     "@trustlessfi/addresses": ^0.3.8
     "@trustlessfi/artifacts": ^0.1.0
     "@trustlessfi/multicall": ^0.4.4
-    "@trustlessfi/typechain": ^0.4.1
+    "@trustlessfi/typechain": ^0.6.1
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.46.1
     "@types/carbon__colors": ^10.31.0
@@ -18631,7 +18635,7 @@ resolve@^2.0.0-next.3:
     react-svg-loader: ^3.0.3
     sass: ^1.43.4
     svg-react-loader: ^0.4.6
-    typescript: ~4.4.4
+    typescript: ^4.5.2
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -19157,23 +19161,23 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.4.4#~builtin<compat/typescript>":
-  version: 4.4.4
-  resolution: "typescript@patch:typescript@npm%3A4.4.4#~builtin<compat/typescript>::version=4.4.4&hash=32657b"
+typescript@^4.5.2:
+  version: 4.5.2
+  resolution: "typescript@npm:4.5.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c97c33903f1eb4f9e178649befdfc859d93157db1eccd1e521e84976ec6861db53412d8018e5e4c5d09268771c65498d42caa64bd881878346c3644f6b7cd202
+  checksum: 74f9ce65d532bdf5d0214b3f60cf37992180023388c87a11ee6f838a803067ef0b63c600fa501b0deb07f989257dce1e244c9635ed79feca40bbccf6e0aa1ebc
   languageName: node
   linkType: hard
 
-typescript@~4.4.4:
-  version: 4.4.4
-  resolution: "typescript@npm:4.4.4"
+"typescript@patch:typescript@^4.5.2#~builtin<compat/typescript>":
+  version: 4.5.2
+  resolution: "typescript@patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=32657b"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 89ecb8436bb48ef5594d49289f5f89103071716b6e4844278f4fb3362856e31203e187a9c76d205c3f0b674d221a058fd28310dbcbcf5d95e9a57229bb5203f1
+  checksum: 02cf0f190f0cb6d216558d8db9c3a968feeab4965c340a351e5e6e84a42a3946e5e200a9538b6e427af9d17e4f713254dd0707d5fd6f238ce93f0aee1986ab57
   languageName: node
   linkType: hard
 
