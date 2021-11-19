@@ -133,6 +133,7 @@ const CreateLiquidityPosition = () => {
       || rewardsAddress === null
       || userAddress === null
       || pool === null
+      || chainID === null
       || token.symbol.toLowerCase() === 'weth') return null
 
     return (
@@ -147,6 +148,7 @@ const CreateLiquidityPosition = () => {
           tokenIndex,
           poolAddress,
           userAddress,
+          chainID,
         }))}
       />
     )

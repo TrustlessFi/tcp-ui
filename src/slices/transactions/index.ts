@@ -45,6 +45,7 @@ export type TransactionInfo = {
   type: TransactionType
   status: TransactionStatus
   startTimeMS: number
+  chainID: ChainID
 }
 
 export interface txCreatePositionArgs {
@@ -135,6 +136,7 @@ export interface TransactionData {
   args: TransactionArgs
   openTxTab: () => void
   userAddress: string
+  chainID: ChainID
 }
 
 export type TransactionState = {[key in string]: TransactionInfo}
@@ -364,6 +366,7 @@ export const waitForTransaction = createAsyncThunk(
       startTimeMS: timeMS(),
       type: args.type,
       status: TransactionStatus.Pending,
+      chainID: data.chainID,
     }))
     data.openTxTab()
 

@@ -3,7 +3,8 @@ import { useHistory } from 'react-router-dom'
 import { TransactionArgs } from '../../slices/transactions'
 import ConnectWalletButton from './ConnectWalletButton'
 import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
-import { waitForTransaction } from '../../slices/transactions/index';
+import { waitForTransaction } from '../../slices/transactions'
+import { getChainIDFromState } from '../../slices/chainID'
 import { CSSProperties } from 'react';
 
 const CreateTransactionButton = ({
@@ -32,8 +33,9 @@ const CreateTransactionButton = ({
 
   const waitingForMetamask = selector(state => state.wallet.waitingForMetamask)
   const userAddress = selector(state => state.wallet.address)
+  const chainID = getChainIDFromState(selector(state => state.chainID))
 
-  if (userAddress === null && !showDisabledInsteadOfConnectWallet) return <ConnectWalletButton />
+  if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) return <ConnectWalletButton />
 
   const buttonDisplay =
     waitingForMetamask
@@ -50,7 +52,7 @@ const CreateTransactionButton = ({
       kind={kind}
       size={size}
       style={style}
-      onClick={() => dispatch(waitForTransaction({args: txArgs, openTxTab, userAddress: userAddress!}))}
+      onClick={() => dispatch(waitForTransaction({args: txArgs, openTxTab, userAddress: userAddress!, chainID}))}
       disabled={waitingForMetamask || disabled === true || userAddress === null}>
       {buttonDisplay}
     </Button>

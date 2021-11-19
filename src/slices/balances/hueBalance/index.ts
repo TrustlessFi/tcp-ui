@@ -7,6 +7,7 @@ import getContract from '../../../utils/getContract';
 import { Hue } from '@trustlessfi/typechain'
 import { uint256Max } from '../../../utils'
 import { TransactionType, } from '../../transactions'
+import { ChainID } from '@trustlessfi/addresses'
 
 export type hueBalanceArgs = {
   Hue: string
@@ -20,6 +21,7 @@ export type hueApproveArgs = {
   Hue: string
   spender: ProtocolContract
   spenderAddress: string
+  chainID: ChainID
 }
 
 export const getHueBalance = createAsyncThunk(
@@ -43,7 +45,7 @@ export const approveHue = createAsyncThunk(
 
     const hue = getContract(args.Hue, ProtocolContract.Hue) as Hue
 
-    await approveToken(hue, args.spenderAddress, TransactionType.ApproveHue, userAddress, dispatch)
+    await approveToken(hue, args.spenderAddress, TransactionType.ApproveHue, userAddress, dispatch, args.chainID)
   }
 )
 

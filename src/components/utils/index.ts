@@ -4,6 +4,7 @@ import { clearEthBalance } from '../../slices/ethBalance'
 import { clearPositions } from '../../slices/positions'
 import { clearHueBalance } from '../../slices/balances/hueBalance'
 import { clearLendHueBalance } from '../../slices/balances/lendHueBalance'
+import { ChainID } from '@trustlessfi/addresses'
 
 export enum UserTxSortOption {
   NONCE_ASCENDING,
@@ -11,15 +12,18 @@ export enum UserTxSortOption {
 }
 
 export const getSortedUserTxs = (
+  chainID: ChainID | null,
   userAddress: string | null,
   txs: TransactionState | null,
   sortOption: UserTxSortOption = UserTxSortOption.NONCE_ASCENDING,
 ): TransactionInfo[] => {
+  if (chainID === null) return []
   if (userAddress === null) return []
   if (txs === null) return []
 
   const resultTxs =  Object.values(txs)
     .filter(tx => tx.userAddress === userAddress)
+    .filter(tx => tx.chainID === chainID)
 
   switch(sortOption) {
     case UserTxSortOption.NONCE_ASCENDING:

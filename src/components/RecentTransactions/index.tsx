@@ -6,8 +6,8 @@ import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../utils'
-import Text from '../utils/Text'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../utils/ExplorerLink'
+import { getChainIDFromState } from '../../slices/chainID'
 
 const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus} = {
   [TransactionStatus.Pending]: 'active',
@@ -15,13 +15,14 @@ const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus}
   [TransactionStatus.Success]: 'finished',
 }
 
-const Transactions = () => {
+const RecentTransactions = () => {
   const dispatch = useAppDispatch()
 
-  const chainID = selector(state => state.chainID)
   const userAddress = selector(state => state.wallet.address)
   const transactions = selector(state => state.transactions)
-  const txs = getSortedUserTxs(userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
+  const chainID = selector(state => state.chainID)
+
+  const txs = getSortedUserTxs(getChainIDFromState(chainID), userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
 
   const getDateTimeString = (timeInMS: number) => {
     const date = (new Date(timeInMS))
@@ -77,4 +78,4 @@ const Transactions = () => {
   )
 }
 
-export default Transactions
+export default RecentTransactions
