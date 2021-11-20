@@ -132,7 +132,18 @@ export interface txApprovePoolToken {
   tokenAddress: string
   Rewards: string
   poolAddress: string,
-  chainID: ChainID,
+}
+
+export interface txApproveHue {
+  type: TransactionType.ApproveHue
+  Hue: string
+  spenderAddress: string
+}
+
+export interface txApproveLendHue {
+  type: TransactionType.ApproveLendHue
+  LendHue: string
+  spenderAddress: string
 }
 
 export type TransactionArgs =
@@ -144,7 +155,9 @@ export type TransactionArgs =
   txIncreaseLiquidityPositionArgs |
   txDecreaseLiquidityPositionArgs |
   txClaimPositionRewards |
-  txApprovePoolToken
+  txApprovePoolToken |
+  txApproveHue |
+  txApproveLendHue
 
 export interface TransactionData {
   args: TransactionArgs
@@ -354,6 +367,14 @@ const executeTransaction = async (
 
       return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max)
 
+    case TransactionType.ApproveHue:
+      const hue = new Contract(args.Hue, erc20Artifact.abi, provider) as ERC20
+      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+
+    case TransactionType.ApproveLendHue:
+      const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
+      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+
     default:
       assertUnreachable(type)
   }
@@ -437,6 +458,12 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.ApprovePoolToken:
           dispatch(clearPoolCurrentData(args.poolAddress))
+          break
+        case TransactionType.ApproveHue:
+          dispatch(clearHueBalance())
+          break
+        case TransactionType.ApproveLendHue:
+          dispatch(clearLendHueBalance())
           break
       default:
         assertUnreachable(type)

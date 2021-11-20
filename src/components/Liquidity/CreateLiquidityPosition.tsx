@@ -5,7 +5,6 @@ import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
-import { approvePoolToken } from '../../slices/poolCurrentData'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
 import {
@@ -23,7 +22,6 @@ import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { ProtocolContract } from '../../slices/contracts/index';
-import GenericApprovalButton from '../utils/GenericApprovalButton';
 import { reason } from '../library/ErrorMessage';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
@@ -151,7 +149,6 @@ const CreateLiquidityPosition = () => {
           tokenAddress: token!.address,
           Rewards: rewardsAddress!,
           poolAddress,
-          chainID: chainID!,
         }}
       />
     )

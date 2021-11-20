@@ -16,9 +16,7 @@ import { selectionMade } from '../../slices/lendSelection'
 import { TransactionType } from '../../slices/transactions/index'
 import { ProtocolContract } from '../../slices/contracts/index'
 import { getAPR } from './library'
-import ApprovalButton from '../utils/ApprovalButton'
 import { zeroIfNaN } from '../../utils/index'
-import ConnectWalletButton from '../utils/ConnectWalletButton'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
 
@@ -31,6 +29,7 @@ const Lend = () => {
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const hueContract = getContractWaitFunction(ProtocolContract.Hue)(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
 
@@ -114,11 +113,16 @@ const Lend = () => {
           ]} />
         </div>
       </div>
-      <ApprovalButton
-        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0}
-        token={ProtocolContract.Hue}
-        protocolContract={ProtocolContract.Market}
-        approvalLabels={{waiting: 'Approve Lend', approving: 'Approve in Metamask...', approved: 'Lend Approved'}}
+      <CreateTransactionButton
+        title={"Approve Lend"}
+        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || hueBalance.approval.Market?.approved}
+        showDisabledInsteadOfConnectWallet={true}
+        shouldOpenTxTab={false}
+        txArgs={{
+          type: TransactionType.ApproveHue,
+          Hue: hueContract!,
+          spenderAddress: marketContract!,
+        }}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
         <CreateTransactionButton

@@ -4,23 +4,6 @@ import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/t
 import { ProtocolContract } from '../contracts'
 import { getMulticallContract, contract } from '../../utils/getContract'
 import { getMulticall, getDuplicateFuncMulticall, executeMulticalls, rc } from '@trustlessfi/multicall'
-import { ChainID } from '@trustlessfi/addresses'
-
-import { ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
-import getProvider from '../../utils/getProvider';
-import { uint256Max, timeS } from '../../utils'
-import {
-  TransactionStatus,
-  TransactionType,
-  transactionCreated,
-  transactionSucceeded,
-  transactionFailed
-} from '../transactions'
-import {
-  addNotification,
-} from '../notifications'
-
-import { ERC20 } from '@trustlessfi/typechain'
 
 export interface tokenInfo {
   address: string,
@@ -52,41 +35,6 @@ export interface balanceArgs {
   tokenAddress: string,
   userAddress: string,
   TrustlessMulticall: string,
-}
-
-export const approveToken = async (
-  token: ERC20,
-  spender: string,
-  txType: TransactionType,
-  userAddress: string,
-  dispatch: ThunkDispatch<unknown, unknown, AnyAction>,
-  chainID: ChainID,
-) => {
-    const provider = getProvider()
-    const tx = await token.connect(provider.getSigner()).approve(spender, uint256Max)
-
-    const txInfo = {
-      hash: tx.hash,
-      userAddress,
-      nonce: tx.nonce,
-      startTimeMS: timeS(),
-      type: txType,
-      status: TransactionStatus.Pending,
-      chainID,
-    }
-
-    dispatch(transactionCreated(txInfo))
-
-    const receipt = await provider.waitForTransaction(tx.hash)
-    const succeeded = receipt.status === 1
-
-    if (succeeded) {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Success }))
-      dispatch(transactionSucceeded(tx.hash))
-    } else {
-      dispatch(addNotification({ ...txInfo, status: TransactionStatus.Failure }))
-      dispatch(transactionFailed(tx.hash))
-    }
 }
 
 export const tokenBalanceThunk = async (
