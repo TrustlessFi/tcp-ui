@@ -399,6 +399,7 @@ export const waitForTransaction = createAsyncThunk(
         type: args.type,
         userAddress,
         status: TransactionStatus.Failure,
+        chainID: data.chainID,
       }))
       dispatch(metamaskComplete())
       return
@@ -427,6 +428,7 @@ export const waitForTransaction = createAsyncThunk(
         userAddress,
         status: TransactionStatus.Failure,
         hash: tx.hash,
+        chainID: data.chainID,
       }))
       dispatch(transactionFailed(tx.hash))
     }
