@@ -17,6 +17,7 @@ export enum ProposalState {
 export interface Proposal {
   proposal: {
     id: number
+    ipfsHash: string
     proposer: string
     eta: number
     targets: string[]

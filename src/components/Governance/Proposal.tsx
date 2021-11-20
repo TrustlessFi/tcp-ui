@@ -9,14 +9,24 @@ interface ProposalProps {
   quorum: number;
 }
 
-// TO DO: Add Description
+const ProposalDescription: FunctionComponent<{ipfsHash: string}> = ({ ipfsHash }) => {
+  if (!ipfsHash) {
+    return <span>Description TBD</span>
+  }
+  return <a
+    href={`https://gateway.ipfs.io/ipfs/${ipfsHash}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >Description</a>
+};
+
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
   const { proposal: p } = proposal;
   const totalVotes = p.forVotes + p.againstVotes;
   return (
     <Tile style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div>
-          <span> Proposal {p.id}: -- Description TBD -- . {p.state} </span>
+          <span> Proposal {p.id}: <ProposalDescription ipfsHash={p.ipfsHash} />. {p.state} </span>
           <div style={{ display: 'inline' }}>
             <AppTag
               name={p.state}

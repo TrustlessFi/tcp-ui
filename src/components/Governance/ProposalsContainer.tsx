@@ -166,13 +166,14 @@ const ProposalsContainer: FunctionComponent = () => {
     );
   }
 
-  if (proposalsState && !Object.values(proposalsState).length) {
+  const proposalsTotal = proposalsState?.proposals && Object.values(proposalsState.proposals).length || 0;
+
+  if (proposalsTotal === 0) {
     return (
-      <Center> There are no governance proposals </Center>
+      <Center> There are no governance proposals at this time </Center>
     );
   }
-
-  const proposalsTotal = proposalsState?.proposals && Object.values(proposalsState.proposals).length || 0;
+  
   return (
     <>
       <ProposalsHeader
@@ -188,7 +189,7 @@ const ProposalsContainer: FunctionComponent = () => {
         toggleSort={toggleSort}
         toggleTag={toggleTag}
       />
-      <ProposalsList displayedProposals={displayedProposals} quorum={quorum}/>
+      <ProposalsList displayedProposals={displayedProposals} quorum={quorum} proposalsTotal={proposalsTotal}/>
     </>
   );
 }
@@ -263,12 +264,13 @@ const ProposalsHeader: FunctionComponent<ProposalsHeaderProps> = ({
 
 interface ProposalsListProps {
   displayedProposals: IProposal[] | null;
+  proposalsTotal: number;
   quorum: number;
 }
 
-const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposals, quorum }) => {
+const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposals, proposalsTotal, quorum }) => {
   if (displayedProposals && !displayedProposals.length) {
-    return null;
+    return <Center style={{ padding: '40px 0'}}> You have filtered out all {proposalsTotal} proposal(s). </Center>;
   }
 
   return (

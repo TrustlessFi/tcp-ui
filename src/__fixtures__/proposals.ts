@@ -70,6 +70,7 @@ const getProposal = (id: number, args: {
   const proposal: Proposal = {
     proposal: {
       id,
+      ipfsHash: 'QmXExS4BMc1YrH6iWERyryFcDWkvobxryXSwECLrcd7Y1H',
       proposer: getRandomAddress(),
       eta: timeS() + ((hours(2) * args.percentageCompletion) / 100),
       targets: actions.map(action => action.target),

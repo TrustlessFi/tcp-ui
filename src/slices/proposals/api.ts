@@ -32,6 +32,7 @@ const convertStateIDToState = (stateID: number) => {
 interface RawProposal {
   proposal: {
     id: number
+    ipfsHash: string
     proposer: string
     eta: number
     targets: string[]
@@ -57,6 +58,7 @@ interface RawProposal {
 const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   proposal: {
     id: rawProposal.proposal.id,
+    ipfsHash: rawProposal.proposal.ipfsHash,
     proposer: rawProposal.proposal.proposer,
     eta: rawProposal.proposal.eta,
     targets: rawProposal.proposal.targets,
