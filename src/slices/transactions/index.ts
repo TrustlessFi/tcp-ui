@@ -22,6 +22,7 @@ import { getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../uti
 import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
+import { numDisplay } from '../../utils'
 
 export enum TransactionType {
   CreatePosition,
@@ -41,16 +42,6 @@ export enum TransactionStatus {
   Pending,
   Success,
   Failure,
-}
-
-export type TransactionInfo = {
-  hash: string
-  nonce: number
-  userAddress: string
-  type: TransactionType
-  status: TransactionStatus
-  startTimeMS: number
-  chainID: ChainID
 }
 
 export interface txCreatePositionArgs {
@@ -132,6 +123,7 @@ export interface txApprovePoolToken {
   tokenAddress: string
   Rewards: string
   poolAddress: string,
+  symbol: string
 }
 
 export interface txApproveHue {
@@ -166,29 +158,73 @@ export interface TransactionData {
   chainID: ChainID
 }
 
+export type TransactionInfo = {
+  hash: string
+  nonce: number
+  userAddress: string
+  type: TransactionType
+  status: TransactionStatus
+  startTimeMS: number
+  chainID: ChainID
+  args: TransactionArgs
+}
+
 export type TransactionState = {[key in string]: TransactionInfo}
 
-export const getTxNamePastTense = (type: TransactionType) => {
-  // TODO receive token args here and make this better
+export const getTxLongName = (args: TransactionArgs) => {
+  const type = args.type
   switch(type) {
     case TransactionType.CreatePosition:
-      return 'Position Created'
+      if (args.debtCount === 0) return 'Create Position without debt'
+      return 'Create Position with ' + numDisplay(args.debtCount) + ' Hue debt'
     case TransactionType.UpdatePosition:
-      return 'Position Updated'
+      return 'Update position ' + args.positionID
     case TransactionType.Lend:
-      return 'Hue Lent'
+      return 'Lend ' + args.count + ' Hue'
     case TransactionType.Withdraw:
-      return 'Hue Withdrawn'
+      return 'Withdraw ' + args.count + ' Hue'
     case TransactionType.ApproveHue:
+      return 'Approve Hue'
     case TransactionType.ApproveLendHue:
-      return 'Approved'
+      return 'Approve Withdraw'
     case TransactionType.CreateLiquidityPosition:
-      return 'Liquidity Position Created'
+      return 'Create Liquidity Position'
     case TransactionType.IncreaseLiquidityPosition:
+      return 'Increase Liquidity Position ' + args.positionID
     case TransactionType.DecreaseLiquidityPosition:
-      return 'Liquidity Position Updated'
+      return 'Decrease Liquidity Position ' + args.positionID
     case TransactionType.ClaimAllPositionRewards:
-      return 'Rewards Claimed'
+      return 'Claim All Rewards'
+    case TransactionType.ApprovePoolToken:
+      return 'Approve ' + args.symbol
+    default:
+      assertUnreachable(type)
+  }
+  return ''
+}
+
+export const getTxShortName = (type: TransactionType) => {
+  switch(type) {
+    case TransactionType.CreatePosition:
+      return 'Create Position'
+    case TransactionType.UpdatePosition:
+      return 'Update position'
+    case TransactionType.Lend:
+      return 'Lend Hue'
+    case TransactionType.Withdraw:
+      return 'Withdraw Hue'
+    case TransactionType.ApproveHue:
+      return 'Approve Hue'
+    case TransactionType.ApproveLendHue:
+      return 'Approve Withdraw'
+    case TransactionType.CreateLiquidityPosition:
+      return 'Create Liquidity Position'
+    case TransactionType.IncreaseLiquidityPosition:
+      return 'Increase Liquidity Position'
+    case TransactionType.DecreaseLiquidityPosition:
+      return 'Decrease Liquidity Position'
+    case TransactionType.ClaimAllPositionRewards:
+      return 'Claim All Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve Token'
     default:
@@ -197,61 +233,7 @@ export const getTxNamePastTense = (type: TransactionType) => {
   return ''
 }
 
-export const getTxFailureTitle = (type: TransactionType) => {
-  switch(type) {
-    case TransactionType.CreatePosition:
-      return 'Position Creation Failed'
-    case TransactionType.UpdatePosition:
-      return 'Position Update Failed'
-    case TransactionType.Lend:
-      return 'Hue Lend Failed'
-    case TransactionType.Withdraw:
-      return 'Hue Withdrawak Failed'
-    case TransactionType.ApproveHue:
-    case TransactionType.ApproveLendHue:
-      return 'Approval Failed'
-    case TransactionType.CreateLiquidityPosition:
-      return 'Liquidity Position Creation Failed'
-    case TransactionType.IncreaseLiquidityPosition:
-    case TransactionType.DecreaseLiquidityPosition:
-      return 'Liquidity Position Update Failed'
-    case TransactionType.ClaimAllPositionRewards:
-      return 'Claim Rewards Failed'
-    case TransactionType.ApprovePoolToken:
-      return 'Token Approval Failed'
-    default:
-      assertUnreachable(type)
-  }
-  return ''
-}
-
-export const getTxNamePresentTense = (type: TransactionType) => {
-  switch(type) {
-    case TransactionType.CreatePosition:
-      return 'Creating Position'
-    case TransactionType.UpdatePosition:
-      return 'Updating Position'
-    case TransactionType.Lend:
-      return 'Lending Hue'
-    case TransactionType.Withdraw:
-      return 'Withdrawing Hue'
-    case TransactionType.ApproveHue:
-    case TransactionType.ApproveLendHue:
-      return 'Approving'
-    case TransactionType.CreateLiquidityPosition:
-      return 'Creating Liquidity Position'
-    case TransactionType.IncreaseLiquidityPosition:
-    case TransactionType.DecreaseLiquidityPosition:
-      return 'Updating Liquidity Position'
-    case TransactionType.ClaimAllPositionRewards:
-      return 'Claiming Rewards'
-    case TransactionType.ApprovePoolToken:
-      return 'Approving Token'
-    default:
-      assertUnreachable(type)
-  }
-  return ''
-}
+export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
 const getDeadline = async (chainID: ChainID, multicallAddress: string) => {
   const trustlessMulticall = getMulticallContract(multicallAddress)
@@ -413,6 +395,7 @@ export const waitForTransaction = createAsyncThunk(
       type: args.type,
       status: TransactionStatus.Pending,
       chainID: data.chainID,
+      args: data.args,
     }))
     data.openTxTab()
 

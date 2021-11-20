@@ -136,11 +136,13 @@ const CreateLiquidityPosition = () => {
       || chainID === null
       || tokenData.rewardsApproval.approved
 
+    const symbol = tokenIndex === 0 ? token0Symbol : token1Symbol
+
     return (
       <CreateTransactionButton
         key={tokenIndex}
         style={{marginRight: 8}}
-        title={"Approve " + (tokenIndex === 0 ? token0Symbol : token1Symbol)}
+        title={"Approve " + symbol}
         disabled={disabled}
         showDisabledInsteadOfConnectWallet={true}
         shouldOpenTxTab={false}
@@ -149,6 +151,7 @@ const CreateLiquidityPosition = () => {
           tokenAddress: token!.address,
           Rewards: rewardsAddress!,
           poolAddress,
+          symbol,
         }}
       />
     )

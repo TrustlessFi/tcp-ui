@@ -5,9 +5,9 @@ import { TransactionStatus } from '../../slices/transactions'
 import { ErrorFilled24, CheckmarkFilled24, Close24 } from '@carbon/icons-react';
 import { getOpacityTransition } from '../utils'
 import ExplorerLink from '../utils/ExplorerLink'
-import { assertUnreachable, timeMS, isTxHash } from '../../utils'
+import { assertUnreachable, timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
-import { getTxFailureTitle, getTxNamePresentTense } from '../../slices/transactions'
+import { getTxErrorName, getTxShortName } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch } from '../../app/hooks';
 
@@ -94,9 +94,10 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
     return null
   }
 
-  const title = notif.status === TransactionStatus.Failure
-    ? getTxFailureTitle(notif.type)
-    : getTxNamePresentTense(notif.type)
+  const title =
+    notif.status === TransactionStatus.Failure
+      ? getTxErrorName(notif.type)
+      : getTxShortName(notif.type)
 
   return (
     <div style={{
