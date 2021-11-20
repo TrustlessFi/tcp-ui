@@ -127,29 +127,32 @@ const CreateLiquidityPosition = () => {
   const toggleInverted = () => setInverted(!inverted)
 
   const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
-    if (
+    if (token !== undefined && token.symbol.toLowerCase() === 'weth') return null
+
+    const disabled =
       token === undefined
       || tokenData === undefined
       || rewardsAddress === null
       || userAddress === null
       || pool === null
       || chainID === null
-      || token.symbol.toLowerCase() === 'weth') return null
+      || tokenData.rewardsApproval.approved
 
     return (
-      <GenericApprovalButton
-        key={token.address}
-        style={{marginRight: 16}}
-        approval={tokenData.rewardsApproval}
-        tokenSymbol={tokenIndex === 0 ? token0Symbol : token1Symbol}
-        onApprove={() => dispatch(approvePoolToken({
-          tokenAddress: token.address,
-          Rewards: rewardsAddress,
-          tokenIndex,
+      <CreateTransactionButton
+        key={tokenIndex}
+        style={{marginRight: 8}}
+        title={"Approve " + (tokenIndex === 0 ? token0Symbol : token1Symbol)}
+        disabled={disabled}
+        showDisabledInsteadOfConnectWallet={true}
+        shouldOpenTxTab={false}
+        txArgs={{
+          type: TransactionType.ApprovePoolToken,
+          tokenAddress: token!.address,
+          Rewards: rewardsAddress!,
           poolAddress,
-          userAddress,
-          chainID,
-        }))}
+          chainID: chainID!,
+        }}
       />
     )
   }

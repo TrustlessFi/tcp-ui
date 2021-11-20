@@ -1,3 +1,4 @@
+import { Contract } from 'ethers'
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { getLocalStorage, assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
@@ -7,17 +8,20 @@ import { clearPositions } from '../positions'
 import { clearLiquidityPositions } from '../liquidityPositions'
 import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
+import { clearPoolCurrentData } from '../poolCurrentData'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
+import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
 import { getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
-import { zeroAddress , bnf } from '../../utils/index'
+import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
+import { ERC20 } from '@trustlessfi/typechain'
 
 export enum TransactionType {
   CreatePosition,
@@ -30,6 +34,7 @@ export enum TransactionType {
   IncreaseLiquidityPosition,
   DecreaseLiquidityPosition,
   ClaimAllPositionRewards,
+  ApprovePoolToken,
 }
 
 export enum TransactionStatus {
@@ -122,6 +127,14 @@ export interface txClaimPositionRewards {
   Market: string
 }
 
+export interface txApprovePoolToken {
+  type: TransactionType.ApprovePoolToken
+  tokenAddress: string
+  Rewards: string
+  poolAddress: string,
+  chainID: ChainID,
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -130,7 +143,8 @@ export type TransactionArgs =
   txCreateLiquidityPositionArgs |
   txIncreaseLiquidityPositionArgs |
   txDecreaseLiquidityPositionArgs |
-  txClaimPositionRewards
+  txClaimPositionRewards |
+  txApprovePoolToken
 
 export interface TransactionData {
   args: TransactionArgs
@@ -142,6 +156,7 @@ export interface TransactionData {
 export type TransactionState = {[key in string]: TransactionInfo}
 
 export const getTxNamePastTense = (type: TransactionType) => {
+  // TODO receive token args here and make this better
   switch(type) {
     case TransactionType.CreatePosition:
       return 'Position Created'
@@ -161,6 +176,8 @@ export const getTxNamePastTense = (type: TransactionType) => {
       return 'Liquidity Position Updated'
     case TransactionType.ClaimAllPositionRewards:
       return 'Rewards Claimed'
+    case TransactionType.ApprovePoolToken:
+      return 'Approve Token'
     default:
       assertUnreachable(type)
   }
@@ -187,6 +204,8 @@ export const getTxFailureTitle = (type: TransactionType) => {
       return 'Liquidity Position Update Failed'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim Rewards Failed'
+    case TransactionType.ApprovePoolToken:
+      return 'Token Approval Failed'
     default:
       assertUnreachable(type)
   }
@@ -213,6 +232,8 @@ export const getTxNamePresentTense = (type: TransactionType) => {
       return 'Updating Liquidity Position'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claiming Rewards'
+    case TransactionType.ApprovePoolToken:
+      return 'Approving Token'
     default:
       assertUnreachable(type)
   }
@@ -327,6 +348,12 @@ const executeTransaction = async (
     case TransactionType.ClaimAllPositionRewards:
       return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
 
+
+    case TransactionType.ApprovePoolToken:
+      const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
+
+      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max)
+
     default:
       assertUnreachable(type)
   }
@@ -407,6 +434,9 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.ClaimAllPositionRewards:
           dispatch(clearPositions())
+          break
+        case TransactionType.ApprovePoolToken:
+          dispatch(clearPoolCurrentData(args.poolAddress))
           break
       default:
         assertUnreachable(type)

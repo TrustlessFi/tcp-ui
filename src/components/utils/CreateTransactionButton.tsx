@@ -46,13 +46,20 @@ const CreateTransactionButton = ({
     ? () => history.push('/transactions')
     : () => {}
 
+  const txData = {
+    args: txArgs,
+    openTxTab,
+    userAddress: userAddress!,
+    chainID,
+  }
+
   return (
     <Button
       small={small}
       kind={kind}
       size={size}
       style={style}
-      onClick={() => dispatch(waitForTransaction({args: txArgs, openTxTab, userAddress: userAddress!, chainID}))}
+      onClick={() => dispatch(waitForTransaction(txData))}
       disabled={waitingForMetamask || disabled === true || userAddress === null}>
       {buttonDisplay}
     </Button>
@@ -67,7 +74,7 @@ CreateTransactionButton.defaultProps = {
   kind: 'primary',
   size: 'default',
   style: {},
-  showDisabledInsteadOfConnectWallet: false
-};
+  showDisabledInsteadOfConnectWallet: false,
+}
 
 export default CreateTransactionButton
