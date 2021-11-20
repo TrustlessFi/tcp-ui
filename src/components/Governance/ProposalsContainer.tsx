@@ -277,7 +277,7 @@ const ProposalsList: FunctionComponent<ProposalsListProps> = ({ displayedProposa
     <UnorderedList>
       {displayedProposals && displayedProposals.map(proposal =>
       <ListItem key={proposal.proposal.id}>
-        <Proposal proposal={proposal} quorum={quorum}/>
+        <Proposal proposal={proposal} quorum={quorum} />
       </ListItem>
       )}
     </UnorderedList>
