@@ -10,7 +10,7 @@ export const ProposalVoteModal: FunctionComponent<{
   
     if (!open) return null
 
-    const { proposal: p } = proposal;
+    const { proposal: p } = proposal
   
     return (
       <Modal

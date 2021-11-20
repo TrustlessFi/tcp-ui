@@ -1,16 +1,16 @@
-import { FunctionComponent, SyntheticEvent, useState } from 'react';
-import { ClickableTile } from 'carbon-components-react';
-import { Proposal as IProposal, ProposalState } from '../../slices/proposals';
-import { AppTag } from '../library/AppTag';
-import ProgressBar from '../library/ProgressBar';
-import { ProposalVoteModal } from './ProposalVoteModal';
+import { FunctionComponent, SyntheticEvent, useState } from 'react'
+import { ClickableTile } from 'carbon-components-react'
+import { Proposal as IProposal, ProposalState } from '../../slices/proposals'
+import { AppTag } from '../library/AppTag'
+import ProgressBar from '../library/ProgressBar'
+import { ProposalVoteModal } from './ProposalVoteModal'
 
 interface ProposalProps {
-  proposal: IProposal;
-  quorum: number;
+  proposal: IProposal
+  quorum: number
 }
 
-const ProposalDescription: FunctionComponent<{ipfsHash: string}> = ({ ipfsHash }) => {
+const ProposalDescription: FunctionComponent<{ ipfsHash: string }> = ({ ipfsHash }) => {
   if (!ipfsHash) {
     return <span>Description TBD</span>
   }
@@ -19,17 +19,17 @@ const ProposalDescription: FunctionComponent<{ipfsHash: string}> = ({ ipfsHash }
     target="_blank"
     rel="noopener noreferrer"
   >Description</a>
-};
+}
 
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
-  const [ isProposalVoteOpen, setIsProposalVoteOpen ] = useState<boolean>(false);
-  const { proposal: p } = proposal;
-  const totalVotes = p.forVotes + p.againstVotes;
+  const [ isProposalVoteOpen, setIsProposalVoteOpen ] = useState<boolean>(false)
+  const { proposal: p } = proposal
+  const totalVotes = p.forVotes + p.againstVotes
 
   const closeModal = (e: SyntheticEvent) => {
-    setIsProposalVoteOpen(false);
-    e.stopPropagation();
-  };
+    setIsProposalVoteOpen(false)
+    e.stopPropagation()
+  }
 
   return (
     <ClickableTile style={{ display: 'flex', justifyContent: 'space-between' }} onClick={() => setIsProposalVoteOpen(true)}>
@@ -49,7 +49,7 @@ const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
         <ProgressBar label="Quorum Progress" amount={p.forVotes} max={quorum} />
       </div>
     </ClickableTile>
-  );
+  )
 }
   
-export default Proposal;
+export default Proposal
