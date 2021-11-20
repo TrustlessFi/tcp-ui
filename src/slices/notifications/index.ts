@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { v4 as getUid } from 'uuid'
 import { getLocalStorage, timeMS } from '../../utils'
 import { TransactionStatus, TransactionType } from '../transactions'
+import { ChainID } from '@trustlessfi/addresses'
 
 export interface notificationArgs {
   hash?: string
   status: TransactionStatus
   userAddress: string
   type: TransactionType
+  chainID: ChainID
 }
 
 export interface notificationInfo extends notificationArgs {
