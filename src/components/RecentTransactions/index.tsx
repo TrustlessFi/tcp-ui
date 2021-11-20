@@ -1,7 +1,7 @@
 import { Button, InlineLoading, InlineLoadingStatus } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { clearUserTransactions, TransactionStatus, getTxNamePastTense, getTxNamePresentTense } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
@@ -51,7 +51,7 @@ const RecentTransactions = () => {
         key: tx.hash,
         data: {
           'Nonce': tx.nonce,
-          'Transaction': tx.status === TransactionStatus.Pending ? getTxNamePresentTense(tx.type) : getTxNamePastTense(tx.type),
+          'Transaction': getTxLongName(tx.args),
           'Start Time': getDateTimeString(tx.startTimeMS),
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
         },
