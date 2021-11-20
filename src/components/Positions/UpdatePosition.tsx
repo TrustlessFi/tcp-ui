@@ -29,7 +29,6 @@ import PositionMetadata from '../library/PositionMetadata'
 import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../Lend/library/InputPicker'
-import ApprovalButton from '../utils/ApprovalButton'
 import CreateTransactionButton from '../utils/CreateTransactionButton';
 import { Row, Col } from 'react-flexbox-grid'
 import PositionMetadata2 from '../library/PositionMetadata2';
@@ -223,11 +222,16 @@ const UpdatePosition = () => {
             ]} />
           </div>
           <div style={{marginTop: 32}}>
-            <ApprovalButton
-              disabled={debtIncrease >= 0}
-              token={ProtocolContract.Hue}
-              protocolContract={ProtocolContract.Market}
-              approvalLabels={{waiting: 'Approve Payback', approving: 'Approving Payback...', approved: 'Payback Approved'}}
+            <CreateTransactionButton
+              title={"Approve Payback"}
+              disabled={debtIncrease >= 0 || hueBalance.approval.Market?.approved}
+              showDisabledInsteadOfConnectWallet={true}
+              shouldOpenTxTab={false}
+              txArgs={{
+                type: TransactionType.ApproveHue,
+                Hue: hueContract!,
+                spenderAddress: marketContract!,
+              }}
             />
           </div>
           <div style={{marginTop: 32, marginBottom: 32}}>

@@ -1,7 +1,4 @@
 import { useState } from "react"
-import {
-  Button,
-} from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
@@ -15,9 +12,7 @@ import ErrorMessage from '../library/ErrorMessage'
 import { ProtocolContract } from '../../slices/contracts'
 import { selectionMade } from '../../slices/lendSelection'
 import { getAPR } from './library'
-import ApprovalButton from '../utils/ApprovalButton'
 import { zeroIfNaN } from '../../utils/index';
-import ConnectWalletButton from '../utils/ConnectWalletButton';
 import RelativeLoading from '../library/RelativeLoading';
 import { TransactionType } from '../../slices/transactions/index';
 import CreateTransactionButton from '../utils/CreateTransactionButton';
@@ -31,6 +26,7 @@ const Withdraw = () => {
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
   const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const lendHueContract = getContractWaitFunction(ProtocolContract.LendHue)(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
 
@@ -74,12 +70,6 @@ const Withdraw = () => {
 
   const convertHueToLendHue = (amount: number) => dataNull ? 1 : amount / market.valueOfLendTokensInHue
   const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * market.valueOfLendTokensInHue
-
-  const openWithdrawDialog = () => {
-    /*
-    dispatch(openModal())
-    */
-  }
 
   return (
     <>
@@ -125,11 +115,16 @@ const Withdraw = () => {
           ]} />
         </div>
       </div>
-      <ApprovalButton
-        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0}
-        token={ProtocolContract.LendHue}
-        protocolContract={ProtocolContract.Market}
-        approvalLabels={{waiting: 'Approve Withdraw', approving: 'Approve in Metamask...', approved: 'Withdraw Approved'}}
+      <CreateTransactionButton
+        title={"Approve Withdraw"}
+        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || lendHueBalance.approval.Market?.approved}
+        showDisabledInsteadOfConnectWallet={true}
+        shouldOpenTxTab={false}
+        txArgs={{
+          type: TransactionType.ApproveLendHue,
+          LendHue: lendHueContract!,
+          spenderAddress: marketContract!,
+        }}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
         <CreateTransactionButton
