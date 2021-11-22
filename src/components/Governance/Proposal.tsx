@@ -1,24 +1,13 @@
 import { FunctionComponent, SyntheticEvent, useState } from 'react'
 import { ClickableTile } from 'carbon-components-react'
-import { Proposal as IProposal, ProposalState } from '../../slices/proposals'
-import { AppTag } from '../library/AppTag'
+import { Proposal as IProposal } from '../../slices/proposals'
 import ProgressBar from '../library/ProgressBar'
 import { ProposalVoteModal } from './ProposalVoteModal'
+import { InlineAppTag, ProposalDescription } from './GovernanceSubcomponents'
 
 interface ProposalProps {
   proposal: IProposal
   quorum: number
-}
-
-const ProposalDescription: FunctionComponent<{ ipfsHash: string }> = ({ ipfsHash }) => {
-  if (!ipfsHash) {
-    return <span>Description TBD</span>
-  }
-  return <a
-    href={`https://gateway.ipfs.io/ipfs/${ipfsHash}`}
-    target="_blank"
-    rel="noopener noreferrer"
-  >Proposal Description</a>
 }
 
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
@@ -36,13 +25,7 @@ const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
       <ProposalVoteModal open={isProposalVoteOpen} onRequestClose={closeModal} proposal={proposal} />
       <div>
         <span> Proposal {p.id}: <ProposalDescription ipfsHash={p.ipfsHash} />. {p.state} </span>
-        <div style={{ display: 'inline' }}>
-          <AppTag
-            name={p.state}
-            color={p.state === ProposalState.Active ? 'blue' : 'gray'}
-            selected
-          />
-        </div>
+        <InlineAppTag proposalState={p.state} />
       </div>
       <div style={{ width: '25%', display: 'flex', flexDirection: 'column' }}>
         <ProgressBar label="Sentiment" amount={p.forVotes} max={totalVotes} />

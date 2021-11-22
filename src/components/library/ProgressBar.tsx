@@ -1,19 +1,23 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react'
 
 interface ProgressBarProps {
-  label: string;
-  amount: number;
-  max: number;
+  label: string
+  amount: number
+  max: number
+  rightLabel?: string
 }
 
 // Carbon doesn't have one of these yet AFAICT
-const ProgressBar: FunctionComponent<ProgressBarProps> = ({ label, amount, max }) => {
+const ProgressBar: FunctionComponent<ProgressBarProps> = ({ label, amount, max, rightLabel }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '4px' }}>
-      <label htmlFor={label} style={{ fontSize: 12 }} >{label}</label>
-      <progress id={label} value={amount} max={max}> {amount}% </progress>
+      <label htmlFor={label} style={{ fontSize: 12 }}>
+        {label}
+        {rightLabel && <span style={{ fontSize: 12, display: 'inline', float: 'right' }}>{rightLabel}</span>}
+      </label>
+      <progress id={label} value={amount} max={max} style={{ width: '100%' }}> {amount}% </progress>
     </div>
-  );
+  )
 }
   
-export default ProgressBar;
+export default ProgressBar

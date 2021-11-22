@@ -1,19 +1,19 @@
 import { CodeSnippet } from "carbon-components-react"
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, ethers } from "ethers"
 import { FunctionComponent } from "react"
 import { Proposal } from "../../slices/proposals"
 
 const getSignatureInfoRawString = (target: string, signature: string, calldata: string): string => {
-  const targetString = `target: ${target}`;
-  const signatureString = `signature: ${signature}`;
-  const calldataString = `calldata: ${calldata}`;
-  return `${targetString}\n${signatureString}\n${calldataString}`;
+  const targetString = `target: ${target}`
+  const signatureString = `signature: ${signature}`
+  const calldataString = `calldata: ${calldata}`
+  return `${targetString}\n${signatureString}\n${calldataString}`
 }
   
 const getSignatureInfoString = (signature: string, calldata: string): string => {
-  const functionName = signature.split('(')[0];
-  const functionParams = signature.split('(')[1].split(')')[0].split(', ');
-  let parameterValues = [];
+  const functionName = signature.split('(')[0]
+  const functionParams = signature.split('(')[1].split(')')[0].split(', ')
+  let parameterValues = []
   if (functionParams.length) {
     const values = ethers.utils.defaultAbiCoder.decode(functionParams, calldata)
     parameterValues = Object.values(values).map(value => {
@@ -24,12 +24,12 @@ const getSignatureInfoString = (signature: string, calldata: string): string => 
         return value.toString()
       }
       return value
-    });
+    })
   }
   const populatedSignature = `${functionName}(${parameterValues.join(', ')})`
   // Come back to this
   const targetContractName = 'TestContract'
-  // let targetContractName = Object.keys(addresses).find(key => addresses[key] === p.targets[i]);
+  // let targetContractName = Object.keys(addresses).find(key => addresses[key] === p.targets[i])
 
   return `${targetContractName}.${populatedSignature}`
 }
