@@ -1,6 +1,6 @@
-import { CodeSnippet, Modal } from "carbon-components-react"
+import { CodeSnippet } from "carbon-components-react"
 import { BigNumber, ethers } from "ethers";
-import { FunctionComponent, SyntheticEvent, useState } from "react"
+import { FunctionComponent } from "react"
 import { Proposal } from "../../slices/proposals"
 
 const getSignatureInfoRawString = (target: string, signature: string, calldata: string): string => {
@@ -18,7 +18,7 @@ const getSignatureInfoString = (signature: string, calldata: string): string => 
     const values = ethers.utils.defaultAbiCoder.decode(functionParams, calldata)
     parameterValues = Object.values(values).map(value => {
       if (BigNumber.isBigNumber(value)) {
-        return value.toHexString()
+        return value.toString()
       }
       if (value.type === Number) {
         return value.toString()
