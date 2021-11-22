@@ -18,7 +18,7 @@ const ProposalDescription: FunctionComponent<{ ipfsHash: string }> = ({ ipfsHash
     href={`https://gateway.ipfs.io/ipfs/${ipfsHash}`}
     target="_blank"
     rel="noopener noreferrer"
-  >Description</a>
+  >Proposal Description</a>
 }
 
 const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
