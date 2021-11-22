@@ -1,31 +1,14 @@
 import { CodeSnippet, Modal } from "carbon-components-react"
+import { BigNumber, ethers } from "ethers";
 import { FunctionComponent, SyntheticEvent, useState } from "react"
 import { Proposal } from "../../slices/proposals"
+import { SignatureInfo } from "./SignatureInfo";
 
 enum VoteChoice {
   YES = "YES",
   NO = "NO",
   NULL = "NULL",
 }
-
-const SignatureInfoRaw: FunctionComponent<{ proposal: Proposal }> = ({ proposal }) => {
-  const { proposal: p } = proposal
-  return (
-    <>
-      {p.targets.map((_, index) => {
-        const targetString = `target: ${p.targets[index]}`;
-        const signatureString = `signature: ${p.signatures[index]}`;
-        const calldataString = `calldata: ${p.calldatas[index]}`;
-        const rawString = `${targetString}\n${signatureString}\n${calldataString}`;
-        return (
-          <CodeSnippet key={`${p.targets[index]}-${index}`} type="multi">
-            {rawString}
-          </CodeSnippet>
-        )
-      })}
-    </>
-  )
-};
 
 const getVoteChoice = (proposal: Proposal): VoteChoice => {
   if (proposal.receipt.hasVoted) {
@@ -46,7 +29,7 @@ const ProposalVoteModalContent: FunctionComponent<{
   const [ showRaw, setShowRaw ] = useState<boolean>(false)
   console.log(proposal)
   return <div>
-    <SignatureInfoRaw proposal={proposal} />
+    <SignatureInfo proposal={proposal} showRaw={showRaw} />
   </div>
 
 };
