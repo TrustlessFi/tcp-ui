@@ -1,10 +1,9 @@
 import { Checkbox, Modal, RadioButtonGroup, RadioButton, Tile, RadioButtonValue } from "carbon-components-react"
 import { FunctionComponent, SyntheticEvent, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { ProtocolContract } from "../../slices/contracts"
 import { Proposal, ProposalState } from "../../slices/proposals"
 import { TransactionType } from "../../slices/transactions"
-import { getContractWaitFunction } from "../../slices/waitFor"
+import { waitForContracts } from "../../slices/waitFor"
 import { numDisplay } from "../../utils"
 import ProgressBar from "../library/ProgressBar"
 import CreateTransactionButton from "../utils/CreateTransactionButton"
@@ -58,7 +57,8 @@ const ProposalVoteModalContent: FunctionComponent<{
   quorum: number,
 }> = ({ proposal, quorum }) => {
   const dispatch = useAppDispatch()
-  const tcpGovernorAlpha = getContractWaitFunction(ProtocolContract.TcpGovernorAlpha)(useAppSelector, dispatch)
+  const contracts = waitForContracts(useAppSelector, dispatch)
+
 
   const initialVoteChoice = getVoteChoice(proposal)
   const [ voteChoice, setVoteChoice ] = useState<VoteChoice>(initialVoteChoice)
@@ -128,7 +128,7 @@ const ProposalVoteModalContent: FunctionComponent<{
               disabled={getIsVotingDisabled(proposal) || voteChoice === VoteChoice.NULL}
               txArgs={{
                 type: TransactionType.VoteProposal,
-                TcpGovernorAlpha: tcpGovernorAlpha!,
+                TcpGovernorAlpha: contracts!.TcpGovernorAlpha,
                 proposalID: p.id,
                 support: voteChoice === VoteChoice.YES,
               }}
