@@ -7,7 +7,7 @@ import {
   waitForMarket,
   waitForHueBalance,
   waitForEthBalance,
-  getContractWaitFunction,
+  waitForContracts,
   waitForPositions
 } from '../../slices/waitFor'
 import {
@@ -25,7 +25,6 @@ import { editorClosed } from '../../slices/positionsEditor'
 import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
 import Text from '../utils/Text'
-import PositionMetadata from '../library/PositionMetadata'
 import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../Lend/library/InputPicker'
@@ -66,8 +65,7 @@ const UpdatePosition = () => {
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
-  const hueContract = getContractWaitFunction(ProtocolContract.Hue)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
   const positions = waitForPositions(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
@@ -85,8 +83,7 @@ const UpdatePosition = () => {
     priceInfo === null ||
     market === null ||
     rates === null ||
-    marketContract === null ||
-    hueContract === null ||
+    contracts === null ||
     userEthBalance === null ||
     userAddress === null ||
     positions === null
@@ -229,8 +226,8 @@ const UpdatePosition = () => {
               shouldOpenTxTab={false}
               txArgs={{
                 type: TransactionType.ApproveHue,
-                Hue: hueContract!,
-                spenderAddress: marketContract!,
+                Hue: contracts!.Hue,
+                spenderAddress: contracts!.Market,
               }}
             />
           </div>
@@ -243,7 +240,7 @@ const UpdatePosition = () => {
                 positionID,
                 debtIncrease,
                 collateralIncrease,
-                Market: marketContract,
+                Market: contracts!.Market,
               }}
             />
           </div>

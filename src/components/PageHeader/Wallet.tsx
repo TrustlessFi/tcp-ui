@@ -21,8 +21,6 @@ const Wallet = () => {
   const chainID = getChainIDFromState(selector(state => state.chainID))
   const txs = selector(state => state.transactions)
 
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
-
   const walletConnected = getWalletConnectedFunction(dispatch)
 
   const chainChanged = (chainID: number | string) => {

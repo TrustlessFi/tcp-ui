@@ -3,7 +3,7 @@ import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Rewards, } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts'
+import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticalls, getMulticall, rc } from '@trustlessfi/multicall'
 
@@ -14,8 +14,8 @@ export type rewardsInfo = {
 }
 
 export type rewardsArgs = {
-  Rewards: string,
-  TrustlessMulticall: string,
+  contracts: ContractsInfo,
+  trustlessMulticall: string,
 }
 
 export interface RewardsState extends sliceState<rewardsInfo> {}
@@ -23,8 +23,9 @@ export interface RewardsState extends sliceState<rewardsInfo> {}
 export const getRewardsInfo = createAsyncThunk(
   'rewards/getRewardsInfo',
   async (args: rewardsArgs): Promise<rewardsInfo> => {
-    const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+    console.log("rewards/getRewardsInfo")
+    const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
     const { rewardsInfo } = await executeMulticalls(
       trustlessMulticall,
@@ -38,7 +39,7 @@ export const getRewardsInfo = createAsyncThunk(
           }
         ),
       }
-    ) 
+    )
 
     return rewardsInfo
   }

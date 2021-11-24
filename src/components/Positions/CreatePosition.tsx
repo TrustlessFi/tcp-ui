@@ -9,7 +9,7 @@ import {
   waitForRates,
   waitForPrices,
   waitForLiquidations,
-  getContractWaitFunction
+  waitForContracts,
 } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
 import Breadcrumbs from '../library/Breadcrumbs'
@@ -18,7 +18,6 @@ import RelativeLoading from '../library/RelativeLoading'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
-import { ProtocolContract } from '../../slices/contracts'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import { Row, Col } from 'react-flexbox-grid'
 
@@ -31,7 +30,7 @@ const CreatePosition = () => {
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
   const [collateralCount, setCollateralCount] = useState(0)
@@ -43,7 +42,7 @@ const CreatePosition = () => {
     priceInfo === null ||
     market === null ||
     rates === null ||
-    marketContract === null ||
+    contracts === null ||
     userEthBalance === null
 
   const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
@@ -140,7 +139,7 @@ const CreatePosition = () => {
                 type: TransactionType.CreatePosition,
                 collateralCount,
                 debtCount,
-                Market: marketContract!,
+                Market: contracts!.Market,
               }}
             />
           </div>

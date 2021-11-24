@@ -34,7 +34,7 @@ export interface balanceState extends sliceState<balanceInfo> {}
 export interface balanceArgs {
   tokenAddress: string,
   userAddress: string,
-  TrustlessMulticall: string,
+  trustlessMulticall: string,
 }
 
 export const tokenBalanceThunk = async (
@@ -42,8 +42,9 @@ export const tokenBalanceThunk = async (
   approvalsList: {contract: ProtocolContract, address: string}[],
   balancesList: {contract: ProtocolContract, address: string}[],
 ): Promise<balanceInfo> => {
+  console.log("inside tokenBalanceThunk")
   const token = contract(args.tokenAddress, erc20Artifact.abi)
-  const multicall = getMulticallContract(args.TrustlessMulticall)
+  const multicall = getMulticallContract(args.trustlessMulticall)
 
   const { basicInfo, approvals, balances, userBalance } = await executeMulticalls(
     multicall,

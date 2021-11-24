@@ -4,7 +4,7 @@ import { RootState } from '../../app/store'
 import { minutes, timeS } from '../../utils/'
 import { transactionsSlice, TransactionState } from '../../slices/transactions'
 import { positionsEditorSlice, PositionsEditorState } from '../../slices/positionsEditor'
-import { contractsSlice, ProtocolContractsState } from '../../slices/contracts'
+import { contractsSlice, ContractsState } from '../../slices/contracts'
 import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
@@ -17,7 +17,7 @@ import { notificationsSlice, NotificationState } from '../../slices/notification
 type slicesState =
   TransactionState |
   PositionsEditorState |
-  ProtocolContractsState |
+  ContractsState |
   poolsMetadata |
   liquidationsInfo |
   marketInfo |
@@ -44,7 +44,7 @@ const MEDIUM_EXPIRATION = minutes(5)
 const LONG_EXPIRATION = minutes(30)
 
 export const slicesToPersist: persistedSlices = {
-  
+
   // Simple slices
   [contractsSlice.name]: {
     slice: contractsSlice,

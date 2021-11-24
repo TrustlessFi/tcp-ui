@@ -3,6 +3,7 @@ import { sliceState, initialState } from '../'
 import { fetchPositions } from './api'
 import { systemDebtInfo } from '../systemDebt'
 import { marketInfo } from "../market"
+import { ContractsInfo } from '../contracts'
 import { getGenericReducerBuilder } from '../'
 
 export interface Position {
@@ -24,9 +25,8 @@ export interface positionsArgs {
   userAddress: string,
   sdi: systemDebtInfo,
   marketInfo: marketInfo,
-  Accounting: string,
-  HuePositionNFT: string,
-  TrustlessMulticall: string,
+  contracts: ContractsInfo,
+  trustlessMulticall: string,
 }
 
 export interface PositionsState extends sliceState<positionsInfo> {}

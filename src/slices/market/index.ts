@@ -2,13 +2,13 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Market } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts'
+import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage, mnt } from '../../utils'
 import { executeMulticall, rc } from '@trustlessfi/multicall'
 
 export interface marketArgs {
-  Market: string
-  TrustlessMulticall: string
+  contracts: ContractsInfo
+  trustlessMulticall: string
 }
 
 export type marketInfo = {
@@ -27,8 +27,9 @@ export interface MarketState extends sliceState<marketInfo> {}
 export const getMarketInfo = createAsyncThunk(
   'market/getMarketInfo',
   async (args: marketArgs): Promise<marketInfo> => {
-    const market = getContract(args.Market, ProtocolContract.Market) as Market
-    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+    console.log("inside getMarketIfno", {args})
+    const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
     return (await executeMulticall(
       trustlessMulticall,

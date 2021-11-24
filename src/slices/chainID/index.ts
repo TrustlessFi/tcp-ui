@@ -1,17 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ChainID } from '@trustlessfi/addresses'
+import { ChainID, getAddress } from '@trustlessfi/addresses'
+
+import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
+
 
 export interface ChainIDState {
   chainID: ChainID | null
   unknownChainID: number | null
+  governor: string | null
+  trustlessMulticall: string | null
+  protocolDataAggregator: string | null
 }
 
 const initialState: ChainIDState = {
   chainID: null,
   unknownChainID: null,
+  governor: null,
+  trustlessMulticall: null,
+  protocolDataAggregator: null,
 }
 
-export const getChainIDFromState = (state: ChainIDState) =>  
+export const getChainIDFromState = (state: ChainIDState) =>
   state.chainID !== null ? state.chainID : state.unknownChainID
 
 const name = 'chainID'
@@ -22,13 +31,20 @@ export const chainIDSlice = createSlice({
   reducers: {
     chainIDFound: (state, action: PayloadAction<number>) => {
       const chainID = action.payload
-      if (ChainID[chainID] === undefined) {
-        state.unknownChainID = chainID
-        state.chainID = null
-      } else {
-        state.unknownChainID = null
-        state.chainID = chainID
-      }
+      return ChainID[chainID] === undefined
+        ? {
+          unknownChainID: chainID,
+          chainID: null,
+          governor: null,
+          trustlessMulticall: null,
+          protocolDataAggregator: null
+        } : {
+          unknownChainID: null,
+          chainID,
+          governor: getAddress(chainID, 'TCP', 'Governor', localHardhatAddresses),
+          trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
+          protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
+        }
     },
   }
 })

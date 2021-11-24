@@ -4,7 +4,7 @@ import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
 import { Accounting } from '@trustlessfi/typechain';
-import { ProtocolContract } from '../contracts'
+import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 
 export type systemDebtInfo = {
@@ -15,7 +15,7 @@ export type systemDebtInfo = {
 }
 
 export type systemDebtArgs = {
-  Accounting: string
+  contracts: ContractsInfo
 }
 
 export interface SystemDebtState extends sliceState<systemDebtInfo> {}
@@ -23,7 +23,8 @@ export interface SystemDebtState extends sliceState<systemDebtInfo> {}
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
   async (args: systemDebtArgs) => {
-    const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
+    console.log("inside get sdi", {args})
+    const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
 
     const sdi = await accounting.getSystemDebtInfo()
 

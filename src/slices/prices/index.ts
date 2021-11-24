@@ -4,7 +4,7 @@ import { liquidationsInfo } from '../liquidations'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Prices } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts'
+import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { getMulticall, rc, executeMulticalls } from '@trustlessfi/multicall'
 
@@ -17,15 +17,17 @@ export interface PricesState extends sliceState<pricesInfo> {}
 
 export interface pricesArgs {
   liquidationsInfo: liquidationsInfo
-  Prices: string
-  TrustlessMulticall: string
+  contracts: ContractsInfo
+  trustlessMulticall: string
 }
 
 export const getPricesInfo = createAsyncThunk(
   'prices/getPricesInfo',
   async (args: pricesArgs): Promise<pricesInfo> => {
-    const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
-    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+
+    console.log('prices/getPricesInfo')
+    const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
     const { ethPrice } = await executeMulticalls(
       trustlessMulticall,
