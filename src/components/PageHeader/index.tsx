@@ -2,6 +2,7 @@ import { MouseEvent } from 'react'
 import { withRouter, useHistory, useLocation } from 'react-router'
 import { useEffect, useState, CSSProperties } from 'react'
 import { Row, Col } from 'react-flexbox-grid'
+import useWindowWidth from '../../hooks/useWindowWidth'
 import {
   Header,
   HeaderContainer,
@@ -27,19 +28,11 @@ const logo = require('../../img/tcp_logo_white.svg')
 const logo_name = require('../../img/tcp_logo_name_white.svg')
 
 const PageHeader = () => {
-  const [ windowWidth, setWindowWidth ] = useState(window.innerWidth)
   const [ areNavLinksHidden, setAreNavLinksHidden ] = useState(false)
 
-  const navLinks = "headerNavigationLinks"
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth)
-      const navLinksElement = document.getElementById(navLinks)
-      if (navLinksElement !== null) setAreNavLinksHidden(window.getComputedStyle(navLinksElement).display === 'none')
-    }
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('load', handleResize)
+  const isSmallViewport = useWindowWidth(() => {
+    const navLinksElement = document.getElementById('headerNavigationLinks')
+    if (navLinksElement !== null) setAreNavLinksHidden(window.getComputedStyle(navLinksElement).display === 'none')
   })
 
   const history = useHistory()
@@ -81,7 +74,6 @@ const PageHeader = () => {
     )
   })
 
-  const smallViewport = windowWidth < 800
   const iconSize = 28
   const iconMarginHorizontal = 12
 
@@ -100,7 +92,7 @@ const PageHeader = () => {
           <HeaderName href="/" prefix="" className='header_logo' >
             <div style={{marginRight: iconMarginHorizontal, marginLeft: iconMarginHorizontal}}>
               <Row middle="xs">
-                { smallViewport
+                { isSmallViewport
                   ? <img src={logo.default} alt="logo" width={iconSize} height={iconSize} />
                   : <img src={logo_name.default} alt="logo" height={iconSize} />
                 }
@@ -111,7 +103,7 @@ const PageHeader = () => {
             {tabs}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 16 }}>
-            {smallViewport ? null : <NetworkIndicator />}
+            {isSmallViewport ? null : <NetworkIndicator />}
             <span style={{marginLeft: 12}}>
               <Wallet />
             </span>
