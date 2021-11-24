@@ -21,8 +21,6 @@ export interface GovernorState extends sliceState<governorInfo> {}
 export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
   async (args: governorArgs) => {
-    console.log('governor/getGovernorInfo')
-
     const governor = getContract(args.Governor, RootContract.Governor) as Governor
 
     const [

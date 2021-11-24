@@ -23,7 +23,6 @@ export interface SystemDebtState extends sliceState<systemDebtInfo> {}
 export const getSystemDebtInfo = createAsyncThunk(
   'systemDebt/getSystemDebtInfo',
   async (args: systemDebtArgs) => {
-    console.log("inside get sdi", {args})
     const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
 
     const sdi = await accounting.getSystemDebtInfo()

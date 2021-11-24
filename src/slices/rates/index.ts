@@ -23,8 +23,6 @@ export interface RatesState extends sliceState<ratesInfo> {}
 export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
   async (args: ratesArgs): Promise<ratesInfo> => {
-
-    console.log("rates/getRatesInfo")
     const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 

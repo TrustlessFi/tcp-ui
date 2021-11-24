@@ -87,7 +87,6 @@ export const getMulticallContract = (address: string) =>
   getContract(address, RootContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
 const getContract = (address: string, theContract: ProtocolContract | RootContract, multicallViewOnly = false) => {
-  console.log("inside getContract", {address, theContract, multicallViewOnly})
   const getAbi = (): abi => {
     if (theContract === RootContract.TrustlessMulticall) {
       return multicallViewOnly ? trustlessMulticallViewOnlyArtifact.abi : trustlessMulticallArtifact.abi

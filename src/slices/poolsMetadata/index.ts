@@ -45,7 +45,6 @@ export interface PoolsMetadataState extends sliceState<poolsMetadata> {}
 export const getPoolsMetadata = createAsyncThunk(
   'poolsMetadata/getPoolMetadata',
   async (args: getPoolsMetadataArgs): Promise<poolsMetadata> => {
-    console.log('poolsMetadata/getPoolMetadata', {args})
     const provider = getProvider()
     const protocolDataAggregator = getContract(args.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
     const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards

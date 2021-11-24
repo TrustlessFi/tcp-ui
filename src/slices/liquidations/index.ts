@@ -23,8 +23,6 @@ export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 export const getLiquidationsInfo = createAsyncThunk(
   'liquidations/getLiquidationsInfo',
   async (args: liquidationsArgs): Promise<liquidationsInfo> => {
-
-    console.log("liquidations/getLiquidationsInfo")
     const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 

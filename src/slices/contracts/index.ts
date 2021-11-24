@@ -42,13 +42,9 @@ export interface contractsArgs {
 export const getContracts = createAsyncThunk(
   'contracts/getContracts',
   async (args: contractsArgs): Promise<ContractsInfo> => {
-    console.log("inside get contracts 0", args)
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-    console.log("inside get contracts 1")
     const governor = getContract(args.governor, RootContract.Governor) as Governor
-    console.log("inside get contracts 2")
 
-    console.log("before result")
     const result =  (await executeMulticall(
       trustlessMulticall,
       governor,
@@ -72,7 +68,6 @@ export const getContracts = createAsyncThunk(
         tcpAllocation: rc.String,
       },
     ))
-    console.log("after result", {result})
 
     return {
       [ProtocolContract.Accounting]: result.accounting,
