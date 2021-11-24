@@ -1,9 +1,13 @@
 import { Checkbox, Modal, RadioButtonGroup, RadioButton, Tile, RadioButtonValue } from "carbon-components-react"
-import { ChangeEvent, FunctionComponent, SyntheticEvent, useState } from "react"
+import { FunctionComponent, SyntheticEvent, useState } from "react"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { ProtocolContract } from "../../slices/contracts"
 import { Proposal, ProposalState } from "../../slices/proposals"
+import { TransactionType } from "../../slices/transactions"
+import { getContractWaitFunction } from "../../slices/waitFor"
 import { numDisplay } from "../../utils"
-import { ExecuteButton } from "../library/ExecuteButton"
 import ProgressBar from "../library/ProgressBar"
+import CreateTransactionButton from "../utils/CreateTransactionButton"
 import { InlineAppTag, ProposalDescription } from "./GovernanceSubcomponents"
 import { SignatureInfo } from "./SignatureInfo"
 
@@ -53,15 +57,18 @@ const ProposalVoteModalContent: FunctionComponent<{
   proposal: Proposal,
   quorum: number,
 }> = ({ proposal, quorum }) => {
+  const dispatch = useAppDispatch()
+  const tcpGovernorAlpha = getContractWaitFunction(ProtocolContract.TcpGovernorAlpha)(useAppSelector, dispatch)
+
   const initialVoteChoice = getVoteChoice(proposal)
   const [ voteChoice, setVoteChoice ] = useState<VoteChoice>(initialVoteChoice)
   const [ showRaw, setShowRaw ] = useState<boolean>(false)
+
   const { proposal: p } = proposal
   const totalVotes = p.forVotes + p.againstVotes
   const voteForPercentage = Math.round(p.forVotes / totalVotes * 100) || 0
   const voteAgainstPercentage = Math.round(p.againstVotes / totalVotes * 100) || 0
   const quorumRounded = Math.round(quorum)
-  const votingDisabled = getIsVotingDisabled(proposal) || voteChoice === VoteChoice.NULL
 
   const handleVoteChange = (newSelection: RadioButtonValue): void => {
     setVoteChoice(newSelection as VoteChoice)
@@ -111,23 +118,21 @@ const ProposalVoteModalContent: FunctionComponent<{
               legendText="Do you support this proposal?"
               onChange={handleVoteChange}
               valueSelected={voteChoice}
-              disabled={votingDisabled}
+              disabled={getIsVotingDisabled(proposal)}
             >
               <RadioButton labelText="Yes" value={VoteChoice.YES} id="proposal-vote-yes" />
               <RadioButton labelText="No" value={VoteChoice.NO} id="proposal-vote-no" />
             </RadioButtonGroup>
-            <ExecuteButton
-              buttonLabel={{
-                notExecuted: 'Cast Vote',
-                executing: 'Voting...',
-                executed: 'Voted',
+            <CreateTransactionButton
+              title="Cast Vote"
+              disabled={getIsVotingDisabled(proposal) || voteChoice === VoteChoice.NULL}
+              txArgs={{
+                type: TransactionType.VoteProposal,
+                TcpGovernorAlpha: tcpGovernorAlpha!,
+                proposalID: p.id,
+                support: voteChoice === VoteChoice.YES,
               }}
-              executing={proposal.voting}
-              executed={proposal.voted}
-              disabled={votingDisabled}
-              // TODO: implement voting
-              onClick={() => console.log('Need to implment this')}
-              size='field'
+              style={{ marginTop: 8, width: '50%' }}
             />
           </div>
         </Tile>
