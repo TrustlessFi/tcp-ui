@@ -59,7 +59,6 @@ const ProposalVoteModalContent: FunctionComponent<{
   const dispatch = useAppDispatch()
   const contracts = waitForContracts(useAppSelector, dispatch)
 
-
   const initialVoteChoice = getVoteChoice(proposal)
   const [ voteChoice, setVoteChoice ] = useState<VoteChoice>(initialVoteChoice)
   const [ showRaw, setShowRaw ] = useState<boolean>(false)
@@ -69,6 +68,9 @@ const ProposalVoteModalContent: FunctionComponent<{
   const voteForPercentage = Math.round(p.forVotes / totalVotes * 100) || 0
   const voteAgainstPercentage = Math.round(p.againstVotes / totalVotes * 100) || 0
   const quorumRounded = Math.round(quorum)
+  const forVotesRounded = Math.round(p.forVotes);
+  const againstVotesRounded = Math.round(p.againstVotes);
+  const totalVotesRounded = Math.round(totalVotes);
 
   const handleVoteChange = (newSelection: RadioButtonValue): void => {
     setVoteChoice(newSelection as VoteChoice)
@@ -94,19 +96,19 @@ const ProposalVoteModalContent: FunctionComponent<{
             label={`For ${voteForPercentage}%`}
             amount={p.forVotes}
             max={totalVotes}
-            rightLabel={`${p.forVotes} / ${totalVotes}`}
+            rightLabel={`${forVotesRounded} / ${totalVotesRounded}`}
           />
           <ProgressBar
             label={`Against ${voteAgainstPercentage}%`}
             amount={p.againstVotes}
             max={totalVotes}
-            rightLabel={`${p.againstVotes} / ${totalVotes}`}
+            rightLabel={`${againstVotesRounded} / ${totalVotesRounded}`}
           />
           <ProgressBar
             label={p.forVotes > quorum ? "Quorum Reached" : "Quorum Not Reached"}
             amount={p.forVotes}
             max={quorum}
-            rightLabel={`${p.forVotes} / ${quorumRounded}`}
+            rightLabel={`${forVotesRounded} / ${quorumRounded}`}
           />
         </Tile>
         <Tile style={{ flex: '0 1 50%', marginLeft: 8 }} light >
