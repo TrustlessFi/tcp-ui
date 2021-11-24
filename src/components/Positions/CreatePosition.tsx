@@ -20,6 +20,7 @@ import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import { Row, Col } from 'react-flexbox-grid'
+import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -104,71 +105,73 @@ const CreatePosition = () => {
 
   const paragraphDivider = <div style={{height: 32}} />
 
+  const columnOne =
+    <>
+      <div style={{marginBottom: 8}}>
+        Collateral Eth
+      </div>
+      <div style={{marginBottom: 8}}>
+        <PositionNumberInput
+          id="collateralInput"
+          action={(value: number) => setCollateralCount(value)}
+          value={collateralCount}
+        />
+      </div>
+      <div style={{marginBottom: 8}}>
+        Borrow Hue
+      </div>
+      <div>
+        <PositionNumberInput
+          id="debtInput"
+          action={(value: number) => setDebtCount(value)}
+          value={debtCount}
+        />
+      </div>
+      <PositionMetadata2 items={metadataItems} />
+      <div style={{marginTop: 8, marginBottom: 8}}>
+        <CreateTransactionButton
+          title="Confirm Position in Metamask"
+          disabled={isFailing}
+          txArgs={{
+            type: TransactionType.CreatePosition,
+            collateralCount,
+            debtCount,
+            Market: contracts === null ? '' : contracts.Market,
+          }}
+        />
+      </div>
+      <div style={{marginTop: 8}}>
+        <ErrorMessage reasons={failureReasons} />
+      </div>
+    </>
+
+  const columnTwo =
+    <LargeText>
+      You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
+
+      {paragraphDivider}
+
+      You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
+      In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
+      The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
+      to maintain liquidation incentives.
+
+      {paragraphDivider}
+
+      Hue debt currently carries a {interestRateDisplay} interest rate
+        that will vary due to market forces.
+      The price of Eth is currently {ethPriceDisplay} Hue. If the price of Eth falls
+      below <Bold>{liquidationPriceDisplay}</Bold> Hue you could
+      lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
+    </LargeText>
+
   return (
-    <div style={{position: 'relative'}}>
-      <Breadcrumbs items={[{ text: 'Positions', href: '/' }, 'New']} />
-      <RelativeLoading show={userAddress !== null && dataNull} />
-      <Row middle='xs'>
-        <Col xs={4}>
-          <div style={{marginBottom: 8}}>
-            Collateral Eth
-          </div>
-          <div style={{marginBottom: 8}}>
-            <PositionNumberInput
-              id="collateralInput"
-              action={(value: number) => setCollateralCount(value)}
-              value={collateralCount}
-            />
-          </div>
-          <div style={{marginBottom: 8}}>
-            Borrow Hue
-          </div>
-          <div>
-            <PositionNumberInput
-              id="debtInput"
-              action={(value: number) => setDebtCount(value)}
-              value={debtCount}
-            />
-          </div>
-          <PositionMetadata2 items={metadataItems} />
-          <div style={{marginTop: 8, marginBottom: 8}}>
-            <CreateTransactionButton
-              title="Confirm Position in Metamask"
-              disabled={isFailing}
-              txArgs={{
-                type: TransactionType.CreatePosition,
-                collateralCount,
-                debtCount,
-                Market: contracts!.Market,
-              }}
-            />
-          </div>
-          <div style={{marginTop: 8}}>
-            <ErrorMessage reasons={failureReasons} />
-          </div>
-        </Col>
-        <Col xs={8}>
-          <LargeText>
-            You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
-
-            {paragraphDivider}
-
-            You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
-            In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
-            The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
-            to maintain liquidation incentives.
-
-            {paragraphDivider}
-
-            Hue debt currently carries a {interestRateDisplay} interest rate
-              that will vary due to market forces.
-            The price of Eth is currently {ethPriceDisplay} Hue. If the price of Eth falls
-            below <Bold>{liquidationPriceDisplay}</Bold> Hue you could
-            lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
-          </LargeText>
-        </Col>
-      </Row>
-    </div>
+    <TwoColumnDisplay
+      columnOne={columnOne}
+      columnTwo={columnTwo}
+      loading={userAddress !== null && dataNull}
+      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'New']}
+    />
   )
 }
 

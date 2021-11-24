@@ -1,8 +1,11 @@
 import { Row, Col } from 'react-flexbox-grid'
 import Text from '../utils/Text'
 
-type metadata = {value: string, title: string, failing?: boolean}
-
+export interface metadata {
+  value: string,
+  title: string,
+  failing?: boolean
+}
 
 const PositionMetadata2 = ({items}: { items: metadata[]}) => {
 
