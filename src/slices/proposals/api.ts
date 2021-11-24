@@ -84,7 +84,8 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
 })
 
 export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
-  const tcpGovernorAlpha = getContract(args.TcpGovernorAlpha, ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
+  console.log("inside genProposals")
+  const tcpGovernorAlpha = getContract(args.contracts[ProtocolContract.TcpGovernorAlpha], ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
 
   const [rawProposalData, quorumVotes] = await Promise.all([
     (tcpGovernorAlpha as TcpGovernorAlpha).getAllProposals(args.userAddress),

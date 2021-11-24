@@ -1,19 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { initialState, getGenericReducerBuilder } from '../../'
 import { balanceState, tokenBalanceThunk } from '../'
-import { ProtocolContract } from '../../contracts'
-import getProvider from '../../../utils/getProvider';
-import getContract from '../../../utils/getContract';
-import { Hue } from '@trustlessfi/typechain'
-import { uint256Max } from '../../../utils'
-import { TransactionType, } from '../../transactions'
+import { ProtocolContract, ContractsInfo } from '../../contracts'
 import { ChainID } from '@trustlessfi/addresses'
 
 export type hueBalanceArgs = {
-  Hue: string
-  Market: string
-  Accounting: string
-  TrustlessMulticall: string
+  contracts: ContractsInfo
+  trustlessMulticall: string
   userAddress: string
 }
 
@@ -27,11 +20,11 @@ export type hueApproveArgs = {
 export const getHueBalance = createAsyncThunk(
   'hueBalance/getHueBalance',
   async (args: hueBalanceArgs) => tokenBalanceThunk(
-    { tokenAddress: args.Hue, userAddress: args.userAddress, TrustlessMulticall: args.TrustlessMulticall},
-    [{contract: ProtocolContract.Market, address: args.Market}],
+    { tokenAddress: args.contracts[ProtocolContract.Hue], userAddress: args.userAddress, trustlessMulticall: args.trustlessMulticall},
+    [{contract: ProtocolContract.Market, address: args.contracts[ProtocolContract.Market]}],
     [
-      {contract: ProtocolContract.Hue, address: args.Hue},
-      {contract: ProtocolContract.Accounting, address: args.Accounting},
+      {contract: ProtocolContract.Hue, address: args.contracts[ProtocolContract.Hue]},
+      {contract: ProtocolContract.Accounting, address: args.contracts[ProtocolContract.Accounting]},
     ],
   ),
 )

@@ -5,7 +5,7 @@ import { ContractInterface, Contract } from "ethers"
 import { Web3Provider } from '@ethersproject/providers'
 
 import getProvider from './getProvider'
-import { ProtocolContract } from '../slices/contracts'
+import { ProtocolContract, RootContract } from '../slices/contracts'
 
 // ==================== Typechain =========================
 import {
@@ -57,19 +57,16 @@ import { assertUnreachable } from '@trustlessfi/utils'
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }
 
-const artifactLookup: {[key in ProtocolContract]: contractAbi} = {
+const artifactLookup: {[key in ProtocolContract | RootContract]: contractAbi} = {
   [ProtocolContract.Accounting]: accountingArtifact,
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
-  [ProtocolContract.Governor]: governorArtifact,
   [ProtocolContract.Hue]: hueArtifact,
   [ProtocolContract.HuePositionNFT]: huePositionNFTArtifact,
   [ProtocolContract.LendHue]: lendHueArtifact,
   [ProtocolContract.Liquidations]: liquidationsArtifact,
   [ProtocolContract.Market]: marketArtifact,
-  [ProtocolContract.TrustlessMulticall]: trustlessMulticallArtifact,
   [ProtocolContract.Prices]: pricesArtifact,
-  [ProtocolContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [ProtocolContract.ProtocolLock]: protocolLockArtifact,
   [ProtocolContract.Rates]: ratesArtifact,
   [ProtocolContract.Rewards]: rewardsArtifact,
@@ -77,34 +74,37 @@ const artifactLookup: {[key in ProtocolContract]: contractAbi} = {
   [ProtocolContract.Tcp]: tcpArtifact,
   [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
+
+  [RootContract.Governor]: governorArtifact,
+  [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
+  [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
 }
 
 export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
   new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
 
 export const getMulticallContract = (address: string) =>
-  getContract(address, ProtocolContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
+  getContract(address, RootContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
-const getContract = (address: string, protocolContract: ProtocolContract, multicallViewOnly = false) => {
+const getContract = (address: string, theContract: ProtocolContract | RootContract, multicallViewOnly = false) => {
+  console.log("inside getContract", {address, theContract, multicallViewOnly})
   const getAbi = (): abi => {
-    if (protocolContract === ProtocolContract.TrustlessMulticall) {
+    if (theContract === RootContract.TrustlessMulticall) {
       return multicallViewOnly ? trustlessMulticallViewOnlyArtifact.abi : trustlessMulticallArtifact.abi
     } else {
-      return artifactLookup[protocolContract].abi
+      return artifactLookup[theContract].abi
     }
   }
 
   const contract = new Contract(address, getAbi(), getProvider())
 
-  switch (protocolContract) {
+  switch (theContract) {
     case ProtocolContract.Accounting:
       return contract as Accounting
     case ProtocolContract.Auctions:
       return contract as Auctions
     case ProtocolContract.EnforcedDecentralization:
       return contract as EnforcedDecentralization
-    case ProtocolContract.Governor:
-      return contract as Governor
     case ProtocolContract.Hue:
       return contract as Hue
     case ProtocolContract.HuePositionNFT:
@@ -115,12 +115,8 @@ const getContract = (address: string, protocolContract: ProtocolContract, multic
       return contract as Liquidations
     case ProtocolContract.Market:
       return contract as Market
-    case ProtocolContract.TrustlessMulticall:
-      return contract as TrustlessMulticall
     case ProtocolContract.Prices:
       return contract as Prices
-    case ProtocolContract.ProtocolDataAggregator:
-      return contract as ProtocolDataAggregator
     case ProtocolContract.ProtocolLock:
       return contract as ProtocolLock
     case ProtocolContract.Rates:
@@ -135,10 +131,15 @@ const getContract = (address: string, protocolContract: ProtocolContract, multic
       return contract as TcpGovernorAlpha
     case ProtocolContract.TcpTimelock:
       return contract as TcpTimelock
-    default:
-      assertUnreachable(protocolContract)
 
-    throw new Error('getContract: Should never get here')
+    case RootContract.Governor:
+      return contract as Governor
+    case RootContract.ProtocolDataAggregator:
+      return contract as ProtocolDataAggregator
+    case RootContract.TrustlessMulticall:
+      return contract as TrustlessMulticall
+    default:
+      assertUnreachable(theContract)
   }
 }
 

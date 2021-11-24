@@ -3,6 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, initialState } from '../'
 import { fetchLiquidityPositions } from './api'
 import { getGenericReducerBuilder } from '../'
+import { ContractsInfo } from '../contracts'
+
 
 export interface LiquidityPosition {
   positionID: string
@@ -20,8 +22,8 @@ export interface LiquidityPosition {
 export interface liquidityPositions { [id: string]: LiquidityPosition }
 
 export interface liquidityPositionsArgs {
-  Accounting: string,
-  TrustlessMulticall: string,
+  contracts: ContractsInfo
+  trustlessMulticall: string
   userAddress: string
 }
 

@@ -8,8 +8,9 @@ import { executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multi
 import { Accounting } from '@trustlessfi/typechain'
 
 export const fetchLiquidityPositions = async (args: liquidityPositionsArgs): Promise<liquidityPositions> => {
-  const accounting = getContract(args.Accounting, ProtocolContract.Accounting) as Accounting
-  const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+  console.log('fetchLiquidityPosition s')
+  const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
+  const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
   const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
 

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
+import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import { LendBorrowOption } from './'
@@ -25,8 +25,7 @@ const Withdraw = () => {
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
-  const lendHueContract = getContractWaitFunction(ProtocolContract.LendHue)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
 
@@ -38,7 +37,7 @@ const Withdraw = () => {
     market === null ||
     rates === null ||
     sdi === null ||
-    marketContract === null
+    contracts === null
 
   const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
 
@@ -122,8 +121,8 @@ const Withdraw = () => {
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApproveLendHue,
-          LendHue: lendHueContract!,
-          spenderAddress: marketContract!,
+          LendHue: contracts!.LendHue,
+          spenderAddress: contracts!.Market,
         }}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
@@ -133,7 +132,7 @@ const Withdraw = () => {
           txArgs={{
             type: TransactionType.Withdraw,
             count: convertHueToLendHue(amount),
-            Market: marketContract!,
+            Market: contracts!.Market,
           }}
         />
       </div>

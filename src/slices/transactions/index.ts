@@ -87,7 +87,7 @@ export interface txCreateLiquidityPositionArgs {
   amount0Min: number
   amount1Desired: number
   amount1Min: number
-  TrustlessMulticall: string
+  trustlessMulticall: string
   Rewards: string
 }
 
@@ -98,7 +98,7 @@ export interface txIncreaseLiquidityPositionArgs {
   amount0Change: number
   amount1Change: number
   Rewards: string
-  TrustlessMulticall: string
+  trustlessMulticall: string
 }
 
 export interface txDecreaseLiquidityPositionArgs {
@@ -109,7 +109,7 @@ export interface txDecreaseLiquidityPositionArgs {
   amount1Min: number
   liquidity: number
   Rewards: string
-  TrustlessMulticall: string
+  trustlessMulticall: string
 }
 
 export interface txClaimPositionRewards {
@@ -289,7 +289,7 @@ const executeTransaction = async (
 
       const ethCount = (args.token0IsWeth ? amount0Desired : bnf(0)).add(args.token1IsWeth ? amount1Desired : bnf(0))
 
-      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
+      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       return await rewards.createLiquidityPosition({
         token0: args.token0,
@@ -311,7 +311,7 @@ const executeTransaction = async (
     case TransactionType.IncreaseLiquidityPosition:
       rewards = getRewards(args.Rewards)
 
-      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
+      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       console.log(args)
 
@@ -328,7 +328,7 @@ const executeTransaction = async (
     case TransactionType.DecreaseLiquidityPosition:
       rewards = getRewards(args.Rewards)
 
-      deadline = await getDeadline(args.chainID, args.TrustlessMulticall)
+      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       console.log(args)
 

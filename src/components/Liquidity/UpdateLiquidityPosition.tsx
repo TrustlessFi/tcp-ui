@@ -3,7 +3,7 @@ import { useParams } from 'react-router'
 import { Percent, Token } from '@uniswap/sdk-core'
 import { FeeAmount, Pool, Position, TickMath } from '@uniswap/v3-sdk'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getContractWaitFunction, getPoolCurrentDataWaitFunction, waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
+import { waitForContracts, getPoolCurrentDataWaitFunction, waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
 import { bnf, displaySymbol, getPoolName, SLIPPAGE_TOLERANCE, tickToPriceDisplay } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo'
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates'
@@ -11,7 +11,6 @@ import InputPicker from '../Lend/library/InputPicker'
 import Breadcrumbs from '../library/Breadcrumbs'
 import LargeText from '../utils/LargeText'
 import { TransactionArgs, TransactionType, txDecreaseLiquidityPositionArgs, txIncreaseLiquidityPositionArgs } from '../../slices/transactions';
-import { ProtocolContract } from '../../slices/contracts';
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import PositionNumberInput from '../library/PositionNumberInput'
 
@@ -29,12 +28,12 @@ const UpdateLiquidityPosition = () => {
   const dispatch = useAppDispatch();
 
   const chainID = selector(state => state.chainID.chainID)
+  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
 
-  const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
-  const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
-
+  const contracts = waitForContracts(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
+
 
   const position = liquidityPositions && liquidityPositions[params.positionID]
   const pool = poolsMetadata && position && Object.values(poolsMetadata).find(pool => pool.poolID === position.poolID)
@@ -72,8 +71,8 @@ const UpdateLiquidityPosition = () => {
   let txArgs = {
     chainID: chainID!,
     positionID: Number(position?.positionID),
-    TrustlessMulticall: trustlessMulticallAddress!,
-    Rewards: rewardsAddress!,
+    trustlessMulticall,
+    Rewards: contracts!.Rewards,
   }
 
   if(changeType === ChangeType.Increase && chainID && pool && poolCurrentData) {

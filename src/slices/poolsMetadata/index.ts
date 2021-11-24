@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Fee } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 import getProvider from '../../utils/getProvider';
-import { ProtocolContract } from '../contracts/index';
+import { ProtocolContract, RootContract, ContractsInfo } from '../contracts/index';
 import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
@@ -15,9 +15,9 @@ import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts
 import { zeroAddress, unique } from '../../utils'
 
 export interface getPoolsMetadataArgs {
-  Rewards: string
-  TrustlessMulticall: string
-  ProtocolDataAggregator: string
+  contracts: ContractsInfo
+  trustlessMulticall: string
+  protocolDataAggregator: string
   userAddress: string
 }
 
@@ -27,7 +27,6 @@ export interface tokenMetadata {
   symbol: string
   decimals: number
 }
-
 
 export interface poolMetadata {
   fee: Fee
@@ -46,10 +45,11 @@ export interface PoolsMetadataState extends sliceState<poolsMetadata> {}
 export const getPoolsMetadata = createAsyncThunk(
   'poolsMetadata/getPoolMetadata',
   async (args: getPoolsMetadataArgs): Promise<poolsMetadata> => {
+    console.log('poolsMetadata/getPoolMetadata', {args})
     const provider = getProvider()
-    const protocolDataAggregator = getContract(args.ProtocolDataAggregator, ProtocolContract.ProtocolDataAggregator) as ProtocolDataAggregator
-    const rewards = getContract(args.Rewards, ProtocolContract.Rewards) as Rewards
-    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+    const protocolDataAggregator = getContract(args.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
+    const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
     // TODO make this into it's own node and cache for 30 minutes
     const poolConfigs = await protocolDataAggregator.getIncentivizedPools()

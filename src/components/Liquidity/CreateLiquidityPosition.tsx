@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , getContractWaitFunction , waitForEthBalance } from '../../slices/waitFor'
+import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata , waitForContracts , waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
@@ -21,7 +21,6 @@ import PositionNumberInput from '../library/PositionNumberInput'
 import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
-import { ProtocolContract } from '../../slices/contracts/index';
 import { reason } from '../library/ErrorMessage';
 import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
@@ -72,14 +71,15 @@ const CreateLiquidityPosition = () => {
 
   const { poolAddress }: MatchParams = useParams()
 
-  const trustlessMulticallAddress = getContractWaitFunction(ProtocolContract.TrustlessMulticall)(selector, dispatch)
-  const rewardsAddress = getContractWaitFunction(ProtocolContract.Rewards)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
   const userEthBalance = waitForEthBalance(selector, dispatch)
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+
   const chainID = selector(state => state.chainID.chainID)
+  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
 
   const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
 
@@ -130,10 +130,11 @@ const CreateLiquidityPosition = () => {
     const disabled =
       token === undefined
       || tokenData === undefined
-      || rewardsAddress === null
+      || contracts === null
       || userAddress === null
       || pool === null
       || chainID === null
+      || trustlessMulticall === null
       || tokenData.rewardsApproval.approved
 
     const symbol = tokenIndex === 0 ? token0Symbol : token1Symbol
@@ -149,7 +150,7 @@ const CreateLiquidityPosition = () => {
         txArgs={{
           type: TransactionType.ApprovePoolToken,
           tokenAddress: token!.address,
-          Rewards: rewardsAddress!,
+          Rewards: contracts!.Rewards,
           poolAddress,
           symbol,
         }}
@@ -310,8 +311,8 @@ const CreateLiquidityPosition = () => {
               amount0Min,
               amount1Desired,
               amount1Min,
-              TrustlessMulticall: trustlessMulticallAddress!,
-              Rewards: rewardsAddress!,
+              trustlessMulticall: trustlessMulticall!,
+              Rewards: contracts!.Rewards,
             }}
           />
         </div>

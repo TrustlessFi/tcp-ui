@@ -4,7 +4,7 @@ import {
 } from 'carbon-components-react'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, getContractWaitFunction, waitForRates, waitForSDI } from '../../slices/waitFor'
+import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import { LendBorrowOption } from './'
@@ -28,8 +28,7 @@ const Lend = () => {
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
-  const hueContract = getContractWaitFunction(ProtocolContract.Hue)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
 
@@ -41,7 +40,7 @@ const Lend = () => {
     market === null ||
     rates === null ||
     sdi === null ||
-    marketContract === null
+    contracts === null
 
   const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
 
@@ -120,8 +119,8 @@ const Lend = () => {
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApproveHue,
-          Hue: hueContract!,
-          spenderAddress: marketContract!,
+          Hue: contracts!.Hue,
+          spenderAddress: contracts!.Market,
         }}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
@@ -131,7 +130,7 @@ const Lend = () => {
           txArgs={{
             type: TransactionType.Lend,
             count: amount,
-            Market: marketContract!,
+            Market: contracts!.Market,
           }}
         />
       </div>

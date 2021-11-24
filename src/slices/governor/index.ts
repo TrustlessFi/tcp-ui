@@ -4,7 +4,7 @@ import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 
 import { Governor } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts/';
+import { RootContract } from '../contracts/';
 import getContract from '../../utils/getContract'
 
 export type governorArgs = {
@@ -21,8 +21,9 @@ export interface GovernorState extends sliceState<governorInfo> {}
 export const getGovernorInfo = createAsyncThunk(
   'governor/getGovernorInfo',
   async (args: governorArgs) => {
+    console.log('governor/getGovernorInfo')
 
-    const governor = getContract(args.Governor, ProtocolContract.Governor) as Governor
+    const governor = getContract(args.Governor, RootContract.Governor) as Governor
 
     const [
       phase,

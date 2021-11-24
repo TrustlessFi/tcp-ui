@@ -21,18 +21,20 @@ import { zeroAddress , unscale } from '../../utils/index';
 
 export const fetchPoolCurrentData = async (args: poolCurrentDataArgs): Promise<poolCurrentInfo> => {
     const provider = getProvider()
-    const prices = getContract(args.Prices, ProtocolContract.Prices) as Prices
-    const trustlessMulticall = getMulticallContract(args.TrustlessMulticall)
+    const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-    enforce(args.PoolsMetadata.hasOwnProperty(args.poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + args.poolAddress)
-    const pool = args.PoolsMetadata[args.poolAddress]
+    enforce(args.poolsMetadata.hasOwnProperty(args.poolAddress), 'fetchPoolCurrentData: poolsMetadata missing poolAddress: ' + args.poolAddress)
+    const pool = args.poolsMetadata[args.poolAddress]
     const poolContract = new Contract(args.poolAddress, poolArtifact.abi, provider) as UniswapV3Pool
     const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider) as ERC20
 
+    const rewards = args.contracts[ProtocolContract.Rewards]
+
     const token0UserBalanceSelector = getFullSelector(tokenContract, pool.token0.address, 'balanceOf', [args.userAddress])
     const token1UserBalanceSelector = getFullSelector(tokenContract, pool.token1.address, 'balanceOf', [args.userAddress])
-    const token0AllowanceSelector = getFullSelector(tokenContract, pool.token0.address, 'allowance', [args.userAddress, args.Rewards])
-    const token1AllowanceSelector = getFullSelector(tokenContract, pool.token1.address, 'allowance', [args.userAddress, args.Rewards])
+    const token0AllowanceSelector = getFullSelector(tokenContract, pool.token0.address, 'allowance', [args.userAddress, rewards])
+    const token1AllowanceSelector = getFullSelector(tokenContract, pool.token1.address, 'allowance', [args.userAddress, rewards])
 
     const currentData = await executeMulticalls(
       trustlessMulticall,

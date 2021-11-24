@@ -10,10 +10,9 @@ import RelativeLoading from '../library/RelativeLoading'
 import { numDisplay } from '../../utils'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import Text from '../utils/Text'
-import CreateTransactionButton from '../utils/CreateTransactionButton';
-import { TransactionType } from '../../slices/transactions/index';
-import { getContractWaitFunction } from '../../slices/waitFor';
-import { ProtocolContract } from '../../slices/contracts/index';
+import CreateTransactionButton from '../utils/CreateTransactionButton'
+import { TransactionType } from '../../slices/transactions'
+import { waitForContracts } from '../../slices/waitFor'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
@@ -22,9 +21,11 @@ const ExistingPositionsTable = () => {
   const positions = waitForPositions(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
 
-  if (positions === null || priceInfo === null || positions === null || marketContract === null) {
+  console.log({positions, priceInfo, userAddress, contracts})
+
+  if (positions === null || priceInfo === null || userAddress === null || contracts === null) {
     return (
       <div style={{position: 'relative'}}>
         <RelativeLoading show={userAddress !== null} />
@@ -86,7 +87,7 @@ const ExistingPositions = () => {
   const history = useHistory()
 
   const positions = waitForPositions(selector, dispatch)
-  const marketContract = getContractWaitFunction(ProtocolContract.Market)(selector, dispatch)
+  const contracts = waitForContracts(selector, dispatch)
 
   const positionsIDsWithRewards =
     positions === null
@@ -99,12 +100,12 @@ const ExistingPositions = () => {
         small
         style={{marginRight: 8}}
         title="Claim All Rewards"
-        disabled={positionsIDsWithRewards.length === 0 || marketContract === null}
+        disabled={positionsIDsWithRewards.length === 0 || contracts === null}
         showDisabledInsteadOfConnectWallet={true}
         txArgs={{
           type: TransactionType.ClaimAllPositionRewards,
           positionIDs: positionsIDsWithRewards,
-          Market: marketContract!,
+          Market: contracts === null ? '' : contracts.Market,
         }}
       />
       <Button

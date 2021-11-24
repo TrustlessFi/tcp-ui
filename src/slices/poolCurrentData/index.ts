@@ -3,6 +3,7 @@ import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
 import { poolsMetadata } from '../poolsMetadata'
 import { approval } from '../balances'
+import { ContractsInfo } from '../contracts'
 
 import { getInitialStateCopy } from '../'
 import { fetchPoolCurrentData } from './api'
@@ -23,12 +24,11 @@ export type poolCurrentInfo = {
 export type poolCurrentDataState = {[key in string]: sliceState<poolCurrentInfo>}
 
 export interface poolCurrentDataArgs {
-  Rewards: string
-  Prices: string
-  TrustlessMulticall: string
+  contracts: ContractsInfo
+  trustlessMulticall: string
   userAddress: string,
   rewardsInfo: rewardsInfo
-  PoolsMetadata: poolsMetadata
+  poolsMetadata: poolsMetadata
   poolAddress: string
 }
 

@@ -2,6 +2,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { genProposals } from './api'
 import { getGenericReducerBuilder } from '../'
+import { ContractsInfo } from '../contracts'
+
 
 export enum ProposalState {
   Pending = 'Pending',
@@ -48,7 +50,7 @@ export interface proposalsInfo {
 }
 
 export type proposalsArgs = {
-  TcpGovernorAlpha: string
+  contracts: ContractsInfo
   userAddress: string
 }
 

@@ -1,129 +1,112 @@
-import { AsyncThunk, Draft } from '@reduxjs/toolkit'
-import { ActionReducerMapBuilder } from '@reduxjs/toolkit'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { executeGetGovernor, executeGetContract, executeGetTrustlessMulticall, executeGetProtocolDataAggregator } from './api'
 import { sliceState, initialState } from '../'
 import { ChainID } from '@trustlessfi/addresses'
+import { Governor } from '@trustlessfi/typechain'
 import { getLocalStorage } from '../../utils'
+import { getGenericReducerBuilder } from '../index';
+import { getMulticallContract } from '../../utils/getContract';
+import { executeMulticall, rc } from '@trustlessfi/multicall'
+import getContract from '../../utils/getContract';
 
+// TODO add TCP Allocation
 export enum ProtocolContract {
   Accounting = "Accounting",
   Auctions = "Auctions",
   EnforcedDecentralization = "EnforcedDecentralization",
   Hue = "Hue",
   HuePositionNFT = "HuePositionNFT",
-  Governor = "Governor",
   LendHue = "LendHue",
   Liquidations = "Liquidations",
   Market = "Market",
   Prices = "Prices",
-  ProtocolDataAggregator = "ProtocolDataAggregator",
   ProtocolLock = "ProtocolLock",
   Rates = "Rates",
   Rewards = "Rewards",
   Settlement = "Settlement",
   Tcp = "Tcp",
   TcpGovernorAlpha = "TcpGovernorAlpha",
-  TrustlessMulticall = "TrustlessMulticall",
   TcpTimelock = "TcpTimelock",
 }
 
-export type getSingleContractArgs = {
-  chainID: ChainID
+export enum RootContract {
+  Governor = "Governor",
+  ProtocolDataAggregator = "ProtocolDataAggregator",
+  TrustlessMulticall = "TrustlessMulticall",
 }
 
-export type getContractArgs = {
-  Governor: string
-  contract: ProtocolContract
+export interface contractsArgs {
+  governor: string
+  trustlessMulticall: string
 }
 
-export const getGovernorContract = createAsyncThunk(
-  'contracts/getGovernor',
-  async (args: getSingleContractArgs) => await executeGetGovernor(args),
+export const getContracts = createAsyncThunk(
+  'contracts/getContracts',
+  async (args: contractsArgs): Promise<ContractsInfo> => {
+    console.log("inside get contracts 0", args)
+    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+    console.log("inside get contracts 1")
+    const governor = getContract(args.governor, RootContract.Governor) as Governor
+    console.log("inside get contracts 2")
+
+    console.log("before result")
+    const result =  (await executeMulticall(
+      trustlessMulticall,
+      governor,
+      {
+        accounting: rc.String,
+        auctions: rc.String,
+        tcp: rc.String,
+        hue: rc.String,
+        huePositionNFT: rc.String,
+        enforcedDecentralization: rc.String,
+        lendHue: rc.String,
+        liquidations: rc.String,
+        market: rc.String,
+        prices: rc.String,
+        protocolLock: rc.String,
+        rates: rc.String,
+        rewards: rc.String,
+        settlement: rc.String,
+        timelock: rc.String,
+        governorAlpha: rc.String,
+        tcpAllocation: rc.String,
+      },
+    ))
+    console.log("after result", {result})
+
+    return {
+      [ProtocolContract.Accounting]: result.accounting,
+      [ProtocolContract.Auctions]: result.auctions,
+      [ProtocolContract.EnforcedDecentralization]: result.enforcedDecentralization,
+      [ProtocolContract.Hue]: result.hue,
+      [ProtocolContract.HuePositionNFT]: result.huePositionNFT,
+      [ProtocolContract.LendHue]: result.lendHue,
+      [ProtocolContract.Liquidations]: result.liquidations,
+      [ProtocolContract.Market]: result.market,
+      [ProtocolContract.Prices]: result.prices,
+      [ProtocolContract.ProtocolLock]: result.protocolLock,
+      [ProtocolContract.Rates]: result.rates,
+      [ProtocolContract.Rewards]: result.rewards,
+      [ProtocolContract.Settlement]: result.settlement,
+      [ProtocolContract.Tcp]: result.tcp,
+      [ProtocolContract.TcpGovernorAlpha]: result.governorAlpha,
+      [ProtocolContract.TcpTimelock]: result.timelock,
+    }
+  }
 )
 
-export const getTrustlessMulticallContract = createAsyncThunk(
-  'contracts/getTrustlessMulticall',
-  async (args: getSingleContractArgs) => await executeGetTrustlessMulticall(args),
-)
+export type ContractsInfo = {[key in ProtocolContract]: string}
 
-export const getProtocolDataAggregatorContract = createAsyncThunk(
-  'contracts/getProtocolDataAggregatorContract',
-  async (args: getSingleContractArgs) => await executeGetProtocolDataAggregator(args),
-)
-
-export const getContractThunk = (contract: ProtocolContract) => {
-  return createAsyncThunk(
-    'contracts/get' + contract,
-    async (args: getContractArgs) => await executeGetContract({ ...args, contract }),
-  )
-}
-
-export type getContractReturnType = string // { contract: ProtocolContract, address: string } TODO delete
-
-export type ProtocolContractsState  = {[key in ProtocolContract]: sliceState<getContractReturnType>}
-
-const contractsInitialState: ProtocolContractsState = {
-  [ProtocolContract.Accounting]: initialState,
-  [ProtocolContract.Auctions]:  initialState,
-  [ProtocolContract.EnforcedDecentralization]: initialState,
-  [ProtocolContract.Governor]: initialState,
-  [ProtocolContract.Hue]: initialState,
-  [ProtocolContract.HuePositionNFT]: initialState,
-  [ProtocolContract.LendHue]: initialState,
-  [ProtocolContract.Liquidations]: initialState,
-  [ProtocolContract.Market]: initialState,
-  [ProtocolContract.Prices]: initialState,
-  [ProtocolContract.ProtocolDataAggregator]: initialState,
-  [ProtocolContract.ProtocolLock]: initialState,
-  [ProtocolContract.Rates]: initialState,
-  [ProtocolContract.Rewards]: initialState,
-  [ProtocolContract.Settlement]: initialState,
-  [ProtocolContract.Tcp]: initialState,
-  [ProtocolContract.TcpGovernorAlpha]: initialState,
-  [ProtocolContract.TrustlessMulticall]: initialState,
-  [ProtocolContract.TcpTimelock]: initialState,
-}
-
-export const getContractGenericReducerBuilder = <Args extends {}>(
-  builder: ActionReducerMapBuilder<ProtocolContractsState>,
-  thunk: AsyncThunk<Draft<string>, Args, {}>,
-  contract: ProtocolContract
-): ActionReducerMapBuilder<ProtocolContractsState> =>  {
-  return builder
-    .addCase(thunk.pending, (state) => {
-      state[contract].loading = true
-    })
-    .addCase(thunk.rejected, (state, action) => {
-      state[contract].loading = false
-      state[contract].data.error = action.error
-    })
-    .addCase(thunk.fulfilled, (state, action) => {
-      state[contract].loading = false
-      state[contract].data.value = action.payload
-    })
-}
+export interface ContractsState extends sliceState<ContractsInfo> {}
 
 const name = 'contracts'
 
 export const contractsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, contractsInitialState) as ProtocolContractsState,
+  initialState: getLocalStorage(name, initialState) as ContractsState,
   reducers: {},
   extraReducers: (builder) => {
-    for (const contractString in ProtocolContract) {
-      const contract = contractString as ProtocolContract
-
-      if (contract === ProtocolContract.Governor) {
-        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getGovernorContract, contract)
-      } else if (contract === ProtocolContract.TrustlessMulticall) {
-        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getTrustlessMulticallContract, contract)
-      } else if (contract === ProtocolContract.ProtocolDataAggregator) {
-        builder = getContractGenericReducerBuilder<getSingleContractArgs>(builder, getProtocolDataAggregatorContract, contract)
-      } else {
-        builder = getContractGenericReducerBuilder<getContractArgs>(builder, getContractThunk(contract), contract)
-      }
-    }
+    builder = getGenericReducerBuilder(builder, getContracts)
   }
 })
 
