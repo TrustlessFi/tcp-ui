@@ -22,7 +22,12 @@ const Proposal: FunctionComponent<ProposalProps> = ({ proposal, quorum }) => {
 
   return (
     <ClickableTile style={{ display: 'flex', justifyContent: 'space-between' }} onClick={() => setIsProposalVoteOpen(true)}>
-      <ProposalVoteModal open={isProposalVoteOpen} onRequestClose={closeModal} proposal={proposal} />
+      <ProposalVoteModal
+        proposal={proposal}
+        open={isProposalVoteOpen}
+        onRequestClose={closeModal}
+        quorum={quorum}
+      />
       <div>
         <span> Proposal {p.id}: <ProposalDescription ipfsHash={p.ipfsHash} />. {p.state} </span>
         <InlineAppTag proposalState={p.state} />
