@@ -24,8 +24,6 @@ export interface pricesArgs {
 export const getPricesInfo = createAsyncThunk(
   'prices/getPricesInfo',
   async (args: pricesArgs): Promise<pricesInfo> => {
-
-    console.log('prices/getPricesInfo')
     const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 

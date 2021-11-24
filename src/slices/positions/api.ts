@@ -10,7 +10,6 @@ import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
 import { ProtocolContract } from '../contracts'
 
 export const fetchPositions = async (args: positionsArgs) => {
-  console.log("inside fetchPositions", {args})
   const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
   const positionNFT = getContract(args.contracts[ProtocolContract.HuePositionNFT], ProtocolContract.HuePositionNFT) as HuePositionNFT
   const trustlessMulticall = getMulticallContract(args.trustlessMulticall)

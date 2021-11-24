@@ -42,7 +42,6 @@ export const tokenBalanceThunk = async (
   approvalsList: {contract: ProtocolContract, address: string}[],
   balancesList: {contract: ProtocolContract, address: string}[],
 ): Promise<balanceInfo> => {
-  console.log("inside tokenBalanceThunk")
   const token = contract(args.tokenAddress, erc20Artifact.abi)
   const multicall = getMulticallContract(args.trustlessMulticall)
 

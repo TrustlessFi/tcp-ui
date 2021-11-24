@@ -313,8 +313,6 @@ const executeTransaction = async (
 
       deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
-      console.log(args)
-
       return await rewards.increaseLiquidityPosition({
         tokenId: args.positionID,
         amount0Desired: scale(args.amount0Change),
@@ -329,8 +327,6 @@ const executeTransaction = async (
       rewards = getRewards(args.Rewards)
 
       deadline = await getDeadline(args.chainID, args.trustlessMulticall)
-
-      console.log(args)
 
       return await rewards.decreaseLiquidityPosition({
         amount0Min: scale(args.amount0Min),

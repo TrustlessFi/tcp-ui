@@ -27,7 +27,6 @@ export interface MarketState extends sliceState<marketInfo> {}
 export const getMarketInfo = createAsyncThunk(
   'market/getMarketInfo',
   async (args: marketArgs): Promise<marketInfo> => {
-    console.log("inside getMarketIfno", {args})
     const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 

@@ -23,8 +23,6 @@ const ExistingPositionsTable = () => {
   const userAddress = selector(state => state.wallet.address)
   const contracts = waitForContracts(selector, dispatch)
 
-  console.log({positions, priceInfo, userAddress, contracts})
-
   if (positions === null || priceInfo === null || userAddress === null || contracts === null) {
     return (
       <div style={{position: 'relative'}}>

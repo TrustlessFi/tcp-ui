@@ -23,7 +23,6 @@ export interface RewardsState extends sliceState<rewardsInfo> {}
 export const getRewardsInfo = createAsyncThunk(
   'rewards/getRewardsInfo',
   async (args: rewardsArgs): Promise<rewardsInfo> => {
-    console.log("rewards/getRewardsInfo")
     const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 

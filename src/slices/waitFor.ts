@@ -93,7 +93,6 @@ const getWaitFunction = <Args extends {}, Value, AdditionalData extends {}>(
     const fetchedNode = getNodeFetch(fetchNode, selector, dispatch)
     inputArgs = {...inputArgs, ...fetchedNode}
   })
-  console.log({stateSelector, fetchNodes, inputArgs})
 
   if (Object.values(inputArgs).includes(null)) return null
 
@@ -103,7 +102,6 @@ const getWaitFunction = <Args extends {}, Value, AdditionalData extends {}>(
   }
 
   if (state === undefined || (state.data.value === null && !stateSelector(store.getState()).loading)) {
-    console.log("dispatching", {inputArgs})
     dispatch(thunk(inputArgs as NonNullable<Args>))
   }
 
