@@ -2,6 +2,10 @@ import { CodeSnippet } from "carbon-components-react"
 import { BigNumber, ethers } from "ethers"
 import { FunctionComponent } from "react"
 import { Proposal } from "../../slices/proposals"
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { waitForContracts } from '../../slices/waitFor'
+import { ContractsInfo } from '../../slices/contracts'
+import { firstOrNull } from '../../utils/'
 
 const getSignatureInfoRawString = (target: string, signature: string, calldata: string): string => {
   const targetString = `target: ${target}`
@@ -9,8 +13,8 @@ const getSignatureInfoRawString = (target: string, signature: string, calldata: 
   const calldataString = `calldata: ${calldata}`
   return `${targetString}\n${signatureString}\n${calldataString}`
 }
-  
-const getSignatureInfoString = (signature: string, calldata: string): string => {
+
+const getSignatureInfoString = (contracts: ContractsInfo | null, targetAddress: string, signature: string, calldata: string): string => {
   const functionName = signature.split('(')[0]
   const functionParams = signature.split('(')[1].split(')')[0].split(', ')
   let parameterValues = []
@@ -27,9 +31,12 @@ const getSignatureInfoString = (signature: string, calldata: string): string => 
     })
   }
   const populatedSignature = `${functionName}(${parameterValues.join(', ')})`
-  // Come back to this
-  const targetContractName = 'TestContract'
-  // let targetContractName = Object.keys(addresses).find(key => addresses[key] === p.targets[i])
+
+  const matchingContracts = contracts === null
+    ? []
+    : Object.keys(Object.fromEntries(Object.entries(contracts).filter(([_, address]) => address === targetAddress)))
+
+  const targetContractName = matchingContracts.length > 0 ? matchingContracts[0] : 'UnknownContract'
 
   return `${targetContractName}.${populatedSignature}`
 }
@@ -47,6 +54,10 @@ export const SignatureInfo: FunctionComponent<{
   proposal: Proposal
   showRaw?: boolean,
 }> = ({ showRaw = false, proposal }) => {
+  const dispatch = useAppDispatch()
+
+  const contracts = waitForContracts(selector, dispatch)
+
   const { proposal: p } = proposal
   return (
     <>
@@ -60,7 +71,7 @@ export const SignatureInfo: FunctionComponent<{
         ) : (
           <SignatureInfoWrapper index={index} key={`${p.targets[index]}-${index}`}>
             <CodeSnippet type="single">
-              {getSignatureInfoString(p.signatures[index], p.calldatas[index])}
+              {getSignatureInfoString(contracts, p.targets[index], p.signatures[index], p.calldatas[index])}
             </CodeSnippet>
           </SignatureInfoWrapper>
           )
