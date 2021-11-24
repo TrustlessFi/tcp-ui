@@ -4,8 +4,7 @@ import { FunctionComponent } from "react"
 import { Proposal } from "../../slices/proposals"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForContracts } from '../../slices/waitFor'
-import { ContractsInfo } from '../../slices/contracts'
-import { firstOrNull } from '../../utils/'
+import { ContractsInfo, ProtocolContract } from '../../slices/contracts'
 
 const getSignatureInfoRawString = (target: string, signature: string, calldata: string): string => {
   const targetString = `target: ${target}`
@@ -34,9 +33,8 @@ const getSignatureInfoString = (contracts: ContractsInfo | null, targetAddress: 
 
   const matchingContracts = contracts === null
     ? []
-    : Object.keys(Object.fromEntries(Object.entries(contracts).filter(([_, address]) => address === targetAddress)))
-
-  const targetContractName = matchingContracts.length > 0 ? matchingContracts[0] : 'UnknownContract'
+    : Object.keys(contracts || {}).filter(key => contracts[key as ProtocolContract] === targetAddress);
+  const targetContractName = matchingContracts.length !== 1 ? 'UnknownContract' : matchingContracts[0];
 
   return `${targetContractName}.${populatedSignature}`
 }
