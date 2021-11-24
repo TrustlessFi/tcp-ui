@@ -64,10 +64,16 @@ export const getProposals = createAsyncThunk(
 export const proposalsSlice = createSlice({
   name: 'proposals',
   initialState: initialState as ProposalsState,
-  reducers: {},
+  reducers: {
+    clearProposals: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getProposals)
   },
 })
+
+export const { clearProposals } = proposalsSlice.actions
 
 export default proposalsSlice.reducer

@@ -10,11 +10,12 @@ import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
 import { clearPoolCurrentData } from '../poolCurrentData'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
+import { clearProposals } from '../proposals'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 
-import { Market, Rewards } from '@trustlessfi/typechain'
+import { Market, Rewards, TcpGovernorAlpha } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
@@ -36,6 +37,7 @@ export enum TransactionType {
   DecreaseLiquidityPosition,
   ClaimAllPositionRewards,
   ApprovePoolToken,
+  VoteProposal,
 }
 
 export enum TransactionStatus {
@@ -138,6 +140,13 @@ export interface txApproveLendHue {
   spenderAddress: string
 }
 
+export interface txVoteProposal {
+  type: TransactionType.VoteProposal
+  TcpGovernorAlpha: string
+  proposalID: number
+  support: boolean
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -149,7 +158,8 @@ export type TransactionArgs =
   txClaimPositionRewards |
   txApprovePoolToken |
   txApproveHue |
-  txApproveLendHue
+  txApproveLendHue |
+  txVoteProposal
 
 export interface TransactionData {
   args: TransactionArgs
@@ -197,6 +207,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Claim All Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve ' + args.symbol
+    case TransactionType.VoteProposal:
+      return 'Vote Proposal ' + args.proposalID
     default:
       assertUnreachable(type)
   }
@@ -227,6 +239,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Claim All Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve Token'
+    case TransactionType.VoteProposal:
+      return 'Vote Proposal'
     default:
       assertUnreachable(type)
   }
@@ -255,6 +269,10 @@ const executeTransaction = async (
   const getRewards = (address: string) =>
     getContract(address, ProtocolContract.Rewards)
       .connect(provider.getSigner()) as Rewards
+
+  const getTcpGovernorAlpha = (address: string) =>
+    getContract(address, ProtocolContract.TcpGovernorAlpha)
+      .connect(provider.getSigner()) as TcpGovernorAlpha
 
   const type = args.type
 
@@ -339,7 +357,6 @@ const executeTransaction = async (
     case TransactionType.ClaimAllPositionRewards:
       return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
 
-
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
@@ -352,6 +369,12 @@ const executeTransaction = async (
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
       return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+    
+    case TransactionType.VoteProposal:
+      return await getTcpGovernorAlpha(args.TcpGovernorAlpha).castVote(
+        args.proposalID,
+        args.support
+      )
 
     default:
       assertUnreachable(type)
@@ -445,6 +468,9 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.ApproveLendHue:
           dispatch(clearLendHueBalance())
+          break
+        case TransactionType.VoteProposal:
+          dispatch(clearProposals())
           break
       default:
         assertUnreachable(type)
