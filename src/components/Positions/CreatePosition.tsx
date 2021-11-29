@@ -12,14 +12,11 @@ import {
   waitForContracts,
 } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
-import Breadcrumbs from '../library/Breadcrumbs'
 import PositionMetadata2 from '../library/PositionMetadata2'
-import RelativeLoading from '../library/RelativeLoading'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
-import { Row, Col } from 'react-flexbox-grid'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 
 const CreatePosition = () => {
