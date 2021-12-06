@@ -60,6 +60,7 @@
     "uuid": "^8.3.2"
   },
   "resolutions": {
+    "ethereumjs-abi": "0.6.8",
     "jsbi": "3.1.4",
     "csstype": "3.0.8"
   },
