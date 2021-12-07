@@ -1,8 +1,8 @@
 import { Button } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance } from '../../slices/waitFor'
+import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance, waitForLiquidityPositions } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
@@ -47,9 +47,11 @@ const CreateLiquidityPosition = () => {
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
+
 
   const dataNull =
     contracts === null ||
@@ -61,6 +63,8 @@ const CreateLiquidityPosition = () => {
     chainID === null ||
     trustlessMulticall === null
 
+  const position = liquidityPositions === null ? null : liquidityPositions[positionID]
+
   const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
 
   const tick = poolCurrentData ? poolCurrentData.twapTick : null
@@ -68,28 +72,27 @@ const CreateLiquidityPosition = () => {
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
-  const {
-    inverted, setInverted,
-    tickLower, setTickLower,
-    tickUpper, setTickUpper
-  } = usePoolDisplayInfo(pool, tick)
+  const [inverted, setInverted] = useState(false)
 
   const {
     token0Amount,
     token1Amount,
     updateToken0Amount,
     updateToken1Amount
-  } = useLiquidityPositionUpdates(tickLower, setTickLower, tickUpper, setTickUpper, poolCurrentData, tick)
+  } = useLiquidityPositionUpdates(
+    position === null ? 0 : position.tickLower,
+    () => {},
+    position === null ? 0 : position.tickUpper,
+    () => {},
+    poolCurrentData,
+    tick
+  )
 
   useEffect(() => {
     if (poolAddress) {
       startCreate({ poolAddress })
     }
   }, [poolAddress])
-
-  if (!poolAddress || !poolCurrentData) {
-    return <span />
-  }
 
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
@@ -123,8 +126,8 @@ const CreateLiquidityPosition = () => {
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApprovePoolToken,
-          tokenAddress: token!.address,
-          Rewards: contracts!.Rewards,
+          tokenAddress: token === undefined ? '' : token.address,
+          Rewards: contracts === null ? '' : contracts.Rewards,
           poolAddress,
           symbol,
         }}
@@ -177,7 +180,10 @@ const CreateLiquidityPosition = () => {
     },
     liquidityOutOfRange: {
       message: 'Can\'t increase out of range liquidity.',
-      failing: poolCurrentData.twapTick < tickLower || tickUpper < poolCurrentData.twapTick,
+      failing:
+        position === null || poolCurrentData === null
+        ? false
+        : poolCurrentData.twapTick < position.tickLower || position.tickUpper < poolCurrentData.twapTick,
     },
   }
 
@@ -270,7 +276,7 @@ const CreateLiquidityPosition = () => {
             token1Increase,
             token1Decimals: pool === null ? 0 : pool.token1.decimals,
             token1IsWeth,
-            Rewards: contracts!.Rewards,
+            Rewards: contracts === null ? '' : contracts.Rewards,
             trustlessMulticall: trustlessMulticall!,
           }}
         />
@@ -286,7 +292,8 @@ const CreateLiquidityPosition = () => {
           {' '}{poolName}{' '}
       pool is {inverted ? price1 : price0} {priceUnit}.
       <ParagraphDivider />
-      You are increasing the liquidity between the prices of {tickPriceDisplay(tickLower)} {priceUnit} and {tickPriceDisplay(tickUpper)} {priceUnit}.
+      You are increasing the liquidity between the prices
+      of {position === null ? '-' : tickPriceDisplay(position.tickLower)} {priceUnit} and {position === null ? '-' : tickPriceDisplay(position.tickUpper)} {priceUnit}.
 
       <ParagraphDivider />
       You want to provide increase

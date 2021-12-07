@@ -53,7 +53,7 @@ const LiquidityPositionsTable = (
     </LargeText>
   </>
 
-  let tableTitle =
+  const tableTitle =
     pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' +
     pool.rewardsPortion + '% of TCP Liquidity rewards '
 
