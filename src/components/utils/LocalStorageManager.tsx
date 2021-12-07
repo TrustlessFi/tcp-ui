@@ -9,6 +9,7 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
+import { uniswapContractsSlice, uniswapContractsInfo } from '../../slices/uniswapContracts'
 import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
@@ -24,6 +25,7 @@ type slicesState =
   ratesInfo |
   systemDebtInfo |
   NotificationState |
+  uniswapContractsInfo |
   null
 
 type persistedSlice = {
@@ -95,6 +97,11 @@ export const slicesToPersist: persistedSlices = {
     slice: ratesSlice,
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.rates.data.value
+  },
+  [uniswapContractsSlice.name]: {
+    slice: uniswapContractsSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.uniswapContracts.data.value
   },
 }
 

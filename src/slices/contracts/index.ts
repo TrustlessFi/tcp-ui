@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
-import { ChainID } from '@trustlessfi/addresses'
 import { Governor } from '@trustlessfi/typechain'
 import { getLocalStorage } from '../../utils'
 import { getGenericReducerBuilder } from '../index';

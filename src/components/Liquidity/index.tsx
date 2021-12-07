@@ -1,5 +1,4 @@
 import CreateLiquidityPosition from './CreateLiquidityPosition'
-import UpdateLiquidityPosition from './UpdateLiquidityPosition'
 import IncreaseLiquidityPosition from './IncreaseLiquidityPosition'
 import ExistingLiquidityPositions from './ExistingLiquidityPositions'
 import { Switch, Route } from 'react-router-dom'
