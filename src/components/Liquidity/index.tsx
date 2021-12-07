@@ -1,5 +1,6 @@
 import CreateLiquidityPosition from './CreateLiquidityPosition'
 import UpdateLiquidityPosition from './UpdateLiquidityPosition'
+import IncreaseLiquidityPosition from './IncreaseLiquidityPosition'
 import ExistingLiquidityPositions from './ExistingLiquidityPositions'
 import { Switch, Route } from 'react-router-dom'
 
@@ -11,8 +12,8 @@ const LiquidityPositions = () => (
     <Route path='/liquidity/new/:poolAddress'>
       <CreateLiquidityPosition />
     </Route>
-    <Route path='/liquidity/:positionID'>
-      <UpdateLiquidityPosition />
+    <Route path='/liquidity/increase/:poolAddress/:positionID'>
+      <IncreaseLiquidityPosition />
     </Route>
   </Switch>
 )

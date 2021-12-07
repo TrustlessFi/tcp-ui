@@ -113,7 +113,7 @@ const UpdateLiquidityPosition = () => {
 
   return (
     <>
-      <Breadcrumbs items={[{ text: 'Liquidity', href: '/liquidity' }, 'Update']} />
+      <Breadcrumbs crumbs={[{ text: 'Liquidity', href: '/liquidity' }, 'Update']} />
       <LargeText>
         The current price for the {getPoolName(pool)} pool is {inverted ? price1 : price0} {priceUnit}.
         <br />
