@@ -11,9 +11,10 @@ import {
   waitForLiquidations,
   waitForContracts,
 } from '../../slices/waitFor'
-import { numDisplay }  from '../../utils/'
+import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
+import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import PositionMetadata2 from '../library/PositionMetadata2'
@@ -57,7 +58,7 @@ const CreatePosition = () => {
 
   const ethPriceDisplay = dataNull ? '-' : numDisplay(priceInfo.ethPrice, 0)
 
-  const failures: {[key in string]: reason} = dataNull ? {} : {
+  const failures: { [key in string]: reason } = dataNull ? {} : {
     noCollateral: {
       message: 'No collateral.',
       failing: collateralCount === 0 || isNaN(collateralCount),
@@ -69,7 +70,7 @@ const CreatePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.' ,
+      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.',
       failing: 0 < debtCount && debtCount < market.minPositionSize,
     },
     undercollateralized: {
@@ -90,11 +91,11 @@ const CreatePosition = () => {
       title: 'Hue/Eth Current Price',
       value: ethPriceDisplay,
       failing: false,
-    },{
+    }, {
       title: 'Hue/Eth Liquidation Price',
       value: liquidationPriceDisplay,
       failing: dataNull ? false : liquidationPrice >= priceInfo.ethPrice,
-    },{
+    }, {
       title: 'Collateralization Ratio',
       value: collateralizationDisplay,
       failing: dataNull ? false : failures.undercollateralized.failing,
@@ -103,28 +104,28 @@ const CreatePosition = () => {
 
   const columnOne =
     <>
-      <div style={{marginBottom: 8}}>
-        Collateral Eth
-      </div>
-      <div style={{marginBottom: 8}}>
-        <PositionNumberInput
-          id="collateralInput"
-          action={(value: number) => setCollateralCount(value)}
-          value={collateralCount}
-        />
-      </div>
-      <div style={{marginBottom: 8}}>
-        Borrow Hue
-      </div>
-      <div>
+      <SpacedList spacing={8}>
+        <div style={{ marginBottom: 8 }}>
+          Collateral Eth
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <PositionNumberInput
+            id="collateralInput"
+            action={(value: number) => setCollateralCount(value)}
+            value={collateralCount}
+          />
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          Borrow Hue
+        </div>
         <PositionNumberInput
           id="debtInput"
           action={(value: number) => setDebtCount(value)}
           value={debtCount}
         />
-      </div>
+      </SpacedList>
       <PositionMetadata2 items={metadataItems} />
-      <div style={{marginTop: 8, marginBottom: 8}}>
+      <div style={{ marginTop: 8, marginBottom: 8 }}>
         <CreateTransactionButton
           title="Confirm Position in Metamask"
           disabled={isFailing}
@@ -136,7 +137,7 @@ const CreatePosition = () => {
           }}
         />
       </div>
-      <div style={{marginTop: 8}}>
+      <div style={{ marginTop: 8 }}>
         <ErrorMessage reasons={failureReasons} />
       </div>
     </>
