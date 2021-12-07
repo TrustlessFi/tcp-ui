@@ -3,8 +3,10 @@ import { useHistory } from 'react-router-dom'
 
 export type BreadcrumbItem = { text: string, href?: string } | string
 
-const Breadcrumbs = ({ items }: { items: BreadcrumbItem[] }) => {
+const Breadcrumbs = ({ items }: { items?: BreadcrumbItem[] }) => {
   const history = useHistory()
+
+  if (items === undefined || items.length === 0) return <></>
 
   return (
     <Breadcrumb noTrailingSlash>
@@ -26,8 +28,7 @@ const Breadcrumbs = ({ items }: { items: BreadcrumbItem[] }) => {
               if (!isLast) {
                 history.push(href)
               }
-            }}
-          >
+            }}>
             {text}
           </BreadcrumbItem>
         )

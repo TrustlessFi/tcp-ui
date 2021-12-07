@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
-import Lend from './components/Lend'
+import Lend from './components/Lend/Lend'
+import Withdraw from './components/Lend/Withdraw'
 import Governance from './components/Governance'
 import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
@@ -23,6 +24,7 @@ declare global {
 export enum Tab {
   Positions = 'Positions',
   Lend = 'Lend',
+  Withdraw = 'Withdraw',
   Liquidity = 'Liquidity',
   Governance = 'Governance',
   Transactions = 'Transactions',
@@ -31,6 +33,7 @@ export enum Tab {
 const tabToRender: {[key in Tab]: ReactNode} = {
   Positions: <Positions />,
   Lend: <Lend />,
+  Withdraw: <Withdraw />,
   Liquidity: <Liquidity />,
   Governance: <Governance />,
   Transactions: <RecentTransactions />,
