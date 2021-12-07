@@ -19,7 +19,7 @@ const TwoColumnDisplay = ({
 
   return (
     <div style={{position: 'relative'}}>
-      {<Breadcrumbs items={breadCrumbItems} />}
+      {<Breadcrumbs crumbs={breadCrumbItems} />}
       <RelativeLoading show={loading} />
       {
         isSmallViewport

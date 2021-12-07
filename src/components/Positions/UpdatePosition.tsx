@@ -262,7 +262,7 @@ const UpdatePosition = () => {
       columnOne={columnOne}
       columnTwo={columnTwo}
       loading={userAddress !== null && dataNull}
-      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'New']}
+      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Update', 'Position ' + numDisplay(positionID)]}
     />
   )
 }

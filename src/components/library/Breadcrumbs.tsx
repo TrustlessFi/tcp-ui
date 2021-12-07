@@ -1,38 +1,30 @@
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 
-export type BreadcrumbItem = { text: string, href?: string } | string
+export type BreadcrumbItem = { text: string, href: string } | string
 
-const Breadcrumbs = ({ items }: { items?: BreadcrumbItem[] }) => {
+const Breadcrumbs = ({ crumbs }: { crumbs?: BreadcrumbItem[] }) => {
   const history = useHistory()
 
-  if (items === undefined || items.length === 0) return <></>
+  if (crumbs === undefined || crumbs.length === 0) return null
 
   return (
     <Breadcrumb noTrailingSlash>
-      {items.map((item, index) => {
-        const text = typeof item === 'string' ? item : item.text
-        const isLast = index === items.length - 1
-
-        const href = typeof item === 'object' && item.href !== undefined
-          ? item.href
-          : `/${text.toLowerCase()}`
-
-        return (
-          <BreadcrumbItem
-            key={text}
-            href={!isLast ? href : undefined}
+      {crumbs.map((crumb, index) => (
+        typeof crumb === 'object'
+        ? <BreadcrumbItem
+            key={index}
+            href={crumb.href}
             onClick={e => {
               e.preventDefault()
-
-              if (!isLast) {
-                history.push(href)
-              }
+              history.push(crumb.href)
             }}>
-            {text}
+            {crumb.text}
           </BreadcrumbItem>
-        )
-      })}
+        : <BreadcrumbItem key={index} isCurrentPage={true}>
+            {crumb}
+          </BreadcrumbItem>
+      ))}
     </Breadcrumb>
   );
 }
