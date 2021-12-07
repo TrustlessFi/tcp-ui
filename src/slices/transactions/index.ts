@@ -336,7 +336,7 @@ const executeTransaction = async (
         amount0Desired: scale(args.amount0Change),
         amount0Min: scale(args.amount0Change * (1 - SLIPPAGE_TOLERANCE)),
         amount1Desired: scale(args.amount1Change),
-        amount1Min: scale(args.amount1Change * (2 - SLIPPAGE_TOLERANCE)),
+        amount1Min: scale(args.amount1Change * (1 - SLIPPAGE_TOLERANCE)),
         deadline,
       }, UIID, {
       })
@@ -369,7 +369,7 @@ const executeTransaction = async (
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
       return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
-    
+
     case TransactionType.VoteProposal:
       return await getTcpGovernorAlpha(args.TcpGovernorAlpha).castVote(
         args.proposalID,

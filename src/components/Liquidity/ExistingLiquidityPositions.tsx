@@ -77,7 +77,7 @@ const LiquidityPositionsTable = (
         },
         onClick: () => {
           dispatch(clearPoolCurrentData(pool.address))
-          history.push(`/liquidity/${lqPos.positionID}`)
+          history.push(`/liquidity/increase/${pool.address}/${lqPos.positionID}`)
         }
       }
     })
