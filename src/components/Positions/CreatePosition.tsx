@@ -18,6 +18,7 @@ import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
+import ParagraphDivider from '../utils/ParagraphDivider'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -146,14 +147,14 @@ const CreatePosition = () => {
     <LargeText>
       You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
 
-      {paragraphDivider}
+      <ParagraphDivider />
 
       You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
       In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
       The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
       to maintain liquidation incentives.
 
-      {paragraphDivider}
+      <ParagraphDivider />
 
       Hue debt currently carries a {interestRateDisplay} interest rate
         that will vary due to market forces.

@@ -2,20 +2,22 @@ import { useState } from "react"
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
-import { numDisplay }  from '../../utils/'
+import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
+import PositionMetadata2 from '../library/PositionMetadata2'
 import { LendBorrowOption } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata from '../library/PositionMetadata'
 import ErrorMessage from '../library/ErrorMessage'
-import { ProtocolContract } from '../../slices/contracts'
 import { selectionMade } from '../../slices/lendSelection'
 import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index';
 import RelativeLoading from '../library/RelativeLoading';
 import { TransactionType } from '../../slices/transactions/index';
 import CreateTransactionButton from '../utils/CreateTransactionButton';
+import TwoColumnDisplay from '../utils/TwoColumnDisplay'
+import ParagraphDivider from '../utils/ParagraphDivider'
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
@@ -39,13 +41,13 @@ const Withdraw = () => {
     sdi === null ||
     contracts === null
 
-  const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
+  const apr = dataNull ? 0 : getAPR({ market, rates, sdi, hueBalance })
 
   const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
 
   const lentHueCount = dataNull ? 0 : lendHueBalance.userBalance! * market.valueOfLendTokensInHue
 
-  const failures: {[key in string]: reason} = {
+  const failures: { [key in string]: reason } = {
     noValueEntered: {
       message: 'Please insert a value.',
       failing: amount === 0 || isNaN(amount),
@@ -70,69 +72,62 @@ const Withdraw = () => {
   const convertHueToLendHue = (amount: number) => dataNull ? 1 : amount / market.valueOfLendTokensInHue
   const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * market.valueOfLendTokensInHue
 
-  return (
+
+  const metadataItems = [
+    {
+      title: 'Current Wallet Balance',
+      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
+    }, {
+      title: 'New Wallet Balance',
+      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance + amount, 2)) + ' Hue',
+    }, {
+      title: 'Current Hue Lent',
+      value: numDisplay(lentHueCount, 2),
+    }, {
+      title: 'New Hue Lent',
+      value: numDisplay(lentHueCount - amount, 2),
+      failing: failures.notEnoughLent.failing,
+    },
+  ]
+
+  const columnOne =
     <>
-      <div style={{position: 'relative'}}>
-        <RelativeLoading show={userAddress !== null && dataNull} />
-        <div>
-          <LargeText>
-            I have {dataNull ? '-' : numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
-            <div />
-            The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
-          </LargeText>
-        </div>
-        <LargeText>
-          I want to
-          <InputPicker
-            options={LendBorrowOption}
-            initialValue={LendBorrowOption.Withdraw}
-            onChange={onChange}
-          />
-          <PositionNumberInput
-            id="lendInput"
-            action={(value: number) => setAmount(value)}
-            value={amount}
-          />
-          Hue.
-        </LargeText>
-        <div style={{marginTop: 36, marginBottom: 30}}>
-          <PositionMetadata items={[
-            {
-              title: 'Current Wallet Balance',
-              value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
-            },{
-              title: 'New Wallet Balance',
-              value: (dataNull ? '-' : numDisplay(hueBalance.userBalance + amount, 2)) + ' Hue',
-            },{
-              title: 'Current Hue Lent',
-              value: numDisplay(lentHueCount, 2),
-            },{
-              title: 'New Hue Lent',
-              value: numDisplay(lentHueCount - amount, 2),
-              failing: failures.notEnoughLent.failing,
-            },
-          ]} />
-        </div>
+      <LargeText>
+        I want to
+        <InputPicker
+          options={LendBorrowOption}
+          initialValue={LendBorrowOption.Withdraw}
+          onChange={onChange}
+        />
+        <PositionNumberInput
+          id="lendInput"
+          action={(value: number) => setAmount(value)}
+          value={amount}
+        />
+        Hue.
+      </LargeText>
+      <div style={{ marginTop: 36, marginBottom: 30 }}>
+        <PositionMetadata2 items={metadataItems} />
       </div>
       <CreateTransactionButton
         title={"Approve Withdraw"}
-        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || lendHueBalance.approval.Market?.approved}
+        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || lendHueBalance.approval.Market ?.approved}
         showDisabledInsteadOfConnectWallet={true}
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApproveLendHue,
-          LendHue: contracts!.LendHue,
-          spenderAddress: contracts!.Market,
+          LendHue: contracts === null ? '' : contracts.LendHue,
+          spenderAddress: contracts === null ? '' : contracts.Market,
         }}
       />
-      <div style={{marginTop: 32, marginBottom: 32}}>
+      <div style={{ marginTop: 32, marginBottom: 32 }}>
         <CreateTransactionButton
           title="Withdraw"
           disabled={isFailing || amount === 0}
           txArgs={{
             type: TransactionType.Withdraw,
             count: convertHueToLendHue(amount),
-            Market: contracts!.Market,
+            Market: contracts === null ? '' : contracts.Market,
           }}
         />
       </div>
@@ -140,6 +135,28 @@ const Withdraw = () => {
         <ErrorMessage reasons={failureReasons} />
       </div>
     </>
+
+  const columnTwo =
+    <div style={{ position: 'relative' }}>
+      <RelativeLoading show={userAddress !== null && dataNull} />
+      <div>
+        <LargeText>
+          I have {dataNull ? '-' : numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
+
+          <ParagraphDivider />
+
+          The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
+          </LargeText>
+      </div>
+    </div>
+
+  return (
+    <TwoColumnDisplay
+      columnOne={columnOne}
+      columnTwo={columnTwo}
+      loading={userAddress !== null && dataNull}
+      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Withdraw']}
+    />
   )
 }
 
