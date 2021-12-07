@@ -16,13 +16,10 @@ import {
 } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
-import Breadcrumbs from '../library/Breadcrumbs'
 import PositionNumberInput from '../library/PositionNumberInput'
-import RelativeLoading from '../library/RelativeLoading'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { reason } from '../library/ErrorMessage';
-import PositionMetadata from '../library/PositionMetadata';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
 import CreateTransactionButton from '../utils/CreateTransactionButton';
