@@ -2,6 +2,7 @@ import { useState } from "react"
 import {
   Button,
 } from 'carbon-components-react'
+import { useHistory } from 'react-router-dom'
 import LargeText from '../utils/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
@@ -12,7 +13,6 @@ import InputPicker from './library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
-import { selectionMade } from '../../slices/lendSelection'
 import { TransactionType } from '../../slices/transactions/index'
 import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index'
@@ -23,6 +23,7 @@ import ParagraphDivider from '../utils/ParagraphDivider'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const hueBalance = waitForHueBalance(selector, dispatch)
   const lendHueBalance = waitForLendHueBalance(selector, dispatch)
@@ -45,7 +46,10 @@ const Lend = () => {
 
   const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
 
-  const onChange = (option: LendBorrowOption) => dispatch(selectionMade(option))
+  const onChange = (option: LendBorrowOption) => {
+    if (option === LendBorrowOption.Withdraw)
+    history.push('withdraw')
+  }
 
   const newWalletBalance = dataNull ? 0 : hueBalance.userBalance - amount
   const lentHueCount = dataNull ? 0 : lendHueBalance.userBalance! * market.valueOfLendTokensInHue

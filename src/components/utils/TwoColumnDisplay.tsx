@@ -13,16 +13,13 @@ const TwoColumnDisplay = ({
   columnOne: ReactNode
   columnTwo: ReactNode
   loading: boolean
-  breadCrumbItems:  BreadcrumbItem[]
+  breadCrumbItems?:  BreadcrumbItem[]
 }) => {
   const isSmallViewport = useWindowWidth()
 
-  console.log({breadCrumbItems})
-  console.log({breadcrumbitemslenght: breadCrumbItems.length})
-
   return (
     <div style={{position: 'relative'}}>
-      {breadCrumbItems.length === 0 ? null : <Breadcrumbs items={breadCrumbItems} />}
+      {<Breadcrumbs items={breadCrumbItems} />}
       <RelativeLoading show={loading} />
       {
         isSmallViewport

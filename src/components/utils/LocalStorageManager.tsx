@@ -10,7 +10,6 @@ import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
 import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
-import { lendSelectionSlice, LendSelectionState } from '../../slices/lendSelection'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
@@ -25,7 +24,6 @@ type slicesState =
   ratesInfo |
   systemDebtInfo |
   NotificationState |
-  LendSelectionState |
   null
 
 type persistedSlice = {
@@ -50,11 +48,6 @@ export const slicesToPersist: persistedSlices = {
     slice: contractsSlice,
     ttl: LONG_EXPIRATION,
     getState: (state: RootState) => state.contracts
-  },
-  [lendSelectionSlice.name]: {
-    slice: lendSelectionSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.lendSelection
   },
   [notificationsSlice.name]: {
     slice: notificationsSlice,
