@@ -50,35 +50,31 @@ const LiquidityPositionsTable = (
           {createLiquidityPositionButton}
         </Center>
       </>
-    :
-
-    <>
-      <h4></h4>
-      <h5></h5>
-      <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
-      {
-        key: lqPos.positionID,
-        data: {
-          'ID': lqPos.positionID,
-          'Liquidity': lqPos.liquidity,
-          'Tick Lower': lqPos.tickLower,
-          'Tick Upper': lqPos.tickUpper,
-          'Rewards': '~546 TCP',
-          '': 'claim'
-        },
-        onClick: () => {
-          dispatch(clearPoolCurrentData(pool.address))
-          history.push(`/liquidity/${lqPos.positionID}`)
-        }
-      }
-    ))} />
-      <Center style={{ padding: 24 }}>
-        {createLiquidityPositionButton}
-      </Center>
-    </>
+    : <>
+        <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
+          {
+            key: lqPos.positionID,
+            data: {
+              'ID': lqPos.positionID,
+              'Liquidity': lqPos.liquidity,
+              'Tick Lower': lqPos.tickLower,
+              'Tick Upper': lqPos.tickUpper,
+              'Rewards': '~546 TCP',
+              '': 'claim'
+            },
+            onClick: () => {
+              dispatch(clearPoolCurrentData(pool.address))
+              history.push(`/liquidity/${lqPos.positionID}`)
+            }
+          }
+        ))} />
+        <Center style={{ padding: 24 }}>
+          {createLiquidityPositionButton}
+        </Center>
+      </>
 
   const tableTitle =
-    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - '  + pool.rewardsPortion + '% of TCP Liquidity rewards'
+    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' + pool.rewardsPortion + '% of TCP Liquidity rewards'
 
   return (
     <AppTile key={pool.address} title={tableTitle} >
@@ -94,18 +90,17 @@ const ExistingLiquidityPositions = () => {
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
-
   if (pools === null || liquidityPositions === null || userAddress === null) {
     return (
       <div style={{ position: 'relative' }}>
         <RelativeLoading show={userAddress !== null} />
         <AppTile title="Liquidity Positions">
-          { userAddress === null
+          {userAddress === null
             ? <Center>
-                <div style={{ margin: 32 }}>
-                  <ConnectWalletButton />
-                </div>
-              </Center>
+              <div style={{ margin: 32 }}>
+                <ConnectWalletButton />
+              </div>
+            </Center>
             : null
           }
         </AppTile>
@@ -118,7 +113,7 @@ const ExistingLiquidityPositions = () => {
   return (
     <>
       {Object.values(pools).sort((a, b) => b.rewardsPortion - a.rewardsPortion).map(pool => (
-        <div key={pool.address} style={{marginBottom: 18}}>
+        <div key={pool.address} style={{ marginBottom: 18 }}>
           <LiquidityPositionsTable
             pool={pool}
             liquidityPositions={Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)}
