@@ -10,21 +10,14 @@ import {
   waitForContracts,
   waitForPositions
 } from '../../slices/waitFor'
-import {
-  TextAreaSkeleton,
-  Button,
-} from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { ProtocolContract } from '../../slices/contracts'
 import { numDisplay, zeroIfNaN } from '../../utils/index'
 import { reason } from '../library/ErrorMessage'
-import Breadcrumbs from '../library/Breadcrumbs'
 import { TransactionType } from '../../slices/transactions'
 import { clearPositions } from '../../slices/positions'
 import { editorClosed } from '../../slices/positionsEditor'
 import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
-import Text from '../utils/Text'
 import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../Lend/library/InputPicker'
