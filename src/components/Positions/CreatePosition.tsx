@@ -12,11 +12,11 @@ import {
   waitForContracts,
 } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
-import PositionMetadata2 from '../library/PositionMetadata2'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
+import PositionMetadata2 from '../library/PositionMetadata2'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 import ParagraphDivider from '../utils/ParagraphDivider'
 
@@ -100,8 +100,6 @@ const CreatePosition = () => {
       failing: dataNull ? false : failures.undercollateralized.failing,
     },
   ]
-
-  const paragraphDivider = <div style={{height: 32}} />
 
   const columnOne =
     <>
