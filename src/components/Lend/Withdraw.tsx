@@ -7,9 +7,8 @@ import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import { LendBorrowOption } from './'
-import InputPicker from './library/InputPicker'
+import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
-import PositionMetadata from '../library/PositionMetadata'
 import ErrorMessage from '../library/ErrorMessage'
 import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index';
@@ -101,6 +100,7 @@ const Withdraw = () => {
           options={LendBorrowOption}
           initialValue={LendBorrowOption.Withdraw}
           onChange={onChange}
+          label='Lend/Borrow options'
         />
         <PositionNumberInput
           id="lendInput"

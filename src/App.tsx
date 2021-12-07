@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend/Lend'
@@ -7,8 +7,7 @@ import Governance from './components/Governance'
 import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
-import { Switch, Route } from "react-router-dom"
-import { HashRouter as Router } from "react-router-dom"
+import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/utils/LocalStorageManager'
 import Notifications from './components/Notifications'
 
@@ -42,7 +41,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
 function App() {
   return (
     <ErrorBoundary>
-      <Router>
+      <HashRouter>
         <PageHeader />
         <div style={{marginTop: 47, padding: 48 }}>
           <Switch>
@@ -57,7 +56,7 @@ function App() {
             })}
           </Switch>
         </div>
-      </Router>
+      </HashRouter>
       <Notifications />
       <LocalStorageManager />
     </ErrorBoundary>

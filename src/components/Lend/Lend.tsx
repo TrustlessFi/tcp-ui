@@ -1,15 +1,12 @@
 import { useState } from "react"
-import {
-  Button,
-} from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 import LargeText from '../utils/LargeText'
+import { LendBorrowOption } from './'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay }  from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
-import { LendBorrowOption } from './'
-import InputPicker from './library/InputPicker'
+import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
@@ -47,8 +44,9 @@ const Lend = () => {
   const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
 
   const onChange = (option: LendBorrowOption) => {
-    if (option === LendBorrowOption.Withdraw)
-    history.push('withdraw')
+    if (option === LendBorrowOption.Withdraw) {
+      history.push('withdraw')
+    }
   }
 
   const newWalletBalance = dataNull ? 0 : hueBalance.userBalance - amount
@@ -100,7 +98,12 @@ const Lend = () => {
     <>
       <LargeText>
         I want to
-        <InputPicker options={LendBorrowOption} initialValue={LendBorrowOption.Lend} onChange={onChange} />
+        <InputPicker
+          options={LendBorrowOption}
+          initialValue={LendBorrowOption.Lend}
+          onChange={onChange}
+          label='Lend/Borrow options'
+        />
         <PositionNumberInput
           id="lendInput"
           action={(value: number) => setAmount(value)}
