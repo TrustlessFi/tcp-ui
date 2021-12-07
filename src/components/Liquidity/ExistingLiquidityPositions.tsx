@@ -2,11 +2,12 @@ import { Button } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { startEdit } from '../../slices/liquidityPositionsEditor'
 import { clearPoolCurrentData } from '../../slices/poolCurrentData'
 import { waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf } from '../../utils/'
+import Bold from '../utils/Bold'
+import LargeText from '../utils/LargeText'
 import { poolMetadata } from '../../slices/poolsMetadata'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
@@ -38,46 +39,45 @@ const LiquidityPositionsTable = (
 
   const table = Object.values(liquidityPositions).length === 0
     ? <>
-        <TableHeaderOnly headers={[
-          'ID',
-          'Liquidity',
-          'Tick Lower',
-          'Tick Upper',
-          'Rewards',
-          '',
-        ]} />
-        <Center style={{ padding: 24 }}>
-          {createLiquidityPositionButton}
-        </Center>
-      </>
-    : <>
-        <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
-          {
-            key: lqPos.positionID,
-            data: {
-              'ID': lqPos.positionID,
-              'Liquidity': lqPos.liquidity,
-              'Tick Lower': lqPos.tickLower,
-              'Tick Upper': lqPos.tickUpper,
-              'Rewards': '~546 TCP',
-              '': 'claim'
-            },
-            onClick: () => {
-              dispatch(clearPoolCurrentData(pool.address))
-              history.push(`/liquidity/${lqPos.positionID}`)
-            }
-          }
-        ))} />
-        <Center style={{ padding: 24 }}>
-          {createLiquidityPositionButton}
-        </Center>
-      </>
+      <TableHeaderOnly headers={[
+        'ID',
+        'Liquidity',
+        'Tick Lower',
+        'Tick Upper',
+        'Rewards',
+        '',
+      ]}
+      />
+      <LargeText style={{margin: 32}}>
+        <Bold>
+          No Positions
+        </Bold>
+      </LargeText>
+    </>
+    :
+    <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
+      {
+        key: lqPos.positionID,
+        data: {
+          'ID': lqPos.positionID,
+          'Liquidity': lqPos.liquidity,
+          'Tick Lower': lqPos.tickLower,
+          'Tick Upper': lqPos.tickUpper,
+          'Rewards': '~546 TCP',
+          '': 'claim'
+        },
+        onClick: () => {
+          dispatch(clearPoolCurrentData(pool.address))
+          history.push(`/liquidity/${lqPos.positionID}`)
+        }
+      }
+    ))} />
 
   const tableTitle =
     pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' + pool.rewardsPortion + '% of TCP Liquidity rewards'
 
   return (
-    <AppTile key={pool.address} title={tableTitle} >
+    <AppTile key={pool.address} title={tableTitle} rightElement={createLiquidityPositionButton} >
       {table}
     </AppTile>
   )
