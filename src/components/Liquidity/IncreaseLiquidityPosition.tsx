@@ -282,10 +282,15 @@ const CreateLiquidityPosition = () => {
           {' '}{poolName}{' '}
       pool is {inverted ? price1 : price0} {priceUnit}.
       <ParagraphDivider />
-      I want to provide liquidity between the prices of {tickPriceDisplay(tickLower)} {priceUnit} and {tickPriceDisplay(tickUpper)} {priceUnit}.
+      You are increasing the liquidity between the prices of {tickPriceDisplay(tickLower)} {priceUnit} and {tickPriceDisplay(tickUpper)} {priceUnit}.
+
       <ParagraphDivider />
-      If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
-      more of my position to liquidators.
+      You want to provide increase
+      the {token0Symbol} liquidity by {numDisplay(token0Increase)} and
+      the {token1Symbol} liquidity by {numDisplay(token1Increase)}.
+      <ParagraphDivider />
+      If the {poolName} price moves outside of this price range, You could lose <Bold>{liquidationPenalty}%</Bold> or
+      more of your position to liquidators.
     </LargeText>
 
 
