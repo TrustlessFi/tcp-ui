@@ -1,11 +1,13 @@
 import { Button } from 'carbon-components-react'
-import { useParams } from "react-router";
+import { useHistory, useParams } from 'react-router-dom'
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
+import InputPicker from '../library/InputPicker'
+import { IncreaseDecreaseOption } from './'
 import {
   numDisplay,
   tickToPriceDisplay,
@@ -33,6 +35,8 @@ interface MatchParams {
 
 const CreateLiquidityPosition = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
+
   const params: MatchParams = useParams()
   const positionID = Number(params.positionID)
   const poolAddress = params.poolAddress
@@ -90,13 +94,12 @@ const CreateLiquidityPosition = () => {
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
 
-  const token0Symbol = displaySymbol(pool?.token0.symbol)
-  const token1Symbol = displaySymbol(pool?.token1.symbol)
+  const token0Symbol = displaySymbol(pool ?.token0.symbol)
+  const token1Symbol = displaySymbol(pool ?.token1.symbol)
   const poolName = getPoolName(pool)
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
 
   const toggleInverted = () => setInverted(!inverted)
-
 
   const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
     if (token !== undefined && token.symbol.toLowerCase() === 'weth') return null
@@ -188,10 +191,23 @@ const CreateLiquidityPosition = () => {
   const token0Increase = token0Amount
   const token1Increase = token1Amount
 
+  const onChange = (option: IncreaseDecreaseOption) => {
+    if (option === IncreaseDecreaseOption.Decrease) {
+      history.push(['/liquidity', 'decrease', poolAddress, positionID].join('/'))
+    }
+  }
+
   const columnOne =
     <>
       <div style={{ marginBottom: 16 }}>
         <SpacedList spacing={8}>
+          You want to
+          <InputPicker
+            options={IncreaseDecreaseOption}
+            initialValue={IncreaseDecreaseOption.Increase}
+            onChange={onChange}
+            label='Increase/Decrease options'
+          />
           <>
             <Button
               size="sm"

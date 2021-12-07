@@ -1,15 +1,15 @@
 import { Button } from 'carbon-components-react'
-import { useParams } from 'react-router-dom'
-import { Subtract16, Add16 } from '@carbon/icons-react';
+import { useHistory, useParams } from 'react-router-dom'
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
+import InputPicker from '../library/InputPicker'
+import { IncreaseDecreaseOption } from './'
 import {
   numDisplay,
-  getSpaceForFee,
   tickToPriceDisplay,
   displaySymbol,
   getPoolName,
@@ -29,48 +29,17 @@ import ParagraphDivider from '../utils/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 interface MatchParams {
+  positionID: string
   poolAddress: string
 }
 
-const TickSelector = ({
-  tick,
-  spacing,
-  inverted,
-  updateTick,
-}: {
-    tick: number
-    spacing: number
-    inverted: boolean
-    updateTick: (newTick: number) => void
-  }) => (
-    <span style={{ marginLeft: 8, marginRight: 8 }}>
-      {tickToPriceDisplay(inverted ? -tick : tick)}
-      <Button
-        style={{ marginLeft: 8 }}
-        size="sm"
-        hasIconOnly
-        kind="secondary"
-        renderIcon={Subtract16}
-        iconDescription="reduce amount"
-        onClick={() => updateTick(inverted ? tick + spacing : tick - spacing)}
-      />
-      <Button
-        size="sm"
-        hasIconOnly
-        kind="secondary"
-        renderIcon={Add16}
-        iconDescription="increase amount"
-        onClick={() => updateTick(inverted ? tick - spacing : tick + spacing)}
-      />
-    </span>
-  )
-
-TickSelector.defaultProps = { min: false }
-
 const CreateLiquidityPosition = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
-  const { poolAddress }: MatchParams = useParams()
+  const params: MatchParams = useParams()
+  const positionID = Number(params.positionID)
+  const poolAddress = params.poolAddress
 
   const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
@@ -81,7 +50,6 @@ const CreateLiquidityPosition = () => {
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
-
 
   const dataNull =
     contracts === null ||
@@ -100,8 +68,6 @@ const CreateLiquidityPosition = () => {
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
-  const spacing = getSpaceForFee(pool === null ? 0 : pool.fee)
-
   const {
     inverted, setInverted,
     tickLower, setTickLower,
@@ -111,8 +77,6 @@ const CreateLiquidityPosition = () => {
   const {
     token0Amount,
     token1Amount,
-    updateLowerTick,
-    updateUpperTick,
     updateToken0Amount,
     updateToken1Amount
   } = useLiquidityPositionUpdates(tickLower, setTickLower, tickUpper, setTickUpper, poolCurrentData, tick)
@@ -136,7 +100,6 @@ const CreateLiquidityPosition = () => {
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
 
   const toggleInverted = () => setInverted(!inverted)
-
 
   const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
     if (token !== undefined && token.symbol.toLowerCase() === 'weth') return null
@@ -225,18 +188,26 @@ const CreateLiquidityPosition = () => {
     ' per ' +
     (inverted ? token1Symbol : token0Symbol)
 
-  const amount0Desired = token0Amount
-  // TODO tighter or custom range
-  const amount0Min = amount0Desired * 0.95
-  const amount1Desired = token1Amount
-  // TODO tighter or custom range
-  const amount1Min = amount1Desired * 0.95
+  const token0Increase = token0Amount
+  const token1Increase = token1Amount
 
+  const onChange = (option: IncreaseDecreaseOption) => {
+    if (option === IncreaseDecreaseOption.Increase) {
+      history.push(['/liquidity', 'increase', poolAddress, positionID].join('/'))
+    }
+  }
 
   const columnOne =
     <>
       <div style={{ marginBottom: 16 }}>
         <SpacedList spacing={8}>
+          You want to
+          <InputPicker
+            options={IncreaseDecreaseOption}
+            initialValue={IncreaseDecreaseOption.Decrease}
+            onChange={onChange}
+            label='Increase/Decrease options'
+          />
           <>
             <Button
               size="sm"
@@ -251,24 +222,6 @@ const CreateLiquidityPosition = () => {
               {token1Symbol}
             </Button>
           </>
-          <>{priceUnit} Lower Bound</>
-          <LargeText>
-            <TickSelector
-              tick={inverted ? tickUpper : tickLower}
-              updateTick={inverted ? updateUpperTick : updateLowerTick}
-              inverted={inverted}
-              spacing={spacing}
-            />
-          </LargeText>
-          <>{priceUnit}  Upper Bound</>
-          <LargeText>
-            <TickSelector
-              tick={inverted ? tickLower : tickUpper}
-              updateTick={inverted ? updateLowerTick : updateUpperTick}
-              inverted={inverted}
-              spacing={spacing}
-            />
-          </LargeText>
           <>
             {token0Symbol} count
           <PositionNumberInput
@@ -304,23 +257,17 @@ const CreateLiquidityPosition = () => {
         <CreateTransactionButton
           disabled={isFailing}
           txArgs={{
-            type: TransactionType.CreateLiquidityPosition,
-            token0: poolCurrentData!.token0.address,
-            token0Decimals: pool!.token0.decimals,
-            token0IsWeth,
-            token1: poolCurrentData!.token1.address,
-            token1Decimals: pool!.token1.decimals,
-            token1IsWeth,
-            fee: pool!.fee,
             chainID: chainID!,
-            tickLower,
-            tickUpper,
-            amount0Desired,
-            amount0Min,
-            amount1Desired,
-            amount1Min,
-            trustlessMulticall: trustlessMulticall!,
+            type: TransactionType.IncreaseLiquidityPosition,
+            positionID,
+            token0Increase,
+            token0Decimals: pool === null ? 0 : pool.token0.decimals,
+            token0IsWeth,
+            token1Increase,
+            token1Decimals: pool === null ? 0 : pool.token1.decimals,
+            token1IsWeth,
             Rewards: contracts!.Rewards,
+            trustlessMulticall: trustlessMulticall!,
           }}
         />
       </div>
@@ -347,7 +294,7 @@ const CreateLiquidityPosition = () => {
       columnOne={columnOne}
       columnTwo={columnTwo}
       loading={userAddress !== null && dataNull}
-      breadCrumbItems={[{ text: 'Liquidity', href: '/liquidity' }, 'New']}
+      breadCrumbItems={[{ text: 'Liquidity', href: '/liquidity' }, 'Decrease', 'Position ' + numDisplay(positionID)]}
     />
   )
 }

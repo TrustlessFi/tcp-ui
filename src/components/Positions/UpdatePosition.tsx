@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom'
 import {
   waitForLiquidations,
   waitForRates,
@@ -20,7 +20,7 @@ import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
-import InputPicker from '../Lend/library/InputPicker'
+import InputPicker from '../library/InputPicker'
 import CreateTransactionButton from '../utils/CreateTransactionButton';
 import { Row, Col } from 'react-flexbox-grid'
 import PositionMetadata2 from '../library/PositionMetadata2'
@@ -167,7 +167,6 @@ const UpdatePosition = () => {
     },
   ]
 
-
   const columnOne =
     <>
       <Row bottom='xs' style={{ marginBottom: 8 }}>
@@ -176,6 +175,7 @@ const UpdatePosition = () => {
             options={CollateralChange}
             initialValue={initialCollateralChange}
             onChange={(option: CollateralChange) => setCollateralChange(option)}
+            label='Increase/Decrease options'
           />
         </Col>
         <Col>
@@ -193,6 +193,7 @@ const UpdatePosition = () => {
             options={DebtChange}
             initialValue={initialDebtChange}
             onChange={(option: DebtChange) => setDebtChange(option)}
+            label='Borrow/Lend options'
           />
         </Col>
         <Col>

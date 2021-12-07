@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react'
-import { withRouter, useHistory, useLocation } from 'react-router'
+import { withRouter, useHistory, useLocation } from 'react-router-dom'
 import { useEffect, useState, CSSProperties } from 'react'
 import { Row, Col } from 'react-flexbox-grid'
 import useWindowWidth from '../../hooks/useWindowWidth'
