@@ -17,12 +17,12 @@ const TwoColumnDisplay = ({
 }) => {
   const isSmallViewport = useWindowWidth()
 
+  console.log({breadCrumbItems})
+  console.log({breadcrumbitemslenght: breadCrumbItems.length})
+
   return (
     <div style={{position: 'relative'}}>
-      {breadCrumbItems.length === 0
-        ? null
-        : <Breadcrumbs items={[{ text: 'Positions', href: '/' }, 'New']} />
-      }
+      {breadCrumbItems.length === 0 ? null : <Breadcrumbs items={breadCrumbItems} />}
       <RelativeLoading show={loading} />
       {
         isSmallViewport
