@@ -18,9 +18,9 @@ const LiquidityPositionsTable = (
     pool,
     liquidityPositions,
   }: {
-    pool: poolMetadata,
-    liquidityPositions: LiquidityPosition[],
-  }) => {
+      pool: poolMetadata,
+      liquidityPositions: LiquidityPosition[],
+    }) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
@@ -36,48 +36,54 @@ const LiquidityPositionsTable = (
       New Position
     </Button>
 
-  if (Object.values(liquidityPositions).length === 0) {
-    return (
-      <>
+  const table = Object.values(liquidityPositions).length === 0
+    ? <>
         <TableHeaderOnly headers={[
-          'Position ID',
+          'ID',
           'Liquidity',
           'Tick Lower',
           'Tick Upper',
           'Rewards',
           '',
         ]} />
-        <Center style={{padding: 24}}>
+        <Center style={{ padding: 24 }}>
           {createLiquidityPositionButton}
         </Center>
       </>
-    )
-  }
+    :
 
-  const rows = Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
-    {
-      key: lqPos.positionID,
-      data: {
-        'Position ID': lqPos.positionID,
-        'Liquidity': lqPos.liquidity,
-        'Tick Lower': lqPos.tickLower,
-        'Tick Upper': lqPos.tickUpper,
-        'Rewards': '~546 TCP',
-        '': 'claim'
-      },
-      onClick: () => {
-        dispatch(clearPoolCurrentData(pool.address))
-        history.push(`/liquidity/${lqPos.positionID}`)
-      }
-    }
-  ))
-  return (
     <>
-      <SimpleTable rows={rows} />
-      <Center style={{padding: 24}}>
+      <h4></h4>
+      <h5></h5>
+      <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
+      {
+        key: lqPos.positionID,
+        data: {
+          'ID': lqPos.positionID,
+          'Liquidity': lqPos.liquidity,
+          'Tick Lower': lqPos.tickLower,
+          'Tick Upper': lqPos.tickUpper,
+          'Rewards': '~546 TCP',
+          '': 'claim'
+        },
+        onClick: () => {
+          dispatch(clearPoolCurrentData(pool.address))
+          history.push(`/liquidity/${lqPos.positionID}`)
+        }
+      }
+    ))} />
+      <Center style={{ padding: 24 }}>
         {createLiquidityPositionButton}
       </Center>
     </>
+
+  const tableTitle =
+    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - '  + pool.rewardsPortion + '% of TCP Liquidity rewards'
+
+  return (
+    <AppTile key={pool.address} title={tableTitle} >
+      {table}
+    </AppTile>
   )
 }
 
@@ -91,13 +97,18 @@ const ExistingLiquidityPositions = () => {
 
   if (pools === null || liquidityPositions === null || userAddress === null) {
     return (
-      <div style={{position: 'relative'}}>
+      <div style={{ position: 'relative' }}>
         <RelativeLoading show={userAddress !== null} />
-        <Center>
-          <div style={{margin: 32}}>
-            <ConnectWalletButton />
-          </div>
-        </Center>
+        <AppTile title="Liquidity Positions">
+          { userAddress === null
+            ? <Center>
+                <div style={{ margin: 32 }}>
+                  <ConnectWalletButton />
+                </div>
+              </Center>
+            : null
+          }
+        </AppTile>
       </div>
     )
   }
@@ -105,18 +116,16 @@ const ExistingLiquidityPositions = () => {
   const comparator = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
 
   return (
-    <AppTile title="Uniswap Reward Positions">
-      {Object.values(pools).sort((a, b) => a.poolID - b.poolID).map(pool => (
-        <div key={pool.address}>
-          <h4>{pool.token0.symbol}:{pool.token1.symbol} {pool.fee / 10000}%</h4>
-          <h5>{pool.rewardsPortion}% of TCP Liquidity rewards</h5>
+    <>
+      {Object.values(pools).sort((a, b) => b.rewardsPortion - a.rewardsPortion).map(pool => (
+        <div key={pool.address} style={{marginBottom: 18}}>
           <LiquidityPositionsTable
             pool={pool}
             liquidityPositions={Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)}
           />
         </div>
       ))}
-    </AppTile>
+    </>
   )
 }
 
