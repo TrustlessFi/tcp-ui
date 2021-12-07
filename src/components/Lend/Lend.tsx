@@ -11,6 +11,7 @@ import { LendBorrowOption } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata from '../library/PositionMetadata'
+import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
 import { selectionMade } from '../../slices/lendSelection'
 import { TransactionType } from '../../slices/transactions/index'
@@ -19,6 +20,7 @@ import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
+import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -72,45 +74,39 @@ const Lend = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
 
-  return (
+
+  const metadataItems = [
+    {
+      title: 'Current Wallet Balance',
+      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
+    },{
+      title: 'New Wallet Balance',
+      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance - amount, 2)) + ' Hue',
+      failing: failures.notEnoughInWallet.failing,
+    },{
+      title: 'Current Hue Lent',
+      value: numDisplay(lentHueCount, 2),
+    },{
+      title: 'New Hue Lent',
+      value: numDisplay(newLentHueCount, 2)
+    },
+  ]
+
+
+  const columnOne =
     <>
-      <div style={{position: 'relative'}}>
-        <RelativeLoading show={userAddress !== null && dataNull} />
-        <div>
-          <LargeText>
-            I have {dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
-            <div />
-            The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
-          </LargeText>
-        </div>
-        <LargeText>
-          I want to
-          <InputPicker options={LendBorrowOption} initialValue={LendBorrowOption.Lend} onChange={onChange} />
-          <PositionNumberInput
-            id="lendInput"
-            action={(value: number) => setAmount(value)}
-            value={amount}
-          />
-          Hue.
-        </LargeText>
-        <div style={{marginTop: 36, marginBottom: 30}}>
-          <PositionMetadata items={[
-            {
-              title: 'Current Wallet Balance',
-              value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
-            },{
-              title: 'New Wallet Balance',
-              value: (dataNull ? '-' : numDisplay(hueBalance.userBalance - amount, 2)) + ' Hue',
-              failing: failures.notEnoughInWallet.failing,
-            },{
-              title: 'Current Hue Lent',
-              value: numDisplay(lentHueCount, 2),
-            },{
-              title: 'New Hue Lent',
-              value: numDisplay(newLentHueCount, 2)
-            },
-          ]} />
-        </div>
+      <LargeText>
+        I want to
+        <InputPicker options={LendBorrowOption} initialValue={LendBorrowOption.Lend} onChange={onChange} />
+        <PositionNumberInput
+          id="lendInput"
+          action={(value: number) => setAmount(value)}
+          value={amount}
+        />
+        Hue.
+      </LargeText>
+      <div style={{marginTop: 36, marginBottom: 30}}>
+        <PositionMetadata2 items={metadataItems} />
       </div>
       <CreateTransactionButton
         title={"Approve Lend"}
@@ -119,8 +115,8 @@ const Lend = () => {
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApproveHue,
-          Hue: contracts!.Hue,
-          spenderAddress: contracts!.Market,
+          Hue: contracts === null ? '' : contracts.Hue,
+          spenderAddress: contracts === null ? '' : contracts.Market,
         }}
       />
       <div style={{marginTop: 32, marginBottom: 32}}>
@@ -130,7 +126,7 @@ const Lend = () => {
           txArgs={{
             type: TransactionType.Lend,
             count: amount,
-            Market: contracts!.Market,
+            Market: contracts === null ? '' : contracts.Market,
           }}
         />
       </div>
@@ -138,7 +134,29 @@ const Lend = () => {
         <ErrorMessage reasons={failureReasons} />
       </div>
     </>
+
+
+  const columnTwo =
+    <div style={{position: 'relative'}}>
+      <RelativeLoading show={userAddress !== null && dataNull} />
+      <div>
+        <LargeText>
+          I have {dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
+          <div />
+          The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
+        </LargeText>
+      </div>
+    </div>
+
+  return (
+    <TwoColumnDisplay
+      columnOne={columnOne}
+      columnTwo={columnTwo}
+      loading={userAddress !== null && dataNull}
+      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Lend']}
+    />
   )
+
 }
 
 export default Lend
