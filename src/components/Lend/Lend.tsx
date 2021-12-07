@@ -10,17 +10,16 @@ import PositionNumberInput from '../library/PositionNumberInput'
 import { LendBorrowOption } from './'
 import InputPicker from './library/InputPicker'
 import { reason } from '../library/ErrorMessage'
-import PositionMetadata from '../library/PositionMetadata'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
 import { selectionMade } from '../../slices/lendSelection'
 import { TransactionType } from '../../slices/transactions/index'
-import { ProtocolContract } from '../../slices/contracts/index'
 import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
+import ParagraphDivider from '../utils/ParagraphDivider'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -142,7 +141,9 @@ const Lend = () => {
       <div>
         <LargeText>
           I have {dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
-          <div />
+
+          <ParagraphDivider />
+
           The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
         </LargeText>
       </div>
