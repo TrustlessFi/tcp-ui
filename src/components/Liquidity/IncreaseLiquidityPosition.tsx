@@ -1,6 +1,5 @@
 import { Button } from 'carbon-components-react'
 import { useParams } from "react-router";
-import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance } from '../../slices/waitFor'
@@ -9,7 +8,6 @@ import { tokenMetadata } from '../../slices/poolsMetadata'
 import { tokenData } from '../../slices/poolCurrentData'
 import {
   numDisplay,
-  getSpaceForFee,
   tickToPriceDisplay,
   displaySymbol,
   getPoolName,
@@ -48,7 +46,6 @@ const CreateLiquidityPosition = () => {
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
-
 
   const dataNull =
     contracts === null ||
@@ -93,8 +90,8 @@ const CreateLiquidityPosition = () => {
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
 
-  const token0Symbol = displaySymbol(pool ?.token0.symbol)
-  const token1Symbol = displaySymbol(pool ?.token1.symbol)
+  const token0Symbol = displaySymbol(pool?.token0.symbol)
+  const token1Symbol = displaySymbol(pool?.token1.symbol)
   const poolName = getPoolName(pool)
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
 
@@ -188,13 +185,8 @@ const CreateLiquidityPosition = () => {
     ' per ' +
     (inverted ? token1Symbol : token0Symbol)
 
-  const amount0Desired = token0Amount
-  // TODO tighter or custom range
-  const amount0Min = amount0Desired * 0.95
-  const amount1Desired = token1Amount
-  // TODO tighter or custom range
-  const amount1Min = amount1Desired * 0.95
-
+  const token0Increase = token0Amount
+  const token1Increase = token1Amount
 
   const columnOne =
     <>
@@ -252,8 +244,12 @@ const CreateLiquidityPosition = () => {
             chainID: chainID!,
             type: TransactionType.IncreaseLiquidityPosition,
             positionID,
-            amount0Change: amount0Desired,
-            amount1Change: amount1Desired,
+            token0Increase,
+            token0Decimals: pool === null ? 0 : pool.token0.decimals,
+            token0IsWeth,
+            token1Increase,
+            token1Decimals: pool === null ? 0 : pool.token1.decimals,
+            token1IsWeth,
             Rewards: contracts!.Rewards,
             trustlessMulticall: trustlessMulticall!,
           }}

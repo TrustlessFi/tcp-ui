@@ -3,13 +3,13 @@ import { ChainID, getAddress } from '@trustlessfi/addresses'
 
 import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
 
-
 export interface ChainIDState {
   chainID: ChainID | null
   unknownChainID: number | null
   governor: string | null
   trustlessMulticall: string | null
   protocolDataAggregator: string | null
+  router: string | null
 }
 
 const initialState: ChainIDState = {
@@ -18,6 +18,7 @@ const initialState: ChainIDState = {
   governor: null,
   trustlessMulticall: null,
   protocolDataAggregator: null,
+  router: null
 }
 
 export const getChainIDFromState = (state: ChainIDState) =>
@@ -37,13 +38,15 @@ export const chainIDSlice = createSlice({
           chainID: null,
           governor: null,
           trustlessMulticall: null,
-          protocolDataAggregator: null
+          protocolDataAggregator: null,
+          router: null,
         } : {
           unknownChainID: null,
           chainID,
           governor: getAddress(chainID, 'TCP', 'Governor', localHardhatAddresses),
           trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
           protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
+          router: getAddress(chainID, 'Uniswap', 'router', localHardhatAddresses),
         }
     },
   }
