@@ -1,6 +1,6 @@
-import { Button } from 'carbon-components-react'
+import { useState, useEffect, useRef } from 'react'
+import { Button, Slider, SliderOnChangeArg } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
-import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance } from '../../slices/waitFor'
 import { startCreate } from '../../slices/liquidityPositionsEditor'
@@ -51,6 +51,8 @@ const CreateLiquidityPosition = () => {
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
 
+  const [percentageDecrease, setPercentageDecrease] = useState(50)
+
   const dataNull =
     contracts === null ||
     userAddress === null ||
@@ -97,40 +99,6 @@ const CreateLiquidityPosition = () => {
   const token0Symbol = displaySymbol(pool ?.token0.symbol)
   const token1Symbol = displaySymbol(pool ?.token1.symbol)
   const poolName = getPoolName(pool)
-  const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
-
-  const toggleInverted = () => setInverted(!inverted)
-
-  const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
-    if (token !== undefined && token.symbol.toLowerCase() === 'weth') return null
-
-    const disabled =
-      dataNull ||
-      token === undefined ||
-      pool === null ||
-      tokenData === undefined ||
-      tokenData.rewardsApproval.approved
-
-    const symbol = tokenIndex === 0 ? token0Symbol : token1Symbol
-
-    return (
-      <CreateTransactionButton
-        key={tokenIndex}
-        style={{ marginRight: 8 }}
-        title={"Approve " + symbol}
-        disabled={disabled}
-        showDisabledInsteadOfConnectWallet={true}
-        shouldOpenTxTab={false}
-        txArgs={{
-          type: TransactionType.ApprovePoolToken,
-          tokenAddress: token!.address,
-          Rewards: contracts!.Rewards,
-          poolAddress,
-          symbol,
-        }}
-      />
-    )
-  }
 
   const userToken0Balance =
     token0IsWeth
@@ -141,17 +109,6 @@ const CreateLiquidityPosition = () => {
     token1IsWeth
       ? (userEthBalance === null ? 0 : userEthBalance)
       : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
-
-
-  const token0NeedsToBeApproved =
-    poolCurrentData === null || token0IsWeth
-      ? false
-      : token0Amount > 0 && !poolCurrentData.token0.rewardsApproval.approved
-  const token1NeedsToBeApproved =
-    poolCurrentData === null || token1IsWeth
-      ? false
-      : token1Amount > 0 && !poolCurrentData.token1.rewardsApproval.approved
-
 
   const failures: { [key in string]: reason } = {
     noop: {
@@ -167,21 +124,10 @@ const CreateLiquidityPosition = () => {
       message: 'Not enough ' + token1Symbol + '.',
       failing: token1Amount > userToken1Balance,
     },
-    token0NotApproved: {
-      message: 'You must approve ' + token0Symbol,
-      failing: token0NeedsToBeApproved,
-    },
-    token1NotApproved: {
-      message: 'You must approve ' + token1Symbol,
-      failing: token1NeedsToBeApproved,
-    },
   }
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-
-  const token0ApprovalButton = getApprovalButton(0, pool ?.token0, poolCurrentData ?.token0)
-  const token1ApprovalButton = getApprovalButton(1, pool ?.token1, poolCurrentData ?.token1)
 
   const priceUnit =
     (inverted ? token0Symbol : token1Symbol) +
@@ -208,36 +154,18 @@ const CreateLiquidityPosition = () => {
             onChange={onChange}
             label='Increase/Decrease options'
           />
-          <>
-            <Button
-              size="sm"
-              onClick={toggleInverted}
-              kind={inverted ? 'secondary' : 'primary'}>
-              {token0Symbol}
-            </Button>
-            <Button
-              size="sm"
-              onClick={toggleInverted}
-              kind={inverted ? 'primary' : 'secondary'}>
-              {token1Symbol}
-            </Button>
-          </>
-          <>
-            {token0Symbol} count
-          <PositionNumberInput
-              id="token0Input"
-              action={updateToken0Amount}
-              value={token0Amount}
-            />
-          </>
-          <>
-            {token1Symbol} count
-          <PositionNumberInput
-              id="token1Input"
-              action={updateToken1Amount}
-              value={token1Amount}
-            />
-          </>
+          Your position by
+          <Slider
+            ariaLabelInput="Decrease Percentage"
+            id="percentage_slider"
+            onChange={(arg: SliderOnChangeArg) => setPercentageDecrease(arg.value)}
+            min={0}
+            max={100}
+            step={1}
+            hideTextInput
+            value={percentageDecrease}
+          />
+          {percentageDecrease + '%'}
         </SpacedList>
       </div>
       <PositionMetadata2 items={[
@@ -251,8 +179,6 @@ const CreateLiquidityPosition = () => {
           failing: userToken1Balance - token1Amount < 0,
         }
       ]} />
-      {token0ApprovalButton}
-      {token1ApprovalButton}
       <div style={{ marginTop: 32, marginBottom: 32 }}>
         <CreateTransactionButton
           disabled={isFailing}
@@ -282,12 +208,11 @@ const CreateLiquidityPosition = () => {
           {' '}{poolName}{' '}
       pool is {inverted ? price1 : price0} {priceUnit}.
       <ParagraphDivider />
-      I want to provide liquidity between the prices of {tickPriceDisplay(tickLower)} {priceUnit} and {tickPriceDisplay(tickUpper)} {priceUnit}.
-      <ParagraphDivider />
-      If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
-      more of my position to liquidators.
+      {percentageDecrease === 100
+        ? `You want to delete position ${positionID} and receive all liquidity back to your wallet.`
+        : `You want to decrease the liquidity by ${percentageDecrease}%, receiving the proceeds to your wallet.`
+      }
     </LargeText>
-
 
   return (
     <TwoColumnDisplay

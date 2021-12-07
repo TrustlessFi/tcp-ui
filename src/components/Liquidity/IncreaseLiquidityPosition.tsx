@@ -175,6 +175,10 @@ const CreateLiquidityPosition = () => {
       message: 'You must approve ' + token1Symbol,
       failing: token1NeedsToBeApproved,
     },
+    liquidityOutOfRange: {
+      message: 'Can\'t increase out of range liquidity.',
+      failing: poolCurrentData.twapTick < tickLower || tickUpper < poolCurrentData.twapTick,
+    },
   }
 
   const failureReasons: reason[] = Object.values(failures)
