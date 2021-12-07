@@ -46,7 +46,8 @@ export const abbreviateAddress = (address: string) => address.substr(0, 6) + '..
 
 export const toChecksumAddress = (address: string) => utils.getAddress(address)
 
-export const unscale = (quantity: BigNumber, decimals = 18): number => {
+export const unscale = (_quantity: BigNumber | string, decimals = 18): number => {
+  let quantity = bnf(_quantity)
   const digits = quantity.toString().length
   let digitsToRemove = digits - 15
   if (digitsToRemove > decimals) {

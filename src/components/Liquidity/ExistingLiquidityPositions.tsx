@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearPoolCurrentData } from '../../slices/poolCurrentData'
 import { waitForLiquidityPositions, waitForPoolsMetadata, getPoolCurrentDataWaitFunction } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
-import { bnf, tickToPriceDisplay } from '../../utils/'
+import { bnf, tickToPriceDisplay, unscale, numDisplay } from '../../utils/'
 import Bold from '../utils/Bold'
 import LargeText from '../utils/LargeText'
 import { poolMetadata } from '../../slices/poolsMetadata'
@@ -65,11 +65,13 @@ const LiquidityPositionsTable = (
 
   if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
     const rows = Object.values(liquidityPositions).map((lqPos) => {
+      const liquidityDecimals = Math.floor((pool.token0.decimals + pool.token1.decimals) / 2)
+
       return {
         key: lqPos.positionID,
         data: {
           'ID': lqPos.positionID,
-          'Liquidity': lqPos.liquidity,
+          'Liquidity': numDisplay(unscale(lqPos.liquidity, liquidityDecimals)),
           'Price Range': tickToPriceDisplay(lqPos.tickLower) + ' - ' + tickToPriceDisplay(lqPos.tickUpper) + ' ' + priceUnit,
           'Approximate Rewards': '~546 TCP',
         },
@@ -82,7 +84,6 @@ const LiquidityPositionsTable = (
 
     table = <SimpleTable rows={rows} />
   }
-
 
   return (
     <AppTile
