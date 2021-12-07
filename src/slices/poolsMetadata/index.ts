@@ -80,7 +80,6 @@ export const getPoolsMetadata = createAsyncThunk(
       }
     )
 
-
     const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider)
     const uniqueTokens =
       unique(

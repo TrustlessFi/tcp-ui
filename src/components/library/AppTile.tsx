@@ -9,13 +9,17 @@ interface AppTileProps {
   style?: CSSProperties
   children: ReactNode
   rightElement?: ReactNode
+  subTitle?: string
 }
 
-const AppTile = ({className, title, style, children, rightElement}: AppTileProps ) => (
+const AppTile = ({className, title, style, children, rightElement, subTitle}: AppTileProps ) => (
   <ErrorBoundary>
     <Tile style={{ ...style, padding: 0  }} className={className}>
       <div style={{display: 'flex', alignItems: 'center', height: 68, paddingLeft: 32, paddingRight: 12}} >
-        <LargeText>{title}</LargeText>
+        <div>
+          <LargeText>{title}</LargeText>
+          {subTitle ? <div style={{marginTop: 4}}>{subTitle}</div> : null}
+        </div>
         {rightElement === undefined ? null : (
           <span style={{marginLeft: 'auto'}}>{rightElement}</span>
         )}

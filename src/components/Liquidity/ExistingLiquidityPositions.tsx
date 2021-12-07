@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearPoolCurrentData } from '../../slices/poolCurrentData'
-import { waitForLiquidityPositions, waitForPoolsMetadata } from '../../slices/waitFor'
+import { waitForLiquidityPositions, waitForPoolsMetadata, getPoolCurrentDataWaitFunction } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
-import { bnf } from '../../utils/'
+import { bnf, tickToPriceDisplay } from '../../utils/'
 import Bold from '../utils/Bold'
 import LargeText from '../utils/LargeText'
 import { poolMetadata } from '../../slices/poolsMetadata'
@@ -19,11 +19,13 @@ const LiquidityPositionsTable = (
     pool,
     liquidityPositions,
   }: {
-      pool: poolMetadata,
-      liquidityPositions: LiquidityPosition[],
-    }) => {
+    pool: poolMetadata,
+    liquidityPositions: LiquidityPosition[],
+  }) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
+
+  const poolCurrentData = getPoolCurrentDataWaitFunction(pool.address)(selector, dispatch)
 
   const createLiquidityPositionButton =
     <Button
@@ -37,47 +39,57 @@ const LiquidityPositionsTable = (
       New Position
     </Button>
 
-  const table = Object.values(liquidityPositions).length === 0
-    ? <>
-      <TableHeaderOnly headers={[
-        'ID',
-        'Liquidity',
-        'Tick Lower',
-        'Tick Upper',
-        'Rewards',
-        '',
-      ]}
-      />
-      <LargeText style={{margin: 32}}>
-        <Bold>
-          No Positions
-        </Bold>
-      </LargeText>
-    </>
-    :
-    <SimpleTable rows={Object.values(liquidityPositions).map((lqPos: LiquidityPosition) => (
-      {
+
+  let table = <>
+    <TableHeaderOnly headers={[
+      'ID',
+      'Liquidity',
+      'Price Range',
+      'Approximate Rewards',
+    ]}
+    />
+    <LargeText style={{ margin: 32 }}>
+      No Positions
+    </LargeText>
+  </>
+
+  let tableTitle =
+    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' +
+    pool.rewardsPortion + '% of TCP Liquidity rewards '
+
+  const priceUnit = pool.token1.symbol + ' per ' + pool.token0.symbol
+  const tableSubtitle = 'Current Price: ' +
+    (poolCurrentData === null
+    ? '-'
+    : tickToPriceDisplay(poolCurrentData.twapTick) + ' ' + priceUnit)
+
+  if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
+    const rows = Object.values(liquidityPositions).map((lqPos) => {
+      return {
         key: lqPos.positionID,
         data: {
           'ID': lqPos.positionID,
           'Liquidity': lqPos.liquidity,
-          'Tick Lower': lqPos.tickLower,
-          'Tick Upper': lqPos.tickUpper,
-          'Rewards': '~546 TCP',
-          '': 'claim'
+          'Price Range': tickToPriceDisplay(lqPos.tickLower) + ' - ' + tickToPriceDisplay(lqPos.tickUpper) + ' ' + priceUnit,
+          'Approximate Rewards': '~546 TCP',
         },
         onClick: () => {
           dispatch(clearPoolCurrentData(pool.address))
           history.push(`/liquidity/${lqPos.positionID}`)
         }
       }
-    ))} />
+    })
 
-  const tableTitle =
-    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' + pool.rewardsPortion + '% of TCP Liquidity rewards'
+    table = <SimpleTable rows={rows} />
+  }
+
 
   return (
-    <AppTile key={pool.address} title={tableTitle} rightElement={createLiquidityPositionButton} >
+    <AppTile
+      key={pool.address}
+      title={tableTitle}
+      subTitle={tableSubtitle}
+      rightElement={createLiquidityPositionButton} >
       {table}
     </AppTile>
   )
