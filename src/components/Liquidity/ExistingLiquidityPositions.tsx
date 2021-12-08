@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearPoolCurrentData } from '../../slices/poolCurrentData'
 import { waitForLiquidityPositions, waitForPoolsMetadata, getPoolCurrentDataWaitFunction } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
-import { bnf, tickToPriceDisplay, unscale, numDisplay } from '../../utils/'
+import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol } from '../../utils/'
 import Bold from '../utils/Bold'
 import LargeText from '../utils/LargeText'
 import { poolMetadata } from '../../slices/poolsMetadata'
@@ -53,11 +53,14 @@ const LiquidityPositionsTable = (
     </LargeText>
   </>
 
+  const token0Symbol = displaySymbol(pool.token0.symbol)
+  const token1Symbol = displaySymbol(pool.token1.symbol)
+
   const tableTitle =
-    pool.token0.symbol + ':' + pool.token1.symbol + ' Pool - ' +
+    token0Symbol + ':' + token1Symbol + ' Pool - ' +
     pool.rewardsPortion + '% of TCP Liquidity rewards '
 
-  const priceUnit = pool.token1.symbol + ' per ' + pool.token0.symbol
+  const priceUnit = token1Symbol + ' per ' + token0Symbol
   const tableSubtitle = 'Current Price: ' +
     (poolCurrentData === null
     ? '-'
