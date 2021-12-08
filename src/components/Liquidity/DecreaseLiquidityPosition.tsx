@@ -209,7 +209,6 @@ const CreateLiquidityPosition = () => {
         },{
           title: 'New Position ' + token1Symbol + ' Balance',
           value: numDisplay(newPositionAmount1)
-
         }
       ]} />
       <div style={{ marginTop: 32, marginBottom: 32 }}>
@@ -232,7 +231,13 @@ const CreateLiquidityPosition = () => {
       <ErrorMessage reasons={failureReasons} />
     </>
 
-  const tickPriceDisplay = (tick: number) => tickToPriceDisplay(inverted ? -tick : tick)
+  const tickPriceDisplay = (lower: boolean) => {
+    if (position === null) return 0
+    const tick = lower
+      ? (inverted ? -position.tickUpper : position.tickLower)
+      : (inverted ? -position.tickLower : position.tickUpper)
+    return tickToPriceDisplay(tick)
+  }
 
   const columnTwo =
     <LargeText>
@@ -253,7 +258,7 @@ const CreateLiquidityPosition = () => {
       approximately {numDisplay(unscale(existingTokens.amount0, token0Decimals))} {token0Symbol} and
       {' '}{numDisplay(unscale(existingTokens.amount1, token1Decimals))} {token1Symbol}
       {' '}between the prices of
-      of {position === null ? '-' : tickPriceDisplay(position.tickLower)} and {position === null ? '-' : tickPriceDisplay(position.tickUpper)} {priceUnit}.
+      of {position === null ? '-' : tickPriceDisplay(true)} and {position === null ? '-' : tickPriceDisplay(false)} {priceUnit}.
       <ParagraphDivider />
       The current
       {' '}{priceUnit}
