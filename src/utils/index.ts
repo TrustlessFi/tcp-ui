@@ -228,7 +228,6 @@ export const parseMetamaskError = (error: any): string[] => {
 
   console.error({metamaskError})
   return ['Unknown metamask error']
-
 }
 
 export const upperCaseWord = (word: string) => word.length === 0
@@ -347,8 +346,9 @@ export const getAmountsForLiquidity = (
   currentTick: number,
   lowerTick: number,
   upperTick: number,
-  liquidity: BigNumber
+  _liquidity: BigNumberish
 ): {amount0: BigNumber, amount1: BigNumber} => {
+  const liquidity = bnf(_liquidity)
   const result = {amount0: BigNumber.from(0), amount1: BigNumber.from(0)}
 
   const currentPrice = tickToSqrtPriceX96(currentTick)

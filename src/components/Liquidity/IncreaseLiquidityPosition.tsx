@@ -13,8 +13,10 @@ import {
   tickToPriceDisplay,
   displaySymbol,
   getPoolName,
+  getAmountsForLiquidity,
+  bnf,
+  unscale,
 } from '../../utils'
-import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
 import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
@@ -52,7 +54,6 @@ const CreateLiquidityPosition = () => {
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
 
-
   const dataNull =
     contracts === null ||
     userAddress === null ||
@@ -71,6 +72,14 @@ const CreateLiquidityPosition = () => {
 
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
+
+  const existingTokens =
+    poolCurrentData === null  || position === null
+    ? {amount0: bnf(0), amount1: bnf(0)}
+    : getAmountsForLiquidity(poolCurrentData.instantTick, position.tickLower, position.tickUpper, position.liquidity)
+
+  const token0Decimals = pool === null ? 0 : pool.token0.decimals
+  const token1Decimals = pool === null ? 0 : pool.token1.decimals
 
   const [inverted, setInverted] = useState(false)
 
@@ -155,7 +164,6 @@ const CreateLiquidityPosition = () => {
       ? false
       : token1Amount > 0 && !poolCurrentData.token1.rewardsApproval.approved
 
-
   const failures: { [key in string]: reason } = {
     noop: {
       message: '',
@@ -219,20 +227,6 @@ const CreateLiquidityPosition = () => {
             label='Increase/Decrease options'
           />
           <>
-            <Button
-              size="sm"
-              onClick={toggleInverted}
-              kind={inverted ? 'secondary' : 'primary'}>
-              {token0Symbol}
-            </Button>
-            <Button
-              size="sm"
-              onClick={toggleInverted}
-              kind={inverted ? 'primary' : 'secondary'}>
-              {token1Symbol}
-            </Button>
-          </>
-          <>
             {token0Symbol} count
           <PositionNumberInput
               id="token0Input"
@@ -242,7 +236,7 @@ const CreateLiquidityPosition = () => {
           </>
           <>
             {token1Symbol} count
-          <PositionNumberInput
+            <PositionNumberInput
               id="token1Input"
               action={updateToken1Amount}
               value={token1Amount}
@@ -255,10 +249,16 @@ const CreateLiquidityPosition = () => {
           title: 'New Wallet ' + token0Symbol + ' Balance',
           value: numDisplay(userToken0Balance - token0Amount),
           failing: userToken0Balance - token0Amount < 0,
-        }, {
+        },{
           title: 'New Wallet ' + token1Symbol + ' Balance',
           value: numDisplay(userToken1Balance - token1Amount),
           failing: userToken1Balance - token1Amount < 0,
+        },{
+          title: 'New Position ' + token0Symbol + ' Balance',
+          value: numDisplay(unscale(existingTokens.amount0, token0Decimals) + token0Amount)
+        },{
+          title: 'New Position ' + token1Symbol + ' Balance',
+          value: numDisplay(unscale(existingTokens.amount1, token1Decimals) + token1Amount)
         }
       ]} />
       {token0ApprovalButton}
@@ -288,22 +288,35 @@ const CreateLiquidityPosition = () => {
 
   const columnTwo =
     <LargeText>
-      The current price for the
-          {' '}{poolName}{' '}
-      pool is {inverted ? price1 : price0} {priceUnit}.
+      <Button
+        size="sm"
+        onClick={toggleInverted}
+        kind={inverted ? 'secondary' : 'primary'}>
+        {token0Symbol}
+      </Button>
+      <Button
+        size="sm"
+        onClick={toggleInverted}
+        kind={inverted ? 'primary' : 'secondary'}>
+        {token1Symbol}
+      </Button>
       <ParagraphDivider />
-      You are increasing the liquidity between the prices
-      of {position === null ? '-' : tickPriceDisplay(position.tickLower)} {priceUnit} and {position === null ? '-' : tickPriceDisplay(position.tickUpper)} {priceUnit}.
-
+      Position {positionID} has
+      approximately {numDisplay(unscale(existingTokens.amount0, token0Decimals))} {token0Symbol} and
+      {' '}{numDisplay(unscale(existingTokens.amount1, token1Decimals))} {token1Symbol}
+      {' '}between the prices of
+      of {position === null ? '-' : tickPriceDisplay(position.tickLower)} and {position === null ? '-' : tickPriceDisplay(position.tickUpper)} {priceUnit}.
       <ParagraphDivider />
-      You want to provide increase
-      the {token0Symbol} liquidity by {numDisplay(token0Increase)} and
-      the {token1Symbol} liquidity by {numDisplay(token1Increase)}.
-      <ParagraphDivider />
-      If the {poolName} price moves outside of this price range, You could lose <Bold>{liquidationPenalty}%</Bold> or
+      The current
+      {' '}{priceUnit}
+      {' '}price is {inverted ? price1 : price0}.
+      If the {priceUnit} price moves outside of the position's price range, you could lose <Bold>{liquidationPenalty}%</Bold> or
       more of your position to liquidators.
+      <ParagraphDivider />
+      You are increasing the liquidity to
+      approximately {numDisplay(unscale(existingTokens.amount0, token0Decimals) + token0Increase)} {token0Symbol} and
+      {' '}{numDisplay(unscale(existingTokens.amount1, token1Decimals) + token1Increase)} {token1Symbol}.
     </LargeText>
-
 
   return (
     <TwoColumnDisplay

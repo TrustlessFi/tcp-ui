@@ -29,13 +29,19 @@ export default function useLiquidityPositionUpdates(tickLower: number, setTickLo
       : setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(token1Amount)), instantTick!, tickLower, newTick)))
   }
   const updateToken0Amount = (amount0: number) => {
-    if (isNaN(amount0)) return
+    if (isNaN(amount0)) {
+      setToken0Amount(amount0)
+      return
+    }
     setToken0AdjustedLast(true)
     setToken0Amount(amount0)
     setToken1Amount(unscale(getAmount1ForAmount0(bnf(mnt(amount0)), instantTick!, tickLower, tickUpper)))
   }
   const updateToken1Amount = (amount1: number) => {
-    if (isNaN(amount1)) return
+    if (isNaN(amount1)) {
+      setToken1Amount(amount1)
+      return
+    }
     setToken0AdjustedLast(false)
     setToken1Amount(amount1)
     setToken0Amount(unscale(getAmount0ForAmount1(bnf(mnt(amount1)), instantTick!, tickLower, tickUpper)))

@@ -8,7 +8,6 @@ export interface metadata {
 }
 
 const PositionMetadata2 = ({items}: { items: metadata[]}) => {
-
   const getColor = (isFailing?: boolean) => isFailing ? '#FA4D56' : '#f4f4f4'
 
   const border = '1px solid #404040'
