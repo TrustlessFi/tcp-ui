@@ -169,7 +169,7 @@ const CreateLiquidityPosition = () => {
   }
 
   const newPositionAmount0 = percentageDecrease === 100 ? 0 : currentAmount0 - token0Amount
-  const newPositionAmount1 = percentageDecrease === 100 ? 0 : currentAmount1 - token0Amount
+  const newPositionAmount1 = percentageDecrease === 100 ? 0 : currentAmount1 - token1Amount
 
   const columnOne =
     <>
@@ -212,21 +212,37 @@ const CreateLiquidityPosition = () => {
         }
       ]} />
       <div style={{ marginTop: 32, marginBottom: 32 }}>
-        <CreateTransactionButton
-          disabled={isFailing}
-          txArgs={{
-            chainID: chainID!,
-            type: TransactionType.DecreaseLiquidityPosition,
-            positionID,
-            token0Decrease: token0Amount,
-            token0Decimals,
-            token1Decrease: token1Amount,
-            token1Decimals,
-            liquidity: position === null ? '0' : bnf(position.liquidity).mul(percentageDecrease).div(100).toString(),
-            Rewards: contracts === null ? '' : contracts.Rewards,
-            trustlessMulticall: trustlessMulticall!,
-          }}
-        />
+        {percentageDecrease === 100
+        ? <CreateTransactionButton
+            disabled={isFailing}
+            txArgs={{
+              chainID: chainID!,
+              type: TransactionType.DeleteLiquidityPosition,
+              positionID,
+              token0Decrease: token0Amount,
+              token0Decimals,
+              token1Decrease: token1Amount,
+              token1Decimals,
+              Rewards: contracts === null ? '' : contracts.Rewards,
+              trustlessMulticall: trustlessMulticall!,
+            }}
+          />
+        : <CreateTransactionButton
+            disabled={isFailing}
+            txArgs={{
+              chainID: chainID!,
+              type: TransactionType.DecreaseLiquidityPosition,
+              positionID,
+              token0Decrease: token0Amount,
+              token0Decimals,
+              token1Decrease: token1Amount,
+              token1Decimals,
+              liquidity: position === null ? '0' : bnf(position.liquidity).mul(percentageDecrease).div(100).toString(),
+              Rewards: contracts === null ? '' : contracts.Rewards,
+              trustlessMulticall: trustlessMulticall!,
+            }}
+          />
+        }
       </div>
       <ErrorMessage reasons={failureReasons} />
     </>
@@ -267,8 +283,9 @@ const CreateLiquidityPosition = () => {
       more of your position to liquidators.
       <ParagraphDivider />
       {percentageDecrease === 100
-        ? `You are deleting position ${positionID} and receiving ${numDisplay(currentAmount0)} ${token0Symbol} and ${numDisplay(currentAmount1)} ${token1Symbol} to your wallet.`
-        : 'You are decreasing the liquidity to ' +
+        ? `You are deleting position ${positionID} and receiving approximately ` +
+          `${numDisplay(currentAmount0)} ${token0Symbol} and ${numDisplay(currentAmount1)} ${token1Symbol} to your wallet.`
+        : 'You are decreasing the position liquidity to ' +
           `approximately ${numDisplay(newPositionAmount0)} ${token0Symbol} and ` +
           `${numDisplay(newPositionAmount1)} ${token1Symbol}, and receiving ` +
           `approximately ${numDisplay(token0Amount)} ${token0Symbol} and ` +

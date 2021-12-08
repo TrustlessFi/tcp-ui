@@ -35,6 +35,7 @@ export enum TransactionType {
   CreateLiquidityPosition,
   IncreaseLiquidityPosition,
   DecreaseLiquidityPosition,
+  DeleteLiquidityPosition,
   ClaimAllPositionRewards,
   ApprovePoolToken,
   VoteProposal,
@@ -120,6 +121,18 @@ export interface txDecreaseLiquidityPositionArgs {
   trustlessMulticall: string
 }
 
+export interface txDeleteLiquidityPositionArgs {
+  chainID: ChainID
+  type: TransactionType.DeleteLiquidityPosition
+  positionID: number
+  token0Decrease: number
+  token0Decimals: number
+  token1Decrease: number
+  token1Decimals: number
+  Rewards: string
+  trustlessMulticall: string
+}
+
 export interface txClaimPositionRewards {
   type: TransactionType.ClaimAllPositionRewards
   positionIDs: number[]
@@ -161,6 +174,7 @@ export type TransactionArgs =
   txCreateLiquidityPositionArgs |
   txIncreaseLiquidityPositionArgs |
   txDecreaseLiquidityPositionArgs |
+  txDeleteLiquidityPositionArgs |
   txClaimPositionRewards |
   txApprovePoolToken |
   txApproveHue |
@@ -209,6 +223,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Increase Liquidity Position ' + args.positionID
     case TransactionType.DecreaseLiquidityPosition:
       return 'Decrease Liquidity Position ' + args.positionID
+    case TransactionType.DeleteLiquidityPosition:
+      return 'Delete Liquidity Position ' + args.positionID
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
     case TransactionType.ApprovePoolToken:
@@ -241,6 +257,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Increase Liquidity Position'
     case TransactionType.DecreaseLiquidityPosition:
       return 'Decrease Liquidity Position'
+    case TransactionType.DeleteLiquidityPosition:
+      return 'Delete Liquidity Position'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
     case TransactionType.ApprovePoolToken:
@@ -358,16 +376,32 @@ const executeTransaction = async (
 
       deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
-      const token0Decrease = bnf(mnt(args.token0Decrease, args.token0Decimals))
-      const token1Decrease = bnf(mnt(args.token1Decrease, args.token1Decimals))
+      const token0DecreaseA = bnf(mnt(args.token0Decrease, args.token0Decimals))
+      const token1DecreaseA = bnf(mnt(args.token1Decrease, args.token1Decimals))
 
       return await rewards.decreaseLiquidityPosition({
         tokenId: args.positionID,
-        amount0Min: token0Decrease.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
-        amount1Min: token1Decrease.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        amount0Min: token0DecreaseA.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        amount1Min: token1DecreaseA.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         liquidity: args.liquidity,
         deadline,
       }, UIID)
+
+    case TransactionType.DeleteLiquidityPosition:
+      rewards = getRewards(args.Rewards)
+
+      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
+
+      const token0DecreaseB = bnf(mnt(args.token0Decrease, args.token0Decimals))
+      const token1DecreaseB = bnf(mnt(args.token1Decrease, args.token1Decimals))
+
+      return await rewards.removeLiquidityPosition({
+        tokenId: args.positionID,
+        amount0Min: token0DecreaseB.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        amount1Min: token1DecreaseB.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        liquidity: 0,
+        deadline,
+      })
 
     case TransactionType.ClaimAllPositionRewards:
       return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
@@ -467,10 +501,9 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearHueBalance())
           break
         case TransactionType.CreateLiquidityPosition:
-          dispatch(clearLiquidityPositions())
-          break
         case TransactionType.IncreaseLiquidityPosition:
         case TransactionType.DecreaseLiquidityPosition:
+        case TransactionType.DeleteLiquidityPosition:
           dispatch(clearLiquidityPositions())
           break
         case TransactionType.ClaimAllPositionRewards:
