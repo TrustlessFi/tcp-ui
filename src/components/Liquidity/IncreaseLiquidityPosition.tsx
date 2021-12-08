@@ -62,6 +62,7 @@ const CreateLiquidityPosition = () => {
     poolsMetadata === null ||
     poolCurrentData === null ||
     chainID === null ||
+    liquidityPositions === null ||
     trustlessMulticall === null
 
   const position = liquidityPositions === null ? null : liquidityPositions[positionID]
@@ -153,7 +154,6 @@ const CreateLiquidityPosition = () => {
     token1IsWeth
       ? (userEthBalance === null ? 0 : userEthBalance)
       : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
-
 
   const token0NeedsToBeApproved =
     poolCurrentData === null || token0IsWeth

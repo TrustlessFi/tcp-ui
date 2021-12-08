@@ -48,6 +48,7 @@ export const toChecksumAddress = (address: string) => utils.getAddress(address)
 
 export const unscale = (_quantity: BigNumber | string, decimals = 18): number => {
   let quantity = bnf(_quantity)
+  if (quantity.isZero()) return 0
   const digits = quantity.toString().length
   let digitsToRemove = digits - 15
   if (digitsToRemove > decimals) {
