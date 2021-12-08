@@ -32,8 +32,9 @@ const initialState: LiquidityPositionsEditorState = {
   status: LiquidityPositionEditorStatus.Closed
 }
 
-const name = 'liquidityPositionsEditor'
 
+// TODO delete this file
+const name = 'liquidityPositionsEditor'
 
 export const liquidityPositionsEditorSlice = createSlice({
   name,
