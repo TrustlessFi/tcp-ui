@@ -8,6 +8,7 @@ import { clearPositions } from '../positions'
 import { clearLiquidityPositions } from '../liquidityPositions'
 import { clearEthBalance } from '../ethBalance'
 import { clearHueBalance } from '../balances/hueBalance'
+import { clearRewardsInfo } from '../rewards'
 import { clearPoolCurrentData } from '../poolCurrentData'
 import { clearLendHueBalance } from '../balances/lendHueBalance'
 import { clearProposals } from '../proposals'
@@ -36,6 +37,7 @@ export enum TransactionType {
   IncreaseLiquidityPosition,
   DecreaseLiquidityPosition,
   DeleteLiquidityPosition,
+  ClaimAllLiquidityPositionRewards,
   ClaimAllPositionRewards,
   ApprovePoolToken,
   VoteProposal,
@@ -139,6 +141,12 @@ export interface txClaimPositionRewards {
   Market: string
 }
 
+export interface txClaimLiquidityPositionRewards {
+  type: TransactionType.ClaimAllLiquidityPositionRewards
+  positionIDs: string[]
+  Rewards: string
+}
+
 export interface txApprovePoolToken {
   type: TransactionType.ApprovePoolToken
   tokenAddress: string
@@ -176,6 +184,7 @@ export type TransactionArgs =
   txDecreaseLiquidityPositionArgs |
   txDeleteLiquidityPositionArgs |
   txClaimPositionRewards |
+  txClaimLiquidityPositionRewards |
   txApprovePoolToken |
   txApproveHue |
   txApproveLendHue |
@@ -227,6 +236,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Delete Liquidity Position ' + args.positionID
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
+    case TransactionType.ClaimAllLiquidityPositionRewards:
+      return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve ' + args.symbol
     case TransactionType.VoteProposal:
@@ -261,6 +272,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Delete Liquidity Position'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
+    case TransactionType.ClaimAllLiquidityPositionRewards:
+      return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve Token'
     case TransactionType.VoteProposal:
@@ -406,6 +419,9 @@ const executeTransaction = async (
     case TransactionType.ClaimAllPositionRewards:
       return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
 
+    case TransactionType.ClaimAllLiquidityPositionRewards:
+      return await getRewards(args.Rewards).claimAllRewards(args.positionIDs, UIID)
+
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
@@ -508,6 +524,10 @@ export const waitForTransaction = createAsyncThunk(
           break
         case TransactionType.ClaimAllPositionRewards:
           dispatch(clearPositions())
+          break
+        case TransactionType.ClaimAllLiquidityPositionRewards:
+          dispatch(clearLiquidityPositions())
+          dispatch(clearRewardsInfo())
           break
         case TransactionType.ApprovePoolToken:
           dispatch(clearPoolCurrentData(args.poolAddress))
