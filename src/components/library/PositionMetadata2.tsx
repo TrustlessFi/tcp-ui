@@ -14,7 +14,7 @@ const PositionMetadata2 = ({items}: { items: metadata[]}) => {
   const style = {margin: 0, paddingTop: 8, paddingBottom: 8}
 
   const rows = items.map((item, index, array) => (
-    <Row key={item.title} style={index === array.length - 1 ? style : {...style, borderBottom: border}}>
+    <Row key={index} style={index === array.length - 1 ? style : {...style, borderBottom: border}}>
       <Text monospace size={14} lineHeight="16px" color={getColor(item.failing)} bold>{item.value}</Text>
       <Text monospace size={14} lineHeight="16px" color={getColor(item.failing)} style={{marginLeft: 8}}>{item.title}</Text>
     </Row>
