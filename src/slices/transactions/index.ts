@@ -111,9 +111,11 @@ export interface txDecreaseLiquidityPositionArgs {
   chainID: ChainID
   type: TransactionType.DecreaseLiquidityPosition
   positionID: number
-  amount0Min: number
-  amount1Min: number
-  liquidity: number
+  token0Decrease: number
+  token0Decimals: number
+  token1Decrease: number
+  token1Decimals: number
+  liquidity: string
   Rewards: string
   trustlessMulticall: string
 }
@@ -344,10 +346,10 @@ const executeTransaction = async (
 
       return await rewards.increaseLiquidityPosition({
         tokenId: args.positionID,
-        amount0Desired: scale(args.token0Increase),
-        amount0Min: scale(args.token0Increase * (1 - SLIPPAGE_TOLERANCE)),
-        amount1Desired: scale(args.token1Increase),
-        amount1Min: scale(args.token1Increase * (1 - SLIPPAGE_TOLERANCE)),
+        amount0Desired: token0Increase,
+        amount0Min: token0Increase.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        amount1Desired: token1Increase,
+        amount1Min: token1Increase.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         deadline,
       }, UIID, {value: ethIncrease})
 
@@ -356,11 +358,14 @@ const executeTransaction = async (
 
       deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
+      const token0Decrease = bnf(mnt(args.token0Decrease, args.token0Decimals))
+      const token1Decrease = bnf(mnt(args.token1Decrease, args.token1Decimals))
+
       return await rewards.decreaseLiquidityPosition({
-        amount0Min: scale(args.amount0Min),
-        amount1Min: scale(args.amount1Min),
         tokenId: args.positionID,
-        liquidity: scale(args.liquidity),
+        amount0Min: token0Decrease.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        amount1Min: token1Decrease.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
+        liquidity: args.liquidity,
         deadline,
       }, UIID)
 
