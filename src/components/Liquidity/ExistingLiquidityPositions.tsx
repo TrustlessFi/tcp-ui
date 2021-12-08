@@ -65,6 +65,10 @@ const LiquidityPositionsTable = (
   if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
     const rows = Object.values(liquidityPositions).map((lqPos) => {
 
+      // TODO move this into the liquidity positions slice with rewardsInfo as an input arg,
+      // and create a button inside the ExistingLiquidityPositions component that allows collecting ALL
+      // rewards for all positions in all pools at once
+
       let approximateRewards = bnf(0)
       const lastTimeRewarded = lqPos.lastTimeRewarded
       const lastPeriodRewarded = timeToPeriod(lastTimeRewarded, rewardsInfo.periodLength, rewardsInfo.firstPeriod)
