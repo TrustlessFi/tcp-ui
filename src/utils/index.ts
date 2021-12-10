@@ -25,6 +25,7 @@ export const bnf = (val: BigNumberish) => BigNumber.from(val)
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
 
 export const mnt = (quantity: number, decimals = 18): string => {
+  if (isNaN(quantity)) return '0' 
   if (decimals < 6) throw new Error('too few decimals: ' + decimals)
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }

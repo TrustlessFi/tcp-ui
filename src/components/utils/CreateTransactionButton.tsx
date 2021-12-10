@@ -35,7 +35,9 @@ const CreateTransactionButton = ({
   const userAddress = selector(state => state.wallet.address)
   const chainID = getChainIDFromState(selector(state => state.chainID))
 
-  if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) return <ConnectWalletButton />
+  if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) {
+    return <ConnectWalletButton small />
+  }
 
   const buttonDisplay =
     waitingForMetamask

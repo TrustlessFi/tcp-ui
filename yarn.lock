@@ -3026,13 +3026,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@trustlessfi/addresses@npm:0.4.0"
+"@trustlessfi/addresses@npm:^0.4.7":
+  version: 0.4.7
+  resolution: "@trustlessfi/addresses@npm:0.4.7"
   dependencies:
-    "@trustlessfi/utils": ^0.2.4
-    "@types/node": ^16.11.9
-  checksum: 4daea0c46662ac6e7750f42dcb2328f5770ec9b9e0b9cc004f5919e113c770d33a37b3484b47121153c317abe9031f0cdf72613f4d74506305b5c34476063393
+    "@trustlessfi/utils": ^0.2.8
+    "@types/node": ^16.11.11
+  checksum: dde22dc48e44adb30d5983b10ea6de487d51869149ddd2ab564f9e6d998475c8c9d225b8922ecc4e9ba98f28837338bacea50adeccb09cbc0b4ac37fec1b9b0c
   languageName: node
   linkType: hard
 
@@ -3043,13 +3043,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/multicall@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "@trustlessfi/multicall@npm:0.4.4"
+"@trustlessfi/multicall@npm:^0.4.6":
+  version: 0.4.6
+  resolution: "@trustlessfi/multicall@npm:0.4.6"
   dependencies:
     "@trustlessfi/utils": ^0.2.1
     ethers: ^5.4.7
-  checksum: 86370d1334af8c92f8e8b51d6c5d61cd9fa1b51dce1cdcd3c271b7ead3ed809c624f1a358269f47ae7247068f7e31f1bbfd77fff82816203c8b010f0d0ee4310
+  checksum: 2671a5c7ebc195df2ea5702cc64ae11877ce83a874a74051a131c6ab51f9897edc2f94742317dc53783f52da88a2cc8402244c4eee2799648c91c5aed3c90381
   languageName: node
   linkType: hard
 
@@ -3064,12 +3064,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/utils@npm:^0.2.1, @trustlessfi/utils@npm:^0.2.4":
+"@trustlessfi/utils@npm:^0.2.1":
   version: 0.2.4
   resolution: "@trustlessfi/utils@npm:0.2.4"
   dependencies:
     ethers: ^5.4.7
   checksum: 5b56810d037ff89cc08f2f82ed0ed34556d1e11c36d5bc70711685601f70accd1771ead96d6d8e1971ebb9fc25a2641ff8dfe87651ceb905ffcea9ba3b6922ed
+  languageName: node
+  linkType: hard
+
+"@trustlessfi/utils@npm:^0.2.8":
+  version: 0.2.8
+  resolution: "@trustlessfi/utils@npm:0.2.8"
+  dependencies:
+    ethers: ^5.4.7
+  checksum: fac5ee784ebb3f81e565c821da2da278a18947f49fa6bb6d37e07cf0d6e85891317913bf63f33dbb6cecb68b1cb7d5bbbdbfd3c406e289683b738316147b9fdc
   languageName: node
   linkType: hard
 
@@ -3319,10 +3328,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.9":
-  version: 16.11.10
-  resolution: "@types/node@npm:16.11.10"
-  checksum: 9c79419c5c3d92d5825bffa30f3668533f598d8b63a73ea7fc24e47f162bdbed92b0f8e4f4261cc3314b39cee050e303366d2aa154abc95c63a572a110b8c160
+"@types/node@npm:^16.11.11":
+  version: 16.11.12
+  resolution: "@types/node@npm:16.11.12"
+  checksum: a3feb346d61a56f5a137c29bb8c63cfa3cc02e184b9dffdc18ef1528dcce55596e570575215a2e39e6ce69343eeb2a5ba71c271938f1dc8db4cc393902855412
   languageName: node
   linkType: hard
 
@@ -18577,9 +18586,9 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.15.0
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trustlessfi/addresses": ^0.4.0
+    "@trustlessfi/addresses": ^0.4.7
     "@trustlessfi/artifacts": ^0.1.4
-    "@trustlessfi/multicall": ^0.4.4
+    "@trustlessfi/multicall": ^0.4.6
     "@trustlessfi/typechain": ^0.6.8
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.46.1
