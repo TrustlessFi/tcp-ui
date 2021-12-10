@@ -3,7 +3,6 @@ import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend/Lend'
 import Withdraw from './components/Lend/Withdraw'
-import Governance from './components/Governance'
 import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
@@ -25,7 +24,6 @@ export enum Tab {
   Lend = 'Lend',
   Withdraw = 'Withdraw',
   Liquidity = 'Liquidity',
-  Governance = 'Governance',
   Transactions = 'Transactions',
 }
 
@@ -34,7 +32,6 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Lend: <Lend />,
   Withdraw: <Withdraw />,
   Liquidity: <Liquidity />,
-  Governance: <Governance />,
   Transactions: <RecentTransactions />,
 }
 
