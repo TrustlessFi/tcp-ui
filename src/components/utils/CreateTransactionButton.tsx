@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory } from 'react-router-dom'
 import { TransactionArgs } from '../../slices/transactions'
 import ConnectWalletButton from './ConnectWalletButton'
-import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
+import { Button,  ButtonKind, ButtonSize } from 'carbon-components-react'
 import { waitForTransaction } from '../../slices/transactions'
 import { getChainIDFromState } from '../../slices/chainID'
 import { CSSProperties } from 'react';
@@ -12,7 +12,6 @@ const CreateTransactionButton = ({
   title,
   disabled,
   shouldOpenTxTab,
-  small,
   kind,
   size,
   style,
@@ -22,7 +21,6 @@ const CreateTransactionButton = ({
   title: string
   disabled: boolean
   shouldOpenTxTab: boolean
-  small: boolean
   kind: ButtonKind
   size: ButtonSize
   style: CSSProperties
@@ -36,7 +34,7 @@ const CreateTransactionButton = ({
   const chainID = getChainIDFromState(selector(state => state.chainID))
 
   if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) {
-    return <ConnectWalletButton small />
+    return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
   const buttonDisplay =
@@ -57,7 +55,6 @@ const CreateTransactionButton = ({
 
   return (
     <Button
-      small={small}
       kind={kind}
       size={size}
       style={style}
@@ -72,7 +69,6 @@ CreateTransactionButton.defaultProps = {
   title: 'Confirm in Metamask',
   disabled: false,
   shouldOpenTxTab: true,
-  small: false,
   kind: 'primary',
   size: 'default',
   style: {},

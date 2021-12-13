@@ -132,7 +132,7 @@ const LiquidityPositionsTable = (
   const rightElement =
     <>
       <CreateTransactionButton
-        small
+        size="sm"
         style={{marginRight: 8}}
         title="Claim All Rewards"
         disabled={positionIDsWithRewards.length === 0}
