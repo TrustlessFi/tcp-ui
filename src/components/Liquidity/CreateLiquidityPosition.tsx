@@ -232,8 +232,8 @@ const CreateLiquidityPosition = () => {
 
   const columnOne =
     <>
-      <div style={{ marginBottom: 16 }}>
-        <SpacedList spacing={8}>
+      <div style={{ marginBottom: 16, marginTop: 16 }}>
+        <SpacedList spacing={16} style={{marginBottom: 16}}>
           <>
             <Button
               size="sm"
@@ -257,7 +257,7 @@ const CreateLiquidityPosition = () => {
               spacing={spacing}
             />
           </LargeText>
-          <>{priceUnit}  Upper Bound</>
+          <>{priceUnit} Upper Bound</>
           <LargeText>
             <TickSelector
               tick={inverted ? tickLower : tickUpper}
@@ -266,35 +266,39 @@ const CreateLiquidityPosition = () => {
               spacing={spacing}
             />
           </LargeText>
+        </SpacedList>
+        <SpacedList spacing={8}>
           <>
             {token0Symbol} count
+          </>
           <PositionNumberInput
               id="token0Input"
               action={updateToken0Amount}
               value={token0Amount}
             />
-          </>
           <>
             {token1Symbol} count
-          <PositionNumberInput
-              id="token1Input"
-              action={updateToken1Amount}
-              value={token1Amount}
-            />
           </>
+          <PositionNumberInput
+            id="token1Input"
+            action={updateToken1Amount}
+            value={token1Amount}
+          />
         </SpacedList>
       </div>
-      <PositionMetadata2 items={[
-        {
-          title: 'New Wallet ' + token0Symbol + ' Balance',
-          value: numDisplay(userToken0Balance - token0Amount),
-          failing: userToken0Balance - token0Amount < 0,
-        }, {
-          title: 'New Wallet ' + token1Symbol + ' Balance',
-          value: numDisplay(userToken1Balance - token1Amount),
-          failing: userToken1Balance - token1Amount < 0,
-        }
-      ]} />
+      <div style={{marginBottom: 16}}>
+        <PositionMetadata2 items={[
+          {
+            title: 'New Wallet ' + token0Symbol + ' Balance',
+            value: numDisplay(userToken0Balance - token0Amount),
+            failing: userToken0Balance - token0Amount < 0,
+          }, {
+            title: 'New Wallet ' + token1Symbol + ' Balance',
+            value: numDisplay(userToken1Balance - token1Amount),
+            failing: userToken1Balance - token1Amount < 0,
+          }
+        ]} />
+      </div>
       {token0ApprovalButton}
       {token1ApprovalButton}
       <div style={{ marginTop: 32, marginBottom: 32 }}>

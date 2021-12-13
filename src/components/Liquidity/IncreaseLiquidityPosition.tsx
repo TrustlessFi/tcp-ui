@@ -232,48 +232,51 @@ const CreateLiquidityPosition = () => {
     <>
       <div style={{ marginBottom: 16 }}>
         <SpacedList spacing={8}>
-          You want to
-          <InputPicker
-            options={IncreaseDecreaseOption}
-            initialValue={IncreaseDecreaseOption.Increase}
-            onChange={onChange}
-            label='Increase/Decrease options'
-          />
+          <div style={{marginBottom: 16}}>
+            <InputPicker
+              options={IncreaseDecreaseOption}
+              initialValue={IncreaseDecreaseOption.Increase}
+              onChange={onChange}
+              label='Increase/Decrease options'
+            />
+          </div>
           <>
             {token0Symbol} count
-          <PositionNumberInput
-              id="token0Input"
-              action={updateToken0Amount}
-              value={token0Amount}
-            />
           </>
+          <PositionNumberInput
+            id="token0Input"
+            action={updateToken0Amount}
+            value={token0Amount}
+          />
           <>
             {token1Symbol} count
-            <PositionNumberInput
-              id="token1Input"
-              action={updateToken1Amount}
-              value={token1Amount}
-            />
           </>
+          <PositionNumberInput
+            id="token1Input"
+            action={updateToken1Amount}
+            value={token1Amount}
+          />
         </SpacedList>
       </div>
-      <PositionMetadata2 items={[
-        {
-          title: 'New Wallet ' + token0Symbol + ' Balance',
-          value: numDisplay(userToken0Balance - token0Amount),
-          failing: userToken0Balance - token0Amount < 0,
-        },{
-          title: 'New Wallet ' + token1Symbol + ' Balance',
-          value: numDisplay(userToken1Balance - token1Amount),
-          failing: userToken1Balance - token1Amount < 0,
-        },{
-          title: 'New Position ' + token0Symbol + ' Balance',
-          value: numDisplay(unscale(existingTokens.amount0, token0Decimals) + token0Amount)
-        },{
-          title: 'New Position ' + token1Symbol + ' Balance',
-          value: numDisplay(unscale(existingTokens.amount1, token1Decimals) + token1Amount)
-        }
-      ]} />
+      <div style={{marginBottom: 16}}>
+        <PositionMetadata2 items={[
+          {
+            title: 'New Wallet ' + token0Symbol + ' Balance',
+            value: numDisplay(userToken0Balance - token0Amount),
+            failing: userToken0Balance - token0Amount < 0,
+          },{
+            title: 'New Wallet ' + token1Symbol + ' Balance',
+            value: numDisplay(userToken1Balance - token1Amount),
+            failing: userToken1Balance - token1Amount < 0,
+          },{
+            title: 'New Position ' + token0Symbol + ' Balance',
+            value: numDisplay(unscale(existingTokens.amount0, token0Decimals) + token0Amount)
+          },{
+            title: 'New Position ' + token1Symbol + ' Balance',
+            value: numDisplay(unscale(existingTokens.amount1, token1Decimals) + token1Amount)
+          }
+        ]} />
+      </div>
       {token0ApprovalButton}
       {token1ApprovalButton}
       <div style={{ marginTop: 32, marginBottom: 32 }}>

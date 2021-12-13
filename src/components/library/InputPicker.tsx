@@ -18,7 +18,7 @@ const InputPicker = <T extends string, TEnumValue extends string>({
   style?: CSSProperties
 }) => {
   return (
-    <div style={{display: 'inline-block', width: 146, marginTop: 8}} >
+    <div style={{display: 'inline-block', width: 146}} >
       <Dropdown
         ariaLabel="Dropdown"
         id={label}
@@ -32,7 +32,7 @@ const InputPicker = <T extends string, TEnumValue extends string>({
         initialSelectedItem={initialValue}
         label={label}
         titleText={<> </>}
-        style={style === undefined ? {marginLeft: 8, marginRight: 8} : style}
+        style={style}
       />
     </div>
   )

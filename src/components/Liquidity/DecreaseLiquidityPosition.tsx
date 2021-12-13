@@ -170,15 +170,16 @@ const CreateLiquidityPosition = () => {
   const columnOne =
     <>
       <div style={{ marginBottom: 16 }}>
-        <SpacedList spacing={8}>
-          You want to
+        <SpacedList spacing={16}>
           <InputPicker
             options={IncreaseDecreaseOption}
             initialValue={IncreaseDecreaseOption.Decrease}
             onChange={onChange}
             label='Increase/Decrease options'
           />
-          Your position by
+          <>
+            Your position by {percentageDecrease + '%'}
+          </>
           <Slider
             ariaLabelInput="Decrease Percentage"
             id="percentage_slider"
@@ -189,7 +190,6 @@ const CreateLiquidityPosition = () => {
             hideTextInput
             value={percentageDecrease}
           />
-          {percentageDecrease + '%'}
         </SpacedList>
       </div>
       <PositionMetadata2 items={[

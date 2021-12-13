@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import {  CSSProperties } from 'react'
 
 export enum ListDirection {
   Row = 'Row',
@@ -8,14 +9,16 @@ export enum ListDirection {
 const SpacedList = ({
   spacing,
   children,
-  direction
+  direction,
+  style,
 }: {
   spacing: number,
   children: ReactNode | ReactNode[],
   direction: ListDirection
+  style?: CSSProperties
 }) => {
   return (
-    <>
+    <div style={style}>
       {Array.isArray(children)
         ? (direction === ListDirection.Col
           ? children.map((child, index) =>
@@ -28,7 +31,7 @@ const SpacedList = ({
               ? child
               : <span key={index} style={{ marginRight: spacing }}>{child}</span>)
         ) : children}
-    </>
+    </div>
   )
 }
 
