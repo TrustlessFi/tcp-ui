@@ -8,9 +8,7 @@ export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
 export const isDevEnvironment = process.env.NODE_ENV === 'development'
 
-export const sleepS = (seconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000))
-}
+export const sleepS = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 
 // ======================= Number Utils ============================
 export const log = (input: { base: number; val: number }) =>
