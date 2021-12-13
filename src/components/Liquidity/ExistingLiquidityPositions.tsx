@@ -17,6 +17,7 @@ import RelativeLoading from '../library/RelativeLoading'
 import ConnectWalletButton from '../utils/ConnectWalletButton'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../utils/CreateTransactionButton'
+import Text from '../utils/Text'
 
 const LiquidityPositionsTable = (
   {
@@ -42,19 +43,6 @@ const LiquidityPositionsTable = (
   const invert = () => setInverted(!inverted)
 
 
-  let table = <>
-    <TableHeaderOnly headers={[
-      'ID',
-      'Liquidity',
-      'Price Range',
-      'Approximate Rewards',
-    ]}
-    />
-    <LargeText style={{ margin: 32 }}>
-      No Positions
-    </LargeText>
-  </>
-
   const token0Symbol = displaySymbol(pool.token0.symbol)
   const token1Symbol = displaySymbol(pool.token1.symbol)
 
@@ -66,6 +54,13 @@ const LiquidityPositionsTable = (
     inverted
     ? token0Symbol + ' per ' + token1Symbol
     : token1Symbol + ' per ' + token0Symbol
+
+  let table =
+    <Center style={{padding: 24}}>
+      <Text>
+        You have no {token0Symbol}:{token1Symbol} positions.
+      </Text>
+    </Center>
 
   const tableSubtitle =
     <div onClick={invert}>
