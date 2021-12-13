@@ -60,10 +60,16 @@ const name = 'market'
 export const marketSlice = createSlice({
   name,
   initialState: getStateWithValue<marketInfo>(getLocalStorage(name, null)) as MarketState,
-  reducers: {},
+  reducers: {
+    clearMarketInfo: (state) => {
+      state.data.value = null
+    },
+  },
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getMarketInfo)
   },
 })
+
+export const { clearMarketInfo } = marketSlice.actions
 
 export default marketSlice.reducer

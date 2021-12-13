@@ -8,6 +8,7 @@ import { clearPositions } from '../positions'
 import { clearLiquidityPositions } from '../liquidityPositions'
 import { clearBalances } from '../balances'
 import { clearRewardsInfo } from '../rewards'
+import { clearMarketInfo } from '../market'
 import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { clearProposals } from '../proposals'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
@@ -506,6 +507,12 @@ export const waitForTransaction = createAsyncThunk(
         case TransactionType.CreatePosition:
         case TransactionType.UpdatePosition:
           dispatch(clearPositions())
+          dispatch(clearMarketInfo())
+          dispatch(clearBalances())
+          break
+        case TransactionType.ClaimAllPositionRewards:
+          dispatch(clearPositions())
+          dispatch(clearMarketInfo())
           dispatch(clearBalances())
           break
         case TransactionType.Lend:
@@ -517,10 +524,8 @@ export const waitForTransaction = createAsyncThunk(
         case TransactionType.DecreaseLiquidityPosition:
         case TransactionType.DeleteLiquidityPosition:
           dispatch(clearLiquidityPositions())
-          dispatch(clearBalances())
-          break
-        case TransactionType.ClaimAllPositionRewards:
-          dispatch(clearPositions())
+          dispatch(clearRewardsInfo())
+          dispatch(clearPoolsCurrentData())
           dispatch(clearBalances())
           break
         case TransactionType.ClaimAllLiquidityPositionRewards:
@@ -529,15 +534,8 @@ export const waitForTransaction = createAsyncThunk(
           dispatch(clearBalances())
           break
         case TransactionType.ApprovePoolToken:
-          dispatch(clearBalances())
-          dispatch(clearBalances())
-          break
         case TransactionType.ApproveHue:
-          dispatch(clearBalances())
-          dispatch(clearBalances())
-          break
         case TransactionType.ApproveLendHue:
-          dispatch(clearBalances())
           dispatch(clearBalances())
           break
         case TransactionType.VoteProposal:
