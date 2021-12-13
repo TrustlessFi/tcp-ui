@@ -17,6 +17,7 @@ import CreateTransactionButton from '../utils/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 import ParagraphDivider from '../utils/ParagraphDivider'
+import SpacedList from '../library/SpacedList'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -107,8 +108,7 @@ const Lend = () => {
 
   const columnOne =
     <>
-      <LargeText>
-        I want to
+      <SpacedList spacing={8}>
         <InputPicker
           options={LendBorrowOption}
           initialValue={LendBorrowOption.Lend}
@@ -120,9 +120,9 @@ const Lend = () => {
           action={(value: number) => setAmount(value)}
           value={amount}
         />
-        Hue.
-      </LargeText>
-      <div style={{ marginTop: 36, marginBottom: 30 }}>
+        <>Hue</>
+      </SpacedList>
+      <div style={{ marginTop: 16, marginBottom: 30 }}>
         <PositionMetadata2 items={metadataItems} />
       </div>
       <CreateTransactionButton
@@ -162,7 +162,7 @@ const Lend = () => {
       <RelativeLoading show={userAddress !== null && dataNull} />
       <div>
         <LargeText>
-          I have {dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)} Hue available to deposit.
+          You have {dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)} Hue available to deposit.
 
           <ParagraphDivider />
 

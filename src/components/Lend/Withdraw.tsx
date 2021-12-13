@@ -17,6 +17,7 @@ import { TransactionType } from '../../slices/transactions/index';
 import CreateTransactionButton from '../utils/CreateTransactionButton';
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 import ParagraphDivider from '../utils/ParagraphDivider'
+import SpacedList from '../library/SpacedList'
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
@@ -103,8 +104,7 @@ const Withdraw = () => {
 
   const columnOne =
     <>
-      <LargeText>
-        I want to
+      <SpacedList>
         <InputPicker
           options={LendBorrowOption}
           initialValue={LendBorrowOption.Withdraw}
@@ -116,9 +116,9 @@ const Withdraw = () => {
           action={(value: number) => setAmount(value)}
           value={amount}
         />
-        Hue.
-      </LargeText>
-      <div style={{ marginTop: 36, marginBottom: 30 }}>
+        Hue
+      </SpacedList>
+      <div style={{ marginTop: 16, marginBottom: 30 }}>
         <PositionMetadata2 items={metadataItems} />
       </div>
       <CreateTransactionButton
@@ -157,7 +157,7 @@ const Withdraw = () => {
       <RelativeLoading show={userAddress !== null && dataNull} />
       <div>
         <LargeText>
-          I have {dataNull ? '-' : numDisplay(convertLendHueToHue(balances.tokens[contracts.LendHue].userBalance), 2)} Hue
+          You have {dataNull ? '-' : numDisplay(convertLendHueToHue(balances.tokens[contracts.LendHue].userBalance), 2)} Hue
           available to withdraw.
 
           <ParagraphDivider />

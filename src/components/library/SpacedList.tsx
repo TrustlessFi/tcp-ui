@@ -38,6 +38,7 @@ const SpacedList = ({
 SpacedList.defaultProps = {
   direction: ListDirection.Col,
   small: false,
+  spacing: 8,
 }
 
 export default SpacedList
