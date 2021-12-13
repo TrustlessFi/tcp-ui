@@ -23,10 +23,11 @@ import { Row, Col } from 'react-flexbox-grid'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 import ParagraphDivider from '../utils/ParagraphDivider'
+import SpacedList from '../library/SpacedList'
 
 enum CollateralChange {
-  Increase = 'Increase',
-  Decrease = 'Decrease',
+  IncreaseCollateral = 'Increase Collateral',
+  DecreaseCollateral = 'Decrease Collateral',
 }
 
 enum DebtChange {
@@ -46,7 +47,7 @@ const UpdatePosition = () => {
 
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
-  const initialCollateralChange = CollateralChange.Increase
+  const initialCollateralChange = CollateralChange.IncreaseCollateral
   const initialDebtChange = DebtChange.Borrow
   const [collateralChange, setCollateralChange] = useState(initialCollateralChange)
   const [debtChange, setDebtChange] = useState(initialDebtChange)
@@ -72,7 +73,7 @@ const UpdatePosition = () => {
     userAddress === null
 
   const position = dataNull ? null : positions[positionID]
-  const increaseCollateral = collateralChange === CollateralChange.Increase
+  const increaseCollateral = collateralChange === CollateralChange.IncreaseCollateral
   const increaseDebt = debtChange === DebtChange.Borrow
 
   const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
@@ -159,42 +160,33 @@ const UpdatePosition = () => {
 
   const columnOne =
     <>
-      <Row bottom='xs' style={{ marginBottom: 8 }}>
-        <Col>
-          <InputPicker
-            options={CollateralChange}
-            initialValue={initialCollateralChange}
-            onChange={(option: CollateralChange) => setCollateralChange(option)}
-            label='Increase/Decrease options'
-          />
-        </Col>
-        <Col>
-          Eth collateral by
-        </Col>
-      </Row>
-      <PositionNumberInput
-        id="collateralInput"
-        action={(value: number) => setCollateralCount(value)}
-        value={collateralCount}
-      />
-      <Row bottom='xs' style={{ marginBottom: 8 }}>
-        <Col>
-          <InputPicker
-            options={DebtChange}
-            initialValue={initialDebtChange}
-            onChange={(option: DebtChange) => setDebtChange(option)}
-            label='Borrow/Lend options'
-          />
-        </Col>
-        <Col>
-          Hue
-              </Col>
-      </Row>
-      <PositionNumberInput
-        id="debtInput"
-        action={(value: number) => setDebtCount(value)}
-        value={debtCount}
-      />
+      <SpacedList>
+        <InputPicker
+          width={200}
+          options={CollateralChange}
+          initialValue={initialCollateralChange}
+          onChange={(option: CollateralChange) => setCollateralChange(option)}
+          label='Increase/Decrease options'
+        />
+        <PositionNumberInput
+          id="collateralInput"
+          action={(value: number) => setCollateralCount(value)}
+          value={collateralCount}
+        />
+        Eth
+        <InputPicker
+          options={DebtChange}
+          initialValue={initialDebtChange}
+          onChange={(option: DebtChange) => setDebtChange(option)}
+          label='Borrow/Lend options'
+        />
+        <PositionNumberInput
+          id="debtInput"
+          action={(value: number) => setDebtCount(value)}
+          value={debtCount}
+        />
+        Hue
+      </SpacedList>
       <div style={{ marginTop: 36, marginBottom: 30 }}>
         <PositionMetadata2 items={metadataItems} />
       </div>
@@ -230,7 +222,7 @@ const UpdatePosition = () => {
   const columnTwo =
     <LargeText>
 
-      Position #{positionID} currently has {position === null ? 0 : numDisplay(position.collateralCount, 2)} Eth of Collateral
+      Position {positionID} currently has {position === null ? 0 : numDisplay(position.collateralCount, 2)} Eth of Collateral
             and {numDisplay(position === null ? 0 : position.debtCount, 2)} Hue of debt.
 
       <ParagraphDivider />
@@ -239,7 +231,7 @@ const UpdatePosition = () => {
             by {numDisplay(collateralCount)} Eth for a new total
             of {numDisplay(newCollateralCount, 2)} Eth of collateral
             and {debtChange.toLowerCase()} {numDisplay(debtCount)} Hue for a new total
-            of {newDebtCountDisplay} Hue debt in position #{positionID}.
+            of {newDebtCountDisplay} Hue debt in position {positionID}.
 
       <ParagraphDivider />
 

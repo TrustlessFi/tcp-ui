@@ -10,15 +10,17 @@ const InputPicker = <T extends string, TEnumValue extends string>({
   initialValue,
   label,
   style,
+  width,
 }:{
   options: { [key in T]: TEnumValue }
   onChange: (value: TEnumValue) => void
   initialValue: TEnumValue
   label: string
   style?: CSSProperties
+  width: number
 }) => {
   return (
-    <div style={{display: 'inline-block', width: 146}} >
+    <div style={{display: 'inline-block', width}} >
       <Dropdown
         ariaLabel="Dropdown"
         id={label}
@@ -36,6 +38,10 @@ const InputPicker = <T extends string, TEnumValue extends string>({
       />
     </div>
   )
+}
+
+InputPicker.defaultProps = {
+  width: 146
 }
 
 export default InputPicker

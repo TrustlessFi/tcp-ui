@@ -16,14 +16,14 @@ const ErrorMessage = ({
 }) => {
   const reason = firstOrNull(reasons.filter((reason) => reason.failing && reason.silent !== true))
 
-  if (reason === null) return null
+  const message = reason === null ? ' ' : reason.message
 
   return (
     <div style={{height: 32, color: '#FA4D56'}}>
       {
         large
-        ? <LargeText>{reason.message}</LargeText>
-        : <>{reason.message}</>
+        ? <LargeText>{message}</LargeText>
+        : <>{message}</>
       }
     </div>
   )

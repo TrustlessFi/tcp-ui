@@ -178,7 +178,7 @@ const CreateLiquidityPosition = () => {
             label='Increase/Decrease options'
           />
           <>
-            Your position by {percentageDecrease + '%'}
+            Position {positionID} by {percentageDecrease + '%'}
           </>
           <Slider
             ariaLabelInput="Decrease Percentage"
@@ -294,7 +294,7 @@ const CreateLiquidityPosition = () => {
       columnOne={columnOne}
       columnTwo={columnTwo}
       loading={userAddress !== null && dataNull}
-      breadCrumbItems={[{ text: 'Liquidity', href: '/liquidity' }, 'Decrease', 'Position ' + numDisplay(positionID)]}
+      breadCrumbItems={[{ text: 'Liquidity', href: '/liquidity' }, 'Decrease', 'Position ' + positionID]}
     />
   )
 }
