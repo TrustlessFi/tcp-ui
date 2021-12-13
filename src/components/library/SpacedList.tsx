@@ -21,12 +21,12 @@ const SpacedList = ({
           ? children.map((child, index) =>
             index === children.length - 1
               ? child
-              : <div style={{ marginBottom: spacing }}>{child}</div>
+              : <div key={index} style={{ marginBottom: spacing }}>{child}</div>
           )
           : children.map((child, index) =>
             index === children.length - 1
               ? child
-              : <span style={{ marginRight: spacing }}>{child}</span>)
+              : <span key={index} style={{ marginRight: spacing }}>{child}</span>)
         ) : children}
     </>
   )

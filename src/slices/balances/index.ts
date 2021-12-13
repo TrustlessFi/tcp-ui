@@ -43,12 +43,12 @@ type tokenBalances = {
   }
 }
 
-export interface balanceInfo {
+export interface balancesInfo {
   userEthBalance: number
   tokens: tokenBalances
 }
 
-export interface balanceState extends sliceState<balanceInfo> {}
+export interface balanceState extends sliceState<balancesInfo> {}
 
 export interface balanceArgs {
   userAddress: string,
@@ -62,7 +62,7 @@ export const getBalances = createAsyncThunk(
   'balances/getBalances',
   async (
     args: balanceArgs,
-  ): Promise<balanceInfo> => {
+  ): Promise<balancesInfo> => {
     const provider = getProvider()
     const multicall = getMulticallContract(args.trustlessMulticall)
     const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider) as ERC20

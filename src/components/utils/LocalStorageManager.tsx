@@ -8,8 +8,11 @@ import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
 import { pricesSlice, pricesInfo } from '../../slices/prices'
 import { ratesSlice, ratesInfo } from '../../slices/rates'
+import { positionsSlice, positionsInfo } from '../../slices/positions'
+import { balancesSlice, balancesInfo } from '../../slices/balances'
 import { uniswapContractsSlice, uniswapContractsInfo } from '../../slices/uniswapContracts'
 import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
+import { poolsCurrentDataSlice, poolsCurrentInfo } from '../../slices/poolsCurrentData'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 
@@ -19,6 +22,9 @@ type slicesState =
   poolsMetadata |
   liquidationsInfo |
   marketInfo |
+  balancesInfo |
+  positionsInfo |
+  poolsCurrentInfo |
   pricesInfo |
   ratesInfo |
   systemDebtInfo |
@@ -61,6 +67,26 @@ export const slicesToPersist: persistedSlices = {
   },
 
   // Slices with loadable state
+  [balancesSlice.name]: {
+    slice: balancesSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.balances.data.value
+  },
+  [positionsSlice.name]: {
+    slice: positionsSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.positions.data.value
+  },
+  [poolsCurrentDataSlice.name]: {
+    slice: poolsCurrentDataSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.poolsCurrentData.data.value
+  },
+  [balancesSlice.name]: {
+    slice: balancesSlice,
+    ttl: SHORT_EXPIRATION,
+    getState: (state: RootState) => state.balances.data.value
+  },
   [poolsMetadataSlice.name]: {
     slice: poolsMetadataSlice,
     ttl: LONG_EXPIRATION,
