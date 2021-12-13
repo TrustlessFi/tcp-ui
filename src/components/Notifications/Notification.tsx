@@ -124,12 +124,15 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
             </Row>
             {explorerLink}
             {(notif.status === TransactionStatus.Failure
-                ? <Row>
-                    <NotificationText>
-                      See console for more information.
-                    </NotificationText>
-                  </Row>
-                : null
+              ? <Row>
+                  <NotificationText>
+                    {notif.message !== undefined
+                      ? notif.message
+                      : 'See console for more information.'
+                    }
+                  </NotificationText>
+                </Row>
+              : null
             )}
           </Col>
         </Row>

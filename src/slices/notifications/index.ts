@@ -10,6 +10,7 @@ export interface notificationArgs {
   userAddress: string
   type: TransactionType
   chainID: ChainID
+  message?: string
 }
 
 export interface notificationInfo extends notificationArgs {

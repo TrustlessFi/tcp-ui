@@ -19,7 +19,7 @@ import { Market, Rewards, TcpGovernorAlpha } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
-import { getDefaultTransactionTimeout, mnt, parseMetamaskError } from '../../utils'
+import { getDefaultTransactionTimeout, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
 import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
@@ -459,12 +459,21 @@ export const waitForTransaction = createAsyncThunk(
       dispatch(waitingForMetamask())
       tx = await executeTransaction(args, provider)
     } catch (e) {
-      console.error("failureMessages: " + parseMetamaskError(e).join(', '))
+
+      const errorMessages = parseMetamaskError(e)
+      console.error("failureMessages: " + errorMessages.join(', '))
+
+      const reasonString =
+        errorMessages.length > 0
+        ? extractRevertReasonString(errorMessages[0])
+        : null
+
       dispatch(addNotification({
         type: args.type,
         userAddress,
         status: TransactionStatus.Failure,
         chainID: data.chainID,
+        message: reasonString ? reasonString : errorMessages.join(', ')
       }))
       dispatch(metamaskComplete())
       return

@@ -25,7 +25,7 @@ export const bnf = (val: BigNumberish) => BigNumber.from(val)
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
 
 export const mnt = (quantity: number, decimals = 18): string => {
-  if (isNaN(quantity)) return '0' 
+  if (isNaN(quantity)) return '0'
   if (decimals < 6) throw new Error('too few decimals: ' + decimals)
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
@@ -197,7 +197,7 @@ export const parseMetamaskError = (error: any): string[] => {
     }
   }
 
-  const userRejectedMessage = ['Please re-submit the transaction and accept it in Metamask.']
+  const userRejectedMessage = ['Please accept in metamask']
 
   if (error.hasOwnProperty('code') && error.code === 4001) {
     return userRejectedMessage
@@ -230,6 +230,20 @@ export const parseMetamaskError = (error: any): string[] => {
 
   console.error({metamaskError})
   return ['Unknown metamask error']
+}
+
+export const extractRevertReasonString  = (input: string): string | null => {
+  const vmExceptionMessage = 'Error: VM Exception while processing transaction: reverted with reason string \''
+  const messageIndex = input.indexOf(vmExceptionMessage)
+  if (messageIndex < 0) return null
+  const result = input.substring(vmExceptionMessage.length, input.lastIndexOf('\''))
+
+  switch(result) {
+    case 'STF':
+      return 'Token transfer failed'
+    default:
+      return result
+  }
 }
 
 export const upperCaseWord = (word: string) => word.length === 0

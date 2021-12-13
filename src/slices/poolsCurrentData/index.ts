@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { initialState, getGenericReducerBuilder } from '../'
 import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
@@ -13,7 +13,6 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
   rc,
-  getMulticall,
   getDuplicateFuncMulticall,
   getCustomMulticall,
   getFullSelector,
