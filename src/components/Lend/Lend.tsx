@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom'
 import LargeText from '../utils/LargeText'
 import { LendBorrowOption } from './'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
-import { numDisplay }  from '../../utils/'
+import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
+import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
@@ -22,8 +22,7 @@ const Lend = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const hueBalance = waitForHueBalance(selector, dispatch)
-  const lendHueBalance = waitForLendHueBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
@@ -34,14 +33,21 @@ const Lend = () => {
   const [amount, setAmount] = useState(0)
 
   const dataNull =
-    hueBalance === null ||
-    lendHueBalance === null ||
+    balances === null ||
     market === null ||
     rates === null ||
     sdi === null ||
     contracts === null
 
-  const apr = dataNull ? 0 : getAPR({market, rates, sdi, hueBalance})
+  const apr = dataNull ? 0 : getAPR({
+    market,
+    rates,
+    sdi,
+    lentHue:
+      balances === null || contracts === null
+        ? 0
+        : balances.tokens[contracts.Hue].balances.Accounting
+  })
 
   const onChange = (option: LendBorrowOption) => {
     if (option === LendBorrowOption.Withdraw) {
@@ -49,11 +55,11 @@ const Lend = () => {
     }
   }
 
-  const newWalletBalance = dataNull ? 0 : hueBalance.userBalance - amount
-  const lentHueCount = dataNull ? 0 : lendHueBalance.userBalance! * market.valueOfLendTokensInHue
+  const newWalletBalance = dataNull ? 0 : balances.tokens[contracts.Hue].userBalance - amount
+  const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * market.valueOfLendTokensInHue
   const newLentHueCount = lentHueCount + amount
 
-  const failures: {[key in string]: reason} = {
+  const failures: { [key in string]: reason } = {
     noValueEntered: {
       message: 'Please insert a value.',
       failing: amount === 0 || isNaN(amount),
@@ -69,7 +75,12 @@ const Lend = () => {
 
   failures['hueNotApproved'] = {
     message: 'Lending is not approved.',
-    failing: dataNull ? false : zeroIfNaN(amount) !== 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
+    failing:
+      dataNull
+        ? false
+        : zeroIfNaN(amount) !== 0
+        && (balances.tokens[contracts.Hue].approval.Market === undefined
+          || !balances.tokens[contracts.Hue].approval.Market.approved),
   }
 
   const failureReasons: reason[] = Object.values(failures)
@@ -79,15 +90,15 @@ const Lend = () => {
   const metadataItems = [
     {
       title: 'Current Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
-    },{
+      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)) + ' Hue',
+    }, {
       title: 'New Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance - amount, 2)) + ' Hue',
+      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance - amount, 2)) + ' Hue',
       failing: failures.notEnoughInWallet.failing,
-    },{
+    }, {
       title: 'Current Hue Lent',
       value: numDisplay(lentHueCount, 2),
-    },{
+    }, {
       title: 'New Hue Lent',
       value: numDisplay(newLentHueCount, 2)
     },
@@ -111,12 +122,16 @@ const Lend = () => {
         />
         Hue.
       </LargeText>
-      <div style={{marginTop: 36, marginBottom: 30}}>
+      <div style={{ marginTop: 36, marginBottom: 30 }}>
         <PositionMetadata2 items={metadataItems} />
       </div>
       <CreateTransactionButton
         title={"Approve Lend"}
-        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || hueBalance.approval.Market?.approved}
+        disabled={
+          failingDueToNonApprovalReason
+            || zeroIfNaN(amount) === 0
+            || dataNull
+            || balances.tokens[contracts.Hue].approval.Market.approved}
         showDisabledInsteadOfConnectWallet={true}
         shouldOpenTxTab={false}
         txArgs={{
@@ -125,7 +140,7 @@ const Lend = () => {
           spenderAddress: contracts === null ? '' : contracts.Market,
         }}
       />
-      <div style={{marginTop: 32, marginBottom: 32}}>
+      <div style={{ marginTop: 32, marginBottom: 32 }}>
         <CreateTransactionButton
           title="Lend"
           disabled={isFailing || amount === 0}
@@ -143,11 +158,11 @@ const Lend = () => {
 
 
   const columnTwo =
-    <div style={{position: 'relative'}}>
+    <div style={{ position: 'relative' }}>
       <RelativeLoading show={userAddress !== null && dataNull} />
       <div>
         <LargeText>
-          I have {dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)} Hue available to deposit.
+          I have {dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)} Hue available to deposit.
 
           <ParagraphDivider />
 

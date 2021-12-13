@@ -2,10 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Button, Slider, SliderOnChangeArg } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance, waitForLiquidityPositions } from '../../slices/waitFor'
-import { startCreate } from '../../slices/liquidityPositionsEditor'
-import { tokenMetadata } from '../../slices/poolsMetadata'
-import { tokenData } from '../../slices/poolCurrentData'
+import { waitForPoolsCurrentData, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForLiquidityPositions, waitForBalances } from '../../slices/waitFor'
 import InputPicker from '../library/InputPicker'
 import { IncreaseDecreaseOption } from './'
 import {
@@ -19,7 +16,6 @@ import {
 } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
-import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { reason } from '../library/ErrorMessage';
@@ -46,10 +42,10 @@ const CreateLiquidityPosition = () => {
 
   const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
-  const userEthBalance = waitForEthBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
-  const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+  const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
 
   const chainID = selector(state => state.chainID.chainID)
@@ -57,22 +53,24 @@ const CreateLiquidityPosition = () => {
 
   const [percentageDecrease, setPercentageDecrease] = useState(0)
 
+  const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
+
   const dataNull =
     contracts === null ||
     userAddress === null ||
-    userEthBalance === null ||
+    balances === null ||
     rewardsInfo === null ||
     poolsMetadata === null ||
-    poolCurrentData === null ||
+    pool === null ||
+    poolsCurrentData === null ||
     chainID === null ||
     liquidityPositions === null ||
     trustlessMulticall === null
 
   const position = liquidityPositions === null ? null : liquidityPositions[positionID]
 
-  const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
-
-  const tick = poolCurrentData ? poolCurrentData.twapTick : null
+  const tick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].twapTick
+  const instantTick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].instantTick
 
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
@@ -88,20 +86,14 @@ const CreateLiquidityPosition = () => {
     token1Amount,
     updateToken0Amount,
     updateToken1Amount
-  } = useLiquidityPositionUpdates(tickLower, setTickLower, tickUpper, setTickUpper, poolCurrentData, tick)
-
-  useEffect(() => {
-    if (poolAddress) {
-      startCreate({ poolAddress })
-    }
-  }, [poolAddress])
+  } = useLiquidityPositionUpdates(tickLower, setTickLower, tickUpper, setTickUpper, instantTick, tick)
 
   const toggleInverted = () => setInverted(!inverted)
 
   const existingTokens =
-    poolCurrentData === null  || position === null
+    poolsCurrentData === null  || position === null || pool === null
     ? {amount0: bnf(0), amount1: bnf(0)}
-    : getAmountsForLiquidity(poolCurrentData.instantTick, position.tickLower, position.tickUpper, position.liquidity)
+    : getAmountsForLiquidity(poolsCurrentData[pool.address].instantTick, position.tickLower, position.tickUpper, position.liquidity)
 
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
@@ -129,14 +121,18 @@ const CreateLiquidityPosition = () => {
   }
 
   const userToken0Balance =
-    token0IsWeth
-      ? (userEthBalance === null ? 0 : userEthBalance)
-      : (poolCurrentData === null ? 0 : poolCurrentData.token0.userBalance)
+    dataNull
+    ? 0
+    : (token0IsWeth
+      ? balances.userEthBalance
+      : balances.tokens[pool.token0.address].userBalance)
 
   const userToken1Balance =
-    token1IsWeth
-      ? (userEthBalance === null ? 0 : userEthBalance)
-      : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
+    dataNull
+    ? 0
+    : (token1IsWeth
+      ? balances.userEthBalance
+      : balances.tokens[pool.token1.address].userBalance)
 
   const failures: { [key in string]: reason } = {
     noop: {

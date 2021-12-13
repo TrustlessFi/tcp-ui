@@ -6,13 +6,19 @@ import {
   mnt,
   unscale,
 } from '../utils'
-import { poolCurrentInfo } from '../slices/poolCurrentData'
+import { poolCurrentInfo } from '../slices/poolsCurrentData'
 
-export default function useLiquidityPositionUpdates(tickLower: number, setTickLower: Function, tickUpper: number, setTickUpper: Function, poolCurrentData?: poolCurrentInfo | null, tick?: number | null) {
+export default function useLiquidityPositionUpdates(
+  tickLower: number,
+  setTickLower: Function,
+  tickUpper: number,
+  setTickUpper: Function,
+  instantTick: number | null,
+  tick?: number | null
+) {
   const [token0AdjustedLast, setToken0AdjustedLast] = useState(true)
   const [token0Amount, setToken0Amount] = useState(0)
   const [token1Amount, setToken1Amount] = useState(0)
-  const instantTick = poolCurrentData ? poolCurrentData.instantTick : null
 
   const updateLowerTick = (newTick: number) => {
     if (typeof tick !== 'number' || tick <= newTick) return
@@ -48,11 +54,11 @@ export default function useLiquidityPositionUpdates(tickLower: number, setTickLo
   }
 
   return {
-      token0Amount, setToken0Amount,
-      token1Amount, setToken1Amount,
-      updateLowerTick,
-      updateUpperTick,
-      updateToken0Amount,
-      updateToken1Amount
+    token0Amount, setToken0Amount,
+    token1Amount, setToken1Amount,
+    updateLowerTick,
+    updateUpperTick,
+    updateToken0Amount,
+    updateToken1Amount
   }
 }

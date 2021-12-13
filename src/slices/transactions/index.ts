@@ -6,11 +6,9 @@ import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { clearPositions } from '../positions'
 import { clearLiquidityPositions } from '../liquidityPositions'
-import { clearEthBalance } from '../ethBalance'
-import { clearHueBalance } from '../balances/hueBalance'
+import { clearBalances } from '../balances'
 import { clearRewardsInfo } from '../rewards'
-import { clearPoolCurrentData } from '../poolCurrentData'
-import { clearLendHueBalance } from '../balances/lendHueBalance'
+import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { clearProposals } from '../proposals'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
@@ -508,35 +506,39 @@ export const waitForTransaction = createAsyncThunk(
         case TransactionType.CreatePosition:
         case TransactionType.UpdatePosition:
           dispatch(clearPositions())
-          dispatch(clearEthBalance())
-          dispatch(clearHueBalance())
+          dispatch(clearBalances())
           break
         case TransactionType.Lend:
         case TransactionType.Withdraw:
-          dispatch(clearLendHueBalance())
-          dispatch(clearHueBalance())
+          dispatch(clearBalances())
           break
         case TransactionType.CreateLiquidityPosition:
         case TransactionType.IncreaseLiquidityPosition:
         case TransactionType.DecreaseLiquidityPosition:
         case TransactionType.DeleteLiquidityPosition:
           dispatch(clearLiquidityPositions())
+          dispatch(clearBalances())
           break
         case TransactionType.ClaimAllPositionRewards:
           dispatch(clearPositions())
+          dispatch(clearBalances())
           break
         case TransactionType.ClaimAllLiquidityPositionRewards:
           dispatch(clearLiquidityPositions())
           dispatch(clearRewardsInfo())
+          dispatch(clearBalances())
           break
         case TransactionType.ApprovePoolToken:
-          dispatch(clearPoolCurrentData(args.poolAddress))
+          dispatch(clearBalances())
+          dispatch(clearBalances())
           break
         case TransactionType.ApproveHue:
-          dispatch(clearHueBalance())
+          dispatch(clearBalances())
+          dispatch(clearBalances())
           break
         case TransactionType.ApproveLendHue:
-          dispatch(clearLendHueBalance())
+          dispatch(clearBalances())
+          dispatch(clearBalances())
           break
         case TransactionType.VoteProposal:
           dispatch(clearProposals())

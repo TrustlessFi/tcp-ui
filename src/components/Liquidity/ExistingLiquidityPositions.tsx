@@ -2,10 +2,10 @@ import { Button } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { clearPoolCurrentData } from '../../slices/poolCurrentData'
+import { clearPoolsCurrentData } from '../../slices/poolsCurrentData'
 import { rewardsInfo } from '../../slices/rewards'
 import { ContractsInfo } from '../../slices/contracts'
-import { waitForLiquidityPositions, waitForPoolsMetadata, getPoolCurrentDataWaitFunction, waitForRewards, waitForContracts } from '../../slices/waitFor'
+import { waitForLiquidityPositions, waitForPoolsMetadata, waitForPoolsCurrentData, waitForRewards, waitForContracts } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol, timeToPeriod } from '../../utils/'
 import LargeText from '../utils/LargeText'
@@ -32,7 +32,7 @@ const LiquidityPositionsTable = (
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const poolCurrentData = getPoolCurrentDataWaitFunction(pool.address)(selector, dispatch)
+  const poolCurrentData = waitForPoolsCurrentData(selector, dispatch)
 
   let table = <>
     <TableHeaderOnly headers={[
@@ -58,7 +58,7 @@ const LiquidityPositionsTable = (
   const tableSubtitle = 'Current Price: ' +
     (poolCurrentData === null
     ? '-'
-    : tickToPriceDisplay(poolCurrentData.twapTick) + ' ' + priceUnit)
+    : tickToPriceDisplay(poolCurrentData[pool.address].twapTick) + ' ' + priceUnit)
 
   const positionIDsWithRewards: string[] = []
 
@@ -99,7 +99,6 @@ const LiquidityPositionsTable = (
           'Approximate Rewards': numDisplay(unscale(approximateRewards)) + ' TCP',
         },
         onClick: () => {
-          dispatch(clearPoolCurrentData(pool.address))
           history.push(`/liquidity/increase/${pool.address}/${lqPos.positionID}`)
         }
       }
@@ -126,7 +125,6 @@ const LiquidityPositionsTable = (
         size="small"
         href={`/liquidity/new/${pool.address}`}
         onClick={(e) => {
-          dispatch(clearPoolCurrentData(pool.address))
           history.push(`/liquidity/new/${pool.address}`)
           e.preventDefault()
         }}>

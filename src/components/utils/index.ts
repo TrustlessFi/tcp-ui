@@ -1,9 +1,7 @@
 import { TransactionInfo, TransactionState } from '../../slices/transactions'
 import { AppDispatch } from '../../app/store'
-import { clearEthBalance } from '../../slices/ethBalance'
 import { clearPositions } from '../../slices/positions'
-import { clearHueBalance } from '../../slices/balances/hueBalance'
-import { clearLendHueBalance } from '../../slices/balances/lendHueBalance'
+import { clearBalances } from '../../slices/balances'
 import { ChainID } from '@trustlessfi/addresses'
 
 export enum UserTxSortOption {
@@ -47,8 +45,6 @@ export const getOpacityTransition = (durationSeconds: number) => {
 }
 
 export const clearUserData = (dispatch: AppDispatch) => {
-  dispatch(clearEthBalance())
+  dispatch(clearBalances())
   dispatch(clearPositions())
-  dispatch(clearHueBalance())
-  dispatch(clearLendHueBalance())
 }

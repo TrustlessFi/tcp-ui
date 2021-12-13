@@ -2,7 +2,7 @@ import { useState } from "react"
 import LargeText from '../utils/LargeText'
 import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForHueBalance, waitForLendHueBalance, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
+import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import PositionMetadata2 from '../library/PositionMetadata2'
@@ -22,8 +22,7 @@ const Withdraw = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const hueBalance = waitForHueBalance(selector, dispatch)
-  const lendHueBalance = waitForLendHueBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const sdi = waitForSDI(selector, dispatch)
@@ -34,20 +33,27 @@ const Withdraw = () => {
   const [amount, setAmount] = useState(0)
 
   const dataNull =
-    hueBalance === null ||
-    lendHueBalance === null ||
+    balances === null ||
     market === null ||
     rates === null ||
     sdi === null ||
     contracts === null
 
-  const apr = dataNull ? 0 : getAPR({ market, rates, sdi, hueBalance })
+  const apr = dataNull ? 0 : getAPR({
+    market,
+    rates,
+    sdi,
+    lentHue:
+      balances === null || contracts === null
+        ? 0
+        : balances.tokens[contracts.Hue].balances.Accounting
+  })
 
   const onChange = (option: LendBorrowOption) => {
     if (option === LendBorrowOption.Lend) history.push('lend')
   }
 
-  const lentHueCount = dataNull ? 0 : lendHueBalance.userBalance! * market.valueOfLendTokensInHue
+  const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * market.valueOfLendTokensInHue
 
   const failures: { [key in string]: reason } = {
     noValueEntered: {
@@ -65,7 +71,10 @@ const Withdraw = () => {
 
   failures['lendHueNotApproved'] = {
     message: 'Withdrawal is not approved.',
-    failing: dataNull ? false : zeroIfNaN(amount) !== 0 && (lendHueBalance.approval.Market === undefined || !lendHueBalance.approval.Market.approved),
+    failing:
+      dataNull
+      ? false : zeroIfNaN(amount) !== 0
+      && (balances.tokens[contracts.LendHue].approval.Market === undefined || !balances.tokens[contracts.LendHue].approval.Market.approved),
   }
 
   const failureReasons: reason[] = Object.values(failures)
@@ -78,10 +87,10 @@ const Withdraw = () => {
   const metadataItems = [
     {
       title: 'Current Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance, 2)) + ' Hue',
+      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)) + ' Hue',
     }, {
       title: 'New Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(hueBalance.userBalance + amount, 2)) + ' Hue',
+      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance + amount, 2)) + ' Hue',
     }, {
       title: 'Current Hue Lent',
       value: numDisplay(lentHueCount, 2),
@@ -114,7 +123,11 @@ const Withdraw = () => {
       </div>
       <CreateTransactionButton
         title={"Approve Withdraw"}
-        disabled={failingDueToNonApprovalReason || zeroIfNaN(amount) === 0 || dataNull || lendHueBalance.approval.Market ?.approved}
+        disabled={
+          failingDueToNonApprovalReason
+          || zeroIfNaN(amount) === 0
+          || dataNull
+          || balances.tokens[contracts.LendHue].approval.Market.approved}
         showDisabledInsteadOfConnectWallet={true}
         shouldOpenTxTab={false}
         txArgs={{
@@ -144,7 +157,8 @@ const Withdraw = () => {
       <RelativeLoading show={userAddress !== null && dataNull} />
       <div>
         <LargeText>
-          I have {dataNull ? '-' : numDisplay(convertLendHueToHue(lendHueBalance.userBalance), 2)} Hue available to withdraw.
+          I have {dataNull ? '-' : numDisplay(convertLendHueToHue(balances.tokens[contracts.LendHue].userBalance), 2)} Hue
+          available to withdraw.
 
           <ParagraphDivider />
 

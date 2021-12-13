@@ -3,8 +3,7 @@ import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
-  waitForHueBalance,
-  waitForEthBalance,
+  waitForBalances,
   waitForMarket,
   waitForRates,
   waitForPrices,
@@ -25,9 +24,8 @@ const CreatePosition = () => {
   const dispatch = useAppDispatch()
 
   const liquidations = waitForLiquidations(selector, dispatch)
-  const hueBalance = waitForHueBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
-  const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const contracts = waitForContracts(selector, dispatch)
@@ -38,12 +36,11 @@ const CreatePosition = () => {
 
   const dataNull =
     liquidations === null ||
-    hueBalance === null ||
+    balances === null ||
     priceInfo === null ||
     market === null ||
     rates === null ||
-    contracts === null ||
-    userEthBalance === null
+    contracts === null
 
   const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
   const collateralizationDisplay = dataNull ? '-%' : numDisplay(collateralization * 100, 0) + '%'
@@ -79,7 +76,7 @@ const CreatePosition = () => {
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: userEthBalance - collateralCount < 0,
+      failing: balances === null ? false : balances.userEthBalance - collateralCount < 0,
     }
   }
 
@@ -144,7 +141,7 @@ const CreatePosition = () => {
 
   const columnTwo =
     <LargeText>
-      You have {dataNull ? '-' : numDisplay(userEthBalance)} Eth in your wallet.
+      You have {dataNull ? '-' : numDisplay(balances.userEthBalance)} Eth in your wallet.
 
       <ParagraphDivider />
 

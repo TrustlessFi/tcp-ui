@@ -41,7 +41,6 @@ export interface poolsMetadata {[key: string]: poolMetadata}
 
 export interface PoolsMetadataState extends sliceState<poolsMetadata> {}
 
-
 export const getPoolsMetadata = createAsyncThunk(
   'poolsMetadata/getPoolMetadata',
   async (args: getPoolsMetadataArgs): Promise<poolsMetadata> => {
@@ -153,7 +152,7 @@ export const poolsMetadataSlice = createSlice({
   initialState: initialState as PoolsMetadataState,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getPoolsMetadata)
+    builder = getGenericReducerBuilder( builder, getPoolsMetadata)
   },
 })
 

@@ -2,10 +2,15 @@ import { Button } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { getPoolCurrentDataWaitFunction, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForEthBalance, waitForLiquidityPositions } from '../../slices/waitFor'
-import { startCreate } from '../../slices/liquidityPositionsEditor'
+import {
+  waitForRewards,
+  waitForPoolsMetadata,
+  waitForContracts,
+  waitForBalances,
+  waitForLiquidityPositions,
+  waitForPoolsCurrentData,
+} from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
-import { tokenData } from '../../slices/poolCurrentData'
 import InputPicker from '../library/InputPicker'
 import { IncreaseDecreaseOption } from './'
 import {
@@ -45,39 +50,42 @@ const CreateLiquidityPosition = () => {
 
   const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
-  const userEthBalance = waitForEthBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
-  const poolCurrentData = getPoolCurrentDataWaitFunction(poolAddress)(selector, dispatch)
+  const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
 
+  const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
+
   const dataNull =
     contracts === null ||
     userAddress === null ||
-    userEthBalance === null ||
+    balances === null ||
     rewardsInfo === null ||
     poolsMetadata === null ||
-    poolCurrentData === null ||
+    pool === null ||
+    poolsCurrentData === null ||
     chainID === null ||
     liquidityPositions === null ||
     trustlessMulticall === null
 
   const position = liquidityPositions === null ? null : liquidityPositions[positionID]
 
-  const pool = (!poolAddress || !poolsMetadata) ? null : poolsMetadata[poolAddress]
 
-  const tick = poolCurrentData ? poolCurrentData.twapTick : null
+  const tick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].twapTick
+  const instantTick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].instantTick
 
   const price0 = tickToPriceDisplay(tick === null ? 0 : tick)
   const price1 = tickToPriceDisplay(tick === null ? 0 : -tick)
 
   const existingTokens =
-    poolCurrentData === null  || position === null
+    poolsCurrentData === null  || position === null
     ? {amount0: bnf(0), amount1: bnf(0)}
-    : getAmountsForLiquidity(poolCurrentData.instantTick, position.tickLower, position.tickUpper, position.liquidity)
+    : getAmountsForLiquidity(poolsCurrentData[poolAddress].instantTick, position.tickLower, position.tickUpper, position.liquidity)
 
   const token0Decimals = pool === null ? 0 : pool.token0.decimals
   const token1Decimals = pool === null ? 0 : pool.token1.decimals
@@ -94,15 +102,9 @@ const CreateLiquidityPosition = () => {
     () => {},
     position === null ? 0 : position.tickUpper,
     () => {},
-    poolCurrentData,
+    instantTick,
     tick
   )
-
-  useEffect(() => {
-    if (poolAddress) {
-      startCreate({ poolAddress })
-    }
-  }, [poolAddress])
 
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
@@ -114,15 +116,21 @@ const CreateLiquidityPosition = () => {
 
   const toggleInverted = () => setInverted(!inverted)
 
-  const getApprovalButton = (tokenIndex: 0 | 1, token?: tokenMetadata, tokenData?: tokenData, ) => {
-    if (token !== undefined && token.symbol.toLowerCase() === 'weth') return null
+  const getApprovalButton = (tokenIndex: 0 | 1, token: tokenMetadata | null) => {
+    if (token !== null && token.symbol.toLowerCase() === 'weth') return null
+
+    const isApproved =
+      balances === null
+      || pool === null
+      || token === null
+      ? null
+      : balances.tokens[token.address].approval.Rewards.approved
 
     const disabled =
       dataNull ||
       token === undefined ||
       pool === null ||
-      tokenData === undefined ||
-      tokenData.rewardsApproval.approved
+      isApproved === true
 
     const symbol = tokenIndex === 0 ? token0Symbol : token1Symbol
 
@@ -136,7 +144,7 @@ const CreateLiquidityPosition = () => {
         shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApprovePoolToken,
-          tokenAddress: token === undefined ? '' : token.address,
+          tokenAddress: token === null ? '' : token.address,
           Rewards: contracts === null ? '' : contracts.Rewards,
           poolAddress,
           symbol,
@@ -146,23 +154,28 @@ const CreateLiquidityPosition = () => {
   }
 
   const userToken0Balance =
-    token0IsWeth
-      ? (userEthBalance === null ? 0 : userEthBalance)
-      : (poolCurrentData === null ? 0 : poolCurrentData.token0.userBalance)
+    dataNull
+    ? 0
+    : (token0IsWeth
+      ? balances.userEthBalance
+      : balances.tokens[pool.token0.address].userBalance)
 
   const userToken1Balance =
-    token1IsWeth
-      ? (userEthBalance === null ? 0 : userEthBalance)
-      : (poolCurrentData === null ? 0 : poolCurrentData.token1.userBalance)
+    dataNull
+    ? 0
+    : (token1IsWeth
+      ? balances.userEthBalance
+      : balances.tokens[pool.token1.address].userBalance)
 
   const token0NeedsToBeApproved =
-    poolCurrentData === null || token0IsWeth
+    poolsCurrentData === null || balances === null || pool === null || token0IsWeth
       ? false
-      : token0Amount > 0 && !poolCurrentData.token0.rewardsApproval.approved
+      : token0Amount > 0 && !balances.tokens[pool.token0.address].approval.Rewards.approved
+
   const token1NeedsToBeApproved =
-    poolCurrentData === null || token1IsWeth
+    poolsCurrentData === null || balances === null || pool === null || token1IsWeth
       ? false
-      : token1Amount > 0 && !poolCurrentData.token1.rewardsApproval.approved
+      : token1Amount > 0 && !balances.tokens[pool.token1.address].approval.Rewards.approved
 
   const failures: { [key in string]: reason } = {
     noop: {
@@ -189,17 +202,17 @@ const CreateLiquidityPosition = () => {
     liquidityOutOfRange: {
       message: 'Can\'t increase out of range liquidity.',
       failing:
-        position === null || poolCurrentData === null
+        position === null || poolsCurrentData === null
         ? false
-        : poolCurrentData.twapTick < position.tickLower || position.tickUpper < poolCurrentData.twapTick,
+        : poolsCurrentData[poolAddress].twapTick < position.tickLower || position.tickUpper < poolsCurrentData[poolAddress].twapTick,
     },
   }
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  const token0ApprovalButton = getApprovalButton(0, pool ?.token0, poolCurrentData ?.token0)
-  const token1ApprovalButton = getApprovalButton(1, pool ?.token1, poolCurrentData ?.token1)
+  const token0ApprovalButton = getApprovalButton(0, pool === null ? null : pool.token0)
+  const token1ApprovalButton = getApprovalButton(1, pool === null ? null : pool.token1)
 
   const priceUnit =
     (inverted ? token0Symbol : token1Symbol) +

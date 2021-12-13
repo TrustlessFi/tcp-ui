@@ -3,7 +3,6 @@ import { Slice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store'
 import { minutes, timeS } from '../../utils/'
 import { transactionsSlice, TransactionState } from '../../slices/transactions'
-import { positionsEditorSlice, PositionsEditorState } from '../../slices/positionsEditor'
 import { contractsSlice, ContractsState } from '../../slices/contracts'
 import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
 import { marketSlice, marketInfo } from '../../slices/market'
@@ -16,7 +15,6 @@ import { notificationsSlice, NotificationState } from '../../slices/notification
 
 type slicesState =
   TransactionState |
-  PositionsEditorState |
   ContractsState |
   poolsMetadata |
   liquidationsInfo |
@@ -55,11 +53,6 @@ export const slicesToPersist: persistedSlices = {
     slice: notificationsSlice,
     ttl: SHORT_EXPIRATION,
     getState: (state: RootState) => state.notifications
-  },
-  [positionsEditorSlice.name]: {
-    slice: positionsEditorSlice,
-    ttl: MEDIUM_EXPIRATION,
-    getState: (state: RootState) => state.positionsEditor
   },
   [transactionsSlice.name]: {
     slice: transactionsSlice,

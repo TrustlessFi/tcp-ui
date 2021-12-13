@@ -2,7 +2,6 @@ import { Button } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { editorOpened } from '../../slices/positionsEditor'
 import { waitForPositions , waitForPrices } from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
@@ -67,13 +66,7 @@ const ExistingPositionsTable = () => {
         'Collateralization Ratio': numDisplay(collateralization * 100, 0) + '%',
         'Approximate Rewards': numDisplay(position.approximateRewards) + " TCP"
       },
-      onClick: () => {
-        dispatch(editorOpened({
-          positionID: position.id,
-          creating: false,
-        }))
-        history.push(`/positions/${position.id}`)
-      }
+      onClick: () => history.push(`/positions/${position.id}`)
     }
   })
 
@@ -108,13 +101,7 @@ const ExistingPositions = () => {
       />
       <Button
         size="small"
-        onClick={() => {
-          dispatch(editorOpened({
-            positionID: 0,
-            creating: true,
-          }))
-          history.push('/positions/new')
-        }}>
+        onClick={() => history.push('/positions/new')}>
         New Position
       </Button>
     </>

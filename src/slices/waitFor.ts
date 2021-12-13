@@ -4,9 +4,7 @@ import { AppSelector } from '../app/hooks'
 import { getGovernorInfo } from './governor'
 import { getMarketInfo } from './market'
 import { getRatesInfo } from './rates'
-import { getHueBalance } from './balances/hueBalance'
 import { getPoolsMetadata } from './poolsMetadata'
-import { getLendHueBalance } from './balances/lendHueBalance'
 import { getLiquidityPositions } from './liquidityPositions'
 import { getPositions } from './positions'
 import { getProposals } from './proposals'
@@ -14,8 +12,8 @@ import { getSystemDebtInfo } from './systemDebt'
 import { getLiquidationsInfo } from './liquidations'
 import { getRewardsInfo } from './rewards'
 import { getPricesInfo } from './prices'
-import { fetchEthBalance } from './ethBalance'
-import { getPoolCurrentData } from './poolCurrentData'
+import { getBalances } from './balances'
+import { getPoolsCurrentData } from './poolsCurrentData'
 import { getContracts } from './contracts'
 
 import { sliceState } from './'
@@ -115,9 +113,9 @@ export const waitForContracts = getWaitFunction(
   [FetchNode.ChainID, FetchNode.Governor, FetchNode.TrustlessMulticall],
 )
 
-export const getPoolCurrentDataWaitFunction = (poolAddress: string) => getWaitFunction(
-  (state: RootState) => state.poolCurrentData[poolAddress],
-  getPoolCurrentData,
+export const waitForPoolsCurrentData = getWaitFunction(
+  (state: RootState) => state.poolsCurrentData,
+  getPoolsCurrentData,
   [
     FetchNode.Contracts,
     FetchNode.TrustlessMulticall,
@@ -125,7 +123,6 @@ export const getPoolCurrentDataWaitFunction = (poolAddress: string) => getWaitFu
     FetchNode.RewardsInfo,
     FetchNode.PoolsMetadata,
   ],
-  {poolAddress},
 )
 
 /// ============================ Get Info Logic =======================================
@@ -183,22 +180,16 @@ export const waitForSDI = getWaitFunction(
   [FetchNode.Contracts],
 )
 
-export const waitForHueBalance = getWaitFunction(
-  (state: RootState) => state.hueBalance,
-  getHueBalance,
-  [FetchNode.Contracts, FetchNode.UserAddress, FetchNode.TrustlessMulticall],
-)
-
-export const waitForLendHueBalance = getWaitFunction(
-  (state: RootState) => state.lendHueBalance,
-  getLendHueBalance,
-  [FetchNode.Contracts, FetchNode.UserAddress, FetchNode.TrustlessMulticall],
-)
-
-export const waitForEthBalance = getWaitFunction(
-  (state: RootState) => state.ethBalance,
-  fetchEthBalance,
-  [FetchNode.UserAddress, FetchNode.TrustlessMulticall],
+export const waitForBalances = getWaitFunction(
+  (state: RootState) => state.balances,
+  getBalances,
+  [
+    FetchNode.UserAddress,
+    FetchNode.TrustlessMulticall,
+    FetchNode.PoolsMetadata,
+    FetchNode.RewardsInfo,
+    FetchNode.Contracts
+  ]
 )
 
 export const waitForLiquidityPositions = getWaitFunction(

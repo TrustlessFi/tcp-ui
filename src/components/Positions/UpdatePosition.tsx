@@ -5,8 +5,7 @@ import {
   waitForRates,
   waitForPrices,
   waitForMarket,
-  waitForHueBalance,
-  waitForEthBalance,
+  waitForBalances,
   waitForContracts,
   waitForPositions
 } from '../../slices/waitFor'
@@ -14,8 +13,6 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { numDisplay, zeroIfNaN } from '../../utils/index'
 import { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
-import { clearPositions } from '../../slices/positions'
-import { editorClosed } from '../../slices/positionsEditor'
 import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
 import Bold from '../utils/Bold'
@@ -55,9 +52,8 @@ const UpdatePosition = () => {
   const [debtChange, setDebtChange] = useState(initialDebtChange)
 
   const liquidations = waitForLiquidations(selector, dispatch)
-  const hueBalance = waitForHueBalance(selector, dispatch)
+  const balances = waitForBalances(selector, dispatch)
   const priceInfo = waitForPrices(selector, dispatch)
-  const userEthBalance = waitForEthBalance(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
   const rates = waitForRates(selector, dispatch)
   const contracts = waitForContracts(selector, dispatch)
@@ -65,18 +61,10 @@ const UpdatePosition = () => {
 
   const userAddress = selector(state => state.wallet.address)
 
-  const resetPositions = () => {
-    dispatch(clearPositions())
-    dispatch(editorClosed())
-  }
-
-  if (userAddress === null) resetPositions()
-
   const dataNull =
     liquidations === null ||
-    hueBalance === null ||
+    balances === null ||
     priceInfo === null ||
-    userEthBalance === null ||
     market === null ||
     rates === null ||
     contracts === null ||
@@ -86,8 +74,6 @@ const UpdatePosition = () => {
   const position = dataNull ? null : positions[positionID]
   const increaseCollateral = collateralChange === CollateralChange.Increase
   const increaseDebt = debtChange === DebtChange.Borrow
-
-  if (position === undefined) resetPositions()
 
   const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
   const collateralIncrease = zeroIfNaN(increaseCollateral ? collateralCount : -collateralCount)
@@ -121,11 +107,11 @@ const UpdatePosition = () => {
     },
     insufficientEthInWallet: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: userEthBalance === null ? false : userEthBalance - collateralIncrease < 0,
+      failing: balances === null ? false : balances.userEthBalance - collateralIncrease < 0,
     },
     insufficientHueInWallet: {
       message: 'Connected wallet does not have enough Hue.',
-      failing: hueBalance === null ? false : hueBalance.userBalance + debtIncrease < 0,
+      failing: balances === null || contracts === null ? false : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
     },
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market === null ? 0 : market.collateralizationRequirement * 100) + '%.',
@@ -133,7 +119,11 @@ const UpdatePosition = () => {
     },
     paybackNotApproved: {
       message: 'Paying back Hue is not approved.',
-      failing: hueBalance === null ? false : debtIncrease < 0 && (hueBalance.approval.Market === undefined || !hueBalance.approval.Market.approved),
+      failing:
+        balances === null || contracts === null
+        ? false
+        : debtIncrease < 0 && (balances.tokens[contracts.Hue].approval.Market === undefined
+          || !balances.tokens[contracts.Hue].approval.Market.approved),
     },
   }
 
@@ -211,7 +201,7 @@ const UpdatePosition = () => {
       <div style={{ marginTop: 32 }}>
         <CreateTransactionButton
           title={"Approve Payback"}
-          disabled={debtIncrease >= 0 || hueBalance === null || hueBalance.approval.Market ?.approved}
+          disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
           showDisabledInsteadOfConnectWallet={true}
           shouldOpenTxTab={false}
           txArgs={{
