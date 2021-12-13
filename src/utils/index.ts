@@ -8,9 +8,7 @@ export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
 export const isDevEnvironment = process.env.NODE_ENV === 'development'
 
-export const sleepS = (seconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000))
-}
+export const sleepS = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000))
 
 // ======================= Number Utils ============================
 export const log = (input: { base: number; val: number }) =>
@@ -25,7 +23,7 @@ export const bnf = (val: BigNumberish) => BigNumber.from(val)
 export const scale = (quantity: number, decimals = 18): BigNumber => bnf(mnt(quantity, decimals))
 
 export const mnt = (quantity: number, decimals = 18): string => {
-  if (isNaN(quantity)) return '0' 
+  if (isNaN(quantity)) return '0'
   if (decimals < 6) throw new Error('too few decimals: ' + decimals)
   return (BigInt(Math.round(quantity * 1e6))).toString() + '0'.repeat(decimals - 6)
 }
