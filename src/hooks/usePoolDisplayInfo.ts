@@ -16,13 +16,13 @@ export default function usePoolDisplayInfo (pool?: poolMetadata | null, tick?: n
   const isDataLoadedRef = useRef(false)
 
   useEffect(() => {
-      if (!isDataLoadedRef.current && typeof tick === 'number' && nextLowest !== null && nextHighest !== null) {
-        isDataLoadedRef.current = true
+    if (!isDataLoadedRef.current && typeof tick === 'number' && nextLowest !== null && nextHighest !== null) {
+      isDataLoadedRef.current = true
 
-        setInverted(tick < 0)
-        setTickLower(nextLowest)
-        setTickUpper(nextHighest)
-      }
+      setInverted(tick < 0)
+      setTickLower(nextLowest)
+      setTickUpper(nextHighest)
+    }
   }, [tick, nextLowest, nextHighest])
 
   return {

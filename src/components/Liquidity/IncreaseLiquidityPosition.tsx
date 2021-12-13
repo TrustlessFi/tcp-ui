@@ -22,6 +22,7 @@ import {
   bnf,
   unscale,
 } from '../../utils'
+import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
 import PositionNumberInput from '../library/PositionNumberInput'
 import LargeText from '../utils/LargeText'
@@ -75,7 +76,6 @@ const CreateLiquidityPosition = () => {
 
   const position = liquidityPositions === null ? null : liquidityPositions[positionID]
 
-
   const tick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].twapTick
   const instantTick = poolsCurrentData === null ? null : poolsCurrentData[poolAddress].instantTick
 
@@ -90,7 +90,9 @@ const CreateLiquidityPosition = () => {
   const token0Decimals = pool === null ? 0 : pool.token0.decimals
   const token1Decimals = pool === null ? 0 : pool.token1.decimals
 
-  const [inverted, setInverted] = useState(false)
+  const {
+    inverted, setInverted,
+  } = usePoolDisplayInfo(pool, tick)
 
   const {
     token0Amount,
