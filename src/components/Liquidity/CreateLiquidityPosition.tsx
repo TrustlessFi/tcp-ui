@@ -1,7 +1,6 @@
 import { Button } from 'carbon-components-react'
 import { useParams } from 'react-router-dom'
 import { Subtract16, Add16 } from '@carbon/icons-react';
-import { useEffect } from "react"
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPoolsCurrentData, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForBalances } from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
@@ -333,7 +332,8 @@ const CreateLiquidityPosition = () => {
           {' '}{poolName}{' '}
       pool is {inverted ? price1 : price0} {priceUnit}.
       <ParagraphDivider />
-      I want to provide liquidity between the prices of {tickPriceDisplay(tickLower)} {priceUnit} and {tickPriceDisplay(tickUpper)} {priceUnit}.
+      You want to provide liquidity between the prices
+      of {tickPriceDisplay(inverted ? tickUpper : tickLower)} {priceUnit} and {tickPriceDisplay(inverted ? tickLower : tickUpper)} {priceUnit}.
       <ParagraphDivider />
       If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
       more of my position to liquidators.
