@@ -1,4 +1,5 @@
 import { Button } from 'carbon-components-react'
+import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -33,6 +34,13 @@ const LiquidityPositionsTable = (
   const history = useHistory()
 
   const poolCurrentData = waitForPoolsCurrentData(selector, dispatch)
+  const [inverted, setInverted] = useState(
+    liquidityPositions.length === 0
+    ? false
+    : liquidityPositions[0].tickLower + liquidityPositions[0].tickUpper < 0)
+
+  const invert = () => setInverted(!inverted)
+
 
   let table = <>
     <TableHeaderOnly headers={[
@@ -54,11 +62,24 @@ const LiquidityPositionsTable = (
     token0Symbol + ':' + token1Symbol + ' Pool - ' +
     pool.rewardsPortion + '% of TCP Liquidity rewards '
 
-  const priceUnit = token1Symbol + ' per ' + token0Symbol
-  const tableSubtitle = 'Current Price: ' +
-    (poolCurrentData === null
-    ? '-'
-    : tickToPriceDisplay(poolCurrentData[pool.address].twapTick) + ' ' + priceUnit)
+  const priceUnit =
+    inverted
+    ? token0Symbol + ' per ' + token1Symbol
+    : token1Symbol + ' per ' + token0Symbol
+
+  const tableSubtitle =
+    <div onClick={invert}>
+      Current Price:{' '}
+      {
+        (poolCurrentData === null
+        ? '-'
+        : tickToPriceDisplay(
+            inverted
+            ? -poolCurrentData[pool.address].twapTick
+            : poolCurrentData[pool.address].twapTick
+          ) + ' ' + priceUnit)
+      }
+    </div>
 
   const positionIDsWithRewards: string[] = []
 
@@ -90,12 +111,18 @@ const LiquidityPositionsTable = (
 
       const liquidityDecimals = Math.floor((pool.token0.decimals + pool.token1.decimals) / 2)
 
+      const getTick = (lower: boolean) =>
+        lower
+        ? (inverted ? -lqPos.tickUpper : lqPos.tickLower)
+        : (inverted ? -lqPos.tickLower : lqPos.tickUpper)
+
       return {
         key: lqPos.positionID,
         data: {
           'ID': lqPos.positionID,
           'Liquidity': numDisplay(unscale(lqPos.liquidity, liquidityDecimals)),
-          'Price Range': tickToPriceDisplay(lqPos.tickLower) + ' - ' + tickToPriceDisplay(lqPos.tickUpper) + ' ' + priceUnit,
+          'Price Range':
+            <>{tickToPriceDisplay(getTick(true))} - {tickToPriceDisplay(getTick(false))} {priceUnit}</>,
           'Approximate Rewards': numDisplay(unscale(approximateRewards)) + ' TCP',
         },
         onClick: () => {

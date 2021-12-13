@@ -9,7 +9,7 @@ interface AppTileProps {
   style?: CSSProperties
   children: ReactNode
   rightElement?: ReactNode
-  subTitle?: string
+  subTitle?: ReactNode
 }
 
 const AppTile = ({className, title, style, children, rightElement, subTitle}: AppTileProps ) => (
