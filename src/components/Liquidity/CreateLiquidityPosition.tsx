@@ -332,15 +332,15 @@ const CreateLiquidityPosition = () => {
 
   const columnTwo =
     <LargeText>
-      The current price for the
-          {' '}{poolName}{' '}
-      pool is {inverted ? price1 : price0} {priceUnit}.
+      The current price for the {poolName} pool
+      is {inverted ? price1 : price0} {priceUnit}.
       <ParagraphDivider />
       You want to provide liquidity between the prices
       of {tickPriceDisplay(inverted ? tickUpper : tickLower)} {priceUnit} and {tickPriceDisplay(inverted ? tickLower : tickUpper)} {priceUnit}.
       <ParagraphDivider />
-      If the {poolName} price moves outside of this price range, I could lose <Bold>{liquidationPenalty}%</Bold> or
-      more of my position to liquidators.
+      If the {poolName} price moves outside of this price range,
+      you could lose <Bold>{liquidationPenalty}%</Bold> or
+      more of your position to liquidators.
     </LargeText>
 
 
