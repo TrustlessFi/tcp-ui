@@ -4,7 +4,7 @@ import { initialState, getGenericReducerBuilder } from '../'
 import { unscale, uint255Max, zeroAddress } from '../../utils'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { ProtocolContract, ContractsInfo } from '../contracts'
-import { getMulticallContract, contract } from '../../utils/getContract'
+import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, rc, getCustomMulticall, getFullSelector, getMulticall } from '@trustlessfi/multicall'
 import { poolsMetadata } from '../poolsMetadata'
 import { rewardsInfo } from '../rewards'
@@ -70,7 +70,7 @@ export const getBalances = createAsyncThunk(
     const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
     Object.values(args.poolsMetadata).map(pool => {
       const addAddress = (address: string) => {
-        if (!tokenAddresses.includes(pool.token0.address) && address != args.rewardsInfo.weth) {
+        if (!tokenAddresses.includes(pool.token0.address) && address !== args.rewardsInfo.weth) {
           tokenAddresses.push(address)
         }
       }

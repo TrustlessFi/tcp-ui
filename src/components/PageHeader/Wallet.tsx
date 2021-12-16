@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import MetaMaskOnboarding from "@metamask/onboarding"
 import { Button, InlineLoading } from 'carbon-components-react'

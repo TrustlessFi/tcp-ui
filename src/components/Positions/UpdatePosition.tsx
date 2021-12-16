@@ -19,7 +19,6 @@ import Bold from '../utils/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../library/InputPicker'
 import CreateTransactionButton from '../utils/CreateTransactionButton';
-import { Row, Col } from 'react-flexbox-grid'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import TwoColumnDisplay from '../utils/TwoColumnDisplay'
 import ParagraphDivider from '../utils/ParagraphDivider'

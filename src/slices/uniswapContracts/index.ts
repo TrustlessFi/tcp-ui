@@ -1,4 +1,4 @@
-import { ContractInterface, Contract } from "ethers"
+import { Contract } from "ethers"
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { SwapRouter } from '@trustlessfi/typechain'

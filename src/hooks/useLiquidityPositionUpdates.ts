@@ -6,7 +6,6 @@ import {
   mnt,
   unscale,
 } from '../utils'
-import { poolCurrentInfo } from '../slices/poolsCurrentData'
 
 export default function useLiquidityPositionUpdates(
   tickLower: number,

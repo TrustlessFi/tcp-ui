@@ -1,9 +1,9 @@
 import { Breadcrumb, BreadcrumbItem } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 
-export type BreadcrumbItem = { text: string, href: string } | string
+export type BreadcrumbItemType = { text: string, href: string } | string
 
-const Breadcrumbs = ({ crumbs }: { crumbs?: BreadcrumbItem[] }) => {
+const Breadcrumbs = ({ crumbs }: { crumbs?: BreadcrumbItemType[] }) => {
   const history = useHistory()
 
   if (crumbs === undefined || crumbs.length === 0) return null

@@ -1,7 +1,4 @@
-import { nearestUsableTick } from '@uniswap/v3-sdk'
-import { useState, useEffect, useRef } from 'react'
-import { getSpaceForFee } from '../utils'
-import { poolMetadata } from '../slices/poolsMetadata'
+import { useState, useEffect } from 'react'
 
 export const SMALL_WINDOW_WIDTH = 800
 

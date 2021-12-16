@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { Button, Slider, SliderOnChangeArg } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -9,7 +9,6 @@ import {
   numDisplay,
   tickToPriceDisplay,
   displaySymbol,
-  getPoolName,
   getAmountsForLiquidity,
   bnf,
   unscale
@@ -98,9 +97,8 @@ const CreateLiquidityPosition = () => {
   const token0IsWeth = pool === null || rewardsInfo === null ? false : pool.token0.address === rewardsInfo.weth
   const token1IsWeth = pool === null || rewardsInfo === null ? false : pool.token1.address === rewardsInfo.weth
 
-  const token0Symbol = displaySymbol(pool ?.token0.symbol)
-  const token1Symbol = displaySymbol(pool ?.token1.symbol)
-  const poolName = getPoolName(pool)
+  const token0Symbol = displaySymbol(pool?.token0.symbol)
+  const token1Symbol = displaySymbol(pool?.token1.symbol)
   const liquidationPenalty = rewardsInfo === null ? '-' : numDisplay(rewardsInfo.liquidationPenalty * 100)
   const token0Decimals = pool === null ? 0 : pool.token0.decimals
   const token1Decimals = pool === null ? 0 : pool.token1.decimals

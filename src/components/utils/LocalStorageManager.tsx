@@ -44,7 +44,6 @@ type persistedSlices = {
 
 const NO_EXPIRATION = -1
 const SHORT_EXPIRATION = minutes(1)
-const MEDIUM_EXPIRATION = minutes(5)
 const LONG_EXPIRATION = minutes(30)
 
 export const slicesToPersist: persistedSlices = {
