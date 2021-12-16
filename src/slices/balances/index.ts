@@ -68,6 +68,7 @@ export const getBalances = createAsyncThunk(
     const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider) as ERC20
 
     const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
+    // eslint-disable-next-line array-callback-return
     Object.values(args.poolsMetadata).map(pool => {
       const addAddress = (address: string) => {
         if (!tokenAddresses.includes(pool.token0.address) && address !== args.rewardsInfo.weth) {
@@ -140,6 +141,7 @@ export const getBalances = createAsyncThunk(
 
     const poolsMetadataMap: {[key in string]: poolTokensMetadata} = {}
 
+    // eslint-disable-next-line array-callback-return
     Object.values(args.poolsMetadata).map(md => {
       poolsMetadataMap[md.token0.address] = {
         name: md.token0.name,
