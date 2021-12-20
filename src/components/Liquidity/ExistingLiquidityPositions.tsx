@@ -1,6 +1,6 @@
 import { Button } from 'carbon-components-react'
-import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { MouseEvent, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { rewardsInfo } from '../../slices/rewards'
@@ -40,7 +40,6 @@ const LiquidityPositionsTable = (
 
   const invert = () => setInverted(!inverted)
 
-
   const token0Symbol = displaySymbol(pool.token0.symbol)
   const token1Symbol = displaySymbol(pool.token1.symbol)
 
@@ -53,6 +52,8 @@ const LiquidityPositionsTable = (
     ? token0Symbol + ' per ' + token1Symbol
     : token1Symbol + ' per ' + token0Symbol
 
+  const poolTick = poolCurrentData && poolCurrentData[pool.address]?.twapTick
+
   let table =
     <Center style={{padding: 24}}>
       <Text>
@@ -64,12 +65,12 @@ const LiquidityPositionsTable = (
     <div onClick={invert}>
       Current Price:{' '}
       {
-        (poolCurrentData === null
+        (!poolTick
         ? '-'
         : tickToPriceDisplay(
             inverted
-            ? -poolCurrentData[pool.address].twapTick
-            : poolCurrentData[pool.address].twapTick
+            ? -poolTick
+            : poolTick
           ) + ' ' + priceUnit)
       }
     </div>
@@ -86,6 +87,7 @@ const LiquidityPositionsTable = (
       let approximateRewards = bnf(0)
       const lastTimeRewarded = lqPos.lastTimeRewarded
       const lastPeriodRewarded = timeToPeriod(lastTimeRewarded, rewardsInfo.periodLength, rewardsInfo.firstPeriod)
+      const isInRange = poolTick && lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper
 
       if (lastPeriodRewarded < rewardsInfo.lastPeriodGlobalRewardsAccrued) {
         const avgDebtPerPeriod =
@@ -109,13 +111,29 @@ const LiquidityPositionsTable = (
         ? (inverted ? -lqPos.tickUpper : lqPos.tickLower)
         : (inverted ? -lqPos.tickLower : lqPos.tickUpper)
 
+      const priceRangeText = `${tickToPriceDisplay(getTick(true))} - ${tickToPriceDisplay(getTick(false))} ${priceUnit}`
+
+      const onOutOfRangeButtonClick = (e: MouseEvent) => {
+        history.push(`/liquidity/decrease/${pool.address}/${lqPos.positionID}?outOfRange=1`)
+        e.stopPropagation()
+      }
+
       return {
         key: lqPos.positionID,
         data: {
           'ID': lqPos.positionID,
           'Liquidity': numDisplay(unscale(lqPos.liquidity, liquidityDecimals)),
-          'Price Range':
-            <>{tickToPriceDisplay(getTick(true))} - {tickToPriceDisplay(getTick(false))} {priceUnit}</>,
+          'Price Range': isInRange
+            ? priceRangeText
+            : (
+              <Button
+                size='sm'
+                kind='danger'
+                onClick={onOutOfRangeButtonClick}
+              >
+                {priceRangeText}
+              </Button>
+            ),
           'Approximate Rewards': numDisplay(unscale(approximateRewards)) + ' TCP',
         },
         onClick: () => {

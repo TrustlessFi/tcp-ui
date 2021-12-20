@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button, Slider, SliderOnChangeArg } from 'carbon-components-react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPoolsCurrentData, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForLiquidityPositions, waitForBalances } from '../../slices/waitFor'
 import InputPicker from '../library/InputPicker'
@@ -31,6 +31,10 @@ interface MatchParams {
   poolAddress: string
 }
 
+interface QueryParams {
+  outOfRange: string
+}
+
 const CreateLiquidityPosition = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
@@ -38,6 +42,9 @@ const CreateLiquidityPosition = () => {
   const params: MatchParams = useParams()
   const positionID = Number(params.positionID)
   const poolAddress = params.poolAddress
+
+  const { search }: { search: string } = useLocation()
+  const queryParams = Object.fromEntries(new URLSearchParams(search)) as object as QueryParams
 
   const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
@@ -106,7 +113,7 @@ const CreateLiquidityPosition = () => {
   const currentAmount0 = unscale(existingTokens.amount0, token0Decimals)
   const currentAmount1 = unscale(existingTokens.amount1, token0Decimals)
 
-  const updatePercentageDecrease = (decreasePercentage: number) => {
+  const updatePercentageDecrease = useCallback((decreasePercentage: number) => {
     setPercentageDecrease(decreasePercentage)
 
     if (decreasePercentage === 100) {
@@ -116,7 +123,13 @@ const CreateLiquidityPosition = () => {
       updateToken0Amount((unscale(existingTokens.amount0, token0Decimals) * decreasePercentage) / 100)
       updateToken1Amount((unscale(existingTokens.amount1, token1Decimals) * decreasePercentage) / 100)
     }
-  }
+  }, [currentAmount0, currentAmount1, existingTokens.amount0, existingTokens.amount1, token0Decimals, token1Decimals, updateToken0Amount, updateToken1Amount])
+
+  useEffect(() => {
+    if(queryParams.outOfRange === '1' && poolsCurrentData && position && pool && tickLower && tickUpper) {
+      updatePercentageDecrease(100)
+    }
+  }, [queryParams.outOfRange, updatePercentageDecrease, poolsCurrentData, position, pool, tickLower, tickUpper])
 
   const userToken0Balance =
     dataNull
@@ -264,6 +277,14 @@ const CreateLiquidityPosition = () => {
         {token1Symbol}
       </Button>
       <ParagraphDivider />
+      {queryParams.outOfRange && (
+        <>
+          <span className='error-message'> 
+            This position is out of the current price range. If you do not liquidate it, someone else can liquidate it for you and you will lose 6% of the value of the position.
+          </span>
+          <ParagraphDivider />
+        </>
+      )}
       Position {positionID} has
       approximately {numDisplay(unscale(existingTokens.amount0, token0Decimals))} {token0Symbol} and
       {' '}{numDisplay(unscale(existingTokens.amount1, token1Decimals))} {token1Symbol}
