@@ -1,16 +1,17 @@
 import { sliceState } from '../'
-import { Contract } from 'ethers'
 import { initialState, getGenericReducerBuilder } from '../'
-import { unscale, uint255Max, zeroAddress } from '../../utils'
-import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls, rc, getCustomMulticall, getFullSelector, getMulticall } from '@trustlessfi/multicall'
+import { executeMulticalls,
+  rc,
+  oneContractManyFunctionMC,
+  manyContractOneFunctionMC,
+} from '@trustlessfi/multicall'
 import { poolsMetadata } from '../poolsMetadata'
 import { rewardsInfo } from '../rewards'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import getProvider from '../../utils/getProvider'
-import { ERC20 } from '@trustlessfi/typechain'
 
 export interface tokenInfo {
   address: string,
@@ -63,9 +64,8 @@ export const getBalances = createAsyncThunk(
   async (
     args: balanceArgs,
   ): Promise<balancesInfo> => {
-    const provider = getProvider()
     const multicall = getMulticallContract(args.trustlessMulticall)
-    const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider) as ERC20
+    const tokenContract = addressToERC20(zeroAddress)
 
     const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
     // eslint-disable-next-line array-callback-return
@@ -88,43 +88,43 @@ export const getBalances = createAsyncThunk(
     } = await executeMulticalls(
       multicall,
       {
-        userEthBalance: getMulticall(
+        userEthBalance: oneContractManyFunctionMC(
           multicall,
           { getEthBalance: rc.BigNumber },
           { getEthBalance: [args.userAddress] },
         ),
-        userBalance: getCustomMulticall(
+        userBalance: manyContractOneFunctionMC(
           tokenContract,
-          Object.fromEntries(
-            tokenAddresses.map(address => [getFullSelector(tokenContract, address, 'balanceOf', [args.userAddress]), rc.BigNumber]
-          )
-        )),
-        marketApprovals: getCustomMulticall(
+          Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress]])),
+          'balanceOf',
+          rc.BigNumber
+        ),
+        accountingBalance: manyContractOneFunctionMC(
           tokenContract,
-          Object.fromEntries(
-            tokenAddresses.map(address => [getFullSelector(tokenContract, address, 'allowance', [args.userAddress, args.contracts.Market]), rc.BigNumber]
-          )
-        )),
-        rewardsApprovals: getCustomMulticall(
+          Object.fromEntries(tokenAddresses.map(address => [address, [args.contracts.Accounting]])),
+          'balanceOf',
+          rc.BigNumber
+        ),
+        marketApprovals: manyContractOneFunctionMC(
           tokenContract,
-          Object.fromEntries(
-            tokenAddresses.map(address => [getFullSelector(tokenContract, address, 'allowance', [args.userAddress, args.contracts.Rewards]), rc.BigNumber]
-          )
-        )),
-        accountingBalance: getCustomMulticall(
+          Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Market]])),
+          'allowance',
+          rc.BigNumber,
+        ),
+        rewardsApprovals: manyContractOneFunctionMC(
           tokenContract,
-          Object.fromEntries(
-            tokenAddresses.map(address => [getFullSelector(tokenContract, address, 'balanceOf', [args.contracts.Accounting]), rc.BigNumber]
-          )
-        ))
+          Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Rewards]])),
+          'allowance',
+          rc.BigNumber,
+        ),
       }
     )
 
     const getApprovalFor = (pc: ProtocolContract.Market | ProtocolContract.Rewards, tokenAddress: string) => {
       const value =
         pc  === ProtocolContract.Market
-        ? marketApprovals[getFullSelector(tokenContract, tokenAddress, 'allowance', [args.userAddress, args.contracts.Market])]
-        : rewardsApprovals[getFullSelector(tokenContract, tokenAddress, 'allowance', [args.userAddress, args.contracts.Rewards])]
+        ? marketApprovals[tokenAddress]
+        : rewardsApprovals[tokenAddress]
 
       return {
         allowance: value.toString(),
@@ -182,13 +182,13 @@ export const getBalances = createAsyncThunk(
             symbol: poolsMetadataMap[address].symbol,
             decimals,
           },
-          userBalance: unscale(userBalance[getFullSelector(tokenContract, address, 'balanceOf', [args.userAddress])], decimals),
+          userBalance: unscale(userBalance[address], decimals),
           approval: {
             [ProtocolContract.Market]: getApprovalFor(ProtocolContract.Market, address),
             [ProtocolContract.Rewards]: getApprovalFor(ProtocolContract.Rewards, address),
           },
           balances: {
-            [ProtocolContract.Accounting]: unscale(accountingBalance[getFullSelector(tokenContract, address, 'balanceOf', [args.contracts.Accounting])], decimals),
+            [ProtocolContract.Accounting]: unscale(accountingBalance[address], decimals),
           }
         }]
       }))

@@ -5,14 +5,13 @@ import { SwapRouter } from '@trustlessfi/typechain'
 import { getLocalStorage } from '../../utils'
 import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
-import { executeMulticall, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import routerArtifact from "@trustlessfi/artifacts/dist/contracts/uniswap/uniswap-v3-periphery/contracts/SwapRouter.sol/SwapRouter.json"
 import getProvider from '../../utils/getProvider';
 
-// TODO add TCP Allocation
 export enum UniswapContract {
-  Factory = "Factory",
-  Weth = "Weth",
+  Factory = 'Factory',
+  Weth = 'Weth',
 }
 
 export interface contractsArgs {
@@ -22,27 +21,28 @@ export interface contractsArgs {
 
 export type uniswapContractsInfo = {[key in UniswapContract]: string}
 
-
 export const getContracts = createAsyncThunk(
   'uniswapContracts/getContracts',
   async (args: contractsArgs): Promise<uniswapContractsInfo> => {
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-
     const router = new Contract(args.router, routerArtifact.abi, getProvider()) as SwapRouter
 
-
-    const result =  (await executeMulticall(
+    const { uniswapContracts } = (await executeMulticalls(
       trustlessMulticall,
-      router,
       {
-        WETH9: rc.String,
-        factory: rc.String,
-      },
+        uniswapContracts: oneContractManyFunctionMC(
+          router,
+          {
+            WETH9: rc.String,
+            factory: rc.String,
+          },
+        )
+      }
     ))
 
     return {
-      [UniswapContract.Weth]: result.WETH9,
-      [UniswapContract.Factory]: result.factory,
+      Weth: uniswapContracts.WETH9,
+      Factory: uniswapContracts.factory,
     }
   }
 )

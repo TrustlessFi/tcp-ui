@@ -3,7 +3,7 @@ import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import { positionsInfo, positionsArgs } from './'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { getDuplicateFuncMulticall, executeMulticalls } from '@trustlessfi/multicall'
+import { oneContractOneFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 
 import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
@@ -20,7 +20,7 @@ export const fetchPositions = async (args: positionsArgs) => {
   const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
   const { positions } = await executeMulticalls(trustlessMulticall, {
-    positions: getDuplicateFuncMulticall(
+    positions: oneContractOneFunctionMC(
       accounting,
       'getPosition',
       (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,

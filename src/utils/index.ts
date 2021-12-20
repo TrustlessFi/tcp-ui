@@ -1,8 +1,14 @@
-import { BigNumber, BigNumberish, utils } from "ethers"
+import { BigNumber, BigNumberish, utils, Contract } from "ethers"
 import { ChainID } from '@trustlessfi/addresses'
 import JSBI from "jsbi"
+import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
+import getProvider from './getProvider'
+
+import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import protocolTokenArtifact from '@trustlessfi/artifacts/dist/contracts/core/tokens/ProtocolToken.sol/ProtocolToken.json'
+import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
@@ -44,6 +50,14 @@ export const onNumChange = (numChangeFunc: (val: number) => void) => (
 export const abbreviateAddress = (address: string) => address.substr(0, 6) + '...' + address.substr(address.length - 4, 4)
 
 export const toChecksumAddress = (address: string) => utils.getAddress(address)
+
+export const sum = (a: number, b: number) => a + b
+
+export const range = (start: number, max: number, delta = 1 ): number[] => {
+  const result: number[] = []
+  for(; start <= max; start += delta) result.push(start)
+  return result
+}
 
 export const unscale = (_quantity: BigNumber | string, decimals = 18): number => {
   let quantity = bnf(_quantity)
@@ -414,3 +428,15 @@ export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lo
 
   return (numerator1.sub(numerator2)).mul(amount1).div(denominator)
 }
+
+export type abi = { [key in string]: any }[]
+export type contractArtifact = { abi: abi }
+
+export const addressToERC20 = (erc20Address: string): ERC20 =>
+  new Contract(erc20Address, (erc20Artifact as unknown as contractArtifact).abi, getProvider()) as ERC20
+
+export const addressToProtocolToken = (address: string) =>
+  new Contract(address, (protocolTokenArtifact as unknown as contractArtifact).abi, getProvider()) as ProtocolToken
+
+export const addressToV3Pool = (address: string) =>
+  new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool

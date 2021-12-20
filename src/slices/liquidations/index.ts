@@ -5,7 +5,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations } from '@trustlessfi/typechain'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticalls, getMulticall, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 
 export type liquidationsInfo = {
   twapDuration: number,
@@ -29,7 +29,7 @@ export const getLiquidationsInfo = createAsyncThunk(
     const { liquidationsInfo } = await executeMulticalls(
       trustlessMulticall,
       {
-        liquidationsInfo: getMulticall(
+        liquidationsInfo: oneContractManyFunctionMC(
           liquidations,
           {
             twapDuration: rc.Number,

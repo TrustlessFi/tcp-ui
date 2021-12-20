@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
+import { range } from '../../utils'
 import { PromiseType } from '@trustlessfi/utils'
 
 import { Rewards, Accounting } from '@trustlessfi/typechain'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticalls, getMulticall, rc, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractOneFunctionMC, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
 export interface rewardsInfo {
   twapDuration: number
@@ -41,7 +42,7 @@ export const getRewardsInfo = createAsyncThunk(
     const { rewardsInfo } = await executeMulticalls(
       trustlessMulticall,
       {
-        rewardsInfo: getMulticall(
+        rewardsInfo: oneContractManyFunctionMC(
           rewards,
           {
             twapDuration: rc.Number,
@@ -56,44 +57,36 @@ export const getRewardsInfo = createAsyncThunk(
       }
     )
 
-    const poolIDs: number[] = []
-
-    for(let i = 1; i <= rewardsInfo.countPools; i++) poolIDs.push(i)
+    const poolIDs = range(1, rewardsInfo.countPools)
 
     const { poolConfigs } = await executeMulticalls(
       trustlessMulticall,
       {
-        poolConfigs: getDuplicateFuncMulticall(
+        poolConfigs: oneContractOneFunctionMC(
           rewards,
-          'poolConfigForPoolID',
-          rc.String,
+          'getPoolConfigForPoolID',
+          (result: any) => result as PromiseType<ReturnType<Rewards['getPoolConfigForPoolID']>>,
           Object.fromEntries(poolIDs.map(id => [id, [id]]))
         ),
       },
     )
 
-    const poolIDToAddress = poolConfigs
+    const poolIDToAddress = Object.fromEntries(poolIDs.map(id => [id, [poolConfigs[id].pool]]))
 
-    const { accountingRewardsStatuses } = await executeMulticalls(
+    const { accountingRewardsStatuses, accountingPoolLiquidity } = await executeMulticalls(
       trustlessMulticall,
       {
-        accountingRewardsStatuses: getDuplicateFuncMulticall(
+        accountingRewardsStatuses: oneContractOneFunctionMC(
           accounting,
           'getRewardStatus',
           (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
-          Object.fromEntries(poolIDs.map(id => [id, [poolIDToAddress[id]]]))
+          poolIDToAddress,
         ),
-      }
-    )
-
-    const { accountingPoolLiquidity } = await executeMulticalls(
-      trustlessMulticall,
-      {
-        accountingPoolLiquidity: getDuplicateFuncMulticall(
+        accountingPoolLiquidity: oneContractOneFunctionMC(
           accounting,
           'poolLiquidity',
           rc.BigNumberToString,
-          Object.fromEntries(poolIDs.map(id => [id, [poolIDToAddress[id]]]))
+          poolIDToAddress,
         ),
       }
     )
@@ -102,7 +95,7 @@ export const getRewardsInfo = createAsyncThunk(
       ...rewardsInfo,
       rewardStatuses: Object.fromEntries(
         poolIDs.map(id => [id, {
-          poolAddress: poolIDToAddress[id],
+          poolAddress: poolConfigs[id].pool,
           totalRewards: accountingRewardsStatuses[id].totalRewards.toString(),
           cumulativeLiquidity: accountingRewardsStatuses[id].cumulativeLiquidity.toString(),
           poolLiquidity: accountingPoolLiquidity[id]

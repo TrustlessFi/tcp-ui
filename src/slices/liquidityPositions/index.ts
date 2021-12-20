@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolContract } from '../contracts'
 import { PromiseType } from '@trustlessfi/utils'
-import { executeMulticalls, getDuplicateFuncMulticall } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractOneFunctionMC } from '@trustlessfi/multicall'
 
 import { Accounting } from '@trustlessfi/typechain'
 
@@ -43,7 +43,7 @@ export const getLiquidityPositions = createAsyncThunk(
     const positionIDs = await accounting.getPoolPositionNftIdsByOwner(args.userAddress)
 
     const { positions } = await executeMulticalls(trustlessMulticall, {
-      positions: getDuplicateFuncMulticall(
+      positions: oneContractOneFunctionMC(
         accounting,
         'getPoolPosition',
         (result: any) => result as PromiseType<ReturnType<Accounting['getPoolPosition']>>,

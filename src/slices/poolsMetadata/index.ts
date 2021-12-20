@@ -1,18 +1,20 @@
-import { Contract } from 'ethers'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { Fee } from '../../utils/'
+import {
+  Fee, addressToERC20, zeroAddress, unique, addressToV3Pool,
+  sum,
+} from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import getProvider from '../../utils/getProvider';
 import { ProtocolContract, RootContract, ContractsInfo } from '../contracts/index';
-import { executeMulticalls, rc, getDuplicateContractMulticall, getDuplicateFuncMulticall, contractFunctionSelector, selectorToContractFunction } from '@trustlessfi/multicall'
+import {
+  executeMulticalls,
+  rc,
+  manyContractOneFunctionMC,
+  oneContractOneFunctionMC,
+  idToIdAndArg,
+} from '@trustlessfi/multicall'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-
-import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-
-import { ProtocolDataAggregator, Rewards, UniswapV3Pool } from '@trustlessfi/typechain/'
-import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
-import { zeroAddress, unique } from '../../utils'
+import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
 
 export interface getPoolsMetadataArgs {
   contracts: ContractsInfo
@@ -44,100 +46,61 @@ export interface PoolsMetadataState extends sliceState<poolsMetadata> {}
 export const getPoolsMetadata = createAsyncThunk(
   'poolsMetadata/getPoolMetadata',
   async (args: getPoolsMetadataArgs): Promise<poolsMetadata> => {
-    const provider = getProvider()
     const protocolDataAggregator = getContract(args.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
     const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-    // TODO make this into it's own node and cache for 30 minutes
     const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
+    const poolAddresses = poolConfigs.map(config => config.pool)
+    const totalRewardsPortion = poolConfigs.map(config => config.rewardsPortion.toNumber()).reduce(sum)
 
-    const tokenCalls = poolConfigs.map(config => ['token0', 'token1'].map(func => contractFunctionSelector(config.pool, func))).flat()
-    const feeCalls = poolConfigs.map(config => contractFunctionSelector(config.pool, 'fee'))
+    const poolContract = addressToV3Pool(zeroAddress)
 
-    let totalRewardsPortion = 0
-    poolConfigs.map(config => totalRewardsPortion += config.rewardsPortion.toNumber())
-
-    const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
-
-    const { poolInfo, poolIDs } = await executeMulticalls(
+    const { token0, token1, fee, poolIDs } = await executeMulticalls(
       trustlessMulticall,
       {
-        poolInfo: getDuplicateContractMulticall(
-          poolContract,
-          {
-            ...Object.fromEntries(tokenCalls.map(tokenCall => [tokenCall, rc.String])),
-            ...Object.fromEntries(feeCalls.map(feeCall => [feeCall, rc.Number])),
-          }
-        ),
-        poolIDs: getDuplicateFuncMulticall(
-          rewards,
-          'poolIDForPool',
-          rc.Number,
-          Object.fromEntries(poolConfigs.map(config => [config.pool, [config.pool]]))
-        ),
+        token0: manyContractOneFunctionMC(poolContract, poolAddresses, 'token0', rc.String),
+        token1: manyContractOneFunctionMC(poolContract, poolAddresses, 'token1', rc.String),
+        fee: manyContractOneFunctionMC(poolContract, poolAddresses, 'fee', rc.Number),
+        poolIDs: oneContractOneFunctionMC(rewards, 'poolIDForPool', rc.Number, idToIdAndArg(poolAddresses)),
       }
     )
 
-    const tokenContract = new Contract(zeroAddress, erc20Artifact.abi, provider)
-    const uniqueTokens =
-      unique(
-        Object.entries(poolInfo).map(([id, value]) =>
-          selectorToContractFunction(id).func !== 'token0' && selectorToContractFunction(id).func !== 'token1' ? null : value as string)
-        .filter(value => value !== null)) as string[]
-    const tokenInfo = await executeMulticalls(
+    const tokenAddresses = unique(Object.values(token0).concat(Object.values(token1)))
+    const tokenContract = addressToERC20(zeroAddress)
+
+    const { name, symbol, decimals } = await executeMulticalls(
       trustlessMulticall,
       {
-        symbol: getDuplicateContractMulticall(
-          tokenContract,
-          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'symbol'), rc.String])),
-        ),
-        name: getDuplicateContractMulticall(
-          tokenContract,
-          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'name'), rc.String])),
-        ),
-        decimals: getDuplicateContractMulticall(
-          tokenContract,
-          Object.fromEntries(uniqueTokens.map(address => [contractFunctionSelector(address as string, 'decimals'), rc.Number])),
-        ),
+        name: manyContractOneFunctionMC(tokenContract, tokenAddresses, 'name', rc.String),
+        symbol: manyContractOneFunctionMC(tokenContract, tokenAddresses, 'symbol', rc.String),
+        decimals: manyContractOneFunctionMC(tokenContract, tokenAddresses, 'decimals', rc.Number),
       },
     )
 
     return Object.fromEntries(poolConfigs.map(poolConfig => {
-      const fee = poolInfo[contractFunctionSelector(poolConfig.pool, 'fee')] as number
+      const poolAddress = poolConfig.pool
+      const token0Address = token0[poolAddress]
+      const token1Address = token1[poolAddress]
 
-      const token0Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token0')] as string
-      const token1Address = poolInfo[contractFunctionSelector(poolConfig.pool, 'token1')] as string
-
-      const token0Symbol = tokenInfo.symbol[contractFunctionSelector(token0Address, 'symbol')]
-      const token1Symbol = tokenInfo.symbol[contractFunctionSelector(token1Address, 'symbol')]
-
-      const token0Name = tokenInfo.name[contractFunctionSelector(token0Address, 'name')]
-      const token1Name = tokenInfo.name[contractFunctionSelector(token1Address, 'name')]
-
-      const token0Decimals = tokenInfo.decimals[contractFunctionSelector(token0Address, 'decimals')]
-      const token1Decimals = tokenInfo.decimals[contractFunctionSelector(token1Address, 'decimals')]
-
-      // TODO split out pricesqrt price, rewards approval, prices.twappedtick and user balance into something that only
-      //  loads on opening a particular pool, so all of this can be cached
       return [
         poolConfig.pool,
         {
-          fee,
+          fee: fee[poolAddress],
           rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
-          poolID: poolIDs[poolConfig.pool],
-          address: poolConfig.pool,
+          poolID: poolIDs[poolAddress],
+          address: poolAddress,
           token0: {
             address: token0Address,
-            name: token0Name,
-            symbol: token0Symbol,
-            decimals: token0Decimals,
+            name: name[token0Address],
+            symbol: symbol[token0Address],
+            decimals: decimals[token0Address],
           },
           token1: {
             address: token1Address,
-            name: token1Name,
-            symbol: token1Symbol,
-            decimals: token1Decimals,
+            name: name[token1Address],
+            symbol: symbol[token1Address],
+            decimals: decimals[token1Address],
           },
         }
       ]

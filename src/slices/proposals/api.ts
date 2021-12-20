@@ -83,6 +83,7 @@ const rawProposalToProposal = (rawProposal: RawProposal): Proposal => ({
   voterAddress: rawProposal.voterAddress,
 })
 
+// TODO cleanup and multicall
 export const genProposals = async (args: proposalsArgs): Promise<proposalsInfo | null> => {
   const tcpGovernorAlpha = getContract(args.contracts[ProtocolContract.TcpGovernorAlpha], ProtocolContract.TcpGovernorAlpha) as TcpGovernorAlpha
   const tcp = getContract(args.contracts[ProtocolContract.Tcp], ProtocolContract.Tcp) as Tcp

@@ -6,7 +6,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Prices } from '@trustlessfi/typechain'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { getMulticall, rc, executeMulticalls } from '@trustlessfi/multicall'
+import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
 
 export type pricesInfo = {
@@ -30,7 +30,7 @@ export const getPricesInfo = createAsyncThunk(
     const { ethPrice } = await executeMulticalls(
       trustlessMulticall,
       {
-        ethPrice: getMulticall(
+        ethPrice: oneContractManyFunctionMC(
           prices,
           { calculateInstantCollateralPrice: rc.BigNumberUnscale },
           { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },

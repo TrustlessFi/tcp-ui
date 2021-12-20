@@ -4,7 +4,7 @@ import { Governor } from '@trustlessfi/typechain'
 import { getLocalStorage } from '../../utils'
 import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
-import { executeMulticall, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import getContract from '../../utils/getContract';
 
 // TODO add TCP Allocation
@@ -44,54 +44,58 @@ export const getContracts = createAsyncThunk(
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
     const governor = getContract(args.governor, RootContract.Governor) as Governor
 
-    const result =  (await executeMulticall(
+    const { contracts } = await executeMulticalls(
       trustlessMulticall,
-      governor,
       {
-        accounting: rc.String,
-        auctions: rc.String,
-        tcp: rc.String,
-        hue: rc.String,
-        huePositionNFT: rc.String,
-        enforcedDecentralization: rc.String,
-        lendHue: rc.String,
-        liquidations: rc.String,
-        market: rc.String,
-        prices: rc.String,
-        protocolLock: rc.String,
-        rates: rc.String,
-        rewards: rc.String,
-        settlement: rc.String,
-        timelock: rc.String,
-        governorAlpha: rc.String,
-        tcpAllocation: rc.String,
-      },
-    ))
+        contracts: oneContractManyFunctionMC(
+          governor,
+          {
+            accounting: rc.String,
+            auctions: rc.String,
+            tcp: rc.String,
+            hue: rc.String,
+            huePositionNFT: rc.String,
+            enforcedDecentralization: rc.String,
+            lendHue: rc.String,
+            liquidations: rc.String,
+            market: rc.String,
+            prices: rc.String,
+            protocolLock: rc.String,
+            rates: rc.String,
+            rewards: rc.String,
+            settlement: rc.String,
+            timelock: rc.String,
+            governorAlpha: rc.String,
+            tcpAllocation: rc.String,
+          }
+        )
+      }
+    )
 
     return {
-      [ProtocolContract.Accounting]: result.accounting,
-      [ProtocolContract.Auctions]: result.auctions,
-      [ProtocolContract.EnforcedDecentralization]: result.enforcedDecentralization,
-      [ProtocolContract.Hue]: result.hue,
-      [ProtocolContract.HuePositionNFT]: result.huePositionNFT,
-      [ProtocolContract.LendHue]: result.lendHue,
-      [ProtocolContract.Liquidations]: result.liquidations,
-      [ProtocolContract.Market]: result.market,
-      [ProtocolContract.Prices]: result.prices,
-      [ProtocolContract.ProtocolLock]: result.protocolLock,
-      [ProtocolContract.Rates]: result.rates,
-      [ProtocolContract.Rewards]: result.rewards,
-      [ProtocolContract.Settlement]: result.settlement,
-      [ProtocolContract.Tcp]: result.tcp,
-      [ProtocolContract.TcpGovernorAlpha]: result.governorAlpha,
-      [ProtocolContract.TcpTimelock]: result.timelock,
+      [ProtocolContract.Accounting]: contracts.accounting,
+      [ProtocolContract.Auctions]: contracts.auctions,
+      [ProtocolContract.EnforcedDecentralization]: contracts.enforcedDecentralization,
+      [ProtocolContract.Hue]: contracts.hue,
+      [ProtocolContract.HuePositionNFT]: contracts.huePositionNFT,
+      [ProtocolContract.LendHue]: contracts.lendHue,
+      [ProtocolContract.Liquidations]: contracts.liquidations,
+      [ProtocolContract.Market]: contracts.market,
+      [ProtocolContract.Prices]: contracts.prices,
+      [ProtocolContract.ProtocolLock]: contracts.protocolLock,
+      [ProtocolContract.Rates]: contracts.rates,
+      [ProtocolContract.Rewards]: contracts.rewards,
+      [ProtocolContract.Settlement]: contracts.settlement,
+      [ProtocolContract.Tcp]: contracts.tcp,
+      [ProtocolContract.TcpGovernorAlpha]: contracts.governorAlpha,
+      [ProtocolContract.TcpTimelock]: contracts.timelock,
     }
   }
 )
 
-export type ContractsInfo = {[key in ProtocolContract]: string}
+export type ContractsInfo = { [key in ProtocolContract]: string }
 
-export interface ContractsState extends sliceState<ContractsInfo> {}
+export interface ContractsState extends sliceState<ContractsInfo> { }
 
 const name = 'contracts'
 

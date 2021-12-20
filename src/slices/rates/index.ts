@@ -5,7 +5,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rates } from '@trustlessfi/typechain/'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticall, rc } from '@trustlessfi/multicall'
+import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
 export type ratesInfo = {
   positiveInterestRate: boolean,
@@ -18,7 +18,7 @@ export type ratesArgs = {
   trustlessMulticall: string
 }
 
-export interface RatesState extends sliceState<ratesInfo> {}
+export interface RatesState extends sliceState<ratesInfo> { }
 
 export const getRatesInfo = createAsyncThunk(
   'rates/getRatesInfo',
@@ -26,20 +26,24 @@ export const getRatesInfo = createAsyncThunk(
     const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-    const result = (await executeMulticall(
+    const { ratesInfo } = await executeMulticalls(
       trustlessMulticall,
-      rates,
       {
-        positiveInterestRate: rc.Boolean,
-        interestRateAbsoluteValue: rc.BigNumberUnscale,
-        getReferencePools: rc.StringArray,
-      },
-    ))
+        ratesInfo: oneContractManyFunctionMC(
+          rates,
+          {
+            positiveInterestRate: rc.Boolean,
+            interestRateAbsoluteValue: rc.BigNumberUnscale,
+            getReferencePools: rc.StringArray,
+          },
+        )
+      }
+    )
 
     return {
-      positiveInterestRate: result.positiveInterestRate,
-      interestRateAbsoluteValue: result.interestRateAbsoluteValue,
-      referencePools: result.getReferencePools,
+      positiveInterestRate: ratesInfo.positiveInterestRate,
+      interestRateAbsoluteValue: ratesInfo.interestRateAbsoluteValue,
+      referencePools: ratesInfo.getReferencePools,
     }
   }
 )
@@ -48,7 +52,7 @@ const name = 'rates'
 
 export const ratesSlice = createSlice({
   name,
-  initialState: getStateWithValue<ratesInfo>(getLocalStorage(name, null)) as   RatesState,
+  initialState: getStateWithValue<ratesInfo>(getLocalStorage(name, null)) as RatesState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getRatesInfo)

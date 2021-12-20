@@ -12,10 +12,10 @@ import getProvider from '../../utils/getProvider'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
+  manyContractOneFunctionMC,
+  oneContractOneFunctionMC,
   rc,
-  getDuplicateFuncMulticall,
-  getCustomMulticall,
-  getFullSelector,
+  idToIdAndNoArg,
 } from '@trustlessfi/multicall'
 
 import { Prices, UniswapV3Pool } from '@trustlessfi/typechain'
@@ -54,11 +54,13 @@ export const getPoolsCurrentData = createAsyncThunk(
     const { sqrtPriceX96Instant, tickTwapped } = await executeMulticalls(
       trustlessMulticall,
       {
-        sqrtPriceX96Instant: getCustomMulticall(
+        sqrtPriceX96Instant: manyContractOneFunctionMC(
           poolContract,
-          Object.fromEntries(poolAddresses.map(address => [getFullSelector(poolContract, address, 'slot0', []), rc.String]))
+          idToIdAndNoArg(poolAddresses),
+          'slot0',
+          rc.String,
         ),
-        tickTwapped: getDuplicateFuncMulticall(
+        tickTwapped: oneContractOneFunctionMC(
           prices,
           'calculateInstantTwappedTick',
           rc.Number,
@@ -68,7 +70,7 @@ export const getPoolsCurrentData = createAsyncThunk(
     )
 
     return Object.fromEntries(poolAddresses.map(address => [address, {
-      instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[getFullSelector(poolContract, address, 'slot0', [])]),
+      instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
       twapTick: tickTwapped[address],
     }]))
   }

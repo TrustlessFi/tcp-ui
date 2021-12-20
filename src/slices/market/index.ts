@@ -4,7 +4,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Market } from '@trustlessfi/typechain'
 import { ProtocolContract, ContractsInfo } from '../contracts'
 import { getLocalStorage, mnt } from '../../utils'
-import { executeMulticall, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 
 export interface marketArgs {
   contracts: ContractsInfo
@@ -30,23 +30,29 @@ export const getMarketInfo = createAsyncThunk(
     const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-    return (await executeMulticall(
+    const { marketInfo } = await executeMulticalls(
       trustlessMulticall,
-      market,
       {
-        lastPeriodGlobalInterestAccrued: rc.BigNumberToNumber,
-        collateralizationRequirement: rc.BigNumberUnscale,
-        minPositionSize: rc.BigNumberUnscale,
-        twapDuration: rc.Number,
-        interestPortionToLenders: rc.BigNumberUnscale,
-        periodLength: rc.BigNumberToNumber,
-        firstPeriod: rc.BigNumberToNumber,
-        valueOfLendTokensInHue: rc.BigNumberUnscale,
-      },
-      {
-        valueOfLendTokensInHue: [mnt(1)]
+        marketInfo: oneContractManyFunctionMC(
+          market,
+          {
+            lastPeriodGlobalInterestAccrued: rc.BigNumberToNumber,
+            collateralizationRequirement: rc.BigNumberUnscale,
+            minPositionSize: rc.BigNumberUnscale,
+            twapDuration: rc.Number,
+            interestPortionToLenders: rc.BigNumberUnscale,
+            periodLength: rc.BigNumberToNumber,
+            firstPeriod: rc.BigNumberToNumber,
+            valueOfLendTokensInHue: rc.BigNumberUnscale,
+          },
+          {
+            valueOfLendTokensInHue: [mnt(1)]
+          }
+        )
       }
-    ))
+    )
+    
+    return marketInfo
   }
 )
 
