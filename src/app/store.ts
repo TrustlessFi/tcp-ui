@@ -4,7 +4,6 @@ import positionsReducer from '../slices/positions'
 import poolsMetadataReducer from '../slices/poolsMetadata'
 import poolsCurrentDataReducer from '../slices/poolsCurrentData'
 import liquidityPositionsReducer from '../slices/liquidityPositions'
-import proposalsReducer from '../slices/proposals'
 import chainIDReducer from '../slices/chainID'
 import transactionsReducer from '../slices/transactions'
 import walletReducer from '../slices/wallet'
@@ -29,7 +28,6 @@ export const store = configureStore({
     poolsMetadata: poolsMetadataReducer,
     poolsCurrentData: poolsCurrentDataReducer,
     liquidityPositions: liquidityPositionsReducer,
-    proposals: proposalsReducer,
     chainID: chainIDReducer,
     transactions: transactionsReducer,
     wallet: walletReducer,

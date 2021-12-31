@@ -7,7 +7,6 @@ import { getRatesInfo } from './rates'
 import { getPoolsMetadata } from './poolsMetadata'
 import { getLiquidityPositions } from './liquidityPositions'
 import { getPositions } from './positions'
-import { getProposals } from './proposals'
 import { getSystemDebtInfo } from './systemDebt'
 import { getLiquidationsInfo } from './liquidations'
 import { getRewardsInfo } from './rewards'
@@ -148,12 +147,6 @@ export const waitForPositions = getWaitFunction(
   (state: RootState) => state.positions,
   getPositions,
   [FetchNode.UserAddress, FetchNode.SDI, FetchNode.MarketInfo, FetchNode.Contracts, FetchNode.TrustlessMulticall],
-)
-
-export const waitForProposals = getWaitFunction(
-  (state: RootState) => state.proposals,
-  getProposals,
-  [FetchNode.Contracts, FetchNode.UserAddress],
 )
 
 export const waitForLiquidations = getWaitFunction(
