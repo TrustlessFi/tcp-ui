@@ -6,7 +6,7 @@ import { waitForPositions , waitForPrices } from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
-import { numDisplay } from '../../utils'
+import { numDisplay, sum } from '../../utils'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import Text from '../library/Text'
 import CreateTransactionButton from '../library/CreateTransactionButton'
@@ -80,17 +80,24 @@ const ExistingPositions = () => {
   const positions = waitForPositions(selector, dispatch)
   const contracts = waitForContracts(selector, dispatch)
 
+
   const positionsIDsWithRewards =
     positions === null
     ? []
     : Object.values(positions).filter(position => position.approximateRewards !== 0).map(position => position.id)
+
+
+  const totalRewards =
+    positionsIDsWithRewards.length === 0 || positions === null
+    ? 0
+    : Object.values(positions).map(p => p.approximateRewards).reduce(sum)
 
   const rightElement =
     <>
       <CreateTransactionButton
         size="sm"
         style={{marginRight: 8}}
-        title="Claim All Rewards"
+        title={`Claim ${numDisplay(totalRewards)} Tcp`}
         disabled={positionsIDsWithRewards.length === 0 || contracts === null}
         showDisabledInsteadOfConnectWallet={true}
         txArgs={{
