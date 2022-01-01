@@ -8,7 +8,7 @@ import { Accounting } from '@trustlessfi/typechain'
 
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
-import { ContractsInfo } from '../contracts'
+import { contractsInfo } from '../contracts'
 
 
 export interface LiquidityPosition {
@@ -27,7 +27,7 @@ export interface LiquidityPosition {
 export interface liquidityPositions { [id: string]: LiquidityPosition }
 
 export interface liquidityPositionsArgs {
-  contracts: ContractsInfo
+  contracts: contractsInfo
   trustlessMulticall: string
   userAddress: string
 }

@@ -4,7 +4,7 @@ import { liquidationsInfo } from '../liquidations'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Prices } from '@trustlessfi/typechain'
-import { ProtocolContract, ContractsInfo } from '../contracts'
+import { ProtocolContract, contractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
@@ -17,7 +17,7 @@ export interface PricesState extends sliceState<pricesInfo> {}
 
 export interface pricesArgs {
   liquidationsInfo: liquidationsInfo
-  contracts: ContractsInfo
+  contracts: contractsInfo
   trustlessMulticall: string
 }
 

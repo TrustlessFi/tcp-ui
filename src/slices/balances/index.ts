@@ -1,7 +1,7 @@
 import { sliceState } from '../'
 import { initialState, getGenericReducerBuilder } from '../'
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
-import { ProtocolContract, ContractsInfo } from '../contracts'
+import { ProtocolContract, contractsInfo } from '../contracts'
 import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls,
   rc,
@@ -56,7 +56,7 @@ export interface balanceArgs {
   trustlessMulticall: string,
   poolsMetadata: poolsMetadata
   rewardsInfo: rewardsInfo
-  contracts: ContractsInfo
+  contracts: contractsInfo
 }
 
 export const getBalances = createAsyncThunk(

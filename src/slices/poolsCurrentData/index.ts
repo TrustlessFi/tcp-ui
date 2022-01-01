@@ -3,7 +3,7 @@ import { initialState, getGenericReducerBuilder } from '../'
 import { sliceState } from '../'
 import { rewardsInfo } from '../rewards'
 import { poolsMetadata } from '../poolsMetadata'
-import { ContractsInfo } from '../contracts'
+import { contractsInfo } from '../contracts'
 
 import { Contract } from 'ethers'
 
@@ -35,7 +35,7 @@ export type poolsCurrentInfo = {
 export type poolCurrentDataState = sliceState<poolsCurrentInfo>
 
 export interface poolsCurrentDataArgs {
-  contracts: ContractsInfo
+  contracts: contractsInfo
   trustlessMulticall: string
   rewardsInfo: rewardsInfo
   poolsMetadata: poolsMetadata

@@ -40,7 +40,7 @@ export interface contractsArgs {
 
 export const getContracts = createAsyncThunk(
   'contracts/getContracts',
-  async (args: contractsArgs): Promise<ContractsInfo> => {
+  async (args: contractsArgs): Promise<contractsInfo> => {
     const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
     const governor = getContract(args.governor, RootContract.Governor) as Governor
 
@@ -93,9 +93,9 @@ export const getContracts = createAsyncThunk(
   }
 )
 
-export type ContractsInfo = { [key in ProtocolContract]: string }
+export type contractsInfo = { [key in ProtocolContract]: string }
 
-export interface ContractsState extends sliceState<ContractsInfo> { }
+export interface ContractsState extends sliceState<contractsInfo> { }
 
 const name = 'contracts'
 

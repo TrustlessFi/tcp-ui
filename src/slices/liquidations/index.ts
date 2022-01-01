@@ -3,7 +3,7 @@ import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Liquidations } from '@trustlessfi/typechain'
-import { ProtocolContract, ContractsInfo } from '../contracts'
+import { ProtocolContract, contractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 
@@ -14,7 +14,7 @@ export type liquidationsInfo = {
 }
 
 export type liquidationsArgs = {
-  contracts: ContractsInfo,
+  contracts: contractsInfo,
   trustlessMulticall: string,
 }
 

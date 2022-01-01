@@ -5,7 +5,7 @@ import { range } from '../../utils'
 import { PromiseType } from '@trustlessfi/utils'
 
 import { Rewards, Accounting } from '@trustlessfi/typechain'
-import { ProtocolContract, ContractsInfo } from '../contracts'
+import { ProtocolContract, contractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { executeMulticalls, oneContractOneFunctionMC, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
@@ -26,7 +26,7 @@ export interface rewardsInfo {
 }
 
 export interface rewardsArgs {
-  contracts: ContractsInfo
+  contracts: contractsInfo
   trustlessMulticall: string
 }
 

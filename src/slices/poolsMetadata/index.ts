@@ -5,7 +5,7 @@ import {
   sum,
 } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { ProtocolContract, RootContract, ContractsInfo } from '../contracts/index';
+import { ProtocolContract, RootContract, contractsInfo } from '../contracts/index';
 import {
   executeMulticalls,
   rc,
@@ -17,7 +17,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
 
 export interface getPoolsMetadataArgs {
-  contracts: ContractsInfo
+  contracts: contractsInfo
   trustlessMulticall: string
   protocolDataAggregator: string
   userAddress: string

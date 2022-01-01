@@ -4,7 +4,7 @@ import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
 import { Accounting } from '@trustlessfi/typechain';
-import { ProtocolContract, ContractsInfo } from '../contracts'
+import { ProtocolContract, contractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
 
 export type systemDebtInfo = {
@@ -15,7 +15,7 @@ export type systemDebtInfo = {
 }
 
 export type systemDebtArgs = {
-  contracts: ContractsInfo
+  contracts: contractsInfo
 }
 
 export interface SystemDebtState extends sliceState<systemDebtInfo> {}

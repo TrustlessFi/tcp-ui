@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { rewardsInfo } from '../../slices/rewards'
-import { ContractsInfo } from '../../slices/contracts'
+import { contractsInfo } from '../../slices/contracts'
 import { waitForLiquidityPositions, waitForPoolsMetadata, waitForPoolsCurrentData, waitForRewards, waitForContracts } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol, timeToPeriod } from '../../utils/'
@@ -27,7 +27,7 @@ const LiquidityPositionsTable = (
     pool: poolMetadata
     liquidityPositions: LiquidityPosition[]
     rewardsInfo: rewardsInfo
-    contracts: ContractsInfo
+    contracts: contractsInfo
   }) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
