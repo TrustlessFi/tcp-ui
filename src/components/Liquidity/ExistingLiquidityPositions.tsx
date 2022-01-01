@@ -53,6 +53,7 @@ const LiquidityPositionsTable = (
     : token1Symbol + ' per ' + token0Symbol
 
   const poolTick = poolCurrentData && poolCurrentData[pool.address]?.twapTick
+  console.log({poolTick})
 
   let table =
     <Center style={{padding: 24}}>
@@ -65,7 +66,7 @@ const LiquidityPositionsTable = (
     <div onClick={invert}>
       Current Price:{' '}
       {
-        (!poolTick
+        (poolTick === null
         ? '-'
         : tickToPriceDisplay(
             inverted
@@ -87,7 +88,7 @@ const LiquidityPositionsTable = (
       let approximateRewards = bnf(0)
       const lastTimeRewarded = lqPos.lastTimeRewarded
       const lastPeriodRewarded = timeToPeriod(lastTimeRewarded, rewardsInfo.periodLength, rewardsInfo.firstPeriod)
-      const isInRange = poolTick && lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper
+      const isInRange = poolTick === null || lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper
 
       if (lastPeriodRewarded < rewardsInfo.lastPeriodGlobalRewardsAccrued) {
         const avgDebtPerPeriod =
