@@ -3037,10 +3037,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/artifacts@npm:^0.1.23":
-  version: 0.1.23
-  resolution: "@trustlessfi/artifacts@npm:0.1.23"
-  checksum: bc5673054a56bbc28404ed4bd754b69028b79df581bcc557f7dd10dbe01ffbdd4c5151ec25360f4af6ee29398344a45c7783c3adb3fdf9471d580f086c0c1d5b
+"@trustlessfi/artifacts@npm:^0.1.25":
+  version: 0.1.25
+  resolution: "@trustlessfi/artifacts@npm:0.1.25"
+  checksum: 83cd74ef79cb927b20e221922d0364d1194860755abe7c21bbc32179b196b93b56b05bcdc81b14dd750fc19816af1bcba1e8a676d2cc180d3a320329241bf394
   languageName: node
   linkType: hard
 
@@ -3054,14 +3054,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/typechain@npm:^0.6.28":
-  version: 0.6.28
-  resolution: "@trustlessfi/typechain@npm:0.6.28"
+"@trustlessfi/typechain@npm:^0.6.30":
+  version: 0.6.30
+  resolution: "@trustlessfi/typechain@npm:0.6.30"
   dependencies:
     "@ethersproject/abi": ^5.5.0
     "@ethersproject/providers": ^5.5.0
     ethers: ^5.5.1
-  checksum: 257bec3cd11f85869a1618ff35e310aedfec91c67198a0b0c0cda0539d48e2de2ea20311d23be3cb2ffc17b01230aba68bda5fdeb9ad61e31b6e31eb47d4b570
+  checksum: e14b36c1c98c8e2db47f85530bacbe069cc9abf74d5d83638c968ae59193f94372e8acc0d7677616ba75c3531756a01072a74b2a3b83c2959310b8391a6cb9d7
   languageName: node
   linkType: hard
 
@@ -18588,9 +18588,9 @@ resolve@^2.0.0-next.3:
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
     "@trustlessfi/addresses": ^0.4.14
-    "@trustlessfi/artifacts": ^0.1.23
+    "@trustlessfi/artifacts": ^0.1.25
     "@trustlessfi/multicall": ^0.4.21
-    "@trustlessfi/typechain": ^0.6.28
+    "@trustlessfi/typechain": ^0.6.30
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.46.1
     "@types/carbon__colors": ^10.31.0
