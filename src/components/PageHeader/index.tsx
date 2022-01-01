@@ -1,5 +1,7 @@
 import { MouseEvent } from 'react'
+import { ChainID } from "@trustlessfi/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
+import { useAppSelector as selector } from '../../app/hooks'
 import { useState, CSSProperties } from 'react'
 import { Row } from 'react-flexbox-grid'
 import useWindowWidth from '../../hooks/useWindowWidth'
@@ -18,17 +20,19 @@ import {
   // HeaderSideNavItems,
   Button,
 } from 'carbon-components-react'
-import { Menu32 } from '@carbon/icons-react';
+import { Menu32 } from '@carbon/icons-react'
 import { Tab } from '../../App'
 
+import DebugUtils from '../library/DebugUtils'
 import Wallet from './Wallet'
-import NetworkIndicator from '../library/NetworkIndicator';
+import NetworkIndicator from '../library/NetworkIndicator'
 
 const logo = require('../../img/tcp_logo_white.svg')
 const logo_name = require('../../img/tcp_logo_name_white.svg')
 
 const PageHeader = () => {
   const [ areNavLinksHidden, setAreNavLinksHidden ] = useState(false)
+  const chainID = selector(state => state.chainID.chainID)
 
   const isSmallViewport = useWindowWidth(() => {
     const navLinksElement = document.getElementById('headerNavigationLinks')
@@ -103,6 +107,7 @@ const PageHeader = () => {
             {tabs}
           </HeaderNavigation>
           <div style={{marginLeft: 'auto', marginRight: 16 }}>
+            {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
             {isSmallViewport ? null : <NetworkIndicator />}
             <span style={{marginLeft: 12}}>
               <Wallet />
