@@ -77,6 +77,7 @@ const LiquidityPositionsTable = (
     </div>
 
   const positionIDsWithRewards: string[] = []
+  let totalRewards = 0
 
   if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
     const rows = Object.values(liquidityPositions).map((lqPos) => {
@@ -103,7 +104,10 @@ const LiquidityPositionsTable = (
         }
       }
 
-      if (!approximateRewards.isZero()) positionIDsWithRewards.push(lqPos.positionID)
+      if (!approximateRewards.isZero()) {
+        positionIDsWithRewards.push(lqPos.positionID)
+        totalRewards += unscale(approximateRewards, 18)
+      }
 
       const liquidityDecimals = Math.floor((pool.token0.decimals + pool.token1.decimals) / 2)
 
@@ -151,7 +155,7 @@ const LiquidityPositionsTable = (
       <CreateTransactionButton
         size="sm"
         style={{marginRight: 8}}
-        title="Claim All Rewards"
+        title={`Claim ${numDisplay(totalRewards)} Tcp`}
         disabled={positionIDsWithRewards.length === 0}
         showDisabledInsteadOfConnectWallet={true}
         txArgs={{
