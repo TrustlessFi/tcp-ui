@@ -6,6 +6,7 @@ import { getGovernorInfo, governorInfo } from './governor'
 import { getMarketInfo, marketInfo } from './market'
 import { getRatesInfo, ratesInfo } from './rates'
 import { getPoolsMetadata, poolsMetadata } from './poolsMetadata'
+import { getPoolsCurrentData, poolsCurrentInfo } from './poolsCurrentData'
 import { getLiquidityPositions } from './liquidityPositions'
 import { getPositions } from './positions'
 import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
@@ -13,7 +14,6 @@ import { getLiquidationsInfo, liquidationsInfo } from './liquidations'
 import { getRewardsInfo, rewardsInfo } from './rewards'
 import { getPricesInfo } from './prices'
 import { getBalances } from './balances'
-import { getPoolsCurrentData } from './poolsCurrentData'
 import { getContracts, contractsInfo } from './contracts'
 
 import { sliceState } from './'
@@ -31,6 +31,7 @@ interface fetchNodeTypes {
   marketInfo: marketInfo
   ratesInfo: ratesInfo
   poolsMetadata: poolsMetadata
+  poolsCurrentData: poolsCurrentInfo
   sdi: systemDebtInfo
   contracts: contractsInfo
 }
@@ -152,7 +153,14 @@ export const waitForBalances = getWaitFunction(
 export const waitForLiquidityPositions = getWaitFunction(
   (state: RootState) => state.liquidityPositions,
   getLiquidityPositions,
-  ['userAddress', 'contracts', 'trustlessMulticall'],
+  [
+    'userAddress',
+    'contracts',
+    'trustlessMulticall',
+    'poolsCurrentData',
+    'poolsMetadata',
+    'rewardsInfo',
+  ],
 )
 
 export const waitForPoolsMetadata = getWaitFunction(
@@ -177,6 +185,7 @@ const fetchNodesImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: Ap
   marketInfo: waitForMarket,
   ratesInfo: waitForRates,
   poolsMetadata: waitForPoolsMetadata,
+  poolsCurrentData: waitForPoolsCurrentData,
   sdi: waitForSDI,
   contracts: waitForContracts,
 }

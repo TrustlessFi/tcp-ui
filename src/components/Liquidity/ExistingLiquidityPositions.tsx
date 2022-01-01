@@ -82,31 +82,11 @@ const LiquidityPositionsTable = (
   if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
     const rows = Object.values(liquidityPositions).map((lqPos) => {
 
-      // TODO move this into the liquidity positions slice with rewardsInfo as an input arg,
-      // and create a button inside the ExistingLiquidityPositions component that allows collecting ALL
-      // rewards for all positions in all pools at once
-
-      let approximateRewards = bnf(0)
-      const lastTimeRewarded = lqPos.lastTimeRewarded
-      const lastPeriodRewarded = timeToPeriod(lastTimeRewarded, rewardsInfo.periodLength, rewardsInfo.firstPeriod)
       const isInRange = poolTick === null || lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper
 
-      if (lastPeriodRewarded < rewardsInfo.lastPeriodGlobalRewardsAccrued) {
-        const avgDebtPerPeriod =
-          bnf(rewardsInfo.rewardStatuses[lqPos.poolID].cumulativeLiquidity).sub(lqPos.cumulativeLiquidity)
-            .div(rewardsInfo.lastPeriodGlobalRewardsAccrued - lastPeriodRewarded)
-
-        if (!avgDebtPerPeriod.isZero()) {
-          approximateRewards =
-            bnf(lqPos.liquidity)
-              .mul(bnf(rewardsInfo.rewardStatuses[lqPos.poolID].totalRewards).sub(lqPos.totalRewards))
-              .div(avgDebtPerPeriod)
-        }
-      }
-
-      if (!approximateRewards.isZero()) {
+      if (lqPos.approximateRewards !== 0) {
         positionIDsWithRewards.push(lqPos.positionID)
-        totalRewards += unscale(approximateRewards, 18)
+        totalRewards += lqPos.approximateRewards
       }
 
       const liquidityDecimals = Math.floor((pool.token0.decimals + pool.token1.decimals) / 2)
@@ -139,7 +119,7 @@ const LiquidityPositionsTable = (
                 {priceRangeText}
               </Button>
             ),
-          'Approximate Rewards': numDisplay(unscale(approximateRewards)) + ' TCP',
+          'Approximate Rewards': numDisplay(lqPos.approximateRewards) + ' TCP',
         },
         onClick: () => {
           history.push(`/liquidity/increase/${pool.address}/${lqPos.positionID}`)
