@@ -68,16 +68,19 @@ export const getLiquidityPositions = createAsyncThunk(
       const poolAddress = poolIDToAddress[poolID]
 
       if (lastPeriodRewarded < args.poolsCurrentData[poolAddress].lastPeriodGlobalRewardsAccrued) {
+        const inflationPeriods = args.poolsCurrentData[poolAddress].lastPeriodGlobalRewardsAccrued - lastPeriodRewarded
+        const realPeriods = args.poolsCurrentData[poolAddress].currentPeriod - lastPeriodRewarded
         const avgDebtPerPeriod =
           bnf(args.poolsCurrentData[poolAddress].cumulativeLiquidity).sub(position.cumulativeLiquidity)
-            .div(args.poolsCurrentData[poolAddress].lastPeriodGlobalRewardsAccrued - lastPeriodRewarded)
+            .div(inflationPeriods)
 
         if (!avgDebtPerPeriod.isZero()) {
           approximateRewardsBN =
             bnf(position.liquidity)
               .mul(bnf(args.poolsCurrentData[poolAddress].totalRewards).sub(position.totalRewards))
               .div(avgDebtPerPeriod)
-              // TODO add in scaling for missing periods
+              .mul(realPeriods)
+              .div(inflationPeriods)
         }
       }
 
