@@ -1,7 +1,7 @@
-import { CSSProperties, ReactNode } from "react";
-import { Tile } from "carbon-components-react";
+import { CSSProperties, ReactNode } from "react"
+import { Tile } from "carbon-components-react"
 import ErrorBoundary from './ErrorBoundary'
-import LargeText from '../utils/LargeText';
+import LargeText from '../library/LargeText'
 
 interface AppTileProps {
   className?: string

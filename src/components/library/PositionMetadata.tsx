@@ -1,5 +1,5 @@
 import { Row, Col } from 'react-flexbox-grid'
-import Text from '../utils/Text'
+import Text from '../library/Text'
 import { useEffect, useState } from 'react'
 
 type metadata = {value: string, title: string, failing?: boolean}

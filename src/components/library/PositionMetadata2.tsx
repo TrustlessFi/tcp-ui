@@ -1,5 +1,5 @@
 import { Row, Col } from 'react-flexbox-grid'
-import Text from '../utils/Text'
+import Text from '../library/Text'
 
 export interface metadata {
   value: string,

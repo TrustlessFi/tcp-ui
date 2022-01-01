@@ -7,7 +7,7 @@ import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
 import { Switch, Route, HashRouter } from "react-router-dom"
-import LocalStorageManager from './components/utils/LocalStorageManager'
+import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
 
 import './App.css'

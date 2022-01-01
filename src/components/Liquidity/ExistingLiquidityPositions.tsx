@@ -12,10 +12,10 @@ import { poolMetadata } from '../../slices/poolsMetadata'
 import Center from '../library/Center'
 import SimpleTable from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
-import ConnectWalletButton from '../utils/ConnectWalletButton'
+import ConnectWalletButton from '../library/ConnectWalletButton'
 import { TransactionType } from '../../slices/transactions'
-import CreateTransactionButton from '../utils/CreateTransactionButton'
-import Text from '../utils/Text'
+import CreateTransactionButton from '../library/CreateTransactionButton'
+import Text from '../library/Text'
 
 const LiquidityPositionsTable = (
   {

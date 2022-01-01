@@ -1,4 +1,4 @@
-import LargeText from '../utils/LargeText'
+import LargeText from '../library/LargeText'
 import { firstOrNull }  from '../../utils/'
 
 export type reason = {

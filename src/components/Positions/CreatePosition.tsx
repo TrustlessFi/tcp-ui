@@ -1,6 +1,6 @@
 import { useState } from "react"
-import LargeText from '../utils/LargeText'
-import Bold from '../utils/Bold'
+import LargeText from '../library/LargeText'
+import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   waitForBalances,
@@ -15,10 +15,10 @@ import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
-import CreateTransactionButton from '../utils/CreateTransactionButton'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()

@@ -15,15 +15,15 @@ import {
 } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
-import LargeText from '../utils/LargeText'
-import Bold from '../utils/Bold'
+import LargeText from '../library/LargeText'
+import Bold from '../library/Bold'
 import { reason } from '../library/ErrorMessage';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
-import CreateTransactionButton from '../utils/CreateTransactionButton';
+import CreateTransactionButton from '../library/CreateTransactionButton';
 import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 interface MatchParams {
@@ -279,7 +279,7 @@ const CreateLiquidityPosition = () => {
       <ParagraphDivider />
       {queryParams.outOfRange && (
         <>
-          <span className='error-message'> 
+          <span className='error-message'>
             This position is out of the current price range. If you do not liquidate it, someone else can liquidate it for you and you will lose 6% of the value of the position.
           </span>
           <ParagraphDivider />

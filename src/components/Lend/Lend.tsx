@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useHistory } from 'react-router-dom'
-import LargeText from '../utils/LargeText'
+import LargeText from '../library/LargeText'
 import { LendBorrowOption } from './'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
@@ -13,10 +13,10 @@ import ErrorMessage from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions/index'
 import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index'
-import CreateTransactionButton from '../utils/CreateTransactionButton'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 const Lend = () => {

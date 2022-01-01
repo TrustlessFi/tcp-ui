@@ -14,14 +14,14 @@ import { numDisplay, zeroIfNaN } from '../../utils/index'
 import { reason } from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions'
 import PositionNumberInput from '../library/PositionNumberInput'
-import LargeText from '../utils/LargeText'
-import Bold from '../utils/Bold'
+import LargeText from '../library/LargeText'
+import Bold from '../library/Bold'
 import ErrorMessage from '../library/ErrorMessage'
 import InputPicker from '../library/InputPicker'
-import CreateTransactionButton from '../utils/CreateTransactionButton';
+import CreateTransactionButton from '../library/CreateTransactionButton';
 import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 enum CollateralChange {

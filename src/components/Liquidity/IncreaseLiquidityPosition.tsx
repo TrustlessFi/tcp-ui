@@ -23,15 +23,15 @@ import {
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
 import PositionNumberInput from '../library/PositionNumberInput'
-import LargeText from '../utils/LargeText'
-import Bold from '../utils/Bold'
+import LargeText from '../library/LargeText'
+import Bold from '../library/Bold'
 import { reason } from '../library/ErrorMessage';
 import ErrorMessage from '../library/ErrorMessage';
 import { TransactionType } from '../../slices/transactions/index';
-import CreateTransactionButton from '../utils/CreateTransactionButton';
+import CreateTransactionButton from '../library/CreateTransactionButton';
 import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 interface MatchParams {

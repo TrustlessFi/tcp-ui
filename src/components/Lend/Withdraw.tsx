@@ -1,5 +1,5 @@
 import { useState } from "react"
-import LargeText from '../utils/LargeText'
+import LargeText from '../library/LargeText'
 import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
@@ -14,9 +14,9 @@ import { getAPR } from './library'
 import { zeroIfNaN } from '../../utils/index';
 import RelativeLoading from '../library/RelativeLoading';
 import { TransactionType } from '../../slices/transactions/index';
-import CreateTransactionButton from '../utils/CreateTransactionButton';
-import TwoColumnDisplay from '../utils/TwoColumnDisplay'
-import ParagraphDivider from '../utils/ParagraphDivider'
+import CreateTransactionButton from '../library/CreateTransactionButton';
+import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
 
 const Withdraw = () => {

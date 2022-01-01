@@ -6,13 +6,13 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { chainIDFound } from '../../slices/chainID'
 import { abbreviateAddress } from '../../utils'
-import { getSortedUserTxs } from '../utils'
-import ConnectWalletButton from '../utils/ConnectWalletButton'
-import { getWalletConnectedFunction } from '../utils/WalletConnection'
+import { getSortedUserTxs } from '../library'
+import ConnectWalletButton from '../library/ConnectWalletButton'
+import { getWalletConnectedFunction } from '../library/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
-import { clearEphemeralStorage } from '../utils/LocalStorageManager'
+import { clearEphemeralStorage } from '../library/LocalStorageManager'
 import { getChainIDFromState } from '../../slices/chainID/index';
-import { getEtherscanAddressLink } from '../utils/ExplorerLink';
+import { getEtherscanAddressLink } from '../library/ExplorerLink';
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
