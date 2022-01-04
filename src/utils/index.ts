@@ -440,3 +440,39 @@ export const addressToProtocolToken = (address: string) =>
 
 export const addressToV3Pool = (address: string) =>
   new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool
+
+
+// ======================= ETHEREUM TYPESCRIPT ============================
+interface EthereumRequestArguments {
+  method: string;
+  params?: unknown[] | object;
+}
+interface ethereum {
+  request: (args: EthereumRequestArguments) => Promise<unknown>
+}
+export enum RpcMethod {
+  SwitchChain = 'wallet_switchEthereumChain',
+  ChainID = 'eth_chainId',
+  Accounts = 'eth_accounts',
+}
+interface SwitchChainRequest {
+  method: RpcMethod.SwitchChain
+  chainId: string
+}
+type RpcRequest =
+  | SwitchChainRequest
+  | { method: RpcMethod.ChainID }
+  | { method: RpcMethod.Accounts }
+
+export const makeRPCRequest = async (request: RpcRequest) => {
+  const ethereum = window.ethereum as ethereum | undefined
+  if (ethereum === undefined) return
+  const params = Object.fromEntries(Object.entries(request).filter(([key, _]) => key !== 'method'))
+  const requestParams = {
+    method: request.method,
+    params: [params],
+  }
+  console.log({requestParams})
+  return await ethereum.request(requestParams)
+}
+export const numberToHex = (val: number) => '0x' + val.toString(16)
