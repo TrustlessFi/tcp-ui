@@ -15,6 +15,7 @@ import pricesReducer from '../slices/prices'
 import ratesReducer from '../slices/rates'
 import rewardsReducer from '../slices/rewards'
 import systemDebtReducer from '../slices/systemDebt'
+import tokensAddedToWalletReducer from '../slices/tokensAddedToWallet'
 import transactionsReducer from '../slices/transactions'
 import uniswapContractsReducer from '../slices/uniswapContracts'
 import walletReducer from '../slices/wallet'
@@ -36,6 +37,7 @@ export const store = configureStore({
     rates: ratesReducer,
     rewards: rewardsReducer,
     systemDebt: systemDebtReducer,
+    tokensAddedToWallet: tokensAddedToWalletReducer,
     transactions: transactionsReducer,
     uniswapContracts: uniswapContractsReducer,
     wallet: walletReducer,

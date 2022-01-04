@@ -57,7 +57,7 @@ import { assertUnreachable } from '@trustlessfi/utils'
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }
 
-const artifactLookup: {[key in ProtocolContract | RootContract]: contractAbi} = {
+const artifactLookup = (): {[key in ProtocolContract | RootContract]: contractAbi} => ({
   [ProtocolContract.Accounting]: accountingArtifact,
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
@@ -78,7 +78,7 @@ const artifactLookup: {[key in ProtocolContract | RootContract]: contractAbi} = 
   [RootContract.Governor]: governorArtifact,
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
-}
+})
 
 export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
   new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
@@ -91,7 +91,7 @@ const getContract = (address: string, theContract: ProtocolContract | RootContra
     if (theContract === RootContract.TrustlessMulticall) {
       return multicallViewOnly ? trustlessMulticallViewOnlyArtifact.abi : trustlessMulticallArtifact.abi
     } else {
-      return artifactLookup[theContract].abi
+      return artifactLookup()[theContract].abi
     }
   }
 

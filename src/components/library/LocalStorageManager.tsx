@@ -16,6 +16,7 @@ import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
 import { poolsCurrentDataSlice, poolsCurrentInfo } from '../../slices/poolsCurrentData'
 import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
+import { tokensAddedToWalletSlice, tokensAddedToWalletState } from '../../slices/tokensAddedToWallet'
 
 type slicesState =
   TransactionState |
@@ -32,6 +33,7 @@ type slicesState =
   systemDebtInfo |
   NotificationState |
   uniswapContractsInfo |
+  tokensAddedToWalletState |
   null
 
 type persistedSlice = {
@@ -65,6 +67,11 @@ export const slicesToPersist: persistedSlices = {
     slice: transactionsSlice,
     ttl: NO_EXPIRATION,
     getState: (state: RootState) => state.transactions
+  },
+  [tokensAddedToWalletSlice.name]: {
+    slice: tokensAddedToWalletSlice,
+    ttl: NO_EXPIRATION,
+    getState: (state: RootState) => state.tokensAddedToWallet
   },
 
   // Slices with loadable state

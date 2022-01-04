@@ -10,7 +10,10 @@ import { numDisplay, sum } from '../../utils'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import Text from '../library/Text'
 import CreateTransactionButton from '../library/CreateTransactionButton'
+import AddTokenToWalletButton from '../library/AddTokenToWalletButton'
+import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
+import { WalletToken } from '../../slices/tokensAddedToWallet'
 import { waitForContracts } from '../../slices/waitFor'
 
 const ExistingPositionsTable = () => {
@@ -114,9 +117,18 @@ const ExistingPositions = () => {
     </>
 
   return (
-    <AppTile title="Positions" rightElement={rightElement}>
-      <ExistingPositionsTable />
-    </AppTile>
+    <>
+      <SpacedList spacing={32}>
+        <AppTile title="Positions" rightElement={rightElement}>
+          <ExistingPositionsTable />
+        </AppTile>
+      </SpacedList>
+      <SpacedList spacing={8}>
+        <AddTokenToWalletButton walletToken={WalletToken.Hue} />
+        <AddTokenToWalletButton walletToken={WalletToken.LendHue} />
+        <AddTokenToWalletButton walletToken={WalletToken.TCP} />
+      </SpacedList>
+    </>
   )
 }
 

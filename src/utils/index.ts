@@ -444,35 +444,72 @@ export const addressToV3Pool = (address: string) =>
 
 // ======================= ETHEREUM TYPESCRIPT ============================
 interface EthereumRequestArguments {
-  method: string;
-  params?: unknown[] | object;
+  method: string
+  params?: unknown[] | object
 }
+
 interface ethereum {
   request: (args: EthereumRequestArguments) => Promise<unknown>
 }
+
 export enum RpcMethod {
   SwitchChain = 'wallet_switchEthereumChain',
-  ChainID = 'eth_chainId',
-  Accounts = 'eth_accounts',
+  AddTokenToWallet = 'wallet_watchAsset',
 }
+
 interface SwitchChainRequest {
   method: RpcMethod.SwitchChain
   chainId: string
 }
+
+interface metamaskTokenParams {
+  address: string
+  symbol: string
+  decimals: number
+  image: string
+}
+
+interface AddTokenToWalletRequest {
+  method: RpcMethod.AddTokenToWallet
+  type: string
+  options: metamaskTokenParams
+}
+
 type RpcRequest =
   | SwitchChainRequest
-  | { method: RpcMethod.ChainID }
-  | { method: RpcMethod.Accounts }
+  | AddTokenToWalletRequest
+
+const requiresArray: {[key in RpcMethod]?: boolean} = {
+  [RpcMethod.SwitchChain]: true
+}
 
 export const makeRPCRequest = async (request: RpcRequest) => {
   const ethereum = window.ethereum as ethereum | undefined
   if (ethereum === undefined) return
+
   const params = Object.fromEntries(Object.entries(request).filter(([key, _]) => key !== 'method'))
+
+  console.log({request, params})
+
   const requestParams = {
     method: request.method,
-    params: [params],
+    params: requiresArray[request.method] ? [params] : params,
   }
-  console.log({requestParams})
+
   return await ethereum.request(requestParams)
 }
+
+export const addTokenToWallet = async (
+  options: metamaskTokenParams
+) => {
+  return await makeRPCRequest({
+    method: RpcMethod.AddTokenToWallet,
+    type: 'ERC20',
+    options,
+  })
+}
+
 export const numberToHex = (val: number) => '0x' + val.toString(16)
+
+export const convertSVGtoURI = (svg: string) =>
+  `data:image/svg+xml;base64,${Buffer.from(svg, 'binary').toString('base64')}`
