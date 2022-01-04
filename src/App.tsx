@@ -27,6 +27,9 @@ export enum Tab {
   Transactions = 'Transactions',
 }
 
+export const tabDisplay: { [key in Tab]?: string } = {
+}
+
 const tabToRender: {[key in Tab]: ReactNode} = {
   Positions: <Positions />,
   Lend: <Lend />,

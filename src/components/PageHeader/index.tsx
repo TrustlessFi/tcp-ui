@@ -21,11 +21,12 @@ import {
   Button,
 } from 'carbon-components-react'
 import { Menu32 } from '@carbon/icons-react'
-import { Tab } from '../../App'
+import { Tab, tabDisplay } from '../../App'
 
 import DebugUtils from '../library/DebugUtils'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
+import { first } from '../../utils'
 
 const logo = require('../../img/tcp_logo_white.svg')
 const logo_name = require('../../img/tcp_logo_name_white.svg')
@@ -47,12 +48,35 @@ const PageHeader = () => {
     e.preventDefault()
   }
 
+  const extractPathBase = (path: string) => {
+    path =
+      path.substring(0, 1) === '/'
+      ? path.substring(1)
+      : path
+
+    const slashLocation = path.indexOf('/')
+    return slashLocation === -1
+      ? path
+      : path.substring(0, slashLocation)
+  }
+
+  const pagePath = location.pathname
+  const currentPage =
+    pagePath === '/' || pagePath === ''
+    ? first(Object.values(Tab))
+    : extractPathBase(pagePath)
+
   const tabs = Object.values(Tab).map((tab, index) => {
+    const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
+    const display = tabDisplay[tab]
     const link = index === 0 ? '/' : '/' + tab.toLowerCase()
-    const isCurrentPage = location.pathname === link
     return (
-      <HeaderMenuItem key={index} href={link} onClick={navigateToRoute.bind(null, link)} isCurrentPage={isCurrentPage}>
-        {tab}
+      <HeaderMenuItem
+      key={index}
+      href={link}
+      onClick={navigateToRoute.bind(null, link)}
+      isCurrentPage={tabIsCurrentPage}>
+        {display === undefined ? tab : display}
       </HeaderMenuItem>
     )
   })
