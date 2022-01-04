@@ -28,6 +28,7 @@ const AddTokenToWalletButton = ({
   const contracts = waitForContracts(selector, dispatch)
   const chainID = getChainIDFromState(selector(state => state.chainID))
   const tokensAddedToWallet = selector(state => state.tokensAddedToWallet)
+  const userAddress = selector(state => state.wallet.address)
 
   const getTokenAddress = (contractsInfo: contractsInfo) => {
     switch(walletToken) {
@@ -51,17 +52,24 @@ const AddTokenToWalletButton = ({
   }
 
   const onClick = async () => {
-    if (contracts === null || chainID === null) return
+    if (contracts === null || chainID === null || userAddress === null) return
     await addTokenToWallet({
       address: getTokenAddress(contracts),
       symbol: walletToken,
       decimals: 18,
       image: getTokenIcon(),
     })
-    dispatch(tokenAddedToWallet({ walletToken, chainID: chainID}))
+    dispatch(tokenAddedToWallet({ walletToken, chainID: chainID, address: userAddress}))
   }
 
-  const alreadyAdded = chainID !== null && tokensAddedToWallet[walletToken][chainID] === true
+  console.log({tokensAddedToWallet})
+  console.log({chainID, userAddress, walletToken, i0: chainID === null ? 'chainID is null' :  tokensAddedToWallet[walletToken][chainID] })
+
+  const alreadyAdded =
+    chainID !== null &&
+    userAddress !== null &&
+    tokensAddedToWallet[walletToken][chainID] !== undefined &&
+    tokensAddedToWallet[walletToken][chainID][userAddress] === true
 
   return (
     <Button
@@ -72,12 +80,13 @@ const AddTokenToWalletButton = ({
       disabled={
         disabled ||
         contracts === null ||
-        chainID === null
+        chainID === null ||
+        userAddress === null
       }>
       {
         title === undefined
         ? (
-          chainID !== null && tokensAddedToWallet[walletToken][chainID] === true
+          alreadyAdded
           ? `Re-add ${walletToken} token to wallet`
           : `Add ${walletToken} token to wallet`
         )
