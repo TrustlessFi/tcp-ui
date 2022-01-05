@@ -34,7 +34,11 @@ export const tokensAddedToWalletSlice = createSlice({
   initialState: getLocalStorage(name, initialState) as tokensAddedToWalletState,
   reducers: {
     tokenAddedToWallet: (state, action: PayloadAction<walletTokenID>) => {
-      state[action.payload.walletToken][action.payload.chainID][action.payload.address] = true
+      if (state[action.payload.walletToken][action.payload.chainID] === undefined) {
+        state[action.payload.walletToken][action.payload.chainID] = {[action.payload.address]: true}
+      } else {
+        state[action.payload.walletToken][action.payload.chainID][action.payload.address] = true
+      }
     },
   }
 })
