@@ -11,7 +11,6 @@ import { executeMulticalls,
 import { poolsMetadata } from '../poolsMetadata'
 import { rewardsInfo } from '../rewards'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import getProvider from '../../utils/getProvider'
 
 export interface tokenInfo {
   address: string,

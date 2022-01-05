@@ -166,7 +166,7 @@ export const waitForLiquidityPositions = getWaitFunction(
 export const waitForPoolsMetadata = getWaitFunction(
   (state: RootState) => state.poolsMetadata,
   getPoolsMetadata,
-  ['protocolDataAggregator', 'trustlessMulticall', 'contracts', 'userAddress'],
+  ['protocolDataAggregator', 'trustlessMulticall', 'contracts'],
 )
 
 const getStateSelector = <T>(selectorFunc: (state: RootState) => T) =>

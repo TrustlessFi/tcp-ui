@@ -489,8 +489,6 @@ export const makeRPCRequest = async (request: RpcRequest) => {
 
   const params = Object.fromEntries(Object.entries(request).filter(([key, _]) => key !== 'method'))
 
-  console.log({request, params})
-
   const requestParams = {
     method: request.method,
     params: requiresArray[request.method] ? [params] : params,

@@ -40,7 +40,7 @@ const ExistingPositionsTable = () => {
         />
         <Center>
           <div style={{margin: 32}}>
-            <ConnectWalletButton />
+            <ConnectWalletButton size='sm' />
           </div>
         </Center>
       </div>
@@ -117,18 +117,16 @@ const ExistingPositions = () => {
     </>
 
   return (
-    <>
-      <SpacedList spacing={32}>
-        <AppTile title="Positions" rightElement={rightElement}>
-          <ExistingPositionsTable />
-        </AppTile>
-      </SpacedList>
+    <SpacedList spacing={32}>
+      <AppTile title="Positions" rightElement={rightElement}>
+        <ExistingPositionsTable />
+      </AppTile>
       <SpacedList spacing={8}>
         <AddTokenToWalletButton walletToken={WalletToken.Hue} />
         <AddTokenToWalletButton walletToken={WalletToken.LendHue} />
         <AddTokenToWalletButton walletToken={WalletToken.TCP} />
       </SpacedList>
-    </>
+    </SpacedList>
   )
 }
 

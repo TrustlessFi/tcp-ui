@@ -14,7 +14,7 @@ import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 
-import { Market, Rewards, TcpGovernorAlpha } from '@trustlessfi/typechain'
+import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'

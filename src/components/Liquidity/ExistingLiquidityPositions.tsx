@@ -1,42 +1,45 @@
 import { Button } from 'carbon-components-react'
-import { MouseEvent, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { MouseEvent, useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { rewardsInfo } from '../../slices/rewards'
-import { contractsInfo } from '../../slices/contracts'
-import { waitForLiquidityPositions, waitForPoolsMetadata, waitForPoolsCurrentData, waitForRewards, waitForContracts } from '../../slices/waitFor'
+import { waitForLiquidityPositions, waitForPoolsMetadata, waitForPoolsCurrentData, waitForContracts } from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
-import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol, timeToPeriod } from '../../utils/'
+import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol } from '../../utils/'
 import { poolMetadata } from '../../slices/poolsMetadata'
 import Center from '../library/Center'
 import SimpleTable from '../library/SimpleTable'
-import RelativeLoading from '../library/RelativeLoading'
-import ConnectWalletButton from '../library/ConnectWalletButton'
+import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
+import ConnectWalletButton from '../library/ConnectWalletButton'
 import CreateTransactionButton from '../library/CreateTransactionButton'
-import Text from '../library/Text'
+
+
+const comparator = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
 
 const LiquidityPositionsTable = (
-  {
-    pool,
-    liquidityPositions,
-    rewardsInfo,
-    contracts,
-  }: {
+  { pool }: {
     pool: poolMetadata
-    liquidityPositions: LiquidityPosition[]
-    rewardsInfo: rewardsInfo
-    contracts: contractsInfo
   }) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
+  const contracts = waitForContracts(selector, dispatch)
+  const allLiquidityPositions = waitForLiquidityPositions(selector, dispatch)
   const poolCurrentData = waitForPoolsCurrentData(selector, dispatch)
-  const [inverted, setInverted] = useState(
-    liquidityPositions.length === 0
-    ? false
-    : liquidityPositions[0].tickLower + liquidityPositions[0].tickUpper < 0)
+  const userAddress = selector(state => state.wallet.address)
+
+  const liquidityPositions =
+    allLiquidityPositions === null
+    ? []
+    : Object.values(allLiquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)
+
+  const [inverted, setInverted] = useState(false)
+
+  useEffect(() => {
+    if (liquidityPositions.length === 0) return
+    setInverted(liquidityPositions[0].tickLower + liquidityPositions[0].tickUpper < 0)
+  }, [liquidityPositions])
 
   const invert = () => setInverted(!inverted)
 
@@ -53,13 +56,14 @@ const LiquidityPositionsTable = (
     : token1Symbol + ' per ' + token0Symbol
 
   const poolTick = poolCurrentData && poolCurrentData[pool.address]?.twapTick
-  console.log({poolTick})
 
   let table =
-    <Center style={{padding: 24}}>
-      <Text>
-        You have no {token0Symbol}:{token1Symbol} positions.
-      </Text>
+    <Center style={{padding: 32}}>
+      {
+        userAddress === null
+        ? <ConnectWalletButton size='sm' />
+        : `You have no ${token0Symbol}:${token1Symbol} positions.`
+      }
     </Center>
 
   const tableSubtitle =
@@ -82,7 +86,7 @@ const LiquidityPositionsTable = (
   if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
     const rows = Object.values(liquidityPositions).map((lqPos) => {
 
-      const isInRange = poolTick === null || lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper
+      const isInRange = poolTick === null || (lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper)
 
       if (lqPos.approximateRewards !== 0) {
         positionIDsWithRewards.push(lqPos.positionID)
@@ -169,51 +173,19 @@ const LiquidityPositionsTable = (
 const ExistingLiquidityPositions = () => {
   const dispatch = useAppDispatch()
 
-  const rewardsInfo = waitForRewards(selector, dispatch)
-  const contracts = waitForContracts(selector, dispatch)
   const pools = waitForPoolsMetadata(selector, dispatch)
-  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
 
-  if (
-    pools === null ||
-    liquidityPositions === null ||
-    userAddress === null ||
-    rewardsInfo === null ||
-    contracts === null
-  ) {
-    return (
-      <div style={{ position: 'relative' }}>
-        <RelativeLoading show={userAddress !== null} />
-        <AppTile title="Liquidity Positions">
-          {userAddress === null
-            ? <Center>
-              <div style={{ margin: 32 }}>
-                <ConnectWalletButton />
-              </div>
-            </Center>
-            : null
-          }
-        </AppTile>
-      </div>
-    )
-  }
-
-  const comparator = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
+  const sortedPools =
+    pools === null
+    ? []
+    : Object.values(pools).sort((a, b) => b.rewardsPortion - a.rewardsPortion)
 
   return (
-    <>
-      {Object.values(pools).sort((a, b) => b.rewardsPortion - a.rewardsPortion).map(pool => (
-        <div key={pool.address} style={{ marginBottom: 18 }}>
-          <LiquidityPositionsTable
-            rewardsInfo={rewardsInfo}
-            pool={pool}
-            liquidityPositions={Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)}
-            contracts={contracts}
-          />
-        </div>
+    <SpacedList spacing={32}>
+      {sortedPools.map((pool) => (
+        <LiquidityPositionsTable pool={pool} />
       ))}
-    </>
+    </SpacedList>
   )
 }
 

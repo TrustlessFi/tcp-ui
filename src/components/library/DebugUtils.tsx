@@ -1,12 +1,10 @@
 import {
-  TextInput, Modal, Button, Dropdown, OnChangeData,
+  Modal, Button, Dropdown, OnChangeData,
   NumberInput,
 } from 'carbon-components-react'
-import { useAppSelector as selector } from '../../app/hooks'
-import { ChainID, chainIDToName } from '@trustlessfi/addresses'
-import { CSSProperties, useState } from 'react'
+import { useState } from 'react'
 import { onNumChange, seconds, minutes, hours, days, weeks, years }  from '../../utils/'
-import { debugProvider, increaseTime, mineBlocks }  from '../../utils/debugUtils'
+import { increaseTime, mineBlocks }  from '../../utils/debugUtils'
 import AppTile from '../library/AppTile'
 import SpacedList from '../library/SpacedList'
 import Center from '../library/Center'

@@ -20,7 +20,6 @@ export interface getPoolsMetadataArgs {
   contracts: contractsInfo
   trustlessMulticall: string
   protocolDataAggregator: string
-  userAddress: string
 }
 
 export interface tokenMetadata {

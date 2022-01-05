@@ -62,9 +62,6 @@ const AddTokenToWalletButton = ({
     dispatch(tokenAddedToWallet({ walletToken, chainID: chainID, address: userAddress}))
   }
 
-  console.log({tokensAddedToWallet})
-  console.log({chainID, userAddress, walletToken, i0: chainID === null ? 'chainID is null' :  tokensAddedToWallet[walletToken][chainID] })
-
   const alreadyAdded =
     chainID !== null &&
     userAddress !== null &&

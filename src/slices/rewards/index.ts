@@ -1,13 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { range } from '../../utils'
-import { PromiseType } from '@trustlessfi/utils'
 
-import { Rewards, Accounting } from '@trustlessfi/typechain'
+import { Rewards } from '@trustlessfi/typechain'
 import { ProtocolContract, contractsInfo } from '../contracts'
 import { getLocalStorage } from '../../utils'
-import { executeMulticalls, oneContractOneFunctionMC, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
 export interface rewardsInfo {
   twapDuration: number
