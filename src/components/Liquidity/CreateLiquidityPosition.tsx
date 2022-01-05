@@ -5,11 +5,8 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForPoolsCurrentData, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForBalances } from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import {
-  numDisplay,
-  getSpaceForFee,
-  tickToPriceDisplay,
-  displaySymbol,
-  getPoolName,
+  numDisplay, getSpaceForFee, tickToPriceDisplay, displaySymbol,
+  getPoolName, isZeroish,
 } from '../../utils'
 import usePoolDisplayInfo from '../../hooks/usePoolDisplayInfo';
 import useLiquidityPositionUpdates from '../../hooks/useLiquidityPositionUpdates';
@@ -125,22 +122,23 @@ const CreateLiquidityPosition = () => {
 
   const toggleInverted = () => setInverted(!inverted)
 
+  const isZeroishAmount = isZeroish(token0Amount) || isZeroish(token1Amount)
 
   const getApprovalButton = (tokenIndex: 0 | 1, token: tokenMetadata | null) => {
     if (token !== null && token.symbol.toLowerCase() === 'weth') return null
 
     const isApproved =
-      balances === null
-      || pool === null
-      || token === null
-      ? null
-      : balances.tokens[token.address].approval.Rewards.approved
+      balances !== null &&
+      token !== null &&
+      balances.tokens[token.address].approval.Rewards.approved
+
+    if (isApproved) return null
 
     const disabled =
-      dataNull ||
-      token === undefined ||
+      balances === null ||
       pool === null ||
-      isApproved === true
+      token === null ||
+      isZeroishAmount
 
     const symbol = tokenIndex === 0 ? token0Symbol : token1Symbol
 
@@ -148,7 +146,7 @@ const CreateLiquidityPosition = () => {
       <CreateTransactionButton
         key={tokenIndex}
         style={{ marginRight: 8 }}
-        title={"Approve " + symbol}
+        title={`Approve ${symbol}`}
         disabled={disabled}
         showDisabledInsteadOfConnectWallet={true}
         shouldOpenTxTab={false}
@@ -190,7 +188,7 @@ const CreateLiquidityPosition = () => {
   const failures: { [key in string]: reason } = {
     noop: {
       message: '',
-      failing: isNaN(token0Amount) || token0Amount === 0 || isNaN(token1Amount) || token1Amount === 0,
+      failing: isZeroishAmount,
       silent: true
     },
     insufficientToken0: {
@@ -204,10 +202,12 @@ const CreateLiquidityPosition = () => {
     token0NotApproved: {
       message: 'You must approve ' + token0Symbol,
       failing: token0NeedsToBeApproved,
+      silent: true,
     },
     token1NotApproved: {
       message: 'You must approve ' + token1Symbol,
       failing: token1NeedsToBeApproved,
+      silent: true,
     },
   }
 
@@ -271,7 +271,7 @@ const CreateLiquidityPosition = () => {
           <>
             {token0Symbol} count
           </>
-          <PositionNumberInput
+            <PositionNumberInput
               id="token0Input"
               action={updateToken0Amount}
               value={token0Amount}
@@ -304,6 +304,7 @@ const CreateLiquidityPosition = () => {
       <div style={{ marginTop: 32, marginBottom: 32 }}>
         <CreateTransactionButton
           disabled={isFailing}
+          title='Create Position'
           txArgs={{
             type: TransactionType.CreateLiquidityPosition,
             token0: pool === null ? '' : pool.token0.address,

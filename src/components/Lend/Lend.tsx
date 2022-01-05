@@ -12,7 +12,7 @@ import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
 import { TransactionType } from '../../slices/transactions/index'
 import { getAPR } from './library'
-import { zeroIfNaN } from '../../utils/index'
+import { isZeroish } from '../../utils/index'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import RelativeLoading from '../library/RelativeLoading'
 import TwoColumnDisplay from '../library/TwoColumnDisplay'
@@ -63,7 +63,7 @@ const Lend = () => {
   const failures: { [key in string]: reason } = {
     noValueEntered: {
       message: 'Please insert a value.',
-      failing: amount === 0 || isNaN(amount),
+      failing: isZeroish(amount),
       silent: true,
     },
     notEnoughInWallet: {
@@ -72,21 +72,8 @@ const Lend = () => {
     },
   }
 
-  const failingDueToNonApprovalReason = Object.values(failures).filter(reason => reason.failing).length > 0
-
-  failures['hueNotApproved'] = {
-    message: 'Lending is not approved.',
-    failing:
-      dataNull
-        ? false
-        : zeroIfNaN(amount) !== 0
-        && (balances.tokens[contracts.Hue].approval.Market === undefined
-          || !balances.tokens[contracts.Hue].approval.Market.approved),
-  }
-
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
-
 
   const metadataItems = [
     {
@@ -105,9 +92,10 @@ const Lend = () => {
     },
   ]
 
+  const hueApproved = !dataNull && balances.tokens[contracts.Hue].approval.Market.approved
 
   const columnOne =
-    <>
+    <SpacedList spacing={32}>
       <SpacedList spacing={8}>
         <InputPicker
           options={LendBorrowOption}
@@ -120,41 +108,34 @@ const Lend = () => {
           action={(value: number) => setAmount(value)}
           value={amount}
         />
-        <>Hue</>
+        Hue
       </SpacedList>
-      <div style={{ marginTop: 16, marginBottom: 30 }}>
-        <PositionMetadata2 items={metadataItems} />
-      </div>
-      <CreateTransactionButton
-        title={"Approve Lend"}
-        disabled={
-          failingDueToNonApprovalReason
-            || zeroIfNaN(amount) === 0
-            || dataNull
-            || balances.tokens[contracts.Hue].approval.Market.approved}
-        showDisabledInsteadOfConnectWallet={true}
-        shouldOpenTxTab={false}
-        txArgs={{
-          type: TransactionType.ApproveHue,
-          Hue: contracts === null ? '' : contracts.Hue,
-          spenderAddress: contracts === null ? '' : contracts.Market,
-        }}
-      />
-      <div style={{ marginTop: 32, marginBottom: 32 }}>
-        <CreateTransactionButton
-          title="Lend"
-          disabled={isFailing || amount === 0}
-          txArgs={{
-            type: TransactionType.Lend,
-            count: amount,
-            Market: contracts === null ? '' : contracts.Market,
-          }}
-        />
-      </div>
-      <div>
-        <ErrorMessage reasons={failureReasons} />
-      </div>
-    </>
+      <PositionMetadata2 items={metadataItems} />
+      {
+        hueApproved
+        ? <CreateTransactionButton
+            title='Lend'
+            disabled={isFailing || dataNull}
+            txArgs={{
+              type: TransactionType.Lend,
+              count: amount,
+              Market: contracts === null ? '' : contracts.Market,
+            }}
+          />
+        : <CreateTransactionButton
+            title='Approve Lend'
+            disabled={isFailing || dataNull}
+            showDisabledInsteadOfConnectWallet={true}
+            shouldOpenTxTab={false}
+            txArgs={{
+              type: TransactionType.ApproveHue,
+              Hue: contracts === null ? '' : contracts.Hue,
+              spenderAddress: contracts === null ? '' : contracts.Market,
+            }}
+          />
+      }
+      <ErrorMessage reasons={failureReasons} />
+    </SpacedList>
 
 
   const columnTwo =

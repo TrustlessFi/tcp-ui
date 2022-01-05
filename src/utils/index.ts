@@ -111,6 +111,8 @@ export const addCommas = (val: number | string): string => {
 
 export const zeroIfNaN = (val: number) => isNaN(val) ? 0 : val
 
+export const isZeroish = (val: number) => isNaN(val) || val === null || val === undefined || val === 0
+
 export const numDisplay = (
   val: number,
   decimals: number | null = null
@@ -209,7 +211,7 @@ export const parseMetamaskError = (error: any): string[] => {
     }
   }
 
-  const userRejectedMessage = ['Please accept in metamask']
+  const userRejectedMessage = ['Please accept in Metamask']
 
   if (error.hasOwnProperty('code') && error.code === 4001) {
     return userRejectedMessage

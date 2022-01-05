@@ -91,6 +91,12 @@ const UpdatePosition = () => {
 
   // const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
 
+  const hueApproved =
+    balances !== null &&
+    contracts !== null &&
+    balances.tokens[contracts.Hue].approval.Market !== undefined &&
+    balances.tokens[contracts.Hue].approval.Market.approved
+
   const failures: { [key in string]: reason } = {
     noChange: {
       message: 'No change.',
@@ -116,14 +122,6 @@ const UpdatePosition = () => {
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market === null ? 0 : market.collateralizationRequirement * 100) + '%.',
       failing: market === null ? false : newDebtCount !== 0 && collateralization < market.collateralizationRequirement,
-    },
-    paybackNotApproved: {
-      message: 'Paying back Hue is not approved.',
-      failing:
-        balances === null || contracts === null
-        ? false
-        : debtIncrease < 0 && (balances.tokens[contracts.Hue].approval.Market === undefined
-          || !balances.tokens[contracts.Hue].approval.Market.approved),
     },
   }
 
@@ -158,87 +156,78 @@ const UpdatePosition = () => {
   ]
 
   const columnOne =
-    <>
-      <SpacedList>
+    <SpacedList>
+      <InputPicker
+        width={200}
+        options={CollateralChange}
+        initialValue={initialCollateralChange}
+        onChange={(option: CollateralChange) => setCollateralChange(option)}
+        label='Increase/Decrease options'
+      />
+      <PositionNumberInput
+        id="collateralInput"
+        action={(value: number) => setCollateralCount(value)}
+        value={collateralCount}
+      />
+      Eth
         <InputPicker
-          width={200}
-          options={CollateralChange}
-          initialValue={initialCollateralChange}
-          onChange={(option: CollateralChange) => setCollateralChange(option)}
-          label='Increase/Decrease options'
-        />
-        <PositionNumberInput
-          id="collateralInput"
-          action={(value: number) => setCollateralCount(value)}
-          value={collateralCount}
-        />
-        Eth
-        <InputPicker
-          options={DebtChange}
-          initialValue={initialDebtChange}
-          onChange={(option: DebtChange) => setDebtChange(option)}
-          label='Borrow/Lend options'
-        />
-        <PositionNumberInput
-          id="debtInput"
-          action={(value: number) => setDebtCount(value)}
-          value={debtCount}
-        />
-        Hue
-      </SpacedList>
-      <div style={{ marginTop: 36, marginBottom: 30 }}>
+        options={DebtChange}
+        initialValue={initialDebtChange}
+        onChange={(option: DebtChange) => setDebtChange(option)}
+        label='Borrow/Lend options'
+      />
+      <PositionNumberInput
+        id="debtInput"
+        action={(value: number) => setDebtCount(value)}
+        value={debtCount}
+      />
+      Hue
+      <SpacedList spacing={32}>
         <PositionMetadata2 items={metadataItems} />
-      </div>
-      <div style={{ marginTop: 32 }}>
-        <CreateTransactionButton
-          title={"Approve Payback"}
-          disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
-          showDisabledInsteadOfConnectWallet={true}
-          shouldOpenTxTab={false}
-          txArgs={{
-            type: TransactionType.ApproveHue,
-            Hue: contracts === null ? '' : contracts.Hue,
-            spenderAddress: contracts === null ? '' : contracts.Market,
-          }}
-        />
-      </div>
-      <div style={{ marginTop: 32, marginBottom: 32 }}>
-        <CreateTransactionButton
-          title="Update Position"
-          disabled={isFailing}
-          txArgs={{
-            type: TransactionType.UpdatePosition,
-            positionID,
-            debtIncrease,
-            collateralIncrease,
-            Market: contracts === null ? '' : contracts.Market,
-          }}
-        />
-      </div>
-      <ErrorMessage reasons={failureReasons} />
-    </>
+        {
+          debtIncrease < 0 && !hueApproved
+          ? <CreateTransactionButton
+              title={"Approve Payback"}
+              disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+              showDisabledInsteadOfConnectWallet={true}
+              shouldOpenTxTab={false}
+              txArgs={{
+                type: TransactionType.ApproveHue,
+                Hue: contracts === null ? '' : contracts.Hue,
+                spenderAddress: contracts === null ? '' : contracts.Market,
+              }}
+            />
+          : <CreateTransactionButton
+              title="Update Position"
+              disabled={isFailing}
+              txArgs={{
+                type: TransactionType.UpdatePosition,
+                positionID,
+                debtIncrease,
+                collateralIncrease,
+                Market: contracts === null ? '' : contracts.Market,
+              }}
+            />
+        }
+        <ErrorMessage reasons={failureReasons} />
+      </SpacedList>
+    </SpacedList>
 
   const columnTwo =
     <LargeText>
-
-      Position {positionID} currently has {position === null ? 0 : numDisplay(position.collateralCount, 2)} Eth of Collateral
-            and {numDisplay(position === null ? 0 : position.debtCount, 2)} Hue of debt.
-
+        Position {positionID} currently has {position === null ? 0 : numDisplay(position.collateralCount, 2)} Eth of Collateral
+          and {numDisplay(position === null ? 0 : position.debtCount, 2)} Hue of debt.
       <ParagraphDivider />
-
-      You are going to {collateralChange.toLowerCase()} collateral
-            by {numDisplay(collateralCount)} Eth for a new total
-            of {numDisplay(newCollateralCount, 2)} Eth of collateral
-            and {debtChange.toLowerCase()} {numDisplay(debtCount)} Hue for a new total
-            of {newDebtCountDisplay} Hue debt in position {positionID}.
-
+        You are going to {collateralChange.toLowerCase()} collateral
+          by {numDisplay(collateralCount)} Eth for a new total
+          of {numDisplay(newCollateralCount, 2)} Eth of collateral
+          and {debtChange.toLowerCase()} {numDisplay(debtCount)} Hue for a new total
+          of {newDebtCountDisplay} Hue debt in position {positionID}.
       <ParagraphDivider />
-
-      The price of Eth is currently {priceInfo === null ? 0 : numDisplay(priceInfo.ethPrice, 0)} Hue.
-            If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
-            you could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
-
-          </LargeText>
+        The price of Eth is currently {priceInfo === null ? 0 : numDisplay(priceInfo.ethPrice, 0)} Hue.
+          If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
+          you could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
+    </LargeText>
   return (
     <TwoColumnDisplay
       columnOne={columnOne}

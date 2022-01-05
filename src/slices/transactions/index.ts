@@ -208,9 +208,9 @@ export const getTxLongName = (args: TransactionArgs) => {
     case TransactionType.UpdatePosition:
       return 'Update position ' + args.positionID
     case TransactionType.Lend:
-      return 'Lend ' + args.count + ' Hue'
+      return 'Lend ' + numDisplay(args.count) + ' Hue'
     case TransactionType.Withdraw:
-      return 'Withdraw ' + args.count + ' Hue'
+      return 'Withdraw ' + numDisplay(args.count) + ' Hue'
     case TransactionType.ApproveHue:
       return 'Approve Hue'
     case TransactionType.ApproveLendHue:

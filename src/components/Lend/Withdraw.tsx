@@ -11,10 +11,10 @@ import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import ErrorMessage from '../library/ErrorMessage'
 import { getAPR } from './library'
-import { zeroIfNaN } from '../../utils/index';
-import RelativeLoading from '../library/RelativeLoading';
-import { TransactionType } from '../../slices/transactions/index';
-import CreateTransactionButton from '../library/CreateTransactionButton';
+import { isZeroish } from '../../utils'
+import RelativeLoading from '../library/RelativeLoading'
+import { TransactionType } from '../../slices/transactions'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import TwoColumnDisplay from '../library/TwoColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
@@ -59,7 +59,7 @@ const Withdraw = () => {
   const failures: { [key in string]: reason } = {
     noValueEntered: {
       message: 'Please insert a value.',
-      failing: amount === 0 || isNaN(amount),
+      failing: isZeroish(amount),
       silent: true,
     },
     notEnoughLent: {
@@ -68,22 +68,11 @@ const Withdraw = () => {
     },
   }
 
-  const failingDueToNonApprovalReason = Object.values(failures).filter(reason => reason.failing).length > 0
-
-  failures['lendHueNotApproved'] = {
-    message: 'Withdrawal is not approved.',
-    failing:
-      dataNull
-      ? false : zeroIfNaN(amount) !== 0
-      && (balances.tokens[contracts.LendHue].approval.Market === undefined || !balances.tokens[contracts.LendHue].approval.Market.approved),
-  }
-
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
   const convertHueToLendHue = (amount: number) => dataNull ? 1 : amount / market.valueOfLendTokensInHue
   const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * market.valueOfLendTokensInHue
-
 
   const metadataItems = [
     {
@@ -102,8 +91,13 @@ const Withdraw = () => {
     },
   ]
 
+  const withdrawApproved =
+    balances !== null &&
+    contracts !== null &&
+    balances.tokens[contracts.LendHue].approval.Market.approved
+
   const columnOne =
-    <>
+    <SpacedList spacing={32}>
       <SpacedList>
         <InputPicker
           options={LendBorrowOption}
@@ -118,39 +112,36 @@ const Withdraw = () => {
         />
         Hue
       </SpacedList>
-      <div style={{ marginTop: 16, marginBottom: 30 }}>
-        <PositionMetadata2 items={metadataItems} />
-      </div>
-      <CreateTransactionButton
-        title={"Approve Withdraw"}
-        disabled={
-          failingDueToNonApprovalReason
-          || zeroIfNaN(amount) === 0
-          || dataNull
-          || balances.tokens[contracts.LendHue].approval.Market.approved}
-        showDisabledInsteadOfConnectWallet={true}
-        shouldOpenTxTab={false}
-        txArgs={{
-          type: TransactionType.ApproveLendHue,
-          LendHue: contracts === null ? '' : contracts.LendHue,
-          spenderAddress: contracts === null ? '' : contracts.Market,
-        }}
-      />
-      <div style={{ marginTop: 32, marginBottom: 32 }}>
-        <CreateTransactionButton
-          title="Withdraw"
-          disabled={isFailing || amount === 0}
-          txArgs={{
-            type: TransactionType.Withdraw,
-            count: convertHueToLendHue(amount),
-            Market: contracts === null ? '' : contracts.Market,
-          }}
-        />
-      </div>
-      <div>
-        <ErrorMessage reasons={failureReasons} />
-      </div>
-    </>
+      <PositionMetadata2 items={metadataItems} />
+      {
+        withdrawApproved
+        ? <CreateTransactionButton
+            title='Withdraw'
+            disabled={isFailing || isZeroish(amount)}
+            txArgs={{
+              type: TransactionType.Withdraw,
+              count: convertHueToLendHue(amount),
+              Market: contracts === null ? '' : contracts.Market,
+            }}
+          />
+        : <CreateTransactionButton
+            title='Approve Withdraw'
+            disabled={
+              isFailing
+              || isZeroish(amount)
+              || dataNull
+              || balances.tokens[contracts.LendHue].approval.Market.approved}
+            showDisabledInsteadOfConnectWallet={true}
+            shouldOpenTxTab={false}
+            txArgs={{
+              type: TransactionType.ApproveLendHue,
+              LendHue: contracts === null ? '' : contracts.LendHue,
+              spenderAddress: contracts === null ? '' : contracts.Market,
+            }}
+          />
+      }
+      <ErrorMessage reasons={failureReasons} />
+    </SpacedList>
 
   const columnTwo =
     <div style={{ position: 'relative' }}>
