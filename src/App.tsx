@@ -9,6 +9,7 @@ import Liquidity from './components/Liquidity'
 import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
+import SwitchNetwork from './components/SwitchNetwork'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -43,19 +44,21 @@ function App() {
     <ErrorBoundary>
       <HashRouter>
         <PageHeader />
-        <div style={{marginTop: 47, padding: 48 }}>
-          <Switch>
-            {Object.values(Tab).map((tab, index) => {
-              const path = '/' + tab.toLowerCase()
-              const paths = index === 0 ? ['/', path] : [path]
-              return paths.map(path => (
-                <Route exact={path === '/'} path={path} key={path}>
-                  {tabToRender[tab]}
-                </Route>
-              ))
-            })}
-          </Switch>
-        </div>
+        <SwitchNetwork>
+          <div style={{marginTop: 47, padding: 48 }}>
+            <Switch>
+              {Object.values(Tab).map((tab, index) => {
+                const path = '/' + tab.toLowerCase()
+                const paths = index === 0 ? ['/', path] : [path]
+                return paths.map(path => (
+                  <Route exact={path === '/'} path={path} key={path}>
+                    {tabToRender[tab]}
+                  </Route>
+                ))
+              })}
+            </Switch>
+          </div>
+        </SwitchNetwork>
       </HashRouter>
       <Notifications />
       <LocalStorageManager />

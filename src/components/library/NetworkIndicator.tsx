@@ -23,7 +23,7 @@ const NetworkIndicator = ({style}: {style?: CSSProperties}) => {
   }
   return (
     chainID === null
-    ? <Tag type="red" style={style} onClick={switchNetwork}>Switch Network</Tag>
+    ? <Tag type="red" style={style} onClick={switchNetwork}>{`Switch to ${chainIDToName(correctChainID)}`}</Tag>
     : <Tag type={chainIDColor[chainID]} style={style}>{chainIDToName(chainID)}</Tag>
   )
 }
