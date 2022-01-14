@@ -127,9 +127,6 @@ export const numDisplay = (
 }
 
 // ======================= Transactions =========================
-export const getDefaultTransactionTimeout = (chainID: ChainID) =>
-  chainID === ChainID.Hardhat ? days(1) : minutes(20)
-
 export const SLIPPAGE_TOLERANCE = 0.05
 
 // ======================= Constants ============================
