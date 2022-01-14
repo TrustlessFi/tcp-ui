@@ -1,11 +1,12 @@
+import { CSSProperties, useState } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory } from 'react-router-dom'
-import { TransactionArgs } from '../../slices/transactions'
+import { TransactionArgs, TransactionType, TransactionStatus } from '../../slices/transactions'
 import ConnectWalletButton from './ConnectWalletButton'
-import { Button,  ButtonKind, ButtonSize } from 'carbon-components-react'
-import { waitForTransaction } from '../../slices/transactions'
+import { Button,  ButtonKind, ButtonSize, InlineLoading } from 'carbon-components-react'
+import { submitTransaction } from '../../slices/transactions'
 import { getChainIDFromState } from '../../slices/chainID'
-import { CSSProperties } from 'react';
+import { notEmpty } from '../../utils'
 
 const CreateTransactionButton = ({
   txArgs,
@@ -32,12 +33,20 @@ const CreateTransactionButton = ({
   const waitingForMetamask = selector(state => state.wallet.waitingForMetamask)
   const userAddress = selector(state => state.wallet.address)
   const chainID = getChainIDFromState(selector(state => state.chainID))
+  const transactions = selector(state => state.transactions)
 
   if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) {
     return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
-  const buttonDisplay =
+  const pendingTxExists =
+    notEmpty(
+      Object.values(transactions)
+        .filter(tx => tx.status === TransactionStatus.Pending)
+        .filter(tx => tx.type === txArgs.type)
+    )
+
+  const buttonTitle =
     waitingForMetamask
     ? 'Waiting for Metamask Confirmation...'
     : title
@@ -58,9 +67,18 @@ const CreateTransactionButton = ({
       kind={kind}
       size={size}
       style={style}
-      onClick={() => dispatch(waitForTransaction(txData))}
-      disabled={waitingForMetamask || disabled === true || userAddress === null}>
-      {buttonDisplay}
+      onClick={() => dispatch(submitTransaction(txData))}
+      disabled={pendingTxExists || waitingForMetamask || disabled === true || userAddress === null}>
+      {
+        pendingTxExists
+        ? <>
+            <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
+              {buttonTitle}
+            </div>
+            <InlineLoading />
+          </>
+        : buttonTitle
+      }
     </Button>
   )
 }

@@ -12,7 +12,7 @@ import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
 import SwitchNetwork from './components/SwitchNetwork'
-import { TransactionStatus, checkTransaction } from './slices/transactions'
+import { TransactionStatus, waitForTransaction } from './slices/transactions'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -48,11 +48,11 @@ const App: FunctionComponent<{}> = () => {
   const provider = getProvider()
 
   useEffect(() => {
-    const fetchTransactions = () => 
+    const fetchTransactions = () =>
       Promise.all(
         Object.values(transactions)
           .filter(tx => tx.status === TransactionStatus.Pending)
-          .map(tx => checkTransaction(tx, provider, dispatch))
+          .map(tx => waitForTransaction(tx, provider, dispatch))
       )
 
     fetchTransactions()

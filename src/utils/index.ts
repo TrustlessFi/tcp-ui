@@ -193,6 +193,8 @@ export const last = <T>(array: Array<T>): T => {
   return array[array.length - 1]
 }
 
+export const notEmpty = <T>(array: Array<T>) => array.length > 0
+
 export const unique = <T>(array: Array<T>): Array<T> =>
   array.filter((value: T, index: number) => array.indexOf(value) === index)
 

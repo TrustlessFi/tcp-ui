@@ -275,6 +275,7 @@ const getDeadline = async (chainID: ChainID, multicallAddress: string) => {
   const trustlessMulticall = getMulticallContract(multicallAddress)
   const transactionTimeout = getDefaultTransactionTimeout(chainID)
 
+  // TODO add this to a currentChainState waitFor and pass in instead of doing this here
   const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
 
   return BigNumber.from(blockTime).add(transactionTimeout)
@@ -421,7 +422,7 @@ const executeTransaction = async (
 }
 
 
-export const checkTransaction = async (
+export const waitForTransaction = async (
   tx: TransactionInfo,
   provider: ethers.providers.Web3Provider,
   dispatch: ThunkDispatch<unknown, unknown, AnyAction>
@@ -488,8 +489,8 @@ export const checkTransaction = async (
     return succeeded
 }
 
-export const waitForTransaction = createAsyncThunk(
-  'transactions/waitForTransaction',
+export const submitTransaction = createAsyncThunk(
+  'transactions/submitTransaction',
   async (data: TransactionData, {dispatch}): Promise<void> => {
     const args = data.args
     const userAddress = data.userAddress
@@ -537,7 +538,7 @@ export const waitForTransaction = createAsyncThunk(
 
     data.openTxTab()
 
-    await checkTransaction(tx, provider, dispatch)
+    await waitForTransaction(tx, provider, dispatch)
   })
 
 const name = 'transactions'
