@@ -48,15 +48,13 @@ const App: FunctionComponent<{}> = () => {
   const provider = getProvider()
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      console.log("inside on component did load", {transactions})
-      if (transactions === null) return
-      await Promise.all(
+    const fetchTransactions = () => 
+      Promise.all(
         Object.values(transactions)
           .filter(tx => tx.status === TransactionStatus.Pending)
           .map(tx => checkTransaction(tx, provider, dispatch))
       )
-    }
+
     fetchTransactions()
   }, [])
 
