@@ -1,9 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 
 import { Governor } from '@trustlessfi/typechain'
-import { RootContract } from '../contracts/';
+import { RootContract } from '../contracts/'
 import getContract from '../../utils/getContract'
 
 export type governorInfo = {
@@ -34,6 +34,6 @@ export const governorSlice = createSlice({
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getGovernorInfo)
   },
-});
+})
 
-export default governorSlice.reducer;
+export default governorSlice.reducer

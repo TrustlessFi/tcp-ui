@@ -1,9 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ethers } from 'ethers'
-
-export interface ProviderData {
-  provider: ethers.providers.Web3Provider
-}
 
 export interface WalletState {
   address: string | null,

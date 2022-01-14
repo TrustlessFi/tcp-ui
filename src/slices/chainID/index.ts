@@ -30,7 +30,7 @@ export const chainIDSlice = createSlice({
   name,
   initialState: initialState,
   reducers: {
-    chainIDFound: (state, action: PayloadAction<number>) => {
+    chainIDFound: (_state, action: PayloadAction<number>) => {
       const chainID = action.payload
       return ChainID[chainID] === undefined
         ? {

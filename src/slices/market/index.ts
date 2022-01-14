@@ -51,7 +51,7 @@ export const getMarketInfo = createAsyncThunk(
         )
       }
     )
-    
+
     return marketInfo
   }
 )
@@ -68,7 +68,7 @@ export const marketSlice = createSlice({
   initialState: getStateWithValue<marketInfo>(getLocalStorage(name, null)) as MarketState,
   reducers: {
     clearMarketInfo: (state) => {
-      state.data.value = null
+      state.value = null
     },
   },
   extraReducers: (builder) => {

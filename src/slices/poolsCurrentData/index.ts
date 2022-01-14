@@ -120,7 +120,7 @@ export const poolsCurrentDataSlice = createSlice({
   initialState: initialState as poolCurrentDataState,
   reducers: {
     clearPoolsCurrentData: (state) => {
-      state.data.value = null
+      state.value = null
     },
   },
   extraReducers: (builder) => {

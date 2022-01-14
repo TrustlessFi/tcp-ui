@@ -107,7 +107,7 @@ export const liquidityPositionsSlice = createSlice({
   initialState: initialState as LiquidityPositionsState,
   reducers: {
     clearLiquidityPositions: (state) => {
-      state.data.value = null
+      state.value = null
     },
   },
   extraReducers: (builder) => {

@@ -53,19 +53,19 @@ const getWaitFunction = <
 
     if (Object.values(inputArgs).includes(null)) return null
 
-    if (state !== undefined && state.data.error !== null) {
-      console.error(state.data.error.message)
-      throw state.data.error
+    if (state !== undefined && state.error !== null) {
+      console.error(state.error.message)
+      throw state.error
     }
 
     if (
       state === undefined ||
-      (state.data.value === null && !stateSelector(store.getState()).loading)
+      (state.value === null && !stateSelector(store.getState()).loading)
     ) {
       dispatch(thunk(inputArgs as NonNullable<Args>))
     }
 
-    return state === undefined ? null : state.data.value
+    return state === undefined ? null : state.value
   }
 
 type FetchNode = keyof fetchNodeTypes

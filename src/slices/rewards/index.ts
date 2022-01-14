@@ -59,7 +59,7 @@ export const rewardsSlice = createSlice({
   initialState: getStateWithValue<rewardsInfo>(getLocalStorage(name, null)) as RewardsState,
   reducers: {
     clearRewardsInfo: (state) => {
-      state.data.value = null
+      state.value = null
     },
   },
   extraReducers: (builder) => {

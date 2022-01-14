@@ -41,7 +41,7 @@ export const positionsSlice = createSlice({
   initialState: initialState as PositionsState,
   reducers: {
     clearPositions: (state) => {
-      state.data.value = null
+      state.value = null
     },
   },
   extraReducers: (builder) => {

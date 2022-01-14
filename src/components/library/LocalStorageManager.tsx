@@ -78,62 +78,62 @@ export const slicesToPersist: persistedSlices = {
   [balancesSlice.name]: {
     slice: balancesSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.balances.data.value
+    getState: (state: RootState) => state.balances.value
   },
   [positionsSlice.name]: {
     slice: positionsSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.positions.data.value
+    getState: (state: RootState) => state.positions.value
   },
   [poolsCurrentDataSlice.name]: {
     slice: poolsCurrentDataSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.poolsCurrentData.data.value
+    getState: (state: RootState) => state.poolsCurrentData.value
   },
   [balancesSlice.name]: {
     slice: balancesSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.balances.data.value
+    getState: (state: RootState) => state.balances.value
   },
   [poolsMetadataSlice.name]: {
     slice: poolsMetadataSlice,
     ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.poolsMetadata.data.value
+    getState: (state: RootState) => state.poolsMetadata.value
   },
   [liquidationsSlice.name]: {
     slice: liquidationsSlice,
     ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.liquidations.data.value
+    getState: (state: RootState) => state.liquidations.value
   },
   [systemDebtSlice.name]: {
     slice: systemDebtSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.systemDebt.data.value
+    getState: (state: RootState) => state.systemDebt.value
   },
   [pricesSlice.name]: {
     slice: pricesSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.prices.data.value
+    getState: (state: RootState) => state.prices.value
   },
   [marketSlice.name]: {
     slice: marketSlice,
     ttl: SHORT_EXPIRATION,
-    getState: (state: RootState) => state.market.data.value
+    getState: (state: RootState) => state.market.value
   },
   [ratesSlice.name]: {
     slice: ratesSlice,
     ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.rates.data.value
+    getState: (state: RootState) => state.rates.value
   },
   [rewardsSlice.name]: {
     slice: rewardsSlice,
     ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.rewards.data.value
+    getState: (state: RootState) => state.rewards.value
   },
   [uniswapContractsSlice.name]: {
     slice: uniswapContractsSlice,
     ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.uniswapContracts.data.value
+    getState: (state: RootState) => state.uniswapContracts.value
   },
 }
 
