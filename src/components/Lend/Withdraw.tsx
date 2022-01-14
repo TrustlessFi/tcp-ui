@@ -1,13 +1,10 @@
 import { useState } from "react"
 import LargeText from '../library/LargeText'
-import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import PositionMetadata2 from '../library/PositionMetadata2'
-import { LendBorrowOption } from './'
-import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import ErrorMessage from '../library/ErrorMessage'
 import { getAPR } from './library'
@@ -21,7 +18,6 @@ import SpacedList from '../library/SpacedList'
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
-  const history = useHistory()
 
   const balances = waitForBalances(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
@@ -49,10 +45,6 @@ const Withdraw = () => {
         ? 0
         : balances.tokens[contracts.Hue].balances.Accounting
   })
-
-  const onChange = (option: LendBorrowOption) => {
-    if (option === LendBorrowOption.Lend) history.push('lend')
-  }
 
   const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * market.valueOfLendTokensInHue
 
@@ -99,12 +91,7 @@ const Withdraw = () => {
   const columnOne =
     <SpacedList spacing={32}>
       <SpacedList>
-        <InputPicker
-          options={LendBorrowOption}
-          initialValue={LendBorrowOption.Withdraw}
-          onChange={onChange}
-          label='Lend/Borrow options'
-        />
+      Withdraw
         <PositionNumberInput
           id="lendInput"
           action={(value: number) => setAmount(value)}

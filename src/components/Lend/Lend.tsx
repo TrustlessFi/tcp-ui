@@ -1,12 +1,9 @@
 import { useState } from "react"
-import { useHistory } from 'react-router-dom'
 import LargeText from '../library/LargeText'
-import { LendBorrowOption } from './'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
-import InputPicker from '../library/InputPicker'
 import { reason } from '../library/ErrorMessage'
 import PositionMetadata2 from '../library/PositionMetadata2'
 import ErrorMessage from '../library/ErrorMessage'
@@ -21,7 +18,6 @@ import SpacedList from '../library/SpacedList'
 
 const Lend = () => {
   const dispatch = useAppDispatch()
-  const history = useHistory()
 
   const balances = waitForBalances(selector, dispatch)
   const market = waitForMarket(selector, dispatch)
@@ -49,12 +45,6 @@ const Lend = () => {
         ? 0
         : balances.tokens[contracts.Hue].balances.Accounting
   })
-
-  const onChange = (option: LendBorrowOption) => {
-    if (option === LendBorrowOption.Withdraw) {
-      history.push('withdraw')
-    }
-  }
 
   const newWalletBalance = dataNull ? 0 : balances.tokens[contracts.Hue].userBalance - amount
   const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * market.valueOfLendTokensInHue
@@ -97,12 +87,7 @@ const Lend = () => {
   const columnOne =
     <SpacedList spacing={32}>
       <SpacedList spacing={8}>
-        <InputPicker
-          options={LendBorrowOption}
-          initialValue={LendBorrowOption.Lend}
-          onChange={onChange}
-          label='Lend/Borrow options'
-        />
+        Lend
         <PositionNumberInput
           id="lendInput"
           action={(value: number) => setAmount(value)}
@@ -160,7 +145,6 @@ const Lend = () => {
       breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Lend']}
     />
   )
-
 }
 
 export default Lend
