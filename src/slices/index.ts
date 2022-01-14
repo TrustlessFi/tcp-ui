@@ -14,24 +14,6 @@ export const initialState: sliceState<unknown> = {
 
 export const getInitialStateCopy = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
 
-export const getSliceStateLoading = <T>(): sliceState<T> => {
-  const result = JSON.parse(JSON.stringify(initialState))
-  result.loading = true
-  return result
-}
-
-export const getSliceStateError = <T>(error: SerializedError): sliceState<T> => {
-  const result = JSON.parse(JSON.stringify(initialState))
-  result.data.error = error
-  return result
-}
-
-export const getSliceState = <T>(data: T): sliceState<T> => {
-  const result = JSON.parse(JSON.stringify(initialState))
-  result.data.value = data
-  return result
-}
-
 export const getStateWithValue = <T>(value: T | null): sliceState<T> => {
   const state = getInitialStateCopy<T>()
   state.value = value
