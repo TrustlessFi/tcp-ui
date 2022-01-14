@@ -84,7 +84,7 @@ const AddTokenToWalletButton = ({
         chainID === null ||
         userAddress === null
       }>
-      Show {walletToken} in wallet
+      <img src={getTokenIcon()} width={32}/>
       </Button>
   )
 }

@@ -34,7 +34,7 @@ const RecentTransactions = () => {
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Nonce', 'Transaction', 'Start Time', '', 'Status']} />
+          <TableHeaderOnly headers={['Nonce', '', 'Transaction', 'Start Time', 'Status']} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -54,9 +54,9 @@ const RecentTransactions = () => {
         key: tx.hash,
         data: {
           'Nonce': tx.nonce,
+          '': <AddTokenToWalletButton walletToken={getTokenAssociatedWithTx(tx.type)} />,
           'Transaction': getTxLongName(tx.args),
           'Start Time': getDateTimeString(tx.startTimeMS),
-          '': <AddTokenToWalletButton walletToken={getTokenAssociatedWithTx(tx.type)} />,
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
         },
         onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
