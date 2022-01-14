@@ -34,7 +34,7 @@ const RecentTransactions = () => {
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Nonce', '', 'Transaction', 'Start Time', 'Status']} />
+          <TableHeaderOnly headers={['Nonce', 'Add Token to Wallet', 'Transaction', 'Start Time', 'Status']} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -54,7 +54,7 @@ const RecentTransactions = () => {
         key: tx.hash,
         data: {
           'Nonce': tx.nonce,
-          '': <AddTokenToWalletButton walletToken={getTokenAssociatedWithTx(tx.type)} />,
+          'Add Token to Wallet': <AddTokenToWalletButton walletToken={getTokenAssociatedWithTx(tx.type)} />,
           'Transaction': getTxLongName(tx.args),
           'Start Time': getDateTimeString(tx.startTimeMS),
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,

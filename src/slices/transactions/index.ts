@@ -302,7 +302,7 @@ export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | n
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
 const getUniswapTxDeadline = (chainID: ChainID, currentBlockTimestamp: number) =>
-  currentBlockTimestamp + (ChainID.Hardhat ? days(1) : minutes(20))
+  currentBlockTimestamp + (chainID === ChainID.Hardhat ? days(1) : minutes(20))
 
 const executeTransaction = async (
   args: TransactionArgs,
