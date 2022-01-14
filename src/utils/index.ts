@@ -98,7 +98,7 @@ export const roundToXDecimals = (val: number, decimals: number = 0) => {
   else {
     const decimalPointIndex = result.lastIndexOf('.')
     if (decimalPointIndex === -1) return result
-    const decimalCount = result.substr(result.lastIndexOf('.') + 1).length
+    const decimalCount = result.substring(result.lastIndexOf('.') + 1).length
     if (decimalCount < decimals) return result + '0'.repeat(decimals - decimalCount)
     else return result
   }
@@ -127,7 +127,9 @@ export const numDisplay = (
 }
 
 // ======================= Transactions =========================
-export const getDefaultTransactionTimeout = (chainID: ChainID) => chainID === ChainID.Hardhat ? 60 * 2000 : 60 * 20
+export const getDefaultTransactionTimeout = (chainID: ChainID) =>
+  chainID === ChainID.Hardhat ? days(1) : minutes(20)
+
 export const SLIPPAGE_TOLERANCE = 0.05
 
 // ======================= Constants ============================
