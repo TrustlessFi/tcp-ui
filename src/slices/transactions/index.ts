@@ -1,5 +1,5 @@
 import { Contract } from 'ethers'
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { getLocalStorage, assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
 import getProvider from '../../utils/getProvider'
@@ -197,7 +197,7 @@ export type TransactionInfo = {
   args: TransactionArgs
 }
 
-export type TransactionState = {[key in string]: TransactionInfo}
+export type TransactionState = {[hash: string]: TransactionInfo}
 
 export const getTxLongName = (args: TransactionArgs) => {
   const type = args.type
@@ -420,52 +420,12 @@ const executeTransaction = async (
   throw new Error('Shoudnt get here')
 }
 
-export const waitForTransaction = createAsyncThunk(
-  'transactions/waitForTransaction',
-  async (data: TransactionData, {dispatch}): Promise<void> => {
-    const args = data.args
-    const userAddress = data.userAddress
 
-    const provider = getProvider()
-
-    let tx: ContractTransaction
-    try {
-      dispatch(waitingForMetamask())
-      tx = await executeTransaction(args, provider)
-      dispatch(metamaskComplete())
-    } catch (e) {
-
-      const errorMessages = parseMetamaskError(e)
-      console.error("failureMessages: " + errorMessages.join(', '))
-
-      const reasonString =
-        errorMessages.length > 0
-        ? extractRevertReasonString(errorMessages[0])
-        : null
-
-      dispatch(addNotification({
-        type: args.type,
-        userAddress,
-        status: TransactionStatus.Failure,
-        chainID: data.chainID,
-        message: reasonString ? reasonString : errorMessages.join(', ')
-      }))
-      dispatch(metamaskComplete())
-      return
-    }
-
-    dispatch(transactionCreated({
-      hash: tx.hash,
-      nonce: tx.nonce,
-      userAddress,
-      startTimeMS: timeMS(),
-      type: args.type,
-      status: TransactionStatus.Pending,
-      chainID: data.chainID,
-      args: data.args,
-    }))
-    data.openTxTab()
-
+export const checkTransaction = async (
+  tx: TransactionInfo,
+  provider: ethers.providers.Web3Provider,
+  dispatch: ThunkDispatch<unknown, unknown, AnyAction>
+) => {
     const receipt = await provider.waitForTransaction(tx.hash)
 
     const succeeded = receipt.status === 1
@@ -473,18 +433,17 @@ export const waitForTransaction = createAsyncThunk(
       dispatch(transactionSucceeded(tx.hash))
     } else {
       dispatch(addNotification({
-        type: args.type,
-        userAddress,
+        type: tx.type,
+        userAddress: tx.userAddress,
         status: TransactionStatus.Failure,
         hash: tx.hash,
-        chainID: data.chainID,
+        chainID: tx.chainID,
       }))
       dispatch(transactionFailed(tx.hash))
     }
 
-    // Kick off side-effects to reload relevant data
     if (succeeded) {
-      const type = args.type
+      const type = tx.type
 
       switch (type) {
         case TransactionType.CreatePosition:
@@ -525,6 +484,60 @@ export const waitForTransaction = createAsyncThunk(
         assertUnreachable(type)
       }
     }
+
+    return succeeded
+}
+
+export const waitForTransaction = createAsyncThunk(
+  'transactions/waitForTransaction',
+  async (data: TransactionData, {dispatch}): Promise<void> => {
+    const args = data.args
+    const userAddress = data.userAddress
+
+    const provider = getProvider()
+
+    let rawTransaction: ContractTransaction
+    try {
+      dispatch(waitingForMetamask())
+      rawTransaction = await executeTransaction(args, provider)
+      dispatch(metamaskComplete())
+    } catch (e) {
+
+      const errorMessages = parseMetamaskError(e)
+      console.error("failureMessages: " + errorMessages.join(', '))
+
+      const reasonString =
+        errorMessages.length > 0
+        ? extractRevertReasonString(errorMessages[0])
+        : null
+
+      dispatch(addNotification({
+        type: args.type,
+        userAddress,
+        status: TransactionStatus.Failure,
+        chainID: data.chainID,
+        message: reasonString ? reasonString : errorMessages.join(', ')
+      }))
+      dispatch(metamaskComplete())
+      return
+    }
+
+    const tx = {
+      hash: rawTransaction.hash,
+      nonce: rawTransaction.nonce,
+      userAddress,
+      startTimeMS: timeMS(),
+      type: args.type,
+      status: TransactionStatus.Pending,
+      chainID: data.chainID,
+      args: data.args,
+    }
+
+    dispatch(transactionCreated(tx))
+
+    data.openTxTab()
+
+    await checkTransaction(tx, provider, dispatch)
   })
 
 const name = 'transactions'

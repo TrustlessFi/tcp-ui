@@ -1,4 +1,6 @@
-import { ReactNode } from 'react'
+import { ReactNode, FunctionComponent, useEffect } from 'react'
+import { useAppDispatch, useAppSelector as selector } from './app/hooks'
+import getProvider from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend/Lend'
@@ -10,6 +12,7 @@ import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
 import SwitchNetwork from './components/SwitchNetwork'
+import { TransactionStatus, checkTransaction } from './slices/transactions'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -39,7 +42,25 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Transactions: <RecentTransactions />,
 }
 
-function App() {
+const App: FunctionComponent<{}> = () => {
+  const dispatch = useAppDispatch()
+  const transactions = selector(state => state.transactions)
+  const provider = getProvider()
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      console.log("inside on component did load", {transactions})
+      if (transactions === null) return
+      await Promise.all(
+        Object.values(transactions)
+          .filter(tx => tx.status === TransactionStatus.Pending)
+          .map(tx => checkTransaction(tx, provider, dispatch))
+      )
+    }
+    fetchTransactions()
+  }, [])
+
+
   return (
     <ErrorBoundary>
       <HashRouter>
@@ -63,7 +84,7 @@ function App() {
       <Notifications />
       <LocalStorageManager />
     </ErrorBoundary>
-  );
+  )
 }
 
 export default App

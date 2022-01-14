@@ -36,8 +36,6 @@ const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
         </Center>
       </SpacedList>
     : <>{children}</>
-
-
-
 }
+
 export default SwitchNetwork
