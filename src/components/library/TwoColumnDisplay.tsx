@@ -2,6 +2,7 @@ import { ReactNode } from "react"
 import Breadcrumbs, { BreadcrumbItemType } from '../library/Breadcrumbs'
 import RelativeLoading from '../library/RelativeLoading'
 import { Row, Col } from 'react-flexbox-grid'
+import useWindowWidth  from '../../hooks/useWindowWidth'
 
 const TwoColumnDisplay = ({
   columnOne,
@@ -14,18 +15,24 @@ const TwoColumnDisplay = ({
   loading: boolean
   breadCrumbItems?:  BreadcrumbItemType[]
 }) => {
+  const isSmallViewport = useWindowWidth()
+
   return (
     <div style={{position: 'relative'}}>
       {<Breadcrumbs crumbs={breadCrumbItems} />}
       <RelativeLoading show={loading} />
-      <Row middle='xs'>
-        <Col xs={12} sm={4}>
-          {columnOne}
-        </Col>
-        <Col sm={8} className='hidden-xs'>
-          {columnTwo}
-        </Col>
-      </Row>
+      {
+        isSmallViewport
+        ? columnOne
+        : <Row middle='xs'>
+            <Col xs={4}>
+              {columnOne}
+            </Col>
+            <Col xs={8}>
+              {columnTwo}
+            </Col>
+          </Row>
+      }
     </div>
   )
 }
