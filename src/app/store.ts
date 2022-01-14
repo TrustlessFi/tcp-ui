@@ -3,6 +3,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import balancesReducer from '../slices/balances'
 import chainIDReducer from '../slices/chainID'
 import contractsReducer from '../slices/contracts'
+import currentChainInfoReducer from '../slices/currentChainInfo'
 import governorReducer from '../slices/governor'
 import liquidationsReducer from '../slices/liquidations'
 import liquidityPositionsReducer from '../slices/liquidityPositions'
@@ -25,6 +26,7 @@ export const store = configureStore({
     balances: balancesReducer,
     chainID: chainIDReducer,
     contracts: contractsReducer,
+    currentChainInfo: currentChainInfoReducer,
     governor: governorReducer,
     liquidations: liquidationsReducer,
     liquidityPositions: liquidityPositionsReducer,

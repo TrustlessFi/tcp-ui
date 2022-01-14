@@ -8,6 +8,7 @@ import {
   waitForBalances,
   waitForLiquidityPositions,
   waitForPoolsCurrentData,
+  waitForCurrentChainInfo,
 } from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import InputPicker from '../library/InputPicker'
@@ -54,6 +55,7 @@ const CreateLiquidityPosition = () => {
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
   const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
+  const currentChainInfo = waitForCurrentChainInfo(selector, dispatch)
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
@@ -70,6 +72,7 @@ const CreateLiquidityPosition = () => {
     poolsCurrentData === null ||
     chainID === null ||
     liquidityPositions === null ||
+    currentChainInfo === null ||
     trustlessMulticall === null
 
   const position = liquidityPositions === null ? null : liquidityPositions[positionID]
@@ -284,6 +287,7 @@ const CreateLiquidityPosition = () => {
           txArgs={{
             chainID: chainID!,
             type: TransactionType.IncreaseLiquidityPosition,
+            currentBlockTimestamp: currentChainInfo === null ? 0 : currentChainInfo.blockTimestamp,
             positionID,
             token0Increase,
             token0Decimals: pool === null ? 0 : pool.token0.decimals,

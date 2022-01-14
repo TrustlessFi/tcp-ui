@@ -18,7 +18,7 @@ import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
-import { getDefaultTransactionTimeout, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
+import { days, minutes, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
 import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
@@ -76,6 +76,7 @@ export interface txWithdrawArgs {
 export interface txCreateLiquidityPositionArgs {
   chainID: ChainID
   type: TransactionType.CreateLiquidityPosition
+  currentBlockTimestamp: number
   token0: string
   token0Decimals: number
   token0IsWeth: boolean
@@ -96,6 +97,7 @@ export interface txCreateLiquidityPositionArgs {
 export interface txIncreaseLiquidityPositionArgs {
   chainID: ChainID
   type: TransactionType.IncreaseLiquidityPosition
+  currentBlockTimestamp: number
   positionID: number
   token0Increase: number
   token0Decimals: number
@@ -110,6 +112,7 @@ export interface txIncreaseLiquidityPositionArgs {
 export interface txDecreaseLiquidityPositionArgs {
   chainID: ChainID
   type: TransactionType.DecreaseLiquidityPosition
+  currentBlockTimestamp: number
   positionID: number
   token0Decrease: number
   token0Decimals: number
@@ -123,6 +126,7 @@ export interface txDecreaseLiquidityPositionArgs {
 export interface txDeleteLiquidityPositionArgs {
   chainID: ChainID
   type: TransactionType.DeleteLiquidityPosition
+  currentBlockTimestamp: number
   positionID: number
   token0Decrease: number
   token0Decimals: number
@@ -271,15 +275,8 @@ export const getTxShortName = (type: TransactionType) => {
 
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
-const getDeadline = async (chainID: ChainID, multicallAddress: string) => {
-  const trustlessMulticall = getMulticallContract(multicallAddress)
-  const transactionTimeout = getDefaultTransactionTimeout(chainID)
-
-  // TODO add this to a currentChainState waitFor and pass in instead of doing this here
-  const blockTime = await trustlessMulticall.getCurrentBlockTimestamp()
-
-  return BigNumber.from(blockTime).add(transactionTimeout)
-}
+const getUniswapTxDeadline = (chainID: ChainID, currentBlockTimestamp: number) =>
+  currentBlockTimestamp + (ChainID.Hardhat ? days(1) : minutes(20))
 
 const executeTransaction = async (
   args: TransactionArgs,
@@ -295,7 +292,6 @@ const executeTransaction = async (
 
   const type = args.type
 
-  let deadline
   let rewards
 
   switch(type) {
@@ -326,8 +322,6 @@ const executeTransaction = async (
 
       const ethCount = (args.token0IsWeth ? amount0Desired : bnf(0)).add(args.token1IsWeth ? amount1Desired : bnf(0))
 
-      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
-
       return await rewards.createLiquidityPosition({
         token0: args.token0,
         token1: args.token1,
@@ -339,7 +333,7 @@ const executeTransaction = async (
         amount1Desired,
         amount1Min: bnf(mnt(args.amount1Min, args.token1Decimals)),
         recipient: zeroAddress,
-        deadline
+        deadline: getUniswapTxDeadline(args.chainID, args.currentBlockTimestamp)
       },
       UIID,
       {value: ethCount}
@@ -347,8 +341,6 @@ const executeTransaction = async (
 
     case TransactionType.IncreaseLiquidityPosition:
       rewards = getRewards(args.Rewards)
-
-      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       const token0Increase = bnf(mnt(args.token0Increase, args.token0Decimals))
       const token1Increase = bnf(mnt(args.token1Increase, args.token1Decimals))
@@ -361,13 +353,11 @@ const executeTransaction = async (
         amount0Min: token0Increase.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         amount1Desired: token1Increase,
         amount1Min: token1Increase.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
-        deadline,
+        deadline: getUniswapTxDeadline(args.chainID, args.currentBlockTimestamp)
       }, UIID, {value: ethIncrease})
 
     case TransactionType.DecreaseLiquidityPosition:
       rewards = getRewards(args.Rewards)
-
-      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       const token0DecreaseA = bnf(mnt(args.token0Decrease, args.token0Decimals))
       const token1DecreaseA = bnf(mnt(args.token1Decrease, args.token1Decimals))
@@ -377,13 +367,11 @@ const executeTransaction = async (
         amount0Min: token0DecreaseA.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         amount1Min: token1DecreaseA.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         liquidity: args.liquidity,
-        deadline,
+        deadline: getUniswapTxDeadline(args.chainID, args.currentBlockTimestamp)
       }, UIID)
 
     case TransactionType.DeleteLiquidityPosition:
       rewards = getRewards(args.Rewards)
-
-      deadline = await getDeadline(args.chainID, args.trustlessMulticall)
 
       const token0DecreaseB = bnf(mnt(args.token0Decrease, args.token0Decimals))
       const token1DecreaseB = bnf(mnt(args.token1Decrease, args.token1Decimals))
@@ -393,7 +381,7 @@ const executeTransaction = async (
         amount0Min: token0DecreaseB.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         amount1Min: token1DecreaseB.mul(1e9*(1 - SLIPPAGE_TOLERANCE)).div(1e9),
         liquidity: 0,
-        deadline,
+        deadline: getUniswapTxDeadline(args.chainID, args.currentBlockTimestamp)
       })
 
     case TransactionType.ClaimAllPositionRewards:

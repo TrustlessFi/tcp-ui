@@ -1,6 +1,6 @@
-import { AsyncThunk } from "@reduxjs/toolkit"
+import { AsyncThunk } from '@reduxjs/toolkit'
 import { AppDispatch, store, RootState } from '../app/store'
-import { ChainID } from "@trustlessfi/addresses"
+import { ChainID } from '@trustlessfi/addresses'
 import { AppSelector } from '../app/hooks'
 import { getGovernorInfo, governorInfo } from './governor'
 import { getMarketInfo, marketInfo } from './market'
@@ -15,25 +15,27 @@ import { getRewardsInfo, rewardsInfo } from './rewards'
 import { getPricesInfo } from './prices'
 import { getBalances } from './balances'
 import { getContracts, contractsInfo } from './contracts'
+import { getCurrentChainInfo, currentChainInfo } from './currentChainInfo'
 
 import { sliceState } from './'
 
 interface fetchNodeTypes {
   chainID: ChainID
   governor: string
-  trustlessMulticall: string
   protocolDataAggregator: string
+  trustlessMulticall: string
   userAddress: string
 
+  contracts: contractsInfo
+  currentChainInfo: currentChainInfo
   governorInfo: governorInfo
   liquidationsInfo: liquidationsInfo
-  rewardsInfo: rewardsInfo
   marketInfo: marketInfo
-  ratesInfo: ratesInfo
-  poolsMetadata: poolsMetadata
   poolsCurrentData: poolsCurrentInfo
+  poolsMetadata: poolsMetadata
+  ratesInfo: ratesInfo
+  rewardsInfo: rewardsInfo
   sdi: systemDebtInfo
-  contracts: contractsInfo
 }
 
 const getWaitFunction = <
@@ -90,6 +92,12 @@ export const waitForPoolsCurrentData = getWaitFunction(
 )
 
 /// ============================ Get Info Logic =======================================
+export const waitForCurrentChainInfo = getWaitFunction(
+  (state: RootState) => state.currentChainInfo,
+  getCurrentChainInfo,
+  ['trustlessMulticall'],
+)
+
 export const waitForGovernor = getWaitFunction(
   (state: RootState) => state.governor,
   getGovernorInfo,
@@ -175,17 +183,18 @@ const getStateSelector = <T>(selectorFunc: (state: RootState) => T) =>
 const fetchNodesImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => fetchNodeTypes[key] | null} = {
   chainID: getStateSelector(state => state.chainID.chainID),
   governor: getStateSelector(state => state.chainID.governor),
-  trustlessMulticall: getStateSelector(state => state.chainID.trustlessMulticall),
   protocolDataAggregator: getStateSelector(state => state.chainID.protocolDataAggregator),
+  trustlessMulticall: getStateSelector(state => state.chainID.trustlessMulticall),
   userAddress: getStateSelector(state => state.wallet.address),
 
+  contracts: waitForContracts,
+  currentChainInfo: waitForCurrentChainInfo,
   governorInfo: waitForGovernor,
   liquidationsInfo: waitForLiquidations,
-  rewardsInfo: waitForRewards,
   marketInfo: waitForMarket,
-  ratesInfo: waitForRates,
-  poolsMetadata: waitForPoolsMetadata,
   poolsCurrentData: waitForPoolsCurrentData,
+  poolsMetadata: waitForPoolsMetadata,
+  ratesInfo: waitForRates,
+  rewardsInfo: waitForRewards,
   sdi: waitForSDI,
-  contracts: waitForContracts,
 }

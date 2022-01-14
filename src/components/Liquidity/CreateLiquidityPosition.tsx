@@ -2,7 +2,14 @@ import { Button } from 'carbon-components-react'
 import { useParams } from 'react-router-dom'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPoolsCurrentData, waitForRewards, waitForPoolsMetadata, waitForContracts, waitForBalances } from '../../slices/waitFor'
+import {
+  waitForPoolsCurrentData,
+  waitForRewards,
+  waitForPoolsMetadata,
+  waitForContracts,
+  waitForBalances,
+  waitForCurrentChainInfo
+} from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import {
   numDisplay, getSpaceForFee, tickToPriceDisplay, displaySymbol,
@@ -72,6 +79,7 @@ const CreateLiquidityPosition = () => {
   const rewardsInfo = waitForRewards(selector, dispatch)
   const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
   const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
+  const currentChainInfo = waitForCurrentChainInfo(selector, dispatch)
 
   const chainID = selector(state => state.chainID.chainID)
   const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
@@ -86,6 +94,7 @@ const CreateLiquidityPosition = () => {
     poolsMetadata === null ||
     pool === null ||
     poolsCurrentData === null ||
+    currentChainInfo === null ||
     chainID === null ||
     trustlessMulticall === null
 
@@ -307,6 +316,7 @@ const CreateLiquidityPosition = () => {
           title='Create Position'
           txArgs={{
             type: TransactionType.CreateLiquidityPosition,
+            currentBlockTimestamp: currentChainInfo === null ? 0 : currentChainInfo.blockTimestamp,
             token0: pool === null ? '' : pool.token0.address,
             token0Decimals: pool === null ? 0 : pool.token0.decimals,
             token0IsWeth,
