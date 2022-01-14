@@ -131,19 +131,14 @@ const Withdraw = () => {
     </SpacedList>
 
   const columnTwo =
-    <div style={{ position: 'relative' }}>
-      <RelativeLoading show={userAddress !== null && dataNull} />
-      <div>
-        <LargeText>
-          You have {dataNull ? '-' : numDisplay(convertLendHueToHue(balances.tokens[contracts.LendHue].userBalance), 2)} Hue
-          available to withdraw.
+    <LargeText>
+      You have {dataNull ? '-' : numDisplay(convertLendHueToHue(balances.tokens[contracts.LendHue].userBalance), 2)} Hue
+      available to withdraw.
 
-          <ParagraphDivider />
+      <ParagraphDivider />
 
-          The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
-          </LargeText>
-      </div>
-    </div>
+      The current lend APR is {numDisplay(apr * 100, 2)}% but will vary over time due to market forces.
+    </LargeText>
 
   return (
     <TwoColumnDisplay
