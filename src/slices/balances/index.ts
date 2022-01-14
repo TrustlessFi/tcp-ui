@@ -35,7 +35,7 @@ interface approvals {
 }
 
 type tokenBalances = {
-  [key in string]:  {
+  [tokenAddress: string]:  {
     token: tokenInfo
     userBalance: number
     approval: approvals
