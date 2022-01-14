@@ -1,22 +1,23 @@
+import { SyntheticEvent } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
 import { waitForContracts } from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
 import { getChainIDFromState } from '../../slices/chainID'
 import { CSSProperties } from 'react';
-import { tokenAddedToWallet, WalletToken } from '../../slices/tokensAddedToWallet'
+import { WalletToken } from '../../slices/tokensAddedToWallet'
 import { addTokenToWallet, convertSVGtoURI } from '../../utils'
 import TrustlessLogos from '../../utils/trustless_logos'
 
 const AddTokenToWalletButton = ({
   walletToken,
-  title,
+  // title,
   disabled,
-  kind,
+  // kind,
   size,
   style,
 }: {
-  walletToken: WalletToken
+  walletToken: WalletToken | null
   title?: string
   disabled?: boolean
   kind?: ButtonKind
@@ -27,8 +28,10 @@ const AddTokenToWalletButton = ({
 
   const contracts = waitForContracts(selector, dispatch)
   const chainID = getChainIDFromState(selector(state => state.chainID))
-  const tokensAddedToWallet = selector(state => state.tokensAddedToWallet)
+  // const tokensAddedToWallet = selector(state => state.tokensAddedToWallet)
   const userAddress = selector(state => state.wallet.address)
+
+  if (walletToken === null) return <></>
 
   const getTokenAddress = (contractsInfo: contractsInfo) => {
     switch(walletToken) {
@@ -51,7 +54,9 @@ const AddTokenToWalletButton = ({
     }
   }
 
-  const onClick = async () => {
+  const onClick = async (event: SyntheticEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
     if (contracts === null || chainID === null || userAddress === null) return
     await addTokenToWallet({
       address: getTokenAddress(contracts),
@@ -59,36 +64,27 @@ const AddTokenToWalletButton = ({
       decimals: 18,
       image: getTokenIcon(),
     })
-    dispatch(tokenAddedToWallet({ walletToken, chainID: chainID, address: userAddress}))
   }
 
+  /*
   const alreadyAdded =
     chainID !== null &&
     userAddress !== null &&
     tokensAddedToWallet[walletToken][chainID] !== undefined &&
     tokensAddedToWallet[walletToken][chainID][userAddress] === true
+  */
 
   return (
     <Button
-      kind={kind === undefined ? (alreadyAdded ? 'ghost' : 'secondary') : kind}
+      kind='ghost'
       size={size}
       style={style}
       onClick={onClick}
-      disabled={
-        disabled ||
-        contracts === null ||
+      disabled={disabled ||
         chainID === null ||
         userAddress === null
       }>
-      {
-        title === undefined
-        ? (
-          alreadyAdded
-          ? `Re-add ${walletToken} token to wallet`
-          : `Add ${walletToken} token to wallet`
-        )
-        : title
-      }
+      Show {walletToken} in wallet
       </Button>
   )
 }

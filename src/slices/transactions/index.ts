@@ -13,6 +13,7 @@ import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
 import { ProtocolContract } from '../contracts'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
+import { WalletToken } from '../tokensAddedToWallet'
 
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -271,6 +272,31 @@ export const getTxShortName = (type: TransactionType) => {
       assertUnreachable(type)
   }
   return ''
+}
+
+export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
+  switch(type) {
+    case TransactionType.CreatePosition:
+    case TransactionType.UpdatePosition:
+    case TransactionType.Withdraw:
+    case TransactionType.ApproveHue:
+      return WalletToken.Hue
+    case TransactionType.ApproveLendHue:
+    case TransactionType.Lend:
+      return WalletToken.LendHue
+    case TransactionType.ClaimAllPositionRewards:
+    case TransactionType.ClaimAllLiquidityPositionRewards:
+      return WalletToken.TCP
+    case TransactionType.CreateLiquidityPosition:
+    case TransactionType.IncreaseLiquidityPosition:
+    case TransactionType.DecreaseLiquidityPosition:
+    case TransactionType.DeleteLiquidityPosition:
+    case TransactionType.ApprovePoolToken:
+      return null
+    default:
+      assertUnreachable(type)
+  }
+  return null
 }
 
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'

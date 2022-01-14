@@ -1,8 +1,9 @@
 import { Button, InlineLoading, InlineLoadingStatus } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxLongName, getTokenAssociatedWithTx } from '../../slices/transactions'
 import Center from '../library/Center'
+import AddTokenToWalletButton from '../library/AddTokenToWalletButton'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
@@ -33,7 +34,7 @@ const RecentTransactions = () => {
     userAddress === null || txs.length === 0
     ? (
         <div style={{position: 'relative'}}>
-          <TableHeaderOnly headers={['Nonce', 'Transaction', 'Start Time', 'Status',]} />
+          <TableHeaderOnly headers={['Nonce', 'Transaction', 'Start Time', '', 'Status']} />
           <Center>
             <div style={{margin: 32}}>
               {userAddress === null
@@ -55,6 +56,7 @@ const RecentTransactions = () => {
           'Nonce': tx.nonce,
           'Transaction': getTxLongName(tx.args),
           'Start Time': getDateTimeString(tx.startTimeMS),
+          '': <AddTokenToWalletButton walletToken={getTokenAssociatedWithTx(tx.type)} />,
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
         },
         onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
