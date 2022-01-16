@@ -5,14 +5,13 @@ import { Button, InlineLoading } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { chainIDFound } from '../../slices/chainID'
-import { abbreviateAddress } from '../../utils'
 import { getSortedUserTxs } from '../library'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { getWalletConnectedFunction } from '../library/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
 import { clearEphemeralStorage } from '../library/LocalStorageManager'
 import { getChainIDFromState } from '../../slices/chainID/index';
-import { getEtherscanAddressLink } from '../library/ExplorerLink';
+import WalletButton from '../library/WalletButton'
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
@@ -82,12 +81,10 @@ const Wallet = () => {
               </div>
               <InlineLoading />
             </Button>
-          : <Button
-              kind="secondary"
-              size="small"
-              onClick={() => window.open(getEtherscanAddressLink(address, chainID), '_blank')}>
-              {abbreviateAddress(address)}
-            </Button>
+          : <WalletButton
+              address={address}
+              chainID={chainID}
+              style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}} />
         )
       : <ConnectWalletButton size="sm" />
   )

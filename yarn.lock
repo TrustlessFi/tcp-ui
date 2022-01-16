@@ -3207,6 +3207,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ethereum-blockies@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@types/ethereum-blockies@npm:0.1.0"
+  checksum: 48fe41c866fa9c7b410c4be4a550b906a952c9dbbcabdb1c5db406bfecdf664ed6b048ccfadefaec99e65c7f729287a2e927d89af9922793b83c0429394a3193
+  languageName: node
+  linkType: hard
+
 "@types/glob@npm:^7.1.1":
   version: 7.2.0
   resolution: "@types/glob@npm:7.2.0"
@@ -9215,6 +9222,13 @@ __metadata:
     ethereumjs-vm: ^2.6.0
     through2: ^2.0.3
   checksum: 7df8b91bc2bd3f6941e2a5b3230cad5c5523ca3750190cd06af07983feba1bb4af893f226f01072958b00aa626869846894bcb1bfaa451d9c8f7f5b8cdf5ce0a
+  languageName: node
+  linkType: hard
+
+"ethereum-blockies@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "ethereum-blockies@npm:0.1.1"
+  checksum: 96d63f2214302335b9ccf2895151839610b52e20140744574d826ce39b3a663b7a9329631b78d609ba65e5cb4bcc784672a23ef3ee9e608ed4d8443019bf74f8
   languageName: node
   linkType: hard
 
@@ -18595,6 +18609,7 @@ resolve@^2.0.0-next.3:
     "@types/carbon-components-react": ^7.46.1
     "@types/carbon__colors": ^10.31.0
     "@types/carbon__icons-react": ^10.31.2
+    "@types/ethereum-blockies": ^0.1.0
     "@types/jest": ^27.0.2
     "@types/node": ^16.11.7
     "@types/react": ^17.0.35
@@ -18619,6 +18634,7 @@ resolve@^2.0.0-next.3:
     carbon-components: ^10.48.0
     carbon-components-react: ^7.48.1
     carbon-icons: ^7.0.7
+    ethereum-blockies: ^0.1.1
     ethers: ^5.5.1
     jsbi: ^4.1.0
     react: ^17.0.2

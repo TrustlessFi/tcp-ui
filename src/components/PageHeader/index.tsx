@@ -130,10 +130,10 @@ const PageHeader = () => {
           <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
             {tabs}
           </HeaderNavigation>
-          <div style={{marginLeft: 'auto', marginRight: 16 }}>
+          <div style={{marginLeft: 'auto', marginRight: 8 }}>
             {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
             {isSmallViewport ? null : <NetworkIndicator />}
-            <span style={{marginLeft: 12}}>
+            <span style={{marginLeft: 8}}>
               <Wallet />
             </span>
           </div>
