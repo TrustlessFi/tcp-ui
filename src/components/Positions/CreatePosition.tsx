@@ -1,7 +1,13 @@
 import { useState } from "react"
+import { CSSProperties, ReactNode } from 'react';
+import { Row, Col } from 'react-flexbox-grid'
+import { Add32, Tag32, Locked32, ErrorOutline32, ChartLine32, MisuseOutline32 } from '@carbon/icons-react';
+import { red, orange, green, yellow } from '@carbon/colors';
 import LargeText from '../library/LargeText'
+import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+
 import {
   waitForBalances,
   waitForMarket,
@@ -10,15 +16,119 @@ import {
   waitForLiquidations,
   waitForContracts,
 } from '../../slices/waitFor'
-import { numDisplay } from '../../utils/'
+import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import ErrorMessage, { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
-import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../library/TwoColumnDisplay'
+import Text from '../library/Text'
+import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
+import { Button, Accordion, AccordionItem, InlineNotification, NotificationActionButton } from 'carbon-components-react'
+
+const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
+
+const FullNumberInput = ({
+  title,
+  action,
+  value,
+  fontSize,
+  unit,
+  defaultButton,
+  subTitle
+}: {
+  title: string
+  action: (value: number) => void
+  value: number
+
+  fontSize?: number
+  unit?: string
+  defaultButton?: {
+    title: string,
+    action: () => void,
+  }
+  subTitle?: string | ReactNode
+}) => {
+
+  const input =
+    <PositionNumberInput
+      id="collateralInput"
+      action={action}
+      value={value}
+      fontSize={fontSize}
+      unit={unit}
+    />
+
+  return (
+    <SpacedList>
+      <Text size={fontSize}>{title}</Text>
+      {
+        defaultButton === undefined
+        ? <div style={{marginRight: 8}}>{input}</div>
+        : <div style={{display: 'flex'}}>
+            <div style={{float: 'left', width: '100%', marginRight: '1em'}}>
+              {input}
+            </div>
+            <div style={{float: 'right'}}>
+              <Button style={{width: 100}} kind='secondary' onClick={defaultButton.action}>{defaultButton.title}</Button>
+            </div>
+          </div>
+      }
+      {subTitle}
+    </SpacedList>
+  )
+}
+
+FullNumberInput.defaultProps = {
+  fontSize: 18,
+}
+
+const PositionInfoItem = ({
+  icon,
+  title,
+  value,
+  unit,
+  style,
+  color,
+}: {
+  icon: ReactNode,
+  title: string
+  value: string | number
+  unit?: string
+  style?: CSSProperties
+  color?: string
+}) => {
+
+  return (
+    <Row middle="xs" style={{marginLeft: 0, ...style}}>
+      <Col style={{marginRight: '2em', marginLeft: 0}}>
+        {icon}
+      </Col>
+      <Col>
+        <Row>{title}</Row>
+        <Row>
+          <Col>
+            <LargeText color={color}>
+              <Bold>
+                {value}
+              </Bold>
+            </LargeText>
+          </Col>
+          {
+            unit !== undefined
+            ? <Col style={{marginLeft: '0.25em'}}>
+                <LargeText>
+                  {unit}
+                </LargeText>
+              </Col>
+            : null
+          }
+        </Row>
+      </Col>
+    </Row>
+  )
+}
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -31,8 +141,10 @@ const CreatePosition = () => {
   const contracts = waitForContracts(selector, dispatch)
   const userAddress = selector(state => state.wallet.address)
 
+  const defaultCollateralizationRatio = 2.5
   const [collateralCount, setCollateralCount] = useState(0)
-  const [debtCount, setDebtCount] = useState(0.0)
+  const [debtCount, setDebtCount] = useState(0)
+  const [userUpdatedDebtCount, setUserUpdatedDebtCount] = useState(false)
 
   const dataNull =
     liquidations === null ||
@@ -42,18 +154,53 @@ const CreatePosition = () => {
     rates === null ||
     contracts === null
 
-  const collateralization = dataNull ? 0 : (collateralCount * priceInfo.ethPrice) / debtCount
-  const collateralizationDisplay = dataNull ? '-%' : numDisplay(collateralization * 100, 0) + '%'
+  const collateralization = dataNull ? null : (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralizationDisplay = collateralization === null ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
   const liquidationPrice = dataNull ? 0 : (debtCount * market.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
 
-  const totalLiquidationIncentive = dataNull ? 0 : (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+  const collateralizationRequirement = market === null ? null : market.collateralizationRequirement
 
   const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
-  const ethPriceDisplay = dataNull ? '-' : numDisplay(priceInfo.ethPrice, 0)
+  const ethPrice = priceInfo === null ? null : priceInfo.ethPrice
+  const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
+
+  const txCostBuffer = 0.05
+
+  const setCollateralCountToMax = () => {
+    if (balances !== null && balances.userEthBalance > txCostBuffer) {
+      updateCollateralCount(balances.userEthBalance - txCostBuffer)
+    }
+  }
+
+  const setDebtToHighCollateralRatio = () => {
+    setDebtCountToHighCollateralRatioImpl(collateralCount)
+  }
+
+  const updateCollateralCount = (countCollateral: number) => {
+    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
+    if (userUpdatedDebtCount) return
+
+    setDebtCountToHighCollateralRatioImpl(countCollateral)
+  }
+
+  const updateDebtCount = (countDebt: number) => {
+    setUserUpdatedDebtCount(true)
+    updateDebtCountImpl(countDebt)
+  }
+
+  const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
+    if (ethPrice === null) return
+    updateDebtCountImpl((countCollateral * ethPrice) / defaultCollateralizationRatio)
+
+  }
+
+  const updateDebtCountImpl = (countDebt: number) => {
+    setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
+  }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noCollateral: {
@@ -72,7 +219,7 @@ const CreatePosition = () => {
     },
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
-      failing: collateralization < market.collateralizationRequirement,
+      failing: collateralization !== null && collateralization < market.collateralizationRequirement,
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
@@ -83,48 +230,102 @@ const CreatePosition = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  const metadataItems = [
-    {
-      title: 'Hue/Eth Current Price',
-      value: ethPriceDisplay,
-      failing: false,
-    }, {
-      title: 'Hue/Eth Liquidation Price',
-      value: liquidationPriceDisplay,
-      failing: dataNull ? false : liquidationPrice >= priceInfo.ethPrice,
-    }, {
-      title: 'Collateralization Ratio',
-      value: collateralizationDisplay,
-      failing: dataNull ? false : failures.undercollateralized.failing,
-    },
-  ]
+  console.log({collateralizationRequirement, collateralization, red, orange, yellow, green})
+
+  let collateralColor: undefined | string = undefined
+  if (collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)) {
+    if (collateralization < collateralizationRequirement) collateralColor = red[50]
+    else if (collateralization < collateralizationRequirement * 1.34) collateralColor = orange
+    else if (collateralization < collateralizationRequirement * 1.66) collateralColor = yellow
+    else collateralColor = green[50]
+  }
 
   const columnOne =
-    <>
-      <SpacedList spacing={8}>
-        <div style={{ marginBottom: 8 }}>
-          Collateral Eth
-        </div>
-        <div style={{ marginBottom: 8 }}>
-          <PositionNumberInput
-            id="collateralInput"
-            action={(value: number) => setCollateralCount(value)}
-            value={collateralCount}
-          />
-        </div>
-        <div style={{ marginBottom: 8 }}>
-          Borrow Hue
-        </div>
-        <PositionNumberInput
-          id="debtInput"
-          action={(value: number) => setDebtCount(value)}
-          value={debtCount}
+    <SpacedList spacing={64}>
+      <Center>
+        <Text size={36}>
+          Create Position
+        </Text>
+      </Center>
+      <FullNumberInput
+        title='Collateral'
+        action={updateCollateralCount}
+        value={collateralCount}
+        unit='Eth'
+        defaultButton={{
+          title: 'Max',
+          action: setCollateralCountToMax
+        }}
+        subTitle={
+          <Text>
+            You have
+            {' '}
+            <Bold>
+              {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
+            </Bold>
+            {' '}
+            Eth in your wallet
+          </Text>
+        }
+      />
+      <FullNumberInput
+        title='Borrow'
+        action={updateDebtCount}
+        value={debtCount}
+        unit='Hue'
+        defaultButton={{
+          title: `${defaultCollateralizationRatio * 100}%`,
+          action: setDebtToHighCollateralRatio,
+        }}
+        subTitle={
+          <Text>
+            Current interest rate is
+            {' '}
+            <Bold>
+              {interestRateDisplay}
+            </Bold>
+          </Text>
+        }
+      />
+      <SpacedList spacing={16}>
+        {
+          Object.values(failures)
+            .filter(failure => !failure.silent)
+            .filter(failure => failure.failing)
+            .map(failure =>
+              <InlineNotification
+                notificationType='inline'
+                kind='error'
+                title={failure.message}
+                lowContrast
+                hideCloseButton
+              />
+            )
+        }
+      </SpacedList>
+      <SpacedList spacing={16}>
+        <PositionInfoItem
+          icon={<ErrorOutline32 />}
+          title='Liquidation Price'
+          value={liquidationPriceDisplay}
+          unit='Hue/Eth'
+        />
+        <PositionInfoItem
+          icon={<Tag32 />}
+          title='Current Price'
+          value={ethPriceDisplay}
+          unit='Hue/Eth'
+        />
+        <PositionInfoItem
+          icon={<Locked32 />}
+          title='Collateral Ratio'
+          value={collateralizationDisplay}
+          color={collateralColor}
         />
       </SpacedList>
-      <PositionMetadata2 items={metadataItems} />
-      <div style={{ marginTop: 8, marginBottom: 8 }}>
+      <Center>
         <CreateTransactionButton
-          title="Confirm Position in Metamask"
+          title='Confirm'
           disabled={isFailing}
           txArgs={{
             type: TransactionType.CreatePosition,
@@ -133,36 +334,25 @@ const CreatePosition = () => {
             Market: contracts === null ? '' : contracts.Market,
           }}
         />
-      </div>
-      <div style={{ marginTop: 8 }}>
-        <ErrorMessage reasons={failureReasons} />
-      </div>
-    </>
-
-  const columnTwo =
-    <LargeText>
-      You have {dataNull ? '-' : numDisplay(balances.userEthBalance)} Eth in your wallet.
-
-      <ParagraphDivider />
-
-      You want to create a position with {numDisplay(collateralCount)} Eth of collateral.
-      In the same transaction, you want to borrow {numDisplay(debtCount)} Hue.
-      The minimum amount you can borrow is {dataNull ? '-' : numDisplay(market.minPositionSize)} Hue
-      to maintain liquidation incentives.
-
-      <ParagraphDivider />
-
-      Hue debt currently carries a {interestRateDisplay} interest rate
-        that will vary due to market forces.
-      The price of Eth is currently {ethPriceDisplay} Hue. If the price of Eth falls
-      below <Bold>{liquidationPriceDisplay}</Bold> Hue you could
-      lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
-    </LargeText>
+      </Center>
+      <Accordion>
+        <AccordionItem title="How does this work?">
+            Creating a position menas that you are depositing your Eth as collateral to borrow Hue.
+            <ParagraphDivider />
+            Hue can be traded for other assets on zkSync, or staked into the protocol to earn interest.{' '}
+            As long as your position stays collateralized, you will always own the deposited Eth.{' '}
+            The interest rate to borrow Hue can be positive or negative (it's possible to owe less than you borrowed).{' '}
+            <ParagraphDivider />
+            Positions can be adjusted anytime by increasing or decreasing the collateral, or repaying or borrowing more Hue.{' '}
+            Holding a position earns you TCP tokens propostional to the position's contribution to the protocol's overall debt.{' '}
+            Learn more about borrowing <a href={notionURL} target='_blank'>here</a>.
+        </AccordionItem>
+      </Accordion>
+    </SpacedList>
 
   return (
-    <TwoColumnDisplay
+    <OneColumnDisplay
       columnOne={columnOne}
-      columnTwo={columnTwo}
       loading={userAddress !== null && dataNull}
       breadCrumbItems={[{ text: 'Positions', href: '/' }, 'New']}
     />

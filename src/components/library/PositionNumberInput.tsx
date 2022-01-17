@@ -1,7 +1,13 @@
 import {
   NumberInput,
+  TextInput,
 } from 'carbon-components-react'
+import { CSSProperties, ReactNode } from 'react';
+import { Row, Col } from 'react-flexbox-grid'
 import { onNumChange }  from '../../utils/'
+import Center from './Center'
+import LargeText from './LargeText'
+import Text from './Text'
 
 const PositionNumberInput = ({
   id,
@@ -9,36 +15,66 @@ const PositionNumberInput = ({
   action,
   showSteppers,
   small,
+  unit,
+  fontSize,
+  style,
+  max,
 }: {
   id: string
   value: number
   action: (value: number) => void
   showSteppers: boolean
   small: boolean
+  unit?: string
+  fontSize?: number
+  style?: CSSProperties
+  max?: number
 }) => {
   const invalidText = <></>
-  const style = small
-    ? {marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0}
-    : {}
+  const itemStyle = small
+    ? {marginLeft: 8, marginRight: 8, paddingLeft: 10, paddingRight: 0, ...style}
+    : style
 
-  const input =
+  const rawInput =
     <NumberInput
       hideSteppers={!showSteppers}
       id={id}
       invalidText={invalidText}
       min={0}
+      max={max}
       step={1e-6}
       size={small ? 'sm' : 'lg'}
       onChange={onNumChange((value: number) => action(value))}
       value={isNaN(value) ? "" : value }
-      style={style}
+      style={{...itemStyle, fontSize}}
     />
 
-  return small
-    ? <div style={{display: 'inline-block', width: 167, marginTop: 8}} >
-        {input}
-      </div>
-    : input
+  if (small) return (
+    <div style={{display: 'inline-block', width: 167, marginTop: 8}} >
+      {rawInput}
+    </div>
+  )
+
+  if (unit) {
+      return (
+        <Row style={{position: 'relative', marginLeft: 0}}>
+          {rawInput}
+          <Center>
+            <Text
+              size={fontSize}
+              style={{
+                top: 14,
+                right: 48,
+                position: 'absolute',
+              }}>
+              {unit}
+            </Text>
+          </Center>
+        </Row>
+      )
+  }
+
+  return rawInput
 }
 
 PositionNumberInput.defaultProps = {

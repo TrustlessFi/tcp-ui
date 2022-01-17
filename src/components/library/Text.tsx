@@ -17,14 +17,20 @@ const Text = ({
   style?: CSSProperties,
   children: ReactNode
 }) => {
-  if (style === undefined) style = {}
-  if (size) style.fontSize = size
-  if (monospace) style.fontFamily = 'monospace'
-  if (bold) style.fontWeight = 'bold'
-  if (color) style.color = color
-  if (lineHeight) style.lineHeight = lineHeight
+  const customStyle: CSSProperties = {
+    fontSize: size,
+    fontFamily: monospace ? 'monospace' : undefined,
+    fontWeight: bold ? 'bold' : undefined,
+    color,
+    lineHeight,
+  }
 
-  return <span style={style}>{children}</span>
+  const itemStyle =
+    style === undefined
+    ? customStyle
+    : {...style, ...customStyle}
+
+  return <span style={itemStyle}>{children}</span>
 }
 
 export default Text

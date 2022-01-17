@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import {  CSSProperties } from 'react'
+import { CSSProperties } from 'react'
 
 export enum ListDirection {
   Row = 'Row',
