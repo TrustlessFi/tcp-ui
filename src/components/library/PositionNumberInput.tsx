@@ -6,7 +6,6 @@ import { CSSProperties, ReactNode } from 'react';
 import { Row, Col } from 'react-flexbox-grid'
 import { onNumChange }  from '../../utils/'
 import Center from './Center'
-import LargeText from './LargeText'
 import Text from './Text'
 
 const PositionNumberInput = ({
@@ -19,6 +18,7 @@ const PositionNumberInput = ({
   fontSize,
   style,
   max,
+  onFocusUpdate,
 }: {
   id: string
   value: number
@@ -29,6 +29,7 @@ const PositionNumberInput = ({
   fontSize?: number
   style?: CSSProperties
   max?: number
+  onFocusUpdate?: (isFocused: boolean) => void
 }) => {
   const invalidText = <></>
   const itemStyle = small
@@ -47,6 +48,8 @@ const PositionNumberInput = ({
       onChange={onNumChange((value: number) => action(value))}
       value={isNaN(value) ? "" : value }
       style={{...itemStyle, fontSize}}
+      onFocus={onFocusUpdate === undefined ? () => {} : () => onFocusUpdate(true) }
+      onBlur={onFocusUpdate === undefined ? () => {} : () => onFocusUpdate(false) }
     />
 
   if (small) return (

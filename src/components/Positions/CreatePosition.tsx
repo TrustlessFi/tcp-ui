@@ -1,9 +1,6 @@
 import { useState } from "react"
-import { CSSProperties, ReactNode } from 'react';
-import { Row, Col } from 'react-flexbox-grid'
 import { Add32, Tag32, Locked32, ErrorOutline32, ChartLine32, MisuseOutline32 } from '@carbon/icons-react';
 import { red, orange, green, yellow } from '@carbon/colors';
-import LargeText from '../library/LargeText'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -17,118 +14,18 @@ import {
   waitForContracts,
 } from '../../slices/waitFor'
 import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
-import PositionNumberInput from '../library/PositionNumberInput'
-import ErrorMessage, { reason } from '../library/ErrorMessage'
+import PositionInfoItem from '../library/PositionInfoItem'
+import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
+import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
-import { Button, Accordion, AccordionItem, InlineNotification, NotificationActionButton } from 'carbon-components-react'
+import { Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
-
-const FullNumberInput = ({
-  title,
-  action,
-  value,
-  fontSize,
-  unit,
-  defaultButton,
-  subTitle
-}: {
-  title: string
-  action: (value: number) => void
-  value: number
-
-  fontSize?: number
-  unit?: string
-  defaultButton?: {
-    title: string,
-    action: () => void,
-  }
-  subTitle?: string | ReactNode
-}) => {
-
-  const input =
-    <PositionNumberInput
-      id="collateralInput"
-      action={action}
-      value={value}
-      fontSize={fontSize}
-      unit={unit}
-    />
-
-  return (
-    <SpacedList>
-      <Text size={fontSize}>{title}</Text>
-      {
-        defaultButton === undefined
-        ? <div style={{marginRight: 8}}>{input}</div>
-        : <div style={{display: 'flex'}}>
-            <div style={{float: 'left', width: '100%', marginRight: '1em'}}>
-              {input}
-            </div>
-            <div style={{float: 'right'}}>
-              <Button style={{width: 100}} kind='secondary' onClick={defaultButton.action}>{defaultButton.title}</Button>
-            </div>
-          </div>
-      }
-      {subTitle}
-    </SpacedList>
-  )
-}
-
-FullNumberInput.defaultProps = {
-  fontSize: 18,
-}
-
-const PositionInfoItem = ({
-  icon,
-  title,
-  value,
-  unit,
-  style,
-  color,
-}: {
-  icon: ReactNode,
-  title: string
-  value: string | number
-  unit?: string
-  style?: CSSProperties
-  color?: string
-}) => {
-
-  return (
-    <Row middle="xs" style={{marginLeft: 0, ...style}}>
-      <Col style={{marginRight: '2em', marginLeft: 0}}>
-        {icon}
-      </Col>
-      <Col>
-        <Row>{title}</Row>
-        <Row>
-          <Col>
-            <LargeText color={color}>
-              <Bold>
-                {value}
-              </Bold>
-            </LargeText>
-          </Col>
-          {
-            unit !== undefined
-            ? <Col style={{marginLeft: '0.25em'}}>
-                <LargeText>
-                  {unit}
-                </LargeText>
-              </Col>
-            : null
-          }
-        </Row>
-      </Col>
-    </Row>
-  )
-}
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
@@ -145,6 +42,8 @@ const CreatePosition = () => {
   const [collateralCount, setCollateralCount] = useState(0)
   const [debtCount, setDebtCount] = useState(0)
   const [userUpdatedDebtCount, setUserUpdatedDebtCount] = useState(false)
+  const [debtIsFocused, setDebtIsFocused] = useState(false)
+  const [collateralIsFocused, setCollateralIsFocused] = useState(false)
 
   const dataNull =
     liquidations === null ||
@@ -205,32 +104,34 @@ const CreatePosition = () => {
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noCollateral: {
       message: 'No collateral.',
-      failing: collateralCount === 0 || isNaN(collateralCount),
+      failing: !collateralIsFocused && (collateralCount === 0 || isNaN(collateralCount)),
       silent: true,
     },
     invalidDebt: {
       message: 'Invalid debt amount.',
-      failing: isNaN(debtCount),
+      failing: !debtIsFocused && isNaN(debtCount),
       silent: true,
     },
     notBigEnough: {
       message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.',
-      failing: 0 < debtCount && debtCount < market.minPositionSize,
+      failing: !debtIsFocused && 0 < debtCount && debtCount < market.minPositionSize,
     },
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
-      failing: collateralization !== null && collateralization < market.collateralizationRequirement,
+      failing:
+        !debtIsFocused &&
+        !collateralIsFocused &&
+        collateralization !== null &&
+        collateralization < market.collateralizationRequirement,
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',
-      failing: balances === null ? false : balances.userEthBalance - collateralCount < 0,
+      failing: collateralIsFocused || balances === null ? false : balances.userEthBalance - collateralCount < 0,
     }
   }
 
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
-
-  console.log({collateralizationRequirement, collateralization, red, orange, yellow, green})
 
   let collateralColor: undefined | string = undefined
   if (collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)) {
@@ -252,6 +153,7 @@ const CreatePosition = () => {
         action={updateCollateralCount}
         value={collateralCount}
         unit='Eth'
+        onFocusUpdate={setCollateralIsFocused}
         defaultButton={{
           title: 'Max',
           action: setCollateralCountToMax
@@ -273,6 +175,7 @@ const CreatePosition = () => {
         action={updateDebtCount}
         value={debtCount}
         unit='Hue'
+        onFocusUpdate={setDebtIsFocused}
         defaultButton={{
           title: `${defaultCollateralizationRatio * 100}%`,
           action: setDebtToHighCollateralRatio,
