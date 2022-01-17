@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useHistory } from 'react-router-dom'
 import {
   Tag32,
   Locked32,
@@ -39,6 +40,7 @@ interface MatchParams {
 const UpdatePosition = () => {
   const params: MatchParams = useParams()
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const positionID = Number(params.positionID)
 
@@ -67,7 +69,11 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
-  const position = positions === null ? null : positions[positionID]
+  const position = positions === null || positions[positionID] === undefined ? null : positions[positionID]
+
+  useEffect(() => {
+    if (positions !== null && positions[positionID] === undefined) history.push('/positions/')
+  }, [positions])
 
   useEffect(() => {
     if (position === null) return
