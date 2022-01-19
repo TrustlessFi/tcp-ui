@@ -1,38 +1,37 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useHistory } from 'react-router-dom'
+import {
+  Tag32,
+  Locked32,
+  ErrorOutline32,
+} from '@carbon/icons-react';
+import { red, orange, green, yellow } from '@carbon/colors';
+import FullNumberInput from '../library/FullNumberInput'
+import PositionInfoItem from '../library/PositionInfoItem'
+import Center from '../library/Center'
+import Bold from '../library/Bold'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import {
-  waitForLiquidations,
+  waitForBalances,
+  waitForMarket,
   waitForRates,
   waitForPrices,
-  waitForMarket,
-  waitForBalances,
+  waitForLiquidations,
   waitForContracts,
   waitForPositions
 } from '../../slices/waitFor'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { numDisplay, zeroIfNaN } from '../../utils/index'
+import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
-import { TransactionType } from '../../slices/transactions'
-import PositionNumberInput from '../library/PositionNumberInput'
-import LargeText from '../library/LargeText'
-import Bold from '../library/Bold'
-import ErrorMessage from '../library/ErrorMessage'
-import InputPicker from '../library/InputPicker'
-import CreateTransactionButton from '../library/CreateTransactionButton';
-import PositionMetadata2 from '../library/PositionMetadata2'
-import TwoColumnDisplay from '../library/TwoColumnDisplay'
-import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
+import { TransactionType } from '../../slices/transactions'
+import CreateTransactionButton from '../library/CreateTransactionButton'
+import Text from '../library/Text'
+import OneColumnDisplay from '../library/OneColumnDisplay'
+import ParagraphDivider from '../library/ParagraphDivider'
+import { Button, Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
 
-enum CollateralChange {
-  IncreaseCollateral = 'Increase Collateral',
-  DecreaseCollateral = 'Decrease Collateral',
-}
-
-enum DebtChange {
-  Borrow = 'Borrow',
-  Payback = 'Payback',
-}
+const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
 interface MatchParams {
   positionID: string
@@ -41,15 +40,9 @@ interface MatchParams {
 const UpdatePosition = () => {
   const params: MatchParams = useParams()
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const positionID = Number(params.positionID)
-
-  const [collateralCount, setCollateralCount] = useState(0)
-  const [debtCount, setDebtCount] = useState(0)
-  const initialCollateralChange = CollateralChange.IncreaseCollateral
-  const initialDebtChange = DebtChange.Borrow
-  const [collateralChange, setCollateralChange] = useState(initialCollateralChange)
-  const [debtChange, setDebtChange] = useState(initialDebtChange)
 
   const liquidations = waitForLiquidations(selector, dispatch)
   const balances = waitForBalances(selector, dispatch)
@@ -58,8 +51,13 @@ const UpdatePosition = () => {
   const rates = waitForRates(selector, dispatch)
   const contracts = waitForContracts(selector, dispatch)
   const positions = waitForPositions(selector, dispatch)
-
   const userAddress = selector(state => state.wallet.address)
+
+  const defaultCollateralizationRatio = 2.5
+  const [collateralCount, setCollateralCount] = useState(0)
+  const [debtCount, setDebtCount] = useState(0)
+  const [debtIsFocused, setDebtIsFocused] = useState(false)
+  const [collateralIsFocused, setCollateralIsFocused] = useState(false)
 
   const dataNull =
     liquidations === null ||
@@ -71,25 +69,50 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
-  const position = dataNull ? null : positions[positionID]
-  const increaseCollateral = collateralChange === CollateralChange.IncreaseCollateral
-  const increaseDebt = debtChange === DebtChange.Borrow
+  const position = positions === null || positions[positionID] === undefined ? null : positions[positionID]
 
-  const debtIncrease = zeroIfNaN(increaseDebt ? debtCount : -debtCount)
-  const collateralIncrease = zeroIfNaN(increaseCollateral ? collateralCount : -collateralCount)
+  useEffect(() => {
+    if (positions !== null && positions[positionID] === undefined) history.push('/positions/')
+  }, [positions])
 
-  const newDebtCount = position === null ? 0 : (position.debtCount + debtIncrease) < 0 ? 0 : position.debtCount + debtIncrease
-  const newCollateralCount = position === null ? 0 : position.collateralCount + collateralIncrease
+  useEffect(() => {
+    if (position === null) return
+    setCollateralCount(position.collateralCount)
+    updateDebtCountImpl(position.debtCount)
+  }, [position])
 
-  const collateralization = priceInfo === null ? 0 : (newDebtCount === 0 ? 0 : (newCollateralCount * priceInfo.ethPrice) / newDebtCount)
-  const collateralizationDisplay = numDisplay(collateralization * 100, 0) + '%'
+  const collateralIncrease = position === null ? null : collateralCount - position.collateralCount
+  const debtIncrease = position === null ? null : debtCount - position.debtCount
+  const isCollateralChanged = collateralIncrease !== null && Math.abs(collateralIncrease) > 0.001
+  const isDebtChanged = debtIncrease !== null && Math.abs(debtIncrease) > 0.1
+  const isDebtDecrease = isDebtChanged && debtIncrease < 0
 
-  const liquidationPrice = market === null ? 0 :  (newDebtCount * market.collateralizationRequirement) / (newCollateralCount)
-  const liquidationPriceDisplay = numDisplay(liquidationPrice, 0)
+  const collateralization = priceInfo === null ? null : (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralizationDisplay = collateralization === null ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
-  const totalLiquidationIncentive = liquidations === null ? 0 : (liquidations.discoveryIncentive + liquidations.liquidationIncentive - 1) * 100
+  const previousCollateralization =
+    priceInfo === null || position === null
+    ? null
+    : (position.collateralCount * priceInfo.ethPrice) / position.debtCount
 
-  // const interestRate = (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const liquidationPrice = market === null ? 0 : (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
+
+  const previousLiquidationPrice =
+    market === null
+    || position === null
+    ? null
+    : (position.debtCount * market.collateralizationRequirement) / position.collateralCount
+
+  const collateralizationRequirement = market === null ? null : market.collateralizationRequirement
+
+  const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
+
+  const ethPrice = priceInfo === null ? null : priceInfo.ethPrice
+  const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
+
+  const txCostBuffer = 0.05
 
   const hueApproved =
     balances !== null &&
@@ -97,95 +120,192 @@ const UpdatePosition = () => {
     balances.tokens[contracts.Hue].approval.Market !== undefined &&
     balances.tokens[contracts.Hue].approval.Market.approved
 
-  const failures: { [key in string]: reason } = {
+  const setCollateralCountToMax = () => {
+    if (position !== null && balances !== null && balances.userEthBalance > txCostBuffer) {
+      updateCollateralCount((balances.userEthBalance + position.collateralCount) - txCostBuffer)
+    }
+  }
+
+  const setDebtToHighCollateralRatio = () => {
+    setDebtCountToHighCollateralRatioImpl(collateralCount)
+  }
+
+  const updateCollateralCount = (countCollateral: number) => {
+    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
+  }
+
+  const updateDebtCount = (countDebt: number) => {
+    updateDebtCountImpl(countDebt)
+  }
+
+  const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
+    if (ethPrice === null) return
+    updateDebtCountImpl((countCollateral * ethPrice) / defaultCollateralizationRatio)
+  }
+
+  const updateDebtCountImpl = (countDebt: number) => {
+    setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
+  }
+
+  const failures: { [key in string]: reason } = dataNull ? {} : {
     noChange: {
-      message: 'No change.',
-      failing: debtIncrease === 0 && collateralIncrease === 0,
+      message: '.',
+      failing: !isDebtChanged && !isCollateralChanged,
+      silent: true,
+    },
+    invalidInput: {
+      message: '.',
+      failing: isNaN(debtCount) || isNaN(collateralCount),
       silent: true,
     },
     notBigEnough: {
-      message: 'Position has less than ' + numDisplay(market === null ? 0 : market.minPositionSize) + ' Hue.',
-      failing: market === null ? false : 0 < newDebtCount && newDebtCount < market.minPositionSize,
-    },
-    negativeCollateral: {
-      message: 'Position does not have enough Eth.',
-      failing: newCollateralCount < 0,
+      message: `Position has less than ${market === null ? '-' : numDisplay(market.minPositionSize)} Hue.`,
+      failing: debtIsFocused || market === null ? false : 0 < debtCount && debtCount < market.minPositionSize,
     },
     insufficientEthInWallet: {
-      message: 'Connected wallet does not have enough Eth.',
-      failing: balances === null ? false : balances.userEthBalance - collateralIncrease < 0,
+      message: 'Not enough Eth in wallet.',
+      failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
       message: 'Connected wallet does not have enough Hue.',
-      failing: balances === null || contracts === null ? false : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
+      failing:
+        debtIsFocused ||
+        balances === null ||
+        contracts === null ||
+        debtIncrease === null
+        ? false
+        : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
     },
     undercollateralized: {
       message: 'Position has a collateralization less than ' + numDisplay(market === null ? 0 : market.collateralizationRequirement * 100) + '%.',
-      failing: market === null ? false : newDebtCount !== 0 && collateralization < market.collateralizationRequirement,
+      failing:
+        collateralIsFocused ||
+        debtIsFocused ||
+        market === null ||
+        collateralization === null
+        ? false
+        : debtCount !== 0 && collateralization < market.collateralizationRequirement,
     },
   }
 
   const failureReasons: reason[] = Object.values(failures)
-  const isFailing = failureReasons.filter(reason => reason.failing).length > 0
+  const isFailing = failureReasons.filter(reason => reason.failing).length > 0 || dataNull
 
-  const newDebtCountDisplay = numDisplay(newDebtCount < 0 ? 0 : newDebtCount, 2)
-
-  const ethPriceDisplay = priceInfo === null ? '-' : numDisplay(priceInfo.ethPrice, 0)
-
-  const metadataItems = [
-    {
-      title: 'Position Collateral',
-      value: numDisplay(newCollateralCount, 2) + ' Eth',
-      failing: failures.negativeCollateral.failing,
-    }, {
-      title: 'Position Debt',
-      value: newDebtCountDisplay + ' Hue',
-    }, {
-      title: 'Hue/Eth Current Price',
-      value: ethPriceDisplay,
-      failing: false,
-    }, {
-      title: 'Hue/Eth Liquidation Price',
-      value: liquidationPriceDisplay,
-      failing: priceInfo === null  ? false : liquidationPrice >= priceInfo.ethPrice,
-    }, {
-      title: 'Collateralization Ratio',
-      value: collateralizationDisplay,
-      failing: market === null ? false : collateralization < market.collateralizationRequirement,
-    },
-  ]
+  let collateralColor: undefined | string = undefined
+  if (collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)) {
+    if (collateralization < collateralizationRequirement) collateralColor = red[50]
+    else if (collateralization < collateralizationRequirement * 1.34) collateralColor = orange
+    else if (collateralization < collateralizationRequirement * 1.66) collateralColor = yellow
+    else collateralColor = green[50]
+  }
 
   const columnOne =
-    <SpacedList>
-      <InputPicker
-        width={200}
-        options={CollateralChange}
-        initialValue={initialCollateralChange}
-        onChange={(option: CollateralChange) => setCollateralChange(option)}
-        label='Increase/Decrease options'
-      />
-      <PositionNumberInput
-        id="collateralInput"
-        action={(value: number) => setCollateralCount(value)}
+    <SpacedList spacing={64}>
+      <Center>
+        <Text size={36}>
+          Update Position
+        </Text>
+      </Center>
+      <FullNumberInput
+        title='Collateral'
+        action={updateCollateralCount}
         value={collateralCount}
+        unit='Eth'
+        defaultButton={{
+          title: 'Max',
+          action: setCollateralCountToMax
+        }}
+        onFocusUpdate={setCollateralIsFocused}
+        subTitle={
+          <Text>
+            You have
+            {' '}
+            <Bold>
+              {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
+            </Bold>
+            {' '}
+            Eth in your wallet
+          </Text>
+        }
       />
-      Eth
-        <InputPicker
-        options={DebtChange}
-        initialValue={initialDebtChange}
-        onChange={(option: DebtChange) => setDebtChange(option)}
-        label='Borrow/Lend options'
-      />
-      <PositionNumberInput
-        id="debtInput"
-        action={(value: number) => setDebtCount(value)}
+      <FullNumberInput
+        title='Debt'
+        action={updateDebtCount}
         value={debtCount}
+        unit='Hue'
+        defaultButton={{
+          title: `${defaultCollateralizationRatio * 100}%`,
+          action: setDebtToHighCollateralRatio,
+        }}
+        onFocusUpdate={setDebtIsFocused}
+        subTitle={
+          <Text>
+            The interest rate is
+            {' '}
+            <Bold>
+              {interestRateDisplay}
+            </Bold>
+          </Text>
+        }
       />
-      Hue
-      <SpacedList spacing={32}>
-        <PositionMetadata2 items={metadataItems} />
+      <SpacedList spacing={16}>
         {
-          debtIncrease < 0 && !hueApproved
+          Object.values(failures)
+            .filter(failure => !failure.silent)
+            .filter(failure => failure.failing)
+            .map(failure =>
+              <InlineNotification
+                notificationType='inline'
+                kind='error'
+                title={failure.message}
+                lowContrast
+                hideCloseButton
+              />
+            )
+        }
+      </SpacedList>
+      <SpacedList spacing={16}>
+        <PositionInfoItem
+          icon={<ErrorOutline32 />}
+          title='Liquidation Price'
+          value={liquidationPriceDisplay}
+          unit='Hue/Eth'
+          changeData={
+            previousLiquidationPrice !== null
+            ? {
+              previous: previousLiquidationPrice,
+              next: liquidationPrice,
+              increaseIsGood: false,
+            } : undefined
+          }
+        />
+        <PositionInfoItem
+          icon={<Tag32 />}
+          title='Current Price'
+          value={ethPriceDisplay}
+          unit='Hue/Eth'
+        />
+        <PositionInfoItem
+          icon={<Locked32 />}
+          title='Collateral Ratio'
+          value={collateralizationDisplay}
+          color={collateralColor}
+          changeData={
+            previousCollateralization === null ||
+            collateralization === null
+            ? undefined
+            : {
+              previous: previousCollateralization * 100,
+              next: collateralization * 100,
+              increaseIsGood: true,
+              showChangeWithUnit: '%'
+            }
+          }
+        />
+      </SpacedList>
+      <Center>
+        {
+          isDebtDecrease && !hueApproved
           ? <CreateTransactionButton
               title={"Approve Payback"}
               disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
@@ -198,42 +318,38 @@ const UpdatePosition = () => {
               }}
             />
           : <CreateTransactionButton
-              title="Update Position"
+              title='Confirm'
               disabled={isFailing}
               txArgs={{
                 type: TransactionType.UpdatePosition,
                 positionID,
-                debtIncrease,
-                collateralIncrease,
+                collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
+                debtIncrease: position !== null && isDebtChanged ? debtCount - position.debtCount: 0,
                 Market: contracts === null ? '' : contracts.Market,
               }}
             />
         }
-        <ErrorMessage reasons={failureReasons} />
-      </SpacedList>
+      </Center>
+      <Accordion>
+        <AccordionItem title="How does this work?">
+            Creating a position means that you are depositing your Eth as collateral to borrow Hue.
+            <ParagraphDivider />
+            Hue can be traded for other assets on zkSync, or staked into the protocol to earn interest.{' '}
+            As long as your position stays collateralized, you will always own the deposited Eth.{' '}
+            The interest rate to borrow Hue can be positive or negative (it's possible to owe less than you borrowed).{' '}
+            <ParagraphDivider />
+            Positions can be adjusted anytime by increasing or decreasing the collateral, or repaying or borrowing more Hue.{' '}
+            Holding a position earns you TCP tokens propostional to the position's contribution to the protocol's overall debt.{' '}
+            Learn more about borrowing <a href={notionURL} target='_blank'>here</a>.
+        </AccordionItem>
+      </Accordion>
     </SpacedList>
 
-  const columnTwo =
-    <LargeText>
-        Position {positionID} currently has {position === null ? 0 : numDisplay(position.collateralCount, 2)} Eth of Collateral
-          and {numDisplay(position === null ? 0 : position.debtCount, 2)} Hue of debt.
-      <ParagraphDivider />
-        You are going to {collateralChange.toLowerCase()} collateral
-          by {numDisplay(collateralCount)} Eth for a new total
-          of {numDisplay(newCollateralCount, 2)} Eth of collateral
-          and {debtChange.toLowerCase()} {numDisplay(debtCount)} Hue for a new total
-          of {newDebtCountDisplay} Hue debt in position {positionID}.
-      <ParagraphDivider />
-        The price of Eth is currently {priceInfo === null ? 0 : numDisplay(priceInfo.ethPrice, 0)} Hue.
-          If the price of Eth falls below <Bold>{liquidationPriceDisplay}</Bold> Hue
-          you could lose <Bold>{numDisplay(totalLiquidationIncentive, 0)}%</Bold> or more of your position value in Eth to liquidators.
-    </LargeText>
   return (
-    <TwoColumnDisplay
+    <OneColumnDisplay
       columnOne={columnOne}
-      columnTwo={columnTwo}
       loading={userAddress !== null && dataNull}
-      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Update', 'Position ' + numDisplay(positionID)]}
+      breadCrumbItems={[{ text: 'Positions', href: '/' }, positionID.toString()]}
     />
   )
 }

@@ -9,19 +9,23 @@ const Breadcrumbs = ({ crumbs }: { crumbs?: BreadcrumbItemType[] }) => {
   if (crumbs === undefined || crumbs.length === 0) return null
 
   return (
-    <Breadcrumb noTrailingSlash>
+    <Breadcrumb noTrailingSlash style={{whiteSpace: 'nowrap'}}>
       {crumbs.map((crumb, index) => (
         typeof crumb === 'object'
         ? <BreadcrumbItem
             key={index}
             href={crumb.href}
+            style={{display: 'inline-block'}}
             onClick={e => {
               e.preventDefault()
               history.push(crumb.href)
             }}>
             {crumb.text}
           </BreadcrumbItem>
-        : <BreadcrumbItem key={index} isCurrentPage={true}>
+        : <BreadcrumbItem
+            key={index}
+            style={{display: 'inline-block'}}
+            isCurrentPage={true}>
             {crumb}
           </BreadcrumbItem>
       ))}

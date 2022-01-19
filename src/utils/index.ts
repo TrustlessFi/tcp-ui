@@ -92,8 +92,11 @@ export const toInt = (val: number | string) => typeof val === 'number' ? val : p
 export const anyNull = (items: (any | null)[]) => items.some(item => item === null)
 
 // ======================= Number Display Utils ============================
-export const roundToXDecimals = (val: number, decimals: number = 0) => {
-  const result = (Math.round(val * 10 ** decimals) / 10 ** decimals).toString()
+export const roundToXDecimals = (val: number, decimals: number = 0, floor = false) => {
+  const result =
+    floor
+    ? (Math.floor(val * 10 ** decimals) / 10 ** decimals).toString()
+    : (Math.round(val * 10 ** decimals) / 10 ** decimals).toString()
   if (decimals === 0) return result
   else {
     const decimalPointIndex = result.lastIndexOf('.')
@@ -111,7 +114,7 @@ export const addCommas = (val: number | string): string => {
 
 export const zeroIfNaN = (val: number) => isNaN(val) ? 0 : val
 
-export const isZeroish = (val: number) => isNaN(val) || val === null || val === undefined || val === 0
+export const isZeroish = (val: any) => isNaN(val) || val === null || val === undefined || val === 0
 
 export const numDisplay = (
   val: number,
