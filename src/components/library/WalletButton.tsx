@@ -1,6 +1,6 @@
 import { abbreviateAddress } from '../../utils'
-import { Tag} from 'carbon-components-react'
 import { getEtherscanAddressLink } from '../library/ExplorerLink';
+import { Tag } from 'carbon-components-react'
 import { BlockieOptions, create as createIdenticon } from 'ethereum-blockies';
 import { CSSProperties } from 'react';
 
