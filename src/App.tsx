@@ -47,6 +47,8 @@ const App: FunctionComponent<{}> = () => {
   const transactions = selector(state => state.transactions)
   const provider = getProvider()
 
+  // TODO have this filter on only transactions that are relevant to this view: chainID and address
+  // use getAllUserTxs helper function
   useEffect(() => {
     const fetchTransactions = () =>
       Promise.all(
