@@ -2,7 +2,7 @@ import { abbreviateAddress } from '../../utils'
 import { getEtherscanAddressLink } from '../library/ExplorerLink'
 import { Tag } from 'carbon-components-react'
 import Jazzicon from 'jazzicon'
-import { CSSProperties, useRef } from 'react'
+import { CSSProperties, useEffect, useRef, useState } from 'react'
 
 const WalletButton = ({
   address,
@@ -18,7 +18,13 @@ const WalletButton = ({
   const radix = 16
   const identifier = parseInt(address.slice(2, 10), radix)
   const identicon = Jazzicon(diameter, identifier)
-  const ref = useRef<HTMLDivElement>(null)
+
+  const [shouldUpdate, setShouldUpdate] = useState(true)
+  useEffect(() => {
+    if (shouldUpdate) setShouldUpdate(false)
+  }, [shouldUpdate])
+
+  let ref = useRef<HTMLDivElement>(null)
   if (ref.current) {
     ref.current.innerHTML = ''
     ref.current.appendChild(identicon)
