@@ -10,7 +10,7 @@ import { getPoolsCurrentData, poolsCurrentInfo } from './poolsCurrentData'
 import { getLiquidityPositions } from './liquidityPositions'
 import { getPositions } from './positions'
 import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
-import { getLiquidationsInfo, liquidationsInfo } from './liquidations'
+import { getLiquidationsInfo, liquidationsInfo, liquidationsDeps} from './liquidations'
 import { getRewardsInfo, rewardsInfo } from './rewards'
 import { getPricesInfo } from './prices'
 import { getBalances } from './balances'
@@ -125,7 +125,7 @@ export const waitForPositions = getWaitFunction(
 export const waitForLiquidations = getWaitFunction(
   (state: RootState) => state.liquidations,
   getLiquidationsInfo,
-  ['contracts', 'trustlessMulticall'],
+  liquidationsDeps
 )
 
 export const waitForRewards = getWaitFunction(

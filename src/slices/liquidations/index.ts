@@ -18,6 +18,13 @@ export type liquidationsArgs = {
   trustlessMulticall: string,
 }
 
+type KeysEnum<T> = { [P in keyof Required<T>]: true };
+const liquidationDependencies: KeysEnum<liquidationsArgs> = {
+  contracts: true,
+  trustlessMulticall: true,
+};
+export const liquidationsDeps = Object.keys(liquidationDependencies) as (keyof liquidationsArgs)[];
+
 export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 
 export const getLiquidationsInfo = createAsyncThunk(
