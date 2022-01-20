@@ -39,6 +39,7 @@ const CreateTransactionButton = ({
     return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
+  // TODO filter for transactions that are relevant to this address and chain
   const pendingTxExists =
     notEmpty(
       Object.values(transactions)
