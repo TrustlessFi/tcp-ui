@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
+import { sliceState, getStateWithValue, getGenericReducerBuilder, PropertyKeysOf} from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Liquidations } from '@trustlessfi/typechain'
@@ -18,12 +18,11 @@ export type liquidationsArgs = {
   trustlessMulticall: string,
 }
 
-type KeysEnum<T> = { [P in keyof Required<T>]: true };
-const liquidationDependencies: KeysEnum<liquidationsArgs> = {
+const liquidationPropertyKeys: PropertyKeysOf<liquidationsArgs> = {
   contracts: true,
   trustlessMulticall: true,
 };
-export const liquidationsDeps = Object.keys(liquidationDependencies) as (keyof liquidationsArgs)[];
+export const liquidationsDeps = Object.keys(liquidationPropertyKeys) as (keyof liquidationsArgs)[];
 
 export interface LiquidationsState extends sliceState<liquidationsInfo> {}
 

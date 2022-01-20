@@ -37,3 +37,12 @@ export const getGenericReducerBuilder = <Args extends {}, Value>(
       state.value = action.payload
     })
 }
+
+/* Utility type for creating an object from an 'Args' type.
+ *
+ * This ensures the keys of object are equivalent to keys of type.
+ * Values of keys are `true` and used only for object creation.
+ * 
+ * NOTE: This enables `waitFor` dependencies to be specified within each slice.
+ */
+export type PropertyKeysOf<T> = { [P in keyof Required<T>]: true };
