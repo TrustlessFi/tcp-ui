@@ -19,6 +19,7 @@ const WalletButton = ({
   const identifier = parseInt(address.slice(2, 10), radix)
   const identicon = Jazzicon(diameter, identifier)
 
+  // Trigger an immediate rerender on this compoenent so that useRef().current exists.
   const [shouldUpdate, setShouldUpdate] = useState(true)
   useEffect(() => {
     if (shouldUpdate) setShouldUpdate(false)
