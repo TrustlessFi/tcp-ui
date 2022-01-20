@@ -1,8 +1,8 @@
 import { abbreviateAddress } from '../../utils'
-import { getEtherscanAddressLink } from '../library/ExplorerLink';
+import { getEtherscanAddressLink } from '../library/ExplorerLink'
 import { Tag } from 'carbon-components-react'
-import { BlockieOptions, create as createIdenticon } from 'ethereum-blockies';
-import { CSSProperties } from 'react';
+import Jazzicon from 'jazzicon'
+import { CSSProperties, useRef } from 'react'
 
 const WalletButton = ({
   address,
@@ -13,15 +13,22 @@ const WalletButton = ({
   chainID: number,
   style: CSSProperties,
 }) => {
-  const seed = address.toLowerCase();
-  const options: BlockieOptions = {seed, scale: 3};
-  const identicon = createIdenticon(options).toDataURL();
+  const diameter = 24
+  // Convert '0x...' (hexadecimal) wallet address string to an integer.
+  const radix = 16
+  const identifier = parseInt(address.slice(2, 10), radix)
+  const identicon = Jazzicon(diameter, identifier)
+  const ref = useRef<HTMLDivElement>(null)
+  if (ref.current) {
+    ref.current.innerHTML = ''
+    ref.current.appendChild(identicon)
+  }
   return (
     <Tag
       onClick={() => window.open(getEtherscanAddressLink(address, chainID), '_blank')}
       style={style}>
-        <img src={identicon} alt={address} style={{borderRadius: "50%", marginRight: "4px", verticalAlign: "middle"}}/>
-        <div style={{display: "inline", fontSize: "16px", fontWeight: 400, verticalAlign: "middle"}}>{abbreviateAddress(address)}</div>
+        <div ref={ref} style={{display: "inline-block", verticalAlign: "middle", marginTop: "4px", marginRight: "4px"}} />
+        <div style={{display: "inline", verticalAlign: "middle", fontSize: "16px", fontWeight: 400}}>{abbreviateAddress(address)}</div>
     </Tag>
   )
 }
