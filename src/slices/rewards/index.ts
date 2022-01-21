@@ -1,3 +1,5 @@
+import { RootState } from '../../app/store'
+import { getThunkDependencies, NonNull } from '../waitFor'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -16,54 +18,54 @@ export interface rewardsInfo {
   periodLength: number
 }
 
-export interface rewardsArgs {
-  contracts: contractsInfo
-  trustlessMulticall: string
-}
+const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
 
-export interface RewardsState extends sliceState<rewardsInfo> {}
+export const getRewardsInfo = {
+  stateSelector: (state: RootState) => state.rewards,
+  dependencies,
+  thunk:
+    createAsyncThunk(
+      'rewards/getRewardsInfo',
+      async (args: NonNull<typeof dependencies>): Promise<rewardsInfo> => {
+        const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+        const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-export const getRewardsInfo = createAsyncThunk(
-  'rewards/getRewardsInfo',
-  async (args: rewardsArgs): Promise<rewardsInfo> => {
-    const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
-    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-
-    const { rewardsInfo } = await executeMulticalls(
-      trustlessMulticall,
-      {
-        rewardsInfo: oneContractManyFunctionMC(
-          rewards,
+        const { rewardsInfo } = await executeMulticalls(
+          trustlessMulticall,
           {
-            twapDuration: rc.Number,
-            liquidationPenalty: rc.BigNumberUnscale,
-            weth: rc.String,
-            lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
-            countPools: rc.Number,
-            firstPeriod: rc.BigNumberToNumber,
-            periodLength: rc.BigNumberToNumber,
+            rewardsInfo: oneContractManyFunctionMC(
+              rewards,
+              {
+                twapDuration: rc.Number,
+                liquidationPenalty: rc.BigNumberUnscale,
+                weth: rc.String,
+                lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
+                countPools: rc.Number,
+                firstPeriod: rc.BigNumberToNumber,
+                periodLength: rc.BigNumberToNumber,
+              }
+            ),
           }
-        ),
+        )
+
+        return rewardsInfo
       }
     )
-
-    return rewardsInfo
-  }
-)
+}
 
 // TODO add to local storage
 const name = 'rewards'
 
 export const rewardsSlice = createSlice({
   name,
-  initialState: getStateWithValue<rewardsInfo>(getLocalStorage(name, null)) as RewardsState,
+  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<rewardsInfo>,
   reducers: {
     clearRewardsInfo: (state) => {
       state.value = null
     },
   },
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getRewardsInfo)
+    builder = getGenericReducerBuilder(builder, getRewardsInfo.thunk)
   },
 })
 

@@ -6,9 +6,11 @@ import { ChainID, chainIDToName } from '@trustlessfi/addresses'
 
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
+import ConnectWalletButton from '../library/ConnectWalletButton'
 
 import { useAppSelector as selector } from "../../app/hooks"
 import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
+import { getNullableProvider } from '../../utils/getProvider'
 
 
 const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
@@ -27,7 +29,7 @@ const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
     }).catch(_e => setClicked(false))
   }
 
-  return chainID === null
+  return chainID === null && getNullableProvider() !== null
     ? <SpacedList style={{marginTop: '20%'}}>
         <Center>
           <Button kind='danger' onClick={switchNetwork}>

@@ -1,3 +1,5 @@
+import { RootState } from '../../app/store'
+import { getThunkDependencies, NonNull } from '../waitFor'
 import { sliceState } from '../'
 import { initialState, getGenericReducerBuilder } from '../'
 import { getMulticallContract} from '../../utils/getContract'
@@ -14,47 +16,46 @@ export interface currentChainInfo {
   chainID: number
 }
 
-export interface currentChainInfoState extends sliceState<currentChainInfo> {}
+const dependencies = getThunkDependencies(['trustlessMulticall'])
 
-export interface balanceArgs {
-  trustlessMulticall: string,
-}
+export const getCurrentChainInfo = {
+  stateSelector: (state: RootState) => state.currentChainInfo,
+  dependencies,
+  thunk:
+    createAsyncThunk(
+      'currentChainInfo/getCurrentChainInfo',
+      async (args: NonNull<typeof dependencies>): Promise<currentChainInfo> => {
+        const multicall = getMulticallContract(args.trustlessMulticall)
 
-export const getCurrentChainInfo = createAsyncThunk(
-  'currentChainInfo/getCurrentChainInfo',
-  async (
-    args: {trustlessMulticall: string},
-  ): Promise<currentChainInfo> => {
-    const multicall = getMulticallContract(args.trustlessMulticall)
-
-    const { chainInfo } = await executeMulticalls(
-      multicall,
-      {
-        chainInfo: oneContractManyFunctionMC(
+        const { chainInfo } = await executeMulticalls(
           multicall,
           {
-            getBlockNumber: rc.BigNumberToNumber,
-            getCurrentBlockTimestamp: rc.BigNumberToNumber,
-            getChainId: rc.BigNumberToNumber,
-          },
-        ),
+            chainInfo: oneContractManyFunctionMC(
+              multicall,
+              {
+                getBlockNumber: rc.BigNumberToNumber,
+                getCurrentBlockTimestamp: rc.BigNumberToNumber,
+                getChainId: rc.BigNumberToNumber,
+              },
+            ),
+          }
+        )
+
+        return {
+          blockNumber: chainInfo.getBlockNumber,
+          blockTimestamp: chainInfo.getCurrentBlockTimestamp,
+          chainID: chainInfo.getChainId,
+        }
       }
     )
-
-    return {
-      blockNumber: chainInfo.getBlockNumber,
-      blockTimestamp: chainInfo.getCurrentBlockTimestamp,
-      chainID: chainInfo.getChainId,
-    }
-  }
-)
+}
 
 export const currentChainInfoSlice = createSlice({
   name: 'currentChainInfo',
-  initialState: initialState as currentChainInfoState,
+  initialState: initialState as sliceState<currentChainInfo>,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getCurrentChainInfo)
+    builder = getGenericReducerBuilder(builder, getCurrentChainInfo.thunk)
   },
 })
 

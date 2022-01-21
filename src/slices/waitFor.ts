@@ -7,54 +7,69 @@ import { getMarketInfo, marketInfo } from './market'
 import { getRatesInfo, ratesInfo } from './rates'
 import { getPoolsMetadata, poolsMetadata } from './poolsMetadata'
 import { getPoolsCurrentData, poolsCurrentInfo } from './poolsCurrentData'
-import { getLiquidityPositions } from './liquidityPositions'
-import { getPositions } from './positions'
+import { getLiquidityPositions, liquidityPositions } from './liquidityPositions'
+import { getPositions, positionsInfo } from './positions'
 import { getSystemDebtInfo, systemDebtInfo } from './systemDebt'
 import { getLiquidationsInfo, liquidationsInfo } from './liquidations'
 import { getRewardsInfo, rewardsInfo } from './rewards'
-import { getPricesInfo } from './prices'
-import { getBalances } from './balances'
+import { getPricesInfo, pricesInfo } from './prices'
+import { getBalances, balancesInfo } from './balances'
 import { getContracts, contractsInfo } from './contracts'
 import { getCurrentChainInfo, currentChainInfo } from './currentChainInfo'
 
 import { sliceState } from './'
 
-interface fetchNodeTypes {
-  chainID: ChainID
-  governor: string
-  protocolDataAggregator: string
-  trustlessMulticall: string
-  userAddress: string
+const toNull = <T>() => null as T | null
+const nullString = toNull<string>()
 
-  contracts: contractsInfo
-  currentChainInfo: currentChainInfo
-  governorInfo: governorInfo
-  liquidationsInfo: liquidationsInfo
-  marketInfo: marketInfo
-  poolsCurrentData: poolsCurrentInfo
-  poolsMetadata: poolsMetadata
-  ratesInfo: ratesInfo
-  rewardsInfo: rewardsInfo
-  sdi: systemDebtInfo
+const fetchNodes = {
+  chainID: toNull<ChainID>(),
+  governor: nullString,
+  protocolDataAggregator: nullString,
+  trustlessMulticall: nullString,
+  userAddress: nullString,
+
+  balances: toNull<balancesInfo>(),
+  contracts: toNull<contractsInfo>(),
+  currentChainInfo: toNull<currentChainInfo>(),
+  governorInfo: toNull<governorInfo>(),
+  liquidationsInfo: toNull<liquidationsInfo>(),
+  liquidityPositions: toNull<liquidityPositions>(),
+  marketInfo: toNull<marketInfo>(),
+  poolsCurrentData: toNull<poolsCurrentInfo>(),
+  poolsMetadata: toNull<poolsMetadata>(),
+  positions: toNull<positionsInfo>(),
+  pricesInfo: toNull<pricesInfo>(),
+  ratesInfo: toNull<ratesInfo>(),
+  rewardsInfo: toNull<rewardsInfo>(),
+  sdi: toNull<systemDebtInfo>(),
 }
 
+export type NonNull<O> = {
+  [K in keyof O]-?: NonNullable<O[K]>
+}
+
+type FetchNodes = typeof fetchNodes
+type FetchNode = keyof FetchNodes
+
 const getWaitFunction = <
-    Dependency extends keyof fetchNodeTypes,
-    Args extends Pick<fetchNodeTypes, Dependency>,
-    Value
-  >(
-    stateSelector: (state: RootState) => sliceState<Value>,
-    thunk: AsyncThunk<Value, Args, {}>,
-    dependencies: Dependency[]
-  ) => (selector: AppSelector, dispatch: AppDispatch) => {
+    Value,
+    Dependencies extends Partial<{[fetchNode in keyof typeof fetchNodes]: (typeof fetchNodes)[fetchNode] | null}>,
+  >(waitForData: {
+    stateSelector: (state: RootState) => sliceState<Value>
+    dependencies: Dependencies
+    thunk: AsyncThunk<Value, NonNull<Dependencies>, {}>
+  }) => (selector: AppSelector, dispatch: AppDispatch) => {
+    const { stateSelector, thunk, dependencies} = waitForData
     const state = selector(stateSelector)
 
-    const inputArgs = Object.fromEntries(dependencies.map(fetchNode =>
-      [fetchNode, (() => fetchNodesImpl)()[fetchNode](selector, dispatch)]
-    ))
+    const inputArgs = Object.fromEntries(Object.keys(dependencies).map(fetchNode =>
+      [fetchNode, (() => waitForImpl)()[fetchNode as FetchNode](selector, dispatch)]
+    )) as Dependencies
 
     if (Object.values(inputArgs).includes(null)) return null
 
+    // TODO get rid of undefined checks
     if (state !== undefined && state.error !== null) {
       console.error(state.error.message)
       throw state.error
@@ -64,137 +79,54 @@ const getWaitFunction = <
       state === undefined ||
       (state.value === null && !stateSelector(store.getState()).loading)
     ) {
-      dispatch(thunk(inputArgs as NonNullable<Args>))
+      dispatch(thunk(inputArgs as NonNull<Dependencies>))
     }
 
     return state === undefined ? null : state.value
   }
 
-type FetchNode = keyof fetchNodeTypes
+const allPossibleArgs =
+  Object.fromEntries(
+    Object.entries(fetchNodes)
+      .map(([key, _val]) => [key, null])
+  ) as { [key in FetchNode]: FetchNodes[key] }
 
+export const getThunkDependencies = <R extends FetchNode>(val: R[]) =>
+  Object.fromEntries(val.map(key => [key, allPossibleArgs[key]])) as Pick<typeof allPossibleArgs, R>
 
-/// ============================ Get Contracts Logic =======================================
-export const waitForContracts = getWaitFunction(
-  (state: RootState) => state.contracts,
-  getContracts,
-  ['governor', 'trustlessMulticall'],
-)
-
-export const waitForPoolsCurrentData = getWaitFunction(
-  (state: RootState) => state.poolsCurrentData,
-  getPoolsCurrentData,
-  [
-    'contracts',
-    'trustlessMulticall',
-    'rewardsInfo',
-    'poolsMetadata',
-  ],
-)
-
-/// ============================ Get Info Logic =======================================
-export const waitForCurrentChainInfo = getWaitFunction(
-  (state: RootState) => state.currentChainInfo,
-  getCurrentChainInfo,
-  ['trustlessMulticall'],
-)
-
-export const waitForGovernor = getWaitFunction(
-  (state: RootState) => state.governor,
-  getGovernorInfo,
-  ['governor'],
-)
-
-export const waitForPrices = getWaitFunction(
-  (state: RootState) => state.prices,
-  getPricesInfo,
-  ['contracts', 'liquidationsInfo', 'trustlessMulticall'],
-)
-
-export const waitForMarket = getWaitFunction(
-  (state: RootState) => state.market,
-  getMarketInfo,
-  ['contracts', 'trustlessMulticall'],
-)
-
-export const waitForPositions = getWaitFunction(
-  (state: RootState) => state.positions,
-  getPositions,
-  ['userAddress', 'sdi', 'marketInfo', 'contracts', 'trustlessMulticall'],
-)
-
-export const waitForLiquidations = getWaitFunction(
-  (state: RootState) => state.liquidations,
-  getLiquidationsInfo,
-  ['contracts', 'trustlessMulticall'],
-)
-
-export const waitForRewards = getWaitFunction(
-  (state: RootState) => state.rewards,
-  getRewardsInfo,
-  ['contracts', 'trustlessMulticall'],
-)
-
-export const waitForRates = getWaitFunction(
-  (state: RootState) => state.rates,
-  getRatesInfo,
-  ['contracts', 'trustlessMulticall'],
-)
-
-export const waitForSDI = getWaitFunction(
-  (state: RootState) => state.systemDebt,
-  getSystemDebtInfo,
-  ['contracts'],
-)
-
-export const waitForBalances = getWaitFunction(
-  (state: RootState) => state.balances,
-  getBalances,
-  [
-    'userAddress',
-    'trustlessMulticall',
-    'poolsMetadata',
-    'rewardsInfo',
-    'contracts',
-  ]
-)
-
-export const waitForLiquidityPositions = getWaitFunction(
-  (state: RootState) => state.liquidityPositions,
-  getLiquidityPositions,
-  [
-    'userAddress',
-    'contracts',
-    'trustlessMulticall',
-    'poolsCurrentData',
-    'poolsMetadata',
-    'rewardsInfo',
-  ],
-)
-
-export const waitForPoolsMetadata = getWaitFunction(
-  (state: RootState) => state.poolsMetadata,
-  getPoolsMetadata,
-  ['protocolDataAggregator', 'trustlessMulticall', 'contracts'],
-)
 
 const getStateSelector = <T>(selectorFunc: (state: RootState) => T) =>
   (selector: AppSelector, _dispatch: AppDispatch) => selector(selectorFunc)
 
-const fetchNodesImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => fetchNodeTypes[key] | null} = {
+const waitForImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => FetchNodes[key]} = {
   chainID: getStateSelector(state => state.chainID.chainID),
   governor: getStateSelector(state => state.chainID.governor),
   protocolDataAggregator: getStateSelector(state => state.chainID.protocolDataAggregator),
   trustlessMulticall: getStateSelector(state => state.chainID.trustlessMulticall),
   userAddress: getStateSelector(state => state.wallet.address),
 
-  contracts: waitForContracts,
-  currentChainInfo: waitForCurrentChainInfo,
-  governorInfo: waitForGovernor,
-  liquidationsInfo: waitForLiquidations,
-  marketInfo: waitForMarket,
-  poolsCurrentData: waitForPoolsCurrentData,
-  poolsMetadata: waitForPoolsMetadata,
-  ratesInfo: waitForRates,
-  rewardsInfo: waitForRewards,
-  sdi: waitForSDI,
+  balances: getWaitFunction(getBalances),
+  contracts: getWaitFunction(getContracts),
+  currentChainInfo: getWaitFunction(getCurrentChainInfo),
+  governorInfo: getWaitFunction(getGovernorInfo),
+  liquidationsInfo: getWaitFunction(getLiquidationsInfo),
+  liquidityPositions: getWaitFunction(getLiquidityPositions),
+  marketInfo: getWaitFunction(getMarketInfo),
+  poolsCurrentData: getWaitFunction(getPoolsCurrentData),
+  poolsMetadata: getWaitFunction(getPoolsMetadata),
+  positions: getWaitFunction(getPositions),
+  pricesInfo: getWaitFunction(getPricesInfo),
+  ratesInfo: getWaitFunction(getRatesInfo),
+  rewardsInfo: getWaitFunction(getRewardsInfo),
+  sdi: getWaitFunction(getSystemDebtInfo),
 }
+
+const waitFor = <RequestedNodes extends FetchNode>(
+  requestedNodes: RequestedNodes[],
+  selector: AppSelector,
+  dispatch: AppDispatch
+) => Object.fromEntries(
+  requestedNodes.map(fetchNode => [fetchNode, waitForImpl[fetchNode](selector, dispatch)])
+) as { [requestedNode in RequestedNodes]: FetchNodes[requestedNode]}
+
+export default waitFor

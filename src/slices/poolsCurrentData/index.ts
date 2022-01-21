@@ -1,9 +1,7 @@
+import { RootState } from '../../app/store'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { initialState, getGenericReducerBuilder } from '../'
 import { sliceState } from '../'
-import { rewardsInfo } from '../rewards'
-import { poolsMetadata } from '../poolsMetadata'
-import { contractsInfo } from '../contracts'
 
 import { Contract } from 'ethers'
 
@@ -19,6 +17,7 @@ import {
   idToIdAndNoArg,
   idToIdAndArg,
 } from '@trustlessfi/multicall'
+import { NonNull, getThunkDependencies } from '../waitFor'
 
 import { Prices, UniswapV3Pool, Accounting, Rewards } from '@trustlessfi/typechain'
 
@@ -41,79 +40,79 @@ export type poolsCurrentInfo = {
 
 export type poolCurrentDataState = sliceState<poolsCurrentInfo>
 
-export interface poolsCurrentDataArgs {
-  contracts: contractsInfo
-  trustlessMulticall: string
-  rewardsInfo: rewardsInfo
-  poolsMetadata: poolsMetadata
+
+const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'poolsMetadata', 'rewardsInfo'])
+
+export const getPoolsCurrentData = {
+  stateSelector: (state: RootState) => state.poolsCurrentData,
+  dependencies,
+  thunk: createAsyncThunk(
+    'poolsCurrentData/getPoolsCurrentData',
+    async (args: NonNull<typeof dependencies>): Promise<poolsCurrentInfo> => {
+      const provider = getProvider()
+      const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
+      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+      const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
+      const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+      const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
+
+      const poolAddresses = Object.keys(args.poolsMetadata)
+
+      const {
+        sqrtPriceX96Instant,
+        tickTwapped,
+        currentRewardsInfo,
+        rs,
+        poolsLiquidity
+      } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          sqrtPriceX96Instant: manyContractOneFunctionMC(
+            poolContract,
+            idToIdAndNoArg(poolAddresses),
+            'slot0',
+            rc.String,
+          ),
+          tickTwapped: oneContractOneFunctionMC(
+            prices,
+            'calculateInstantTwappedTick',
+            rc.Number,
+            Object.fromEntries(poolAddresses.map(address => [address, [address, args.rewardsInfo.twapDuration]]))
+          ),
+          currentRewardsInfo: oneContractManyFunctionMC(
+            rewards,
+            {
+              lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
+              currentPeriod: rc.BigNumberToNumber,
+            }
+          ),
+          rs: oneContractOneFunctionMC(
+            accounting,
+            'getRewardStatus',
+            (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
+            idToIdAndArg(poolAddresses),
+          ),
+          poolsLiquidity: oneContractOneFunctionMC(
+            accounting,
+            'poolLiquidity',
+            rc.BigNumberToString,
+            idToIdAndArg(poolAddresses),
+          ),
+        }
+      )
+
+      return Object.fromEntries(poolAddresses.map(address => [address, {
+        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
+        twapTick: tickTwapped[address],
+        poolLiquidity: poolsLiquidity[address],
+        cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
+        totalRewards: rs[address].totalRewards.toString(),
+        lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
+        currentPeriod: currentRewardsInfo.currentPeriod,
+      }]))
+    }
+  )
 }
-
-export const getPoolsCurrentData = createAsyncThunk(
-  'poolsCurrentData/getPoolsCurrentData',
-  async (args: poolsCurrentDataArgs): Promise<poolsCurrentInfo> => {
-    const provider = getProvider()
-    const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
-    const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
-    const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
-    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-    const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
-
-    const poolAddresses = Object.keys(args.poolsMetadata)
-
-    const {
-      sqrtPriceX96Instant,
-      tickTwapped,
-      currentRewardsInfo,
-      rs,
-      poolsLiquidity
-    } = await executeMulticalls(
-      trustlessMulticall,
-      {
-        sqrtPriceX96Instant: manyContractOneFunctionMC(
-          poolContract,
-          idToIdAndNoArg(poolAddresses),
-          'slot0',
-          rc.String,
-        ),
-        tickTwapped: oneContractOneFunctionMC(
-          prices,
-          'calculateInstantTwappedTick',
-          rc.Number,
-          Object.fromEntries(poolAddresses.map(address => [address, [address, args.rewardsInfo.twapDuration]]))
-        ),
-        currentRewardsInfo: oneContractManyFunctionMC(
-          rewards,
-          {
-            lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
-            currentPeriod: rc.BigNumberToNumber,
-          }
-        ),
-        rs: oneContractOneFunctionMC(
-          accounting,
-          'getRewardStatus',
-          (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
-          idToIdAndArg(poolAddresses),
-        ),
-        poolsLiquidity: oneContractOneFunctionMC(
-          accounting,
-          'poolLiquidity',
-          rc.BigNumberToString,
-          idToIdAndArg(poolAddresses),
-        ),
-      }
-    )
-
-    return Object.fromEntries(poolAddresses.map(address => [address, {
-      instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
-      twapTick: tickTwapped[address],
-      poolLiquidity: poolsLiquidity[address],
-      cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
-      totalRewards: rs[address].totalRewards.toString(),
-      lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
-      currentPeriod: currentRewardsInfo.currentPeriod,
-    }]))
-  }
-)
 
 export const poolsCurrentDataSlice = createSlice({
   name: 'poolsCurrentData' ,
@@ -124,7 +123,7 @@ export const poolsCurrentDataSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getPoolsCurrentData)
+    builder = getGenericReducerBuilder(builder, getPoolsCurrentData.thunk)
   },
 })
 

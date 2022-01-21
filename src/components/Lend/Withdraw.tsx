@@ -1,7 +1,7 @@
 import { useState } from "react"
 import LargeText from '../library/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForBalances, waitForMarket, waitForContracts, waitForRates, waitForSDI } from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import PositionNumberInput from '../library/PositionNumberInput'
 import PositionMetadata2 from '../library/PositionMetadata2'
@@ -9,7 +9,6 @@ import { reason } from '../library/ErrorMessage'
 import ErrorMessage from '../library/ErrorMessage'
 import { getAPR } from './library'
 import { isZeroish } from '../../utils'
-import RelativeLoading from '../library/RelativeLoading'
 import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import TwoColumnDisplay from '../library/TwoColumnDisplay'
@@ -19,11 +18,13 @@ import SpacedList from '../library/SpacedList'
 const Withdraw = () => {
   const dispatch = useAppDispatch()
 
-  const balances = waitForBalances(selector, dispatch)
-  const market = waitForMarket(selector, dispatch)
-  const rates = waitForRates(selector, dispatch)
-  const sdi = waitForSDI(selector, dispatch)
-  const contracts = waitForContracts(selector, dispatch)
+  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+    'balances',
+    'marketInfo',
+    'ratesInfo',
+    'sdi',
+    'contracts',
+  ], selector, dispatch)
 
   const userAddress = selector(state => state.wallet.address)
 
@@ -31,14 +32,14 @@ const Withdraw = () => {
 
   const dataNull =
     balances === null ||
-    market === null ||
-    rates === null ||
+    marketInfo === null ||
+    ratesInfo === null ||
     sdi === null ||
     contracts === null
 
   const apr = dataNull ? 0 : getAPR({
-    market,
-    rates,
+    marketInfo,
+    ratesInfo,
     sdi,
     lentHue:
       balances === null || contracts === null
@@ -46,7 +47,7 @@ const Withdraw = () => {
         : balances.tokens[contracts.Hue].balances.Accounting
   })
 
-  const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * market.valueOfLendTokensInHue
+  const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * marketInfo.valueOfLendTokensInHue
 
   const failures: { [key in string]: reason } = {
     noValueEntered: {
@@ -63,8 +64,8 @@ const Withdraw = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0
 
-  const convertHueToLendHue = (amount: number) => dataNull ? 1 : amount / market.valueOfLendTokensInHue
-  const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * market.valueOfLendTokensInHue
+  const convertHueToLendHue = (amount: number) => dataNull ? 1 : amount / marketInfo.valueOfLendTokensInHue
+  const convertLendHueToHue = (amount: number) => dataNull ? 1 : amount * marketInfo.valueOfLendTokensInHue
 
   const metadataItems = [
     {

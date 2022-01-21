@@ -1,10 +1,11 @@
+import { RootState } from '../../app/store'
+import { getThunkDependencies, NonNull } from '../waitFor'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
-import { liquidationsInfo } from '../liquidations'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Prices } from '@trustlessfi/typechain'
-import { ProtocolContract, contractsInfo } from '../contracts'
+import { ProtocolContract } from '../contracts'
 import { getLocalStorage } from '../../utils'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
@@ -13,43 +14,42 @@ export type pricesInfo = {
   ethPrice: number,
 }
 
-export interface PricesState extends sliceState<pricesInfo> {}
+export const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'liquidationsInfo'])
 
-export interface pricesArgs {
-  liquidationsInfo: liquidationsInfo
-  contracts: contractsInfo
-  trustlessMulticall: string
-}
+export const getPricesInfo = {
+  stateSelector: (state: RootState) => state.prices,
+  dependencies,
+  thunk:
+    createAsyncThunk(
+      'prices/getPricesInfo',
+      async (args: NonNull<typeof dependencies>): Promise<pricesInfo> => {
+        const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
+        const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
-export const getPricesInfo = createAsyncThunk(
-  'prices/getPricesInfo',
-  async (args: pricesArgs): Promise<pricesInfo> => {
-    const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
-    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+        const { ethPrice } = await executeMulticalls(
+          trustlessMulticall,
+          {
+            ethPrice: oneContractManyFunctionMC(
+              prices,
+              { calculateInstantCollateralPrice: rc.BigNumberUnscale },
+              { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },
+            ),
+          }
+        )
 
-    const { ethPrice } = await executeMulticalls(
-      trustlessMulticall,
-      {
-        ethPrice: oneContractManyFunctionMC(
-          prices,
-          { calculateInstantCollateralPrice: rc.BigNumberUnscale },
-          { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },
-        ),
+        return { ethPrice: ethPrice.calculateInstantCollateralPrice }
       }
     )
-
-    return { ethPrice: ethPrice.calculateInstantCollateralPrice }
-  }
-)
+}
 
 const name = 'prices'
 
 export const pricesSlice = createSlice({
   name,
-  initialState: getStateWithValue<pricesInfo>(getLocalStorage(name, null)) as PricesState,
+  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<pricesInfo>,
   reducers: {},
   extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getPricesInfo)
+    builder = getGenericReducerBuilder(builder, getPricesInfo.thunk)
   },
 });
 

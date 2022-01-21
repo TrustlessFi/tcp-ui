@@ -12,15 +12,7 @@ import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
-import {
-  waitForBalances,
-  waitForMarket,
-  waitForRates,
-  waitForPrices,
-  waitForLiquidations,
-  waitForContracts,
-  waitForPositions
-} from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
@@ -29,7 +21,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
-import { Button, Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
+import { Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
@@ -44,14 +36,25 @@ const UpdatePosition = () => {
 
   const positionID = Number(params.positionID)
 
-  const liquidations = waitForLiquidations(selector, dispatch)
-  const balances = waitForBalances(selector, dispatch)
-  const priceInfo = waitForPrices(selector, dispatch)
-  const market = waitForMarket(selector, dispatch)
-  const rates = waitForRates(selector, dispatch)
-  const contracts = waitForContracts(selector, dispatch)
-  const positions = waitForPositions(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
+  const {
+    liquidationsInfo,
+    balances,
+    pricesInfo,
+    marketInfo,
+    ratesInfo,
+    contracts,
+    positions,
+    userAddress,
+  } = waitFor([
+    'liquidationsInfo',
+    'balances',
+    'pricesInfo',
+    'marketInfo',
+    'ratesInfo',
+    'contracts',
+    'positions',
+    'userAddress',
+  ], selector, dispatch)
 
   const defaultCollateralizationRatio = 2.5
   const [collateralCount, setCollateralCount] = useState(0)
@@ -60,11 +63,11 @@ const UpdatePosition = () => {
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
 
   const dataNull =
-    liquidations === null ||
+    liquidationsInfo === null ||
     balances === null ||
-    priceInfo === null ||
-    market === null ||
-    rates === null ||
+    pricesInfo === null ||
+    marketInfo === null ||
+    ratesInfo === null ||
     contracts === null ||
     positions === null ||
     userAddress === null
@@ -87,29 +90,29 @@ const UpdatePosition = () => {
   const isDebtChanged = debtIncrease !== null && Math.abs(debtIncrease) > 0.1
   const isDebtDecrease = isDebtChanged && debtIncrease < 0
 
-  const collateralization = priceInfo === null ? null : (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralization = pricesInfo === null ? null : (collateralCount * pricesInfo.ethPrice) / debtCount
   const collateralizationDisplay = collateralization === null ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
   const previousCollateralization =
-    priceInfo === null || position === null
+    pricesInfo === null || position === null
     ? null
-    : (position.collateralCount * priceInfo.ethPrice) / position.debtCount
+    : (position.collateralCount * pricesInfo.ethPrice) / position.debtCount
 
-  const liquidationPrice = market === null ? 0 : (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPrice = marketInfo === null ? 0 : (debtCount * marketInfo.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
 
   const previousLiquidationPrice =
-    market === null
+    marketInfo === null
     || position === null
     ? null
-    : (position.debtCount * market.collateralizationRequirement) / position.collateralCount
+    : (position.debtCount * marketInfo.collateralizationRequirement) / position.collateralCount
 
-  const collateralizationRequirement = market === null ? null : market.collateralizationRequirement
+  const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
-  const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const interestRate = dataNull ? 0 : (ratesInfo.positiveInterestRate ? ratesInfo.interestRateAbsoluteValue : -ratesInfo.interestRateAbsoluteValue) * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
-  const ethPrice = priceInfo === null ? null : priceInfo.ethPrice
+  const ethPrice = pricesInfo === null ? null : pricesInfo.ethPrice
   const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
 
   const txCostBuffer = 0.05
@@ -159,8 +162,8 @@ const UpdatePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: `Position has less than ${market === null ? '-' : numDisplay(market.minPositionSize)} Hue.`,
-      failing: debtIsFocused || market === null ? false : 0 < debtCount && debtCount < market.minPositionSize,
+      message: `Position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue.`,
+      failing: debtIsFocused || marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize,
     },
     insufficientEthInWallet: {
       message: 'Not enough Eth in wallet.',
@@ -177,14 +180,14 @@ const UpdatePosition = () => {
         : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
     },
     undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(market === null ? 0 : market.collateralizationRequirement * 100) + '%.',
+      message: 'Position has a collateralization less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
         collateralIsFocused ||
         debtIsFocused ||
-        market === null ||
+        marketInfo === null ||
         collateralization === null
         ? false
-        : debtCount !== 0 && collateralization < market.collateralizationRequirement,
+        : debtCount !== 0 && collateralization < marketInfo.collateralizationRequirement,
     },
   }
 

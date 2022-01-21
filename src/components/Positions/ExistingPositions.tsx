@@ -2,7 +2,7 @@ import { Button } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForPositions , waitForPrices } from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import Center from '../library/Center'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
@@ -11,18 +11,24 @@ import ConnectWalletButton from '../library/ConnectWalletButton'
 import Text from '../library/Text'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import { TransactionType } from '../../slices/transactions'
-import { waitForContracts } from '../../slices/waitFor'
 
 const ExistingPositionsTable = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const positions = waitForPositions(selector, dispatch)
-  const priceInfo = waitForPrices(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
-  const contracts = waitForContracts(selector, dispatch)
+  const {
+    positions,
+    pricesInfo,
+    userAddress,
+    contracts,
+  } = waitFor([
+    'positions',
+    'pricesInfo',
+    'userAddress',
+    'contracts',
+  ], selector, dispatch)
 
-  if (positions === null || priceInfo === null || userAddress === null || contracts === null) {
+  if (positions === null || pricesInfo === null || userAddress === null || contracts === null) {
     return (
       <div style={{position: 'relative'}}>
         <RelativeLoading show={userAddress !== null} />
@@ -55,7 +61,7 @@ const ExistingPositionsTable = () => {
   }
 
   const rows = Object.values(positions).map(position => {
-    const collateralization = (position.collateralCount * priceInfo.ethPrice) / position.debtCount
+    const collateralization = (position.collateralCount * pricesInfo.ethPrice) / position.debtCount
 
     return {
       key: position.id,
@@ -77,8 +83,13 @@ const ExistingPositions = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const positions = waitForPositions(selector, dispatch)
-  const contracts = waitForContracts(selector, dispatch)
+  const {
+    positions,
+    contracts,
+  } = waitFor([
+    'positions',
+    'contracts',
+  ], selector, dispatch)
 
 
   const positionsIDsWithRewards =

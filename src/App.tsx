@@ -1,6 +1,6 @@
 import { ReactNode, FunctionComponent, useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from './app/hooks'
-import getProvider from './utils/getProvider'
+import { getNullableProvider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Lend from './components/Lend/Lend'
@@ -45,19 +45,21 @@ const tabToRender: {[key in Tab]: ReactNode} = {
 const App: FunctionComponent<{}> = () => {
   const dispatch = useAppDispatch()
   const transactions = selector(state => state.transactions)
-  const provider = getProvider()
 
   // TODO have this filter on only transactions that are relevant to this view: chainID and address
   // use getAllUserTxs helper function
   useEffect(() => {
-    const fetchTransactions = () =>
-      Promise.all(
-        Object.values(transactions)
-          .filter(tx => tx.status === TransactionStatus.Pending)
-          .map(tx => waitForTransaction(tx, provider, dispatch))
-      )
+    const provider = getNullableProvider()
+    if (provider !== null) {
+      const fetchTransactions = () =>
+        Promise.all(
+          Object.values(transactions)
+            .filter(tx => tx.status === TransactionStatus.Pending)
+            .map(tx => waitForTransaction(tx, provider, dispatch))
+        )
 
-    fetchTransactions()
+      fetchTransactions()
+    }
   }, [])
 
 
