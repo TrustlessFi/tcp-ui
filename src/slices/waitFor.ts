@@ -37,19 +37,16 @@ const getWaitFunction = <
     if (Object.values(inputArgs).includes(null)) return null
 
     // TODO get rid of undefined checks
-    if (state !== undefined && state.error !== null) {
+    if (state.error !== null) {
       console.error(state.error.message)
       throw state.error
     }
 
-    if (
-      state === undefined ||
-      (state.value === null && !stateSelector(store.getState()).loading)
-    ) {
+    if (state.value === null && !stateSelector(store.getState()).loading) {
       dispatch(thunk(inputArgs as NonNull<Dependencies>))
     }
 
-    return state === undefined ? null : state.value
+    return state.value
   }
 
 const getStateSelector = <T>(selectorFunc: (state: RootState) => T) =>
