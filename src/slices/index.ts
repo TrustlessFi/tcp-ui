@@ -1,4 +1,5 @@
 import { SerializedError, AsyncThunk, Draft, ActionReducerMapBuilder } from '@reduxjs/toolkit'
+import { timeS } from '../utils'
 
 export interface sliceState<T> {
   loading: boolean
@@ -12,12 +13,34 @@ export const initialState: sliceState<unknown> = {
   error: null,
 }
 
-export const getInitialStateCopy = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
+export const getNullSliceState = <T>(): sliceState<T> => JSON.parse(JSON.stringify(initialState))
 
-export const getStateWithValue = <T>(value: T | null): sliceState<T> => {
-  const state = getInitialStateCopy<T>()
+const getStateWithValue = <T>(value: T | null = null): sliceState<T> => {
+  const state = getNullSliceState<T>()
   state.value = value
   return state
+}
+
+export const getLocalStorageState = <T>(name: string, defaultValue: T): T  => {
+  const rawValue = localStorage.getItem(name)
+
+  if (rawValue === null) return defaultValue
+
+  const sliceStateWithExpiration = JSON.parse(rawValue)
+
+  if (sliceStateWithExpiration.expiration < timeS()) {
+    localStorage.removeItem(name)
+    return defaultValue
+  }
+
+  return sliceStateWithExpiration.sliceState
+}
+
+export const getLocalStorageSliceState = <T>(name: string): sliceState<T> =>
+  getStateWithValue(getLocalStorageState(name, null as T | null))
+
+export type NonNullValues<O> = {
+  [K in keyof O]-?: NonNullable<O[K]>
 }
 
 export const getGenericReducerBuilder = <Args extends {}, Value>(

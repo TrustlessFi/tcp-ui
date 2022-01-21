@@ -1,6 +1,7 @@
 import { Contract } from 'ethers'
 import { createSlice, PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
-import { getLocalStorage, assertUnreachable } from '../../utils'
+import { assertUnreachable } from '../../utils'
+import { getLocalStorageState } from '../'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
@@ -559,7 +560,7 @@ const name = 'transactions'
 
 export const transactionsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, {}) as TransactionState,
+  initialState: getLocalStorageState<TransactionState>(name, {}),
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
       const userAddress = action.payload

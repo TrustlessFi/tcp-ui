@@ -4,9 +4,9 @@ import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { LiquidityPosition } from '../../slices/fetchNodes'
+import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol } from '../../utils/'
-import { poolMetadata } from '../../slices/fetchNodes'
+import { poolMetadata } from '../../slices/poolsMetadata'
 import Center from '../library/Center'
 import SimpleTable from '../library/SimpleTable'
 import SpacedList from '../library/SpacedList'
@@ -14,8 +14,7 @@ import { TransactionType } from '../../slices/transactions'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 
-
-const comparator = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
+const sortPoolsByPositionID = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
 
 const LiquidityPositionsTable = (
   { pool }: {
@@ -34,7 +33,7 @@ const LiquidityPositionsTable = (
   const poolLiquidityPositions =
     liquidityPositions === null
     ? []
-    : Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)
+    : Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(sortPoolsByPositionID)
 
   const [inverted, setInverted] = useState(false)
 

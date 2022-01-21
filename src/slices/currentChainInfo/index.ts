@@ -1,14 +1,20 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
-import { sliceState } from '../'
-import { initialState, getGenericReducerBuilder } from '../'
+import { getThunkDependencies } from '../fetchNodes'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getNullSliceState, getGenericReducerBuilder, NonNullValues } from '../'
+
 import { getMulticallContract} from '../../utils/getContract'
 import {
   executeMulticalls,
   rc,
   oneContractManyFunctionMC,
 } from '@trustlessfi/multicall'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+
+export interface currentChainInfo {
+  blockNumber: number
+  blockTimestamp: number
+  chainID: number
+}
 
 const dependencies = getThunkDependencies(['trustlessMulticall'])
 
@@ -18,7 +24,7 @@ export const getCurrentChainInfo = {
   thunk:
     createAsyncThunk(
       'currentChainInfo/getCurrentChainInfo',
-      async (args: NonNull<typeof dependencies>) => {
+      async (args: NonNullValues<typeof dependencies>): Promise<currentChainInfo> => {
         const multicall = getMulticallContract(args.trustlessMulticall)
 
         const { chainInfo } = await executeMulticalls(
@@ -46,7 +52,7 @@ export const getCurrentChainInfo = {
 
 export const currentChainInfoSlice = createSlice({
   name: 'currentChainInfo',
-  initialState: initialState as sliceState<FetchNodes['currentChainInfo']>,
+  initialState: getNullSliceState<currentChainInfo>(),
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getCurrentChainInfo.thunk)

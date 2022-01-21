@@ -3,8 +3,7 @@ import { Slice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store'
 import { minutes, timeS } from '../../utils/'
 import { transactionsSlice, TransactionState } from '../../slices/transactions'
-import { contractsSlice, ContractsState } from '../../slices/contracts'
-import { FetchNodes } from '../../slices/fetchNodes'
+import { contractsSlice, contractsInfo } from '../../slices/contracts'
 import { liquidationsSlice } from '../../slices/liquidations'
 import { marketSlice } from '../../slices/market'
 import { pricesSlice } from '../../slices/prices'
@@ -16,23 +15,33 @@ import { uniswapContractsSlice, uniswapContractsInfo } from '../../slices/uniswa
 import { poolsMetadataSlice } from '../../slices/poolsMetadata'
 import { poolsCurrentDataSlice } from '../../slices/poolsCurrentData'
 import { systemDebtSlice } from '../../slices/systemDebt'
-import { notificationsSlice, NotificationState } from '../../slices/notifications'
+import { notificationsSlice, notificationState } from '../../slices/notifications'
 import { tokensAddedToWalletSlice, tokensAddedToWalletState } from '../../slices/tokensAddedToWallet'
+import { rewardsInfo } from '../../slices/rewards'
+import { liquidationsInfo } from '../../slices/liquidations'
+import { poolsMetadata } from '../../slices/poolsMetadata'
+import { marketInfo } from '../../slices/market'
+import { balances } from '../../slices/balances'
+import { positions } from '../../slices/positions'
+import { poolsCurrentData } from '../../slices/poolsCurrentData'
+import { pricesInfo } from '../../slices/prices'
+import { ratesInfo } from '../../slices/rates'
+import { sdi } from '../../slices/systemDebt'
 
 type slicesState =
   TransactionState |
-  ContractsState |
-  FetchNodes['poolsMetadata'] |
-  FetchNodes['liquidationsInfo'] |
-  FetchNodes['marketInfo'] |
-  FetchNodes['balances'] |
-  FetchNodes['positions'] |
-  FetchNodes['poolsCurrentData'] |
-  FetchNodes['pricesInfo'] |
-  FetchNodes['ratesInfo'] |
-  FetchNodes['rewardsInfo'] |
-  FetchNodes['sdi'] |
-  NotificationState |
+  contractsInfo |
+  poolsMetadata |
+  liquidationsInfo |
+  marketInfo |
+  balances |
+  positions |
+  poolsCurrentData |
+  pricesInfo |
+  ratesInfo |
+  rewardsInfo |
+  sdi |
+  notificationState |
   uniswapContractsInfo |
   tokensAddedToWalletState |
   null
@@ -54,11 +63,6 @@ const LONG_EXPIRATION = minutes(30)
 export const slicesToPersist: persistedSlices = {
 
   // Simple slices
-  [contractsSlice.name]: {
-    slice: contractsSlice,
-    ttl: LONG_EXPIRATION,
-    getState: (state: RootState) => state.contracts
-  },
   [notificationsSlice.name]: {
     slice: notificationsSlice,
     ttl: SHORT_EXPIRATION,
@@ -76,6 +80,11 @@ export const slicesToPersist: persistedSlices = {
   },
 
   // Slices with loadable state
+  [contractsSlice.name]: {
+    slice: contractsSlice,
+    ttl: LONG_EXPIRATION,
+    getState: (state: RootState) => state.contracts.value
+  },
   [balancesSlice.name]: {
     slice: balancesSlice,
     ttl: SHORT_EXPIRATION,
@@ -145,7 +154,7 @@ const LocalStorageManager = () => {
     const year2120 = 4733539200
     const ttl = slice.ttl
     const expiration = ttl === NO_EXPIRATION ? year2120 : timeS() + ttl
-    const stateWithTimestamp = { expiration, sliceState }
+    const stateWithTimestamp: {expiration: number, sliceState: unknown} = { expiration, sliceState }
     localStorage.setItem(key, JSON.stringify(stateWithTimestamp))
   }
   return <></>

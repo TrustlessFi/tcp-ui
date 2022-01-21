@@ -1,13 +1,21 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
+import { getThunkDependencies } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
+import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Rewards } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { getLocalStorage } from '../../utils'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+
+export interface rewardsInfo {
+  twapDuration: number
+  liquidationPenalty: number
+  weth: string
+  countPools: number
+  firstPeriod: number
+  periodLength: number
+}
 
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
 
@@ -17,7 +25,7 @@ export const getRewardsInfo = {
   thunk:
     createAsyncThunk(
       'rewards/getRewardsInfo',
-      async (args: NonNull<typeof dependencies>) => {
+      async (args: NonNullValues<typeof dependencies>): Promise<rewardsInfo> => {
         const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -48,7 +56,7 @@ const name = 'rewards'
 
 export const rewardsSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['rewardsInfo']>,
+  initialState: getLocalStorageSliceState<rewardsInfo>(name),
   reducers: {
     clearRewardsInfo: (state) => {
       state.value = null

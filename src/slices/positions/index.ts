@@ -1,8 +1,7 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes, Position } from '../fetchNodes'
+import { getThunkDependencies, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, initialState } from '../'
-import { getGenericReducerBuilder } from '../'
+import { sliceState, initialState, getGenericReducerBuilder, NonNullValues } from '../'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -12,6 +11,20 @@ import { PromiseType } from '@trustlessfi/utils'
 import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 
+export interface Position {
+  collateralCount: number,
+  debtCount: number,
+  approximateRewards: number,
+  rewards: number,
+  id: number,
+  lastBorrowTime: number,
+  updating: boolean,
+  updated: boolean,
+  claimingRewards: boolean,
+  claimedRewards: boolean,
+}
+
+export interface positions { [key: number]: Position }
 
 const dependencies = getThunkDependencies([
   'userAddress',
@@ -27,7 +40,7 @@ export const getPositions = {
   thunk:
     createAsyncThunk(
       'positions/getPositions',
-      async (args: NonNull<typeof dependencies>) => {
+      async (args: NonNullValues<typeof dependencies>) => {
         const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
         const positionNFT = getContract(args.contracts[ProtocolContract.HuePositionNFT], ProtocolContract.HuePositionNFT) as HuePositionNFT
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)

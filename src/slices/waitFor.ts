@@ -16,8 +16,8 @@ import { getBalances } from './balances'
 import { getContracts } from './contracts'
 import { getCurrentChainInfo } from './currentChainInfo'
 
-import { sliceState } from './'
-import { NonNull, FetchNode, FetchNodes } from './fetchNodes'
+import { sliceState, NonNullValues } from './'
+import { FetchNode, FetchNodes } from './fetchNodes'
 
 const getWaitFunction = <
     Value,
@@ -25,8 +25,9 @@ const getWaitFunction = <
   >(waitForData: {
     stateSelector: (state: RootState) => sliceState<Value>
     dependencies: Dependencies
-    thunk: AsyncThunk<Value, NonNull<Dependencies>, {}>
+    thunk: AsyncThunk<Value, NonNullValues<Dependencies>, {}>
   }) => (selector: AppSelector, dispatch: AppDispatch) => {
+
     const { stateSelector, thunk, dependencies} = waitForData
     const state = selector(stateSelector)
 
@@ -36,14 +37,13 @@ const getWaitFunction = <
 
     if (Object.values(inputArgs).includes(null)) return null
 
-    // TODO get rid of undefined checks
     if (state.error !== null) {
       console.error(state.error.message)
       throw state.error
     }
 
     if (state.value === null && !stateSelector(store.getState()).loading) {
-      dispatch(thunk(inputArgs as NonNull<Dependencies>))
+      dispatch(thunk(inputArgs as NonNullValues<Dependencies>))
     }
 
     return state.value

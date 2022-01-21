@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { tokenMetadata } from '../../slices/fetchNodes'
+import { tokenMetadata } from '../../slices/poolsMetadata'
 import {
   numDisplay, getSpaceForFee, tickToPriceDisplay, displaySymbol,
   getPoolName, isZeroish,

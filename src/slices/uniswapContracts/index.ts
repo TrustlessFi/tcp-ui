@@ -2,7 +2,7 @@ import { Contract } from "ethers"
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { SwapRouter } from '@trustlessfi/typechain'
-import { getLocalStorage } from '../../utils'
+import { getLocalStorageState } from '../'
 import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
@@ -53,7 +53,7 @@ const name = 'uniswapContracts'
 
 export const uniswapContractsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, initialState) as UniswapContractsState,
+  initialState: getLocalStorageState(name, initialState) as UniswapContractsState,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getContracts)

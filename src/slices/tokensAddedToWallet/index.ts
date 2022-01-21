@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { getLocalStorage } from '../../utils'
+import { getLocalStorageState } from '../'
 
 export enum WalletToken {
   Hue = 'Hue',
@@ -31,7 +31,7 @@ const name = 'tokensAddedToWallet'
 
 export const tokensAddedToWalletSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, initialState) as tokensAddedToWalletState,
+  initialState: getLocalStorageState(name, initialState) as tokensAddedToWalletState,
   reducers: {
     tokenAddedToWallet: (state, action: PayloadAction<walletTokenID>) => {
       if (state[action.payload.walletToken][action.payload.chainID] === undefined) {

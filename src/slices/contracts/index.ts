@@ -1,14 +1,15 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../fetchNodes'
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { sliceState, initialState } from '../'
+import { getThunkDependencies } from '../fetchNodes'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
+
 import { Governor } from '@trustlessfi/typechain'
-import { getLocalStorage } from '../../utils'
-import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import getContract from '../../utils/getContract';
 import  ProtocolContract, { RootContract } from './ProtocolContract'
+
+export type contractsInfo = { [key in ProtocolContract]: string }
 
 const dependencies = getThunkDependencies(['governor', 'trustlessMulticall'])
 
@@ -19,7 +20,7 @@ export const getContracts =
   thunk:
     createAsyncThunk(
       'contracts/getContracts',
-      async (args: NonNull<typeof dependencies>): Promise<contractsInfo> => {
+      async (args: NonNullValues<typeof dependencies>): Promise<contractsInfo> => {
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
         const governor = getContract(args.governor, RootContract.Governor) as Governor
 
@@ -73,15 +74,11 @@ export const getContracts =
     )
 }
 
-export type contractsInfo = { [key in ProtocolContract]: string }
-
-export interface ContractsState extends sliceState<contractsInfo> { }
-
 const name = 'contracts'
 
 export const contractsSlice = createSlice({
   name,
-  initialState: getLocalStorage(name, initialState) as ContractsState,
+  initialState: getLocalStorageSliceState<contractsInfo>(name),
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getContracts.thunk)

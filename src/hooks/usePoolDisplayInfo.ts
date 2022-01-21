@@ -1,7 +1,7 @@
 import { nearestUsableTick } from '@uniswap/v3-sdk'
 import { useState, useEffect, useRef } from 'react'
 import { getSpaceForFee } from '../utils'
-import { poolMetadata } from '../slices/fetchNodes'
+import { poolMetadata } from '../slices/poolsMetadata'
 
 export default function usePoolDisplayInfo (pool?: poolMetadata | null, tick?: number | null) {
   const spacing = getSpaceForFee(!pool ? 0 : pool.fee)

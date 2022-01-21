@@ -1,13 +1,18 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
-import getContract, { getMulticallContract } from '../../utils/getContract'
+import { getThunkDependencies } from '../fetchNodes'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
 
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { getLocalStorage } from '../../utils'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+
+export interface liquidationsInfo {
+  twapDuration: number
+  discoveryIncentive: number
+  liquidationIncentive: number
+}
 
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
 
@@ -17,7 +22,7 @@ export const getLiquidationsInfo = {
   thunk:
     createAsyncThunk(
     'liquidations/getLiquidationsInfo',
-    async (args: NonNull<typeof dependencies>) => {
+    async (args: NonNullValues<typeof dependencies>): Promise<liquidationsInfo> => {
       const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
       const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -44,7 +49,7 @@ const name = 'liquidations'
 
 export const liquidationsSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['liquidationsInfo']>,
+  initialState: getLocalStorageSliceState<liquidationsInfo>(name),
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getLiquidationsInfo.thunk)

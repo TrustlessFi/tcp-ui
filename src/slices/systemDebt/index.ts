@@ -1,13 +1,20 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
+import { getThunkDependencies } from '../fetchNodes'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { getLocalStorageSliceState, getLocalStorageState, getGenericReducerBuilder, NonNullValues } from '../'
+
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 
 import { Accounting } from '@trustlessfi/typechain';
 import ProtocolContract from '../contracts/ProtocolContract'
-import { getLocalStorage } from '../../utils'
+
+export interface sdi {
+  debt: number
+  totalTCPRewards: number
+  cumulativeDebt: number
+  debtExchangeRate: number
+}
 
 const dependencies = getThunkDependencies(['contracts'])
 
@@ -17,7 +24,7 @@ export const getSystemDebtInfo = {
   thunk:
     createAsyncThunk(
       'systemDebt/getSystemDebtInfo',
-      async (args: NonNull<typeof dependencies>) => {
+      async (args: NonNullValues<typeof dependencies>): Promise<sdi> => {
         const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
 
         const sdi = await accounting.getSystemDebtInfo()
@@ -36,7 +43,7 @@ const name = 'systemDebt'
 
 export const systemDebtSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['sdi']>,
+  initialState: getLocalStorageSliceState<sdi>(name),
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getSystemDebtInfo.thunk)

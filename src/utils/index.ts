@@ -2,7 +2,7 @@ import { BigNumber, BigNumberish, utils, Contract } from "ethers"
 import JSBI from "jsbi"
 import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
-import { poolMetadata } from '../slices/fetchNodes'
+import { poolMetadata } from '../slices/poolsMetadata'
 import getProvider from './getProvider'
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -159,21 +159,6 @@ export const msToS = (ms: number) => Math.floor(ms / 1000)
 
 export const timeS = () => msToS(timeMS())
 
-// ======================= Local Storage ============================
-export const getLocalStorage = (key: string, defaultValue: any = null) => {
-  const rawValue = localStorage.getItem(key)
-
-  if (rawValue === null) return defaultValue
-
-  const sliceStateWithExpiration = JSON.parse(rawValue)
-
-  if (sliceStateWithExpiration.expiration < timeS()) {
-    localStorage.removeItem(key)
-    return defaultValue
-  }
-
-  return sliceStateWithExpiration.sliceState
-}
 
 export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 

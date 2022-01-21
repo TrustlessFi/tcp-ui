@@ -1,11 +1,9 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
+import { getThunkDependencies, FetchNodes } from '../fetchNodes'
+import { sliceState, initialState, getGenericReducerBuilder, NonNullValues } from '../'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { initialState, getGenericReducerBuilder } from '../'
-import { sliceState } from '../'
 
 import { Contract } from 'ethers'
-
 import ProtocolContract from '../contracts/ProtocolContract'
 import getProvider from '../../utils/getProvider'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -18,12 +16,21 @@ import {
   idToIdAndNoArg,
   idToIdAndArg,
 } from '@trustlessfi/multicall'
-
 import { Prices, UniswapV3Pool, Accounting, Rewards } from '@trustlessfi/typechain'
-
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
 
+export interface poolsCurrentData {
+  [poolID: string]: {
+    instantTick: number
+    twapTick: number
+    poolLiquidity: string
+    cumulativeLiquidity: string
+    totalRewards: string
+    lastPeriodGlobalRewardsAccrued: number
+    currentPeriod: number
+  }
+}
 
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'poolsMetadata', 'rewardsInfo'])
 
@@ -32,7 +39,7 @@ export const getPoolsCurrentData = {
   dependencies,
   thunk: createAsyncThunk(
     'poolsCurrentData/getPoolsCurrentData',
-    async (args: NonNull<typeof dependencies>) => {
+    async (args: NonNullValues<typeof dependencies>) => {
       const provider = getProvider()
       const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards

@@ -1,7 +1,8 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
-import { sliceState } from '../'
-import { initialState, getGenericReducerBuilder } from '../'
+import { getThunkDependencies } from '../fetchNodes'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getNullSliceState, getGenericReducerBuilder, NonNullValues } from '../'
+
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls,
@@ -9,8 +10,32 @@ import { executeMulticalls,
   oneContractManyFunctionMC,
   manyContractOneFunctionMC,
 } from '@trustlessfi/multicall'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import ProtocolContract from '../contracts/ProtocolContract'
+
+export interface balances {
+  userEthBalance: number
+  tokens: {
+    [tokenAddress: string]:  {
+      token: {
+        address: string,
+        name: string,
+        symbol: string,
+        decimals: number,
+      }
+      userBalance: number
+      approval: {
+        [key in ProtocolContract.Market | ProtocolContract.Rewards]: {
+          allowance: string
+          approving: boolean
+          approved: boolean
+        }
+      }
+      balances: {
+        [ProtocolContract.Accounting]: number
+      }
+    }
+  }
+}
 
 const dependencies = getThunkDependencies([
   'contracts',
@@ -26,7 +51,7 @@ export const getBalances = {
   thunk:
     createAsyncThunk(
       'balances/getBalances',
-      async (args: NonNull<typeof dependencies>) => {
+      async (args: NonNullValues<typeof dependencies>): Promise<balances> => {
         const multicall = getMulticallContract(args.trustlessMulticall)
         const tokenContract = addressToERC20(zeroAddress)
 
@@ -164,7 +189,7 @@ const name = 'balances'
 
 export const balancesSlice = createSlice({
   name,
-  initialState: initialState as sliceState<FetchNodes['balances']>,
+  initialState: getNullSliceState<balances>(),
   reducers: {
     clearBalances: (state) => {
       state.value = null
