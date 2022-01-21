@@ -3,12 +3,6 @@ import { contractsInfo } from './contracts'
 import ProtocolContract from './contracts/ProtocolContract'
 import { Fee } from '../utils/'
 
-interface approval {
-  allowance: string
-  approving: boolean
-  approved: boolean
-}
-
 export interface poolMetadata {
   fee: Fee
   rewardsPortion: number
@@ -16,25 +10,6 @@ export interface poolMetadata {
   address: string
   token0: tokenMetadata
   token1: tokenMetadata
-}
-
-type tokenBalances = {
-  [tokenAddress: string]:  {
-    token: {
-      address: string,
-      name: string,
-      symbol: string,
-      decimals: number,
-    }
-    userBalance: number
-    approval: {
-      [ProtocolContract.Market]: approval
-      [ProtocolContract.Rewards]: approval
-    }
-    balances: {
-      [ProtocolContract.Accounting]: number
-    }
-  }
 }
 
 export interface tokenMetadata {
@@ -76,7 +51,27 @@ export interface FetchNodes {
   userAddress: string,
   balances: {
     userEthBalance: number
-    tokens: tokenBalances
+    tokens: {
+      [tokenAddress: string]:  {
+        token: {
+          address: string,
+          name: string,
+          symbol: string,
+          decimals: number,
+        }
+        userBalance: number
+        approval: {
+          [key in ProtocolContract.Market | ProtocolContract.Rewards]: {
+            allowance: string
+            approving: boolean
+            approved: boolean
+          }
+        }
+        balances: {
+          [ProtocolContract.Accounting]: number
+        }
+      }
+    }
   },
   contracts: contractsInfo,
   currentChainInfo: {
@@ -167,11 +162,5 @@ export type NonNull<O> = {
   [K in keyof O]-?: NonNullable<O[K]>
 }
 
-const allPossibleArgs =
-  Object.fromEntries(
-    Object.entries(fetchNodes)
-      .map(([key, _val]) => [key, null])
-  ) as { [key in FetchNode]: FetchNodes[key] | null}
-
 export const getThunkDependencies = <R extends FetchNode>(val: R[]) =>
-  Object.fromEntries(val.map(key => [key, allPossibleArgs[key]])) as Pick<typeof allPossibleArgs, R>
+  Object.fromEntries(val.map(key => [key, fetchNodes[key]])) as Pick<typeof fetchNodes, R>
