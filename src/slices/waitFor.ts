@@ -18,6 +18,7 @@ import { contractsSlice } from './contracts'
 import { rootContractsSlice } from './rootContracts'
 import { currentChainInfoSlice } from './currentChainInfo'
 import { userAddressSlice } from './userAddress'
+import { uniswapContractsSlice } from './uniswapContracts'
 
 import { sliceState, NonNullValues } from './'
 import { FetchNode, FetchNodes } from './fetchNodes'
@@ -84,6 +85,7 @@ const waitForImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDi
   ratesInfo: getWaitFunction(ratesInfoSlice),
   rewardsInfo: getWaitFunction(rewardsInfoSlice),
   sdi: getWaitFunction(systemDebtSlice),
+  uniswapContracts: getWaitFunction(uniswapContractsSlice),
 }
 
 const waitFor = <RequestedNodes extends FetchNode>(

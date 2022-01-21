@@ -1,5 +1,5 @@
 import { Contract } from 'ethers'
-import { createSlice, PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
+import { PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { assertUnreachable } from '../../utils'
 import { getLocalStorageState } from '../'
 import { waitingForMetamask, metamaskComplete } from '../wallet'

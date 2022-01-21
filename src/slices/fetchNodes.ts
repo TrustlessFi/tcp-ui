@@ -16,6 +16,7 @@ import { ratesInfo } from './rates'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
+import { uniswapContracts } from './uniswapContracts'
 
 export interface FetchNodes {
   chainID: ChainID
@@ -36,6 +37,7 @@ export interface FetchNodes {
   ratesInfo: ratesInfo
   rewardsInfo: rewardsInfo
   sdi: sdi
+  uniswapContracts: uniswapContracts
 }
 
 export type FetchNode = keyof FetchNodes
@@ -59,8 +61,8 @@ const fetchNodes: {[node in keyof FetchNodes]: FetchNodes[node] | null} = {
   ratesInfo: null,
   rewardsInfo: null,
   sdi: null,
+  uniswapContracts: null,
 }
-
 
 export type thunkDependencies<R extends FetchNode> = Pick<typeof fetchNodes, R>
 

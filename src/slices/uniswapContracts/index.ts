@@ -8,9 +8,9 @@ import { RootState } from '../../app/store'
 import { thunkArgs } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 
-export enum UniswapContract {
-  Factory = 'Factory',
-  Weth = 'Weth',
+export interface uniswapContracts {
+  weth: string
+  factory: string
 }
 
 const partialUniswapContractsSlice = createChainDataSlice({
@@ -35,8 +35,8 @@ const partialUniswapContractsSlice = createChainDataSlice({
       ))
 
       return {
-        Weth: uniswapContracts.WETH9,
-        Factory: uniswapContracts.factory,
+        weth: uniswapContracts.WETH9,
+        factory: uniswapContracts.factory,
       }
     }
 })
