@@ -185,8 +185,10 @@ export const unique = <T>(array: Array<T>): Array<T> =>
 export const arrayToObject = (array: Array<unknown>) =>
   Object.fromEntries(array.map((value, index) => [index, value]))
 
+/// TYPES
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
-// type PromiseType = PromiseType<typeof promisedOne> // => number
+
+export type Merge<A, B> = { [K in keyof (A | B)]: K extends keyof B ? B[K] : A[K] };
 
 
 export const parseMetamaskError = (error: any): string[] => {

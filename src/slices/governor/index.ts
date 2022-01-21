@@ -1,45 +1,34 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getNullSliceState, getGenericReducerBuilder, NonNullValues } from '../'
-
+import { thunkArgs } from '../fetchNodes'
 import { Governor } from '@trustlessfi/typechain'
 import { RootContract } from '../contracts/ProtocolContract'
 import getContract from '../../utils/getContract'
+import { createChainDataSlice } from '../'
 
 export interface governorInfo {
   phase: number
 }
 
-const dependencies = getThunkDependencies(['governor'])
-
-export const getGovernorInfo = {
-  stateSelector: (state: RootState) => state.governor,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-      'governor/getGovernorInfo',
-      async (args: NonNullValues<typeof dependencies>) => {
-        const governor = getContract(args.governor, RootContract.Governor) as Governor
-
-        const [
-          phase,
-        ] = await Promise.all([
-          governor.currentPhase(),
-        ])
-
-        return { phase }
-      }
-    )
-}
-
-export const governorSlice = createSlice({
+const _governorSlice = createChainDataSlice({
   name: 'governor',
-  initialState: getNullSliceState<governorInfo>(),
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getGovernorInfo.thunk)
-  },
+  dependencies: ['governor'],
+  thunkFunction:
+    async (args: thunkArgs<'governor'>) => {
+      const governor = getContract(args.governor, RootContract.Governor) as Governor
+
+      const [
+        phase,
+      ] = await Promise.all([
+        governor.currentPhase(),
+      ])
+
+      return { phase }
+    },
 })
 
-export default governorSlice.reducer
+export const governorSlice = {
+  ..._governorSlice,
+  stateSelector: (state: RootState) => state.governor
+}
+
+export default _governorSlice.slice.reducer

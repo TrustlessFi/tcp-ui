@@ -1,8 +1,8 @@
 import { AsyncThunk } from '@reduxjs/toolkit'
 import { AppDispatch, store, RootState } from '../app/store'
 import { AppSelector } from '../app/hooks'
-import { getGovernorInfo } from './governor'
-import { getMarketInfo } from './market'
+import { governorSlice } from './governor'
+import { marketSlice } from './market'
 import { getRatesInfo } from './rates'
 import { getPoolsMetadata } from './poolsMetadata'
 import { getPoolsCurrentData } from './poolsCurrentData'
@@ -11,7 +11,7 @@ import { getPositions } from './positions'
 import { getSystemDebtInfo } from './systemDebt'
 import { getLiquidationsInfo } from './liquidations'
 import { getRewardsInfo } from './rewards'
-import { getPricesInfo } from './prices'
+import { pricesSlice } from './prices'
 import { getBalances } from './balances'
 import { getContracts } from './contracts'
 import { getCurrentChainInfo } from './currentChainInfo'
@@ -52,6 +52,16 @@ const getWaitFunction = <
 const getStateSelector = <T>(selectorFunc: (state: RootState) => T) =>
   (selector: AppSelector, _dispatch: AppDispatch) => selector(selectorFunc)
 
+const getLocalDataSelector = <Value>(slice: {stateSelector: (state: RootState) => Value}) =>
+  (selector: AppSelector, _dispatch: AppDispatch) => selector(slice.stateSelector)
+
+
+const allSlices = {
+  marketInfo: marketSlice,
+  governorInfo: governorSlice,
+}
+
+
 const waitForImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => FetchNodes[key] | null} = {
   chainID: getStateSelector(state => state.chainID.chainID),
   governor: getStateSelector(state => state.chainID.governor),
@@ -62,14 +72,14 @@ const waitForImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDi
   balances: getWaitFunction(getBalances),
   contracts: getWaitFunction(getContracts),
   currentChainInfo: getWaitFunction(getCurrentChainInfo),
-  governorInfo: getWaitFunction(getGovernorInfo),
+  governorInfo: getWaitFunction(governorSlice),
   liquidationsInfo: getWaitFunction(getLiquidationsInfo),
   liquidityPositions: getWaitFunction(getLiquidityPositions),
-  marketInfo: getWaitFunction(getMarketInfo),
+  marketInfo: getWaitFunction(marketSlice),
   poolsCurrentData: getWaitFunction(getPoolsCurrentData),
   poolsMetadata: getWaitFunction(getPoolsMetadata),
   positions: getWaitFunction(getPositions),
-  pricesInfo: getWaitFunction(getPricesInfo),
+  pricesInfo: getWaitFunction(pricesSlice),
   ratesInfo: getWaitFunction(getRatesInfo),
   rewardsInfo: getWaitFunction(getRewardsInfo),
   sdi: getWaitFunction(getSystemDebtInfo),

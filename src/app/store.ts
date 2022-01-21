@@ -21,30 +21,30 @@ import transactionsReducer from '../slices/transactions'
 import uniswapContractsReducer from '../slices/uniswapContracts'
 import walletReducer from '../slices/wallet'
 
-export const store = configureStore({
-  reducer: {
-    balances: balancesReducer,
-    chainID: chainIDReducer,
-    contracts: contractsReducer,
-    currentChainInfo: currentChainInfoReducer,
-    governor: governorReducer,
-    liquidations: liquidationsReducer,
-    liquidityPositions: liquidityPositionsReducer,
-    market: marketReducer,
-    notifications: notificationsReducer,
-    poolsCurrentData: poolsCurrentDataReducer,
-    poolsMetadata: poolsMetadataReducer,
-    positions: positionsReducer,
-    prices: pricesReducer,
-    rates: ratesReducer,
-    rewards: rewardsReducer,
-    systemDebt: systemDebtReducer,
-    tokensAddedToWallet: tokensAddedToWalletReducer,
-    transactions: transactionsReducer,
-    uniswapContracts: uniswapContractsReducer,
-    wallet: walletReducer,
-  },
-})
+const reducer = {
+  balances: balancesReducer,
+  chainID: chainIDReducer,
+  contracts: contractsReducer,
+  currentChainInfo: currentChainInfoReducer,
+  governor: governorReducer,
+  liquidations: liquidationsReducer,
+  liquidityPositions: liquidityPositionsReducer,
+  market: marketReducer,
+  notifications: notificationsReducer,
+  poolsCurrentData: poolsCurrentDataReducer,
+  poolsMetadata: poolsMetadataReducer,
+  positions: positionsReducer,
+  prices: pricesReducer,
+  rates: ratesReducer,
+  rewards: rewardsReducer,
+  systemDebt: systemDebtReducer,
+  tokensAddedToWallet: tokensAddedToWalletReducer,
+  transactions: transactionsReducer,
+  uniswapContracts: uniswapContractsReducer,
+  wallet: walletReducer,
+}
+
+export const store = configureStore({ reducer })
 
 export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>

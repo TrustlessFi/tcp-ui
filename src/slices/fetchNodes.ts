@@ -1,4 +1,5 @@
 import { ChainID } from '@trustlessfi/addresses'
+import { NonNullValues } from './'
 
 import { balances } from './balances'
 import { contractsInfo } from './contracts'
@@ -64,5 +65,9 @@ const fetchNodes: {[node in keyof FetchNodes]: FetchNodes[node] | null} = {
 }
 
 
+export type thunkDependencies<R extends FetchNode> = Pick<typeof fetchNodes, R>
+
+export type thunkArgs<R extends FetchNode> = NonNullValues<thunkDependencies<R>>
+
 export const getThunkDependencies = <R extends FetchNode>(val: R[]) =>
-  Object.fromEntries(val.map(key => [key, fetchNodes[key]])) as Pick<typeof fetchNodes, R>
+  Object.fromEntries(val.map(key => [key, fetchNodes[key]])) as thunkDependencies<R>

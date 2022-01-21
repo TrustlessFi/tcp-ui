@@ -1,48 +1,41 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction } from '@reduxjs/toolkit'
 import { ChainID, getAddress } from '@trustlessfi/addresses'
+import { createLocalSlice } from '../'
+import { RootState } from '../../app/store'
 
 import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
 
-export interface ChainIDState {
-  chainID: ChainID | null
-  unknownChainID: number | null
-  governor: string | null
-  trustlessMulticall: string | null
-  protocolDataAggregator: string | null
-  router: string | null
+const initialState = {
+  chainID: null as ChainID | null,
+  unknownChainID: null as number | null,
+  governor: null as string | null,
+  trustlessMulticall: null as string | null,
+  protocolDataAggregator: null as string | null,
+  router: null as string | null
 }
 
-const initialState: ChainIDState = {
-  chainID: null,
-  unknownChainID: null,
-  governor: null,
-  trustlessMulticall: null,
-  protocolDataAggregator: null,
-  router: null
-}
+export type ChainIDState = typeof initialState
 
 export const getChainIDFromState = (state: ChainIDState) =>
   state.chainID !== null ? state.chainID : state.unknownChainID
 
-const name = 'chainID'
-
-export const chainIDSlice = createSlice({
-  name,
-  initialState: initialState,
+const partialChainIDSlice = createLocalSlice({
+  name: 'chainID',
+  initialState,
   reducers: {
     chainIDFound: (_state, action: PayloadAction<number>) => {
       const chainID = action.payload
       return ChainID[chainID] === undefined
         ? {
-          unknownChainID: chainID,
           chainID: null,
+          unknownChainID: chainID,
           governor: null,
           trustlessMulticall: null,
           protocolDataAggregator: null,
           router: null,
         } : {
-          unknownChainID: null,
           chainID,
+          unknownChainID: null,
           governor: getAddress(chainID, 'TCP', 'Governor', localHardhatAddresses),
           trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
           protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
@@ -52,6 +45,11 @@ export const chainIDSlice = createSlice({
   }
 })
 
-export const { chainIDFound } = chainIDSlice.actions
+export const chainIDSlice = {
+  ...partialChainIDSlice,
+  stateSelector: (state: RootState) => state.chainID
+}
 
-export default chainIDSlice.reducer
+export const { chainIDFound } = partialChainIDSlice.slice.actions
+
+export default partialChainIDSlice.slice.reducer

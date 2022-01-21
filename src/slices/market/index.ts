@@ -1,9 +1,7 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
-
+import { thunkArgs } from '../fetchNodes'
 import getContract, { getMulticallContract } from '../../utils/getContract'
+import { createChainDataSlice, CacheDuration } from '../'
 import { Market } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { mnt } from '../../utils'
@@ -20,15 +18,17 @@ export interface marketInfo {
   valueOfLendTokensInHue: number
 }
 
-const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
-
-export const getMarketInfo = {
-  stateSelector: (state: RootState) => state.market,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-    'market/getMarketInfo',
-    async (args: NonNullValues<typeof dependencies>): Promise<marketInfo> => {
+const partialMarketSlice = createChainDataSlice({
+  name: 'market',
+  dependencies: ['contracts', 'trustlessMulticall'],
+  cacheDuration: CacheDuration.SHORT,
+  reducers: {
+    clearMarketInfo: (state) => {
+      state.value = null
+    },
+  },
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'trustlessMulticall'>) => {
       const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
       const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -55,25 +55,14 @@ export const getMarketInfo = {
       )
 
       return marketInfo
-    }
-  )
-}
-
-const name = 'market'
-
-export const marketSlice = createSlice({
-  name,
-  initialState: getLocalStorageSliceState<marketInfo>(name),
-  reducers: {
-    clearMarketInfo: (state) => {
-      state.value = null
     },
-  },
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getMarketInfo.thunk)
-  },
 })
 
-export const { clearMarketInfo } = marketSlice.actions
+export const { clearMarketInfo } = partialMarketSlice.slice.actions
 
-export default marketSlice.reducer
+export const marketSlice = {
+  ...partialMarketSlice,
+  stateSelector: (state: RootState) => state.market
+}
+
+export default partialMarketSlice.slice.reducer
