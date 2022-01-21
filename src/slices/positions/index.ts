@@ -1,5 +1,5 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes, Position } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
@@ -10,22 +10,8 @@ import { oneContractOneFunctionMC, executeMulticalls } from '@trustlessfi/multic
 import { PromiseType } from '@trustlessfi/utils'
 
 import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 
-export interface Position {
-  collateralCount: number,
-  debtCount: number,
-  approximateRewards: number,
-  rewards: number,
-  id: number,
-  lastBorrowTime: number,
-  updating: boolean,
-  updated: boolean,
-  claimingRewards: boolean,
-  claimedRewards: boolean,
-}
-
-export interface positionsInfo { [key: number]: Position }
 
 const dependencies = getThunkDependencies([
   'userAddress',
@@ -36,7 +22,7 @@ const dependencies = getThunkDependencies([
 ])
 
 export const getPositions = {
-  stateSelector: (state: RootState) => state.prices,
+  stateSelector: (state: RootState) => state.positions,
   dependencies,
   thunk:
     createAsyncThunk(
@@ -103,7 +89,7 @@ export const getPositions = {
           } as Position
         })
 
-        const positionsMap: positionsInfo = {}
+        const positionsMap: FetchNodes['positions'] = {}
         positionsInfo.forEach(positionInfo => positionsMap[positionInfo.id] = positionInfo)
         return positionsMap
       }
@@ -113,7 +99,7 @@ export const getPositions = {
 export const positionsSlice =
   createSlice({
   name: 'positions',
-  initialState: initialState as sliceState<positionsInfo>,
+  initialState: initialState as sliceState<FetchNodes['positions']>,
   reducers: {
     clearPositions: (state) => {
       state.value = null

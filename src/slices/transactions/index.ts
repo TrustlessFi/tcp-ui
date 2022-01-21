@@ -11,7 +11,7 @@ import { clearRewardsInfo } from '../rewards'
 import { clearMarketInfo } from '../market'
 import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { ethers, ContractTransaction, BigNumber } from 'ethers'
-import { ProtocolContract } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { WalletToken } from '../tokensAddedToWallet'
 

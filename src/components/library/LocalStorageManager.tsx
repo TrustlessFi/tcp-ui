@@ -4,33 +4,34 @@ import { RootState } from '../../app/store'
 import { minutes, timeS } from '../../utils/'
 import { transactionsSlice, TransactionState } from '../../slices/transactions'
 import { contractsSlice, ContractsState } from '../../slices/contracts'
-import { liquidationsSlice, liquidationsInfo } from '../../slices/liquidations'
-import { marketSlice, marketInfo } from '../../slices/market'
-import { pricesSlice, pricesInfo } from '../../slices/prices'
-import { ratesSlice, ratesInfo } from '../../slices/rates'
-import { rewardsSlice, rewardsInfo } from '../../slices/rewards'
-import { positionsSlice, positionsInfo } from '../../slices/positions'
-import { balancesSlice, balancesInfo } from '../../slices/balances'
+import { FetchNodes } from '../../slices/fetchNodes'
+import { liquidationsSlice } from '../../slices/liquidations'
+import { marketSlice } from '../../slices/market'
+import { pricesSlice } from '../../slices/prices'
+import { ratesSlice } from '../../slices/rates'
+import { rewardsSlice } from '../../slices/rewards'
+import { positionsSlice } from '../../slices/positions'
+import { balancesSlice } from '../../slices/balances'
 import { uniswapContractsSlice, uniswapContractsInfo } from '../../slices/uniswapContracts'
-import { poolsMetadataSlice, poolsMetadata } from '../../slices/poolsMetadata'
-import { poolsCurrentDataSlice, poolsCurrentInfo } from '../../slices/poolsCurrentData'
-import { systemDebtSlice, systemDebtInfo } from '../../slices/systemDebt'
+import { poolsMetadataSlice } from '../../slices/poolsMetadata'
+import { poolsCurrentDataSlice } from '../../slices/poolsCurrentData'
+import { systemDebtSlice } from '../../slices/systemDebt'
 import { notificationsSlice, NotificationState } from '../../slices/notifications'
 import { tokensAddedToWalletSlice, tokensAddedToWalletState } from '../../slices/tokensAddedToWallet'
 
 type slicesState =
   TransactionState |
   ContractsState |
-  poolsMetadata |
-  liquidationsInfo |
-  marketInfo |
-  balancesInfo |
-  positionsInfo |
-  poolsCurrentInfo |
-  pricesInfo |
-  ratesInfo |
-  rewardsInfo |
-  systemDebtInfo |
+  FetchNodes['poolsMetadata'] |
+  FetchNodes['liquidationsInfo'] |
+  FetchNodes['marketInfo'] |
+  FetchNodes['balances'] |
+  FetchNodes['positions'] |
+  FetchNodes['poolsCurrentData'] |
+  FetchNodes['pricesInfo'] |
+  FetchNodes['ratesInfo'] |
+  FetchNodes['rewardsInfo'] |
+  FetchNodes['sdi'] |
   NotificationState |
   uniswapContractsInfo |
   tokensAddedToWalletState |

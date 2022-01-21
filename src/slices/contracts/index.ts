@@ -1,4 +1,5 @@
 import { RootState } from '../../app/store'
+import { getThunkDependencies, NonNull } from '../fetchNodes'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { sliceState, initialState } from '../'
 import { Governor } from '@trustlessfi/typechain'
@@ -7,33 +8,7 @@ import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import getContract from '../../utils/getContract';
-import { getThunkDependencies, NonNull } from '../waitFor'
-
-// TODO add TCP Allocation
-export enum ProtocolContract {
-  Accounting = "Accounting",
-  Auctions = "Auctions",
-  EnforcedDecentralization = "EnforcedDecentralization",
-  Hue = "Hue",
-  HuePositionNFT = "HuePositionNFT",
-  LendHue = "LendHue",
-  Liquidations = "Liquidations",
-  Market = "Market",
-  Prices = "Prices",
-  ProtocolLock = "ProtocolLock",
-  Rates = "Rates",
-  Rewards = "Rewards",
-  Settlement = "Settlement",
-  Tcp = "Tcp",
-  TcpGovernorAlpha = "TcpGovernorAlpha",
-  TcpTimelock = "TcpTimelock",
-}
-
-export enum RootContract {
-  Governor = "Governor",
-  ProtocolDataAggregator = "ProtocolDataAggregator",
-  TrustlessMulticall = "TrustlessMulticall",
-}
+import  ProtocolContract, { RootContract } from './ProtocolContract'
 
 const dependencies = getThunkDependencies(['governor', 'trustlessMulticall'])
 

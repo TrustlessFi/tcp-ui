@@ -1,5 +1,5 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
@@ -7,7 +7,7 @@ import {
   sum,
 } from '../../utils/'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
-import { ProtocolContract, RootContract, contractsInfo } from '../contracts/index';
+import ProtocolContract, { RootContract } from '../contracts/ProtocolContract';
 import {
   executeMulticalls,
   rc,
@@ -18,24 +18,6 @@ import {
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
 
-export interface tokenMetadata {
-  address: string
-  name: string
-  symbol: string
-  decimals: number
-}
-
-export interface poolMetadata {
-  fee: Fee
-  rewardsPortion: number
-  poolID: number
-  address: string
-  token0: tokenMetadata
-  token1: tokenMetadata
-}
-
-export interface poolsMetadata {[key: string]: poolMetadata}
-
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'protocolDataAggregator'])
 
 export const getPoolsMetadata = {
@@ -44,7 +26,7 @@ export const getPoolsMetadata = {
   thunk:
   createAsyncThunk(
     'poolsMetadata/getPoolMetadata',
-    async (args: NonNull<typeof dependencies>): Promise<poolsMetadata> => {
+    async (args: NonNull<typeof dependencies>) => {
       const protocolDataAggregator = getContract(args.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
       const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
@@ -112,7 +94,7 @@ const name = 'poolsMetadata'
 
 export const poolsMetadataSlice = createSlice({
   name,
-  initialState: initialState as sliceState<poolsMetadata>,
+  initialState: initialState as sliceState<FetchNodes['poolsMetadata']>,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder( builder, getPoolsMetadata.thunk)

@@ -1,15 +1,11 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, initialState, getGenericReducerBuilder } from '../'
 
 import { Governor } from '@trustlessfi/typechain'
-import { RootContract } from '../contracts/'
+import { RootContract } from '../contracts/ProtocolContract'
 import getContract from '../../utils/getContract'
-
-export type governorInfo = {
-  phase: number
-}
 
 const dependencies = getThunkDependencies(['governor'])
 
@@ -35,7 +31,7 @@ export const getGovernorInfo = {
 
 export const governorSlice = createSlice({
   name: 'governor',
-  initialState: initialState as sliceState<governorInfo>,
+  initialState: initialState as sliceState<FetchNodes['governorInfo']>,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getGovernorInfo.thunk)

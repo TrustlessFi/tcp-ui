@@ -5,7 +5,7 @@ import { ContractInterface, Contract } from "ethers"
 import { Web3Provider } from '@ethersproject/providers'
 
 import getProvider from './getProvider'
-import { ProtocolContract, RootContract } from '../slices/contracts'
+import ProtocolContract, { RootContract } from '../slices/contracts/ProtocolContract'
 
 // ==================== Typechain =========================
 import {

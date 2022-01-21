@@ -1,9 +1,8 @@
 import { BigNumber, BigNumberish, utils, Contract } from "ethers"
-import { ChainID } from '@trustlessfi/addresses'
 import JSBI from "jsbi"
 import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
-import { poolMetadata } from '../slices/poolsMetadata'
+import { poolMetadata } from '../slices/fetchNodes'
 import getProvider from './getProvider'
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'

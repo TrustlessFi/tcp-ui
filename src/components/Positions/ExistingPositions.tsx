@@ -59,6 +59,7 @@ const ExistingPositionsTable = () => {
       </Center>
     )
   }
+  console.log({positions})
 
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * pricesInfo.ethPrice) / position.debtCount

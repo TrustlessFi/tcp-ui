@@ -1,22 +1,13 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Rewards } from '@trustlessfi/typechain'
-import { ProtocolContract, contractsInfo } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 import { getLocalStorage } from '../../utils'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
-
-export interface rewardsInfo {
-  twapDuration: number
-  liquidationPenalty: number
-  weth: string
-  countPools: number
-  firstPeriod: number
-  periodLength: number
-}
 
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
 
@@ -26,7 +17,7 @@ export const getRewardsInfo = {
   thunk:
     createAsyncThunk(
       'rewards/getRewardsInfo',
-      async (args: NonNull<typeof dependencies>): Promise<rewardsInfo> => {
+      async (args: NonNull<typeof dependencies>) => {
         const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -39,7 +30,6 @@ export const getRewardsInfo = {
                 twapDuration: rc.Number,
                 liquidationPenalty: rc.BigNumberUnscale,
                 weth: rc.String,
-                lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
                 countPools: rc.Number,
                 firstPeriod: rc.BigNumberToNumber,
                 periodLength: rc.BigNumberToNumber,
@@ -58,7 +48,7 @@ const name = 'rewards'
 
 export const rewardsSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<rewardsInfo>,
+  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['rewardsInfo']>,
   reducers: {
     clearRewardsInfo: (state) => {
       state.value = null

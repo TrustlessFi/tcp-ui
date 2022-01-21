@@ -1,18 +1,14 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 
 import { Prices } from '@trustlessfi/typechain'
-import { ProtocolContract } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 import { getLocalStorage } from '../../utils'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
-
-export type pricesInfo = {
-  ethPrice: number,
-}
 
 export const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'liquidationsInfo'])
 
@@ -22,7 +18,7 @@ export const getPricesInfo = {
   thunk:
     createAsyncThunk(
       'prices/getPricesInfo',
-      async (args: NonNull<typeof dependencies>): Promise<pricesInfo> => {
+      async (args: NonNull<typeof dependencies>) => {
         const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -46,7 +42,7 @@ const name = 'prices'
 
 export const pricesSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<pricesInfo>,
+  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['pricesInfo']>,
   reducers: {},
   extraReducers: (builder) => {
     builder = getGenericReducerBuilder(builder, getPricesInfo.thunk)

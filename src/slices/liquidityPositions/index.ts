@@ -1,8 +1,8 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { ProtocolContract } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 import { PromiseType } from '@trustlessfi/utils'
 import { executeMulticalls, oneContractOneFunctionMC } from '@trustlessfi/multicall'
 
@@ -11,19 +11,6 @@ import { Accounting } from '@trustlessfi/typechain'
 import { sliceState, initialState } from '../'
 import { getGenericReducerBuilder } from '../'
 import { bnf, timeToPeriod, unscale } from '../../utils'
-
-export interface LiquidityPosition {
-  positionID: string
-  poolID: number
-  lastBlockPositionIncreased: number
-  liquidity: string
-  owner: string
-  tickLower: number
-  tickUpper: number
-  approximateRewards: number
-}
-
-export interface liquidityPositions { [id: string]: LiquidityPosition }
 
 const dependencies = getThunkDependencies([
   'contracts',
@@ -40,7 +27,7 @@ export const getLiquidityPositions = {
   thunk:
     createAsyncThunk(
       'liquidityPositions/getLiquidityPositions',
-      async (args: NonNull<typeof dependencies>): Promise<liquidityPositions> => {
+      async (args: NonNull<typeof dependencies>) => {
         const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
         const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -105,7 +92,7 @@ export const getLiquidityPositions = {
 
 export const liquidityPositionsSlice = createSlice({
   name: 'liquidityPositions',
-  initialState: initialState as sliceState<liquidityPositions>,
+  initialState: initialState as sliceState<FetchNodes['liquidityPositions']>,
   reducers: {
     clearLiquidityPositions: (state) => {
       state.value = null

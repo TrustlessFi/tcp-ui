@@ -1,23 +1,12 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, NonNull } from '../waitFor'
+import { getThunkDependencies, NonNull, FetchNodes } from '../fetchNodes'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Market } from '@trustlessfi/typechain'
-import { ProtocolContract, contractsInfo } from '../contracts'
+import ProtocolContract from '../contracts/ProtocolContract'
 import { getLocalStorage, mnt } from '../../utils'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
-
-export type marketInfo = {
-  lastPeriodGlobalInterestAccrued: number,
-  collateralizationRequirement: number,
-  minPositionSize: number,
-  twapDuration: number,
-  interestPortionToLenders: number,
-  periodLength: number,
-  firstPeriod: number,
-  valueOfLendTokensInHue: number,
-}
 
 const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
 
@@ -27,7 +16,7 @@ export const getMarketInfo = {
   thunk:
     createAsyncThunk(
     'market/getMarketInfo',
-    async (args: NonNull<typeof dependencies>): Promise<marketInfo> => {
+    async (args: NonNull<typeof dependencies>) => {
       const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
       const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
 
@@ -62,7 +51,7 @@ const name = 'market'
 
 export const marketSlice = createSlice({
   name,
-  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<marketInfo>,
+  initialState: getStateWithValue(getLocalStorage(name)) as sliceState<FetchNodes['marketInfo']>,
   reducers: {
     clearMarketInfo: (state) => {
       state.value = null

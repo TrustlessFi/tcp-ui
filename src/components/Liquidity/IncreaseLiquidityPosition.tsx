@@ -2,7 +2,7 @@ import { Button } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { tokenMetadata } from '../../slices/poolsMetadata'
+import { tokenMetadata } from '../../slices/fetchNodes'
 import InputPicker from '../library/InputPicker'
 import { IncreaseDecreaseOption } from './'
 import {
