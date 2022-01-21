@@ -11,13 +11,12 @@ import { clearBalances } from '../balances'
 import { clearRewardsInfo } from '../rewards'
 import { clearMarketInfo } from '../market'
 import { clearPoolsCurrentData } from '../poolsCurrentData'
-import { ethers, ContractTransaction, BigNumber } from 'ethers'
+import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { WalletToken } from '../tokensAddedToWallet'
-
 import { Market, Rewards } from '@trustlessfi/typechain'
-import getContract, { getMulticallContract } from '../../utils/getContract'
+import getContract from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
 import { UIID } from '../../constants'
 import { days, minutes, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
@@ -25,6 +24,9 @@ import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
+import { createLocalSlice } from '../'
+import { RootState } from '../../app/store'
+import { toChecksumAddress } from '../../utils/'
 
 export enum TransactionType {
   CreatePosition,
@@ -436,7 +438,6 @@ const executeTransaction = async (
   throw new Error('Shoudnt get here')
 }
 
-
 export const waitForTransaction = async (
   tx: TransactionInfo,
   provider: ethers.providers.Web3Provider,
@@ -556,11 +557,9 @@ export const submitTransaction = createAsyncThunk(
     await waitForTransaction(tx, provider, dispatch)
   })
 
-const name = 'transactions'
-
-export const transactionsSlice = createSlice({
-  name,
-  initialState: getLocalStorageState<TransactionState>(name, {}),
+const partialTransactionsSlice = createLocalSlice({
+  name: 'transactions',
+  initialState: {} as TransactionState,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
       const userAddress = action.payload
@@ -585,14 +584,19 @@ export const transactionsSlice = createSlice({
         state[hash].status = TransactionStatus.Failure
       }
     },
-  },
+  }
 })
+
+export const transactionsSlice = {
+  ...partialTransactionsSlice,
+  stateSelector: (state: RootState) => state.userAddress
+}
 
 export const {
   clearUserTransactions,
   transactionCreated,
   transactionSucceeded,
   transactionFailed,
-} = transactionsSlice.actions
+} = partialTransactionsSlice.slice.actions
 
-export default transactionsSlice.reducer
+export default partialTransactionsSlice.slice.reducer

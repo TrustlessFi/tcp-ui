@@ -1,63 +1,49 @@
 import { Contract } from "ethers"
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { sliceState, initialState } from '../'
 import { SwapRouter } from '@trustlessfi/typechain'
-import { getLocalStorageState } from '../'
-import { getGenericReducerBuilder } from '../index';
 import { getMulticallContract } from '../../utils/getContract';
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import routerArtifact from "@trustlessfi/artifacts/dist/contracts/uniswap/uniswap-v3-periphery/contracts/SwapRouter.sol/SwapRouter.json"
 import getProvider from '../../utils/getProvider';
+import { RootState } from '../../app/store'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
 export enum UniswapContract {
   Factory = 'Factory',
   Weth = 'Weth',
 }
 
-export interface contractsArgs {
-  router: string
-  trustlessMulticall: string
-}
+const partialUniswapContractsSlice = createChainDataSlice({
+  name: 'uniswapContracts',
+  dependencies: ['rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'rootContracts'>) => {
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
+      const router = new Contract(args.rootContracts.router, routerArtifact.abi, getProvider()) as SwapRouter
 
-export type uniswapContractsInfo = {[key in UniswapContract]: string}
+      const { uniswapContracts } = (await executeMulticalls(
+        trustlessMulticall,
+        {
+          uniswapContracts: oneContractManyFunctionMC(
+            router,
+            {
+              WETH9: rc.String,
+              factory: rc.String,
+            },
+          )
+        }
+      ))
 
-export const getContracts = createAsyncThunk(
-  'uniswapContracts/getContracts',
-  async (args: contractsArgs): Promise<uniswapContractsInfo> => {
-    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-    const router = new Contract(args.router, routerArtifact.abi, getProvider()) as SwapRouter
-
-    const { uniswapContracts } = (await executeMulticalls(
-      trustlessMulticall,
-      {
-        uniswapContracts: oneContractManyFunctionMC(
-          router,
-          {
-            WETH9: rc.String,
-            factory: rc.String,
-          },
-        )
+      return {
+        Weth: uniswapContracts.WETH9,
+        Factory: uniswapContracts.factory,
       }
-    ))
-
-    return {
-      Weth: uniswapContracts.WETH9,
-      Factory: uniswapContracts.factory,
     }
-  }
-)
-
-export interface UniswapContractsState extends sliceState<uniswapContractsInfo> {}
-
-const name = 'uniswapContracts'
-
-export const uniswapContractsSlice = createSlice({
-  name,
-  initialState: getLocalStorageState(name, initialState) as UniswapContractsState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getContracts)
-  }
 })
 
-export default uniswapContractsSlice.reducer
+export const uniswapContractsSlice = {
+  ...partialUniswapContractsSlice,
+  stateSelector: (state: RootState) => state.uniswapContracts
+}
+
+export default partialUniswapContractsSlice.slice.reducer

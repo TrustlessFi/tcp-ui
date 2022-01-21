@@ -67,8 +67,9 @@ const CreateLiquidityPosition = () => {
     'liquidityPositions',
   ], selector, dispatch)
 
-  const chainID = selector(state => state.chainID.chainID)
-  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
+  const chainID = selector(state => state.chainID)
+  const rootContracts = selector(state => state.rootContracts)
+  const trustlessMulticall = rootContracts === null ? null : rootContracts.trustlessMulticall
 
   const [percentageDecrease, setPercentageDecrease] = useState(0)
 

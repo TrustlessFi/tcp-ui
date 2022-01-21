@@ -1,9 +1,10 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { PayloadAction } from '@reduxjs/toolkit'
 import { v4 as getUid } from 'uuid'
 import { timeMS } from '../../utils'
-import { getLocalStorageState } from '../'
 import { TransactionStatus, TransactionType } from '../transactions'
 import { ChainID } from '@trustlessfi/addresses'
+import { createLocalSlice, CacheDuration } from '../'
+import { RootState } from '../../app/store'
 
 export interface notificationArgs {
   hash?: string
@@ -21,11 +22,11 @@ export interface notificationInfo extends notificationArgs {
 
 export interface notificationState {[uid: string]: notificationInfo}
 
-const name = 'notifications'
 
-export const notificationsSlice = createSlice({
-  name,
-  initialState: getLocalStorageState<notificationState>(name, {}),
+const partialNotificationsSlice = createLocalSlice({
+  name: 'notifications',
+  initialState: {} as notificationState,
+  cacheDuration: CacheDuration.INFINITE,
   reducers: {
     addNotification: (state, action: PayloadAction<notificationArgs>) => {
       const args = action.payload
@@ -39,6 +40,11 @@ export const notificationsSlice = createSlice({
   }
 })
 
-export const { addNotification, notificationClosed } = notificationsSlice.actions
+export const notificationsSlice = {
+  ...partialNotificationsSlice,
+  stateSelector: (state: RootState) => state.chainID
+}
 
-export default notificationsSlice.reducer
+export const { addNotification, notificationClosed } = partialNotificationsSlice.slice.actions
+
+export default partialNotificationsSlice.slice.reducer

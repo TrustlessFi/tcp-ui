@@ -15,11 +15,12 @@ const ConnectWalletButton = ({
 }) => {
   const dispatch = useAppDispatch()
 
+  const userAddress = selector(state => state.userAddress)
   const wallet = selector(state => state.wallet)
 
   const text = wallet.connecting
     ? 'Waiting for User in Metamask...'
-    : (wallet.address !== null
+    : (userAddress !== null
         ? 'Connected'
         : 'Connect a Wallet')
 

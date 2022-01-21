@@ -33,7 +33,7 @@ const logo_name = require('../../img/tcp_logo_name_white.svg')
 
 const PageHeader = () => {
   const [ areNavLinksHidden, setAreNavLinksHidden ] = useState(false)
-  const chainID = selector(state => state.chainID.chainID)
+  const chainID = selector(state => state.chainID)
 
   const isSmallViewport = useWindowWidth(() => {
     const navLinksElement = document.getElementById('headerNavigationLinks')

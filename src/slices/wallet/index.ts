@@ -1,25 +1,17 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createLocalSlice } from '../'
+import { RootState } from '../../app/store'
 
-export interface WalletState {
-  address: string | null,
-  connecting: boolean,
-  waitingForMetamask: boolean,
-}
-
-const initialState: WalletState = { address: null, connecting: false, waitingForMetamask: false }
-
-export const walletSlice = createSlice({
+const partialWalletSlice = createLocalSlice({
   name: 'wallet',
-  initialState,
+  initialState: { connecting: false, waitingForMetamask: false },
   reducers: {
-    connecting: (state) => {
+    walletConnecting: (state) => {
       state.connecting = true
     },
-    connected: (state, action: PayloadAction<string | null>) => {
+    walletConnected: (state) => {
       state.connecting = false
-      state.address = action.payload
     },
-    connectionFailed: (state) => {
+    walletConnectionFailed: (state) => {
       state.connecting = false
     },
     waitingForMetamask: (state) => {
@@ -29,15 +21,19 @@ export const walletSlice = createSlice({
       state.waitingForMetamask = false
     },
   },
-  extraReducers: () => {},
 })
 
-export const {
-  connecting,
-  connected,
-  connectionFailed,
-  waitingForMetamask,
-  metamaskComplete
-} = walletSlice.actions
+export const walletSlice = {
+  ...partialWalletSlice,
+  stateSelector: (state: RootState) => state.chainID
+}
 
-export default walletSlice.reducer
+export const {
+  walletConnecting,
+  walletConnected,
+  walletConnectionFailed,
+  waitingForMetamask,
+  metamaskComplete,
+} = partialWalletSlice.slice.actions
+
+export default partialWalletSlice.slice.reducer

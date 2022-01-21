@@ -26,7 +26,7 @@ const Withdraw = () => {
     'contracts',
   ], selector, dispatch)
 
-  const userAddress = selector(state => state.wallet.address)
+  const userAddress = selector(state => state.userAddress)
 
   const [amount, setAmount] = useState(0)
 

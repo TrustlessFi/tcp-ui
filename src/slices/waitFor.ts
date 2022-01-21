@@ -1,20 +1,23 @@
 import { AsyncThunk } from '@reduxjs/toolkit'
 import { AppDispatch, store, RootState } from '../app/store'
 import { AppSelector } from '../app/hooks'
+import { chainIDSlice } from './chainID'
 import { governorSlice } from './governor'
 import { marketSlice } from './market'
-import { getRatesInfo } from './rates'
-import { getPoolsMetadata } from './poolsMetadata'
-import { getPoolsCurrentData } from './poolsCurrentData'
-import { getLiquidityPositions } from './liquidityPositions'
-import { getPositions } from './positions'
-import { getSystemDebtInfo } from './systemDebt'
-import { getLiquidationsInfo } from './liquidations'
-import { getRewardsInfo } from './rewards'
+import { ratesInfoSlice } from './rates'
+import { poolsMetadataSlice } from './poolsMetadata'
+import { poolsCurrentDataSlice } from './poolsCurrentData'
+import { liquidityPositionsSlice } from './liquidityPositions'
+import { positionsSlice } from './positions'
+import { systemDebtSlice } from './systemDebt'
+import { liquidationsSlice } from './liquidations'
+import { rewardsInfoSlice } from './rewards'
 import { pricesSlice } from './prices'
-import { getBalances } from './balances'
-import { getContracts } from './contracts'
-import { getCurrentChainInfo } from './currentChainInfo'
+import { balancesSlice } from './balances'
+import { contractsSlice } from './contracts'
+import { rootContractsSlice } from './rootContracts'
+import { currentChainInfoSlice } from './currentChainInfo'
+import { userAddressSlice } from './userAddress'
 
 import { sliceState, NonNullValues } from './'
 import { FetchNode, FetchNodes } from './fetchNodes'
@@ -63,26 +66,24 @@ const allSlices = {
 
 
 const waitForImpl: {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => FetchNodes[key] | null} = {
-  chainID: getStateSelector(state => state.chainID.chainID),
-  governor: getStateSelector(state => state.chainID.governor),
-  protocolDataAggregator: getStateSelector(state => state.chainID.protocolDataAggregator),
-  trustlessMulticall: getStateSelector(state => state.chainID.trustlessMulticall),
-  userAddress: getStateSelector(state => state.wallet.address),
+  chainID: getLocalDataSelector(chainIDSlice),
+  rootContracts: getLocalDataSelector(rootContractsSlice),
+  userAddress: getLocalDataSelector(userAddressSlice),
 
-  balances: getWaitFunction(getBalances),
-  contracts: getWaitFunction(getContracts),
-  currentChainInfo: getWaitFunction(getCurrentChainInfo),
+  balances: getWaitFunction(balancesSlice),
+  contracts: getWaitFunction(contractsSlice),
+  currentChainInfo: getWaitFunction(currentChainInfoSlice),
   governorInfo: getWaitFunction(governorSlice),
-  liquidationsInfo: getWaitFunction(getLiquidationsInfo),
-  liquidityPositions: getWaitFunction(getLiquidityPositions),
+  liquidationsInfo: getWaitFunction(liquidationsSlice),
+  liquidityPositions: getWaitFunction(liquidityPositionsSlice),
   marketInfo: getWaitFunction(marketSlice),
-  poolsCurrentData: getWaitFunction(getPoolsCurrentData),
-  poolsMetadata: getWaitFunction(getPoolsMetadata),
-  positions: getWaitFunction(getPositions),
+  poolsCurrentData: getWaitFunction(poolsCurrentDataSlice),
+  poolsMetadata: getWaitFunction(poolsMetadataSlice),
+  positions: getWaitFunction(positionsSlice),
   pricesInfo: getWaitFunction(pricesSlice),
-  ratesInfo: getWaitFunction(getRatesInfo),
-  rewardsInfo: getWaitFunction(getRewardsInfo),
-  sdi: getWaitFunction(getSystemDebtInfo),
+  ratesInfo: getWaitFunction(ratesInfoSlice),
+  rewardsInfo: getWaitFunction(rewardsInfoSlice),
+  sdi: getWaitFunction(systemDebtSlice),
 }
 
 const waitFor = <RequestedNodes extends FetchNode>(

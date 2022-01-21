@@ -1,8 +1,6 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getNullSliceState, getGenericReducerBuilder, NonNullValues } from '../'
-
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 import { getMulticallContract} from '../../utils/getContract'
 import {
   executeMulticalls,
@@ -16,47 +14,38 @@ export interface currentChainInfo {
   chainID: number
 }
 
-const dependencies = getThunkDependencies(['trustlessMulticall'])
-
-export const getCurrentChainInfo = {
-  stateSelector: (state: RootState) => state.currentChainInfo,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-      'currentChainInfo/getCurrentChainInfo',
-      async (args: NonNullValues<typeof dependencies>): Promise<currentChainInfo> => {
-        const multicall = getMulticallContract(args.trustlessMulticall)
-
-        const { chainInfo } = await executeMulticalls(
-          multicall,
-          {
-            chainInfo: oneContractManyFunctionMC(
-              multicall,
-              {
-                getBlockNumber: rc.BigNumberToNumber,
-                getCurrentBlockTimestamp: rc.BigNumberToNumber,
-                getChainId: rc.BigNumberToNumber,
-              },
-            ),
-          }
-        )
-
-        return {
-          blockNumber: chainInfo.getBlockNumber,
-          blockTimestamp: chainInfo.getCurrentBlockTimestamp,
-          chainID: chainInfo.getChainId,
-        }
-      }
-    )
-}
-
-export const currentChainInfoSlice = createSlice({
+const partialCurrentChainInfoSlice = createChainDataSlice({
   name: 'currentChainInfo',
-  initialState: getNullSliceState<currentChainInfo>(),
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getCurrentChainInfo.thunk)
-  },
+  dependencies: ['rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'rootContracts'>) => {
+      const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
+
+      const { chainInfo } = await executeMulticalls(
+        multicall,
+        {
+          chainInfo: oneContractManyFunctionMC(
+            multicall,
+            {
+              getBlockNumber: rc.BigNumberToNumber,
+              getCurrentBlockTimestamp: rc.BigNumberToNumber,
+              getChainId: rc.BigNumberToNumber,
+            },
+          ),
+        }
+      )
+
+      return {
+        blockNumber: chainInfo.getBlockNumber,
+        blockTimestamp: chainInfo.getCurrentBlockTimestamp,
+        chainID: chainInfo.getChainId,
+      }
+    }
 })
 
-export default currentChainInfoSlice.reducer
+export const currentChainInfoSlice = {
+  ...partialCurrentChainInfoSlice,
+  stateSelector: (state: RootState) => state.currentChainInfo
+}
+
+export default partialCurrentChainInfoSlice.slice.reducer

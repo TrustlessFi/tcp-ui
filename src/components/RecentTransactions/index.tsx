@@ -8,7 +8,6 @@ import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
-import { getChainIDFromState } from '../../slices/chainID'
 
 const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus} = {
   [TransactionStatus.Pending]: 'active',
@@ -19,11 +18,11 @@ const txStatusToLoadingStatus: {[key in TransactionStatus]: InlineLoadingStatus}
 const RecentTransactions = () => {
   const dispatch = useAppDispatch()
 
-  const userAddress = selector(state => state.wallet.address)
+  const userAddress = selector(state => state.userAddress)
   const transactions = selector(state => state.transactions)
   const chainID = selector(state => state.chainID)
 
-  const txs = getSortedUserTxs(getChainIDFromState(chainID), userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
+  const txs = getSortedUserTxs(chainID, userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
 
   const getDateTimeString = (timeInMS: number) => {
     const date = (new Date(timeInMS))
@@ -40,7 +39,7 @@ const RecentTransactions = () => {
               {userAddress === null
                 ? <ConnectWalletButton size='sm' />
                 : <Button
-                    onClick={() => window.open(getEtherscanAddressLink(userAddress, chainID.chainID!), '_blank')}
+                    onClick={() => window.open(getEtherscanAddressLink(userAddress, chainID!), '_blank')}
                     size='sm'>
                     View History on Etherscan
                   </Button>
@@ -59,7 +58,7 @@ const RecentTransactions = () => {
           'Start Time': getDateTimeString(tx.startTimeMS),
           'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
         },
-        onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID.chainID!), '_blank'),
+        onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
       }))
     } />
 

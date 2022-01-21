@@ -1,10 +1,6 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies, FetchNodes } from '../fetchNodes'
-import { sliceState, initialState, getGenericReducerBuilder, NonNullValues } from '../'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
-  Fee, addressToERC20, zeroAddress, unique, addressToV3Pool,
-  sum,
+  Fee, addressToERC20, zeroAddress, unique, addressToV3Pool, sum,
 } from '../../utils/'
 import ProtocolContract, { RootContract } from '../contracts/ProtocolContract';
 import {
@@ -16,6 +12,8 @@ import {
 } from '@trustlessfi/multicall'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
 
 export interface tokenMetadata {
@@ -36,18 +34,14 @@ export interface poolMetadata {
 
 export interface poolsMetadata { [key: string]: poolMetadata }
 
-const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall', 'protocolDataAggregator'])
-
-export const getPoolsMetadata = {
-  stateSelector: (state: RootState) => state.poolsMetadata,
-  dependencies,
-  thunk:
-  createAsyncThunk(
-    'poolsMetadata/getPoolMetadata',
-    async (args: NonNullValues<typeof dependencies>) => {
-      const protocolDataAggregator = getContract(args.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
+const partialPoolsMetadataSlice = createChainDataSlice({
+  name: 'poolsMetadata',
+  dependencies: ['contracts', 'rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
+      const protocolDataAggregator = getContract(args.rootContracts.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
-      const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const poolConfigs = await protocolDataAggregator.getIncentivizedPools()
       const poolAddresses = poolConfigs.map(config => config.pool)
@@ -104,19 +98,12 @@ export const getPoolsMetadata = {
           }
         ]
       }))
-    }
-  )
-}
-
-const name = 'poolsMetadata'
-
-export const poolsMetadataSlice = createSlice({
-  name,
-  initialState: initialState as sliceState<FetchNodes['poolsMetadata']>,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder( builder, getPoolsMetadata.thunk)
-  },
+    },
 })
 
-export default poolsMetadataSlice.reducer
+export const poolsMetadataSlice = {
+  ...partialPoolsMetadataSlice,
+  stateSelector: (state: RootState) => state.poolsMetadata
+}
+
+export default partialPoolsMetadataSlice.slice.reducer

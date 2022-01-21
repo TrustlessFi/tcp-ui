@@ -28,6 +28,8 @@ const ExistingPositionsTable = () => {
     'contracts',
   ], selector, dispatch)
 
+  console.log({positions, pricesInfo, userAddress, contracts})
+
   if (positions === null || pricesInfo === null || userAddress === null || contracts === null) {
     return (
       <div style={{position: 'relative'}}>
@@ -59,7 +61,6 @@ const ExistingPositionsTable = () => {
       </Center>
     )
   }
-  console.log({positions})
 
   const rows = Object.values(positions).map(position => {
     const collateralization = (position.collateralCount * pricesInfo.ethPrice) / position.debtCount

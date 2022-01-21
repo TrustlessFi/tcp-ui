@@ -1,12 +1,11 @@
 import { FunctionComponent } from "react"
-import React, { useState } from "react"
+import { useState } from "react"
 
 import { Button } from "carbon-components-react"
 import { ChainID, chainIDToName } from '@trustlessfi/addresses'
 
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
-import ConnectWalletButton from '../library/ConnectWalletButton'
 
 import { useAppSelector as selector } from "../../app/hooks"
 import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
@@ -14,7 +13,7 @@ import { getNullableProvider } from '../../utils/getProvider'
 
 
 const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
-  const chainID = selector((state) => state.chainID.chainID)
+  const chainID = selector(state => state.chainID)
 
   const [ clicked, setClicked ] = useState(false)
 

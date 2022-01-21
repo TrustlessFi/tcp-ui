@@ -20,7 +20,7 @@ export interface marketInfo {
 
 const partialMarketSlice = createChainDataSlice({
   name: 'market',
-  dependencies: ['contracts', 'trustlessMulticall'],
+  dependencies: ['contracts', 'rootContracts'],
   cacheDuration: CacheDuration.SHORT,
   reducers: {
     clearMarketInfo: (state) => {
@@ -28,9 +28,9 @@ const partialMarketSlice = createChainDataSlice({
     },
   },
   thunkFunction:
-    async (args: thunkArgs<'contracts' | 'trustlessMulticall'>) => {
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
-      const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { marketInfo } = await executeMulticalls(
         trustlessMulticall,

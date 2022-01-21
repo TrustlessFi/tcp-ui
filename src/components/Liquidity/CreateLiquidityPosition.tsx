@@ -84,8 +84,9 @@ const CreateLiquidityPosition = () => {
     'currentChainInfo',
   ], selector, dispatch)
 
-  const chainID = selector(state => state.chainID.chainID)
-  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
+  const chainID = selector(state => state.chainID)
+  const rootContracts = selector(state => state.rootContracts)
+  const trustlessMulticall = rootContracts === null ? null : rootContracts.trustlessMulticall
 
   const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 

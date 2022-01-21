@@ -1,12 +1,10 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-
 import { Rewards } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
 export interface rewardsInfo {
   twapDuration: number
@@ -17,56 +15,45 @@ export interface rewardsInfo {
   periodLength: number
 }
 
-const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
-
-export const getRewardsInfo = {
-  stateSelector: (state: RootState) => state.rewards,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-      'rewards/getRewardsInfo',
-      async (args: NonNullValues<typeof dependencies>): Promise<rewardsInfo> => {
-        const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
-        const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-
-        const { rewardsInfo } = await executeMulticalls(
-          trustlessMulticall,
-          {
-            rewardsInfo: oneContractManyFunctionMC(
-              rewards,
-              {
-                twapDuration: rc.Number,
-                liquidationPenalty: rc.BigNumberUnscale,
-                weth: rc.String,
-                countPools: rc.Number,
-                firstPeriod: rc.BigNumberToNumber,
-                periodLength: rc.BigNumberToNumber,
-              }
-            ),
-          }
-        )
-
-        return rewardsInfo
-      }
-    )
-}
-
-// TODO add to local storage
-const name = 'rewards'
-
-export const rewardsSlice = createSlice({
-  name,
-  initialState: getLocalStorageSliceState<rewardsInfo>(name),
+const partialRewardsInfoSlice = createChainDataSlice({
+  name: 'rewards',
+  dependencies: ['contracts', 'rootContracts'],
   reducers: {
     clearRewardsInfo: (state) => {
       state.value = null
     },
   },
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getRewardsInfo.thunk)
-  },
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
+      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
+
+      const { rewardsInfo } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          rewardsInfo: oneContractManyFunctionMC(
+            rewards,
+            {
+              twapDuration: rc.Number,
+              liquidationPenalty: rc.BigNumberUnscale,
+              weth: rc.String,
+              countPools: rc.Number,
+              firstPeriod: rc.BigNumberToNumber,
+              periodLength: rc.BigNumberToNumber,
+            }
+          ),
+        }
+      )
+
+      return rewardsInfo
+    },
 })
 
-export const { clearRewardsInfo } = rewardsSlice.actions
+export const rewardsInfoSlice = {
+  ...partialRewardsInfoSlice,
+  stateSelector: (state: RootState) => state.rewards
+}
 
-export default rewardsSlice.reducer
+export const { clearRewardsInfo } = partialRewardsInfoSlice.slice.actions
+
+export default partialRewardsInfoSlice.slice.reducer

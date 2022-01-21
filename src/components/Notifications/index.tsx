@@ -1,12 +1,11 @@
 import { useAppSelector as selector } from '../../app/hooks'
 
 import Notification from './Notification'
-import { getChainIDFromState } from '../../slices/chainID'
 
 const Notifications = () => {
   const allNotifications = Object.values(selector(state => state.notifications))
-  const userAddress = selector(state => state.wallet.address)
-  const chainID = getChainIDFromState(selector(state => state.chainID))
+  const userAddress = selector(state => state.userAddress)
+  const chainID = selector(state => state.chainID)
 
   if (
     allNotifications.length === 0 ||

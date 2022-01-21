@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
 import waitFor from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
-import { getChainIDFromState } from '../../slices/chainID'
 import { CSSProperties } from 'react';
 import { WalletToken } from '../../slices/tokensAddedToWallet'
 import { addTokenToWallet, convertSVGtoURI } from '../../utils'
@@ -27,9 +26,9 @@ const AddTokenToWalletButton = ({
   const dispatch = useAppDispatch()
 
   const { contracts } = waitFor(['contracts'], selector, dispatch)
-  const chainID = getChainIDFromState(selector(state => state.chainID))
+  const chainID = selector(state => state.chainID)
   // const tokensAddedToWallet = selector(state => state.tokensAddedToWallet)
-  const userAddress = selector(state => state.wallet.address)
+  const userAddress = selector(state => state.userAddress)
 
   if (walletToken === null) return <></>
 

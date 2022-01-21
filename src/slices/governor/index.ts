@@ -9,12 +9,12 @@ export interface governorInfo {
   phase: number
 }
 
-const _governorSlice = createChainDataSlice({
+const partialGovernorSlice = createChainDataSlice({
   name: 'governor',
-  dependencies: ['governor'],
+  dependencies: ['rootContracts'],
   thunkFunction:
-    async (args: thunkArgs<'governor'>) => {
-      const governor = getContract(args.governor, RootContract.Governor) as Governor
+    async (args: thunkArgs<'rootContracts'>) => {
+      const governor = getContract(args.rootContracts.governor, RootContract.Governor) as Governor
 
       const [
         phase,
@@ -27,8 +27,8 @@ const _governorSlice = createChainDataSlice({
 })
 
 export const governorSlice = {
-  ..._governorSlice,
+  ...partialGovernorSlice,
   stateSelector: (state: RootState) => state.governor
 }
 
-export default _governorSlice.slice.reducer
+export default partialGovernorSlice.slice.reducer

@@ -14,22 +14,21 @@ import { positions } from './positions'
 import { pricesInfo } from './prices'
 import { ratesInfo } from './rates'
 import { rewardsInfo } from './rewards'
+import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
 
 export interface FetchNodes {
-  chainID: ChainID,
-  governor: string,
-  protocolDataAggregator: string,
-  trustlessMulticall: string,
-  userAddress: string,
+  chainID: ChainID
+  rootContracts: rootContracts
+  userAddress: string
 
-  balances: balances,
-  contracts: contractsInfo,
-  currentChainInfo: currentChainInfo,
-  governorInfo: governorInfo,
-  liquidationsInfo: liquidationsInfo,
-  liquidityPositions: liquidityPositions,
-  marketInfo: marketInfo,
+  balances: balances
+  contracts: contractsInfo
+  currentChainInfo: currentChainInfo
+  governorInfo: governorInfo
+  liquidationsInfo: liquidationsInfo
+  liquidityPositions: liquidityPositions
+  marketInfo: marketInfo
   poolsCurrentData: poolsCurrentData
   poolsMetadata: poolsMetadata
   positions: positions
@@ -43,9 +42,7 @@ export type FetchNode = keyof FetchNodes
 
 const fetchNodes: {[node in keyof FetchNodes]: FetchNodes[node] | null} = {
   chainID: null,
-  governor: null,
-  protocolDataAggregator: null,
-  trustlessMulticall: null,
+  rootContracts: null,
   userAddress: null,
 
   balances: null,

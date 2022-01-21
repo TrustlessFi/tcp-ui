@@ -1,21 +1,20 @@
 import { RootState } from '../../app/store'
 import { thunkArgs } from '../fetchNodes'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { createChainDataSlice, CacheDuration } from '../'
+import { createChainDataSlice } from '../'
 import { Prices } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 
 export interface pricesInfo { ethPrice: number }
 
-const _pricesSlice = createChainDataSlice({
-  name: 'governor',
-  dependencies: ['contracts', 'trustlessMulticall', 'liquidationsInfo'],
-  cacheDuration: CacheDuration.LONG,
+const partialPricesSlice = createChainDataSlice({
+  name: 'prices',
+  dependencies: ['contracts', 'rootContracts', 'liquidationsInfo'],
   thunkFunction:
-    async (args: thunkArgs<'contracts' | 'trustlessMulticall' | 'liquidationsInfo'>) => {
+    async (args: thunkArgs<'contracts' | 'rootContracts' | 'liquidationsInfo'>) => {
       const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
-      const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { ethPrice } = await executeMulticalls(
         trustlessMulticall,
@@ -33,8 +32,8 @@ const _pricesSlice = createChainDataSlice({
 })
 
 export const pricesSlice = {
-  ..._pricesSlice,
+  ...partialPricesSlice,
   stateSelector: (state: RootState) => state.prices
 }
 
-export default _pricesSlice.slice.reducer
+export default partialPricesSlice.slice.reducer

@@ -5,7 +5,6 @@ import { TransactionArgs, TransactionStatus } from '../../slices/transactions'
 import ConnectWalletButton from './ConnectWalletButton'
 import { Button,  ButtonKind, ButtonSize, InlineLoading } from 'carbon-components-react'
 import { submitTransaction } from '../../slices/transactions'
-import { getChainIDFromState } from '../../slices/chainID'
 import { notEmpty } from '../../utils'
 
 const CreateTransactionButton = ({
@@ -31,8 +30,8 @@ const CreateTransactionButton = ({
   const history = useHistory()
 
   const waitingForMetamask = selector(state => state.wallet.waitingForMetamask)
-  const userAddress = selector(state => state.wallet.address)
-  const chainID = getChainIDFromState(selector(state => state.chainID))
+  const userAddress = selector(state => state.userAddress)
+  const chainID = selector(state => state.chainID)
   const transactions = selector(state => state.transactions)
 
   if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) {

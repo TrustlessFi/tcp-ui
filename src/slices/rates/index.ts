@@ -1,14 +1,10 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
-
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rates } from '@trustlessfi/typechain/'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
-
-const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
 export interface ratesInfo {
   positiveInterestRate: boolean
@@ -16,48 +12,39 @@ export interface ratesInfo {
   referencePools: string[]
 }
 
-export const getRatesInfo = {
-  stateSelector: (state: RootState) => state.rates,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-      'rates/getRatesInfo',
-      async (args: NonNullValues<typeof dependencies>): Promise<ratesInfo> => {
-        const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
-        const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+const partialRatesInfoSlice = createChainDataSlice({
+  name: 'rates',
+  dependencies: ['contracts', 'rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
+      const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-        const { ratesInfo } = await executeMulticalls(
-          trustlessMulticall,
-          {
-            ratesInfo: oneContractManyFunctionMC(
-              rates,
-              {
-                positiveInterestRate: rc.Boolean,
-                interestRateAbsoluteValue: rc.BigNumberUnscale,
-                getReferencePools: rc.StringArray,
-              },
-            )
-          }
-        )
-
-        return {
-          positiveInterestRate: ratesInfo.positiveInterestRate,
-          interestRateAbsoluteValue: ratesInfo.interestRateAbsoluteValue,
-          referencePools: ratesInfo.getReferencePools,
+      const { ratesInfo } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          ratesInfo: oneContractManyFunctionMC(
+            rates,
+            {
+              positiveInterestRate: rc.Boolean,
+              interestRateAbsoluteValue: rc.BigNumberUnscale,
+              getReferencePools: rc.StringArray,
+            },
+          )
         }
+      )
+
+      return {
+        positiveInterestRate: ratesInfo.positiveInterestRate,
+        interestRateAbsoluteValue: ratesInfo.interestRateAbsoluteValue,
+        referencePools: ratesInfo.getReferencePools,
       }
-    )
+    },
+})
+
+export const ratesInfoSlice = {
+  ...partialRatesInfoSlice,
+  stateSelector: (state: RootState) => state.rates
 }
 
-const name = 'rates'
-
-export const ratesSlice = createSlice({
-  name,
-  initialState: getLocalStorageSliceState<ratesInfo>(name),
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getRatesInfo.thunk)
-  },
-});
-
-export default ratesSlice.reducer;
+export default partialRatesInfoSlice.slice.reducer

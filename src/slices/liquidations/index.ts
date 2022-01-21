@@ -1,12 +1,10 @@
 import { RootState } from '../../app/store'
-import { getThunkDependencies } from '../fetchNodes'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getLocalStorageSliceState, getGenericReducerBuilder, NonNullValues } from '../'
-
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
 export interface liquidationsInfo {
   twapDuration: number
@@ -14,17 +12,13 @@ export interface liquidationsInfo {
   liquidationIncentive: number
 }
 
-const dependencies = getThunkDependencies(['contracts', 'trustlessMulticall'])
-
-export const getLiquidationsInfo = {
-  stateSelector: (state: RootState) => state.liquidations,
-  dependencies,
-  thunk:
-    createAsyncThunk(
-    'liquidations/getLiquidationsInfo',
-    async (args: NonNullValues<typeof dependencies>): Promise<liquidationsInfo> => {
+const partialLiquidationsSlice = createChainDataSlice({
+  name: 'liquidations',
+  dependencies: ['contracts', 'rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
-      const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { liquidationsInfo } = await executeMulticalls(
         trustlessMulticall,
@@ -41,19 +35,12 @@ export const getLiquidationsInfo = {
       )
 
       return liquidationsInfo
-    }
-  )
+    },
+})
+
+export const liquidationsSlice = {
+  ...partialLiquidationsSlice,
+  stateSelector: (state: RootState) => state.liquidations
 }
 
-const name = 'liquidations'
-
-export const liquidationsSlice = createSlice({
-  name,
-  initialState: getLocalStorageSliceState<liquidationsInfo>(name),
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getLiquidationsInfo.thunk)
-  },
-});
-
-export default liquidationsSlice.reducer
+export default partialLiquidationsSlice.slice.reducer

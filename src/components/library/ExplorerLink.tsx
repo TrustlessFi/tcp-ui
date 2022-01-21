@@ -43,7 +43,7 @@ const ExplorerLink = ({
   style?: CSSProperties,
   children: React.ReactChild
 }) => {
-  const chainID = selector(state => state.chainID.chainID)
+  const chainID = selector(state => state.chainID)
 
   if (chainID === null) {
     console.error('ExplorerLink: Chain ID Null')
