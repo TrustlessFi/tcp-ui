@@ -4,7 +4,7 @@ import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
 import waitFor from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
 import { CSSProperties } from 'react';
-import { WalletToken } from '../../slices/tokensAddedToWallet'
+import { WalletToken } from '../../slices/transactions'
 import { addTokenToWallet, convertSVGtoURI } from '../../utils'
 import TrustlessLogos from '../../utils/trustless_logos'
 

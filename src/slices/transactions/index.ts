@@ -14,7 +14,6 @@ import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import { WalletToken } from '../tokensAddedToWallet'
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
 import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
@@ -26,7 +25,12 @@ import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice } from '../'
 import { RootState } from '../../app/store'
-import { toChecksumAddress } from '../../utils/'
+
+export enum WalletToken {
+  Hue = 'Hue',
+  LendHue = 'LendHue',
+  TCP = 'TCP',
+}
 
 export enum TransactionType {
   CreatePosition,
