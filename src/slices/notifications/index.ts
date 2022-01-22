@@ -42,7 +42,7 @@ const partialNotificationsSlice = createLocalSlice({
 
 export const notificationsSlice = {
   ...partialNotificationsSlice,
-  stateSelector: (state: RootState) => state.chainID
+  stateSelector: (state: RootState) => state.notifications
 }
 
 export const { addNotification, notificationClosed } = partialNotificationsSlice.slice.actions

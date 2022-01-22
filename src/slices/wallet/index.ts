@@ -1,9 +1,14 @@
 import { createLocalSlice } from '../'
 import { RootState } from '../../app/store'
 
+export interface wallet {
+  connecting: boolean,
+  waitingForMetamask: boolean
+}
+
 const partialWalletSlice = createLocalSlice({
   name: 'wallet',
-  initialState: { connecting: false, waitingForMetamask: false },
+  initialState: { connecting: false, waitingForMetamask: false} as wallet,
   reducers: {
     walletConnecting: (state) => {
       state.connecting = true
@@ -25,7 +30,7 @@ const partialWalletSlice = createLocalSlice({
 
 export const walletSlice = {
   ...partialWalletSlice,
-  stateSelector: (state: RootState) => state.chainID
+  stateSelector: (state: RootState) => state.wallet
 }
 
 export const {

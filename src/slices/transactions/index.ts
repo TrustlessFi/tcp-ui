@@ -593,7 +593,7 @@ const partialTransactionsSlice = createLocalSlice({
 
 export const transactionsSlice = {
   ...partialTransactionsSlice,
-  stateSelector: (state: RootState) => state.userAddress
+  stateSelector: (state: RootState) => state.transactions
 }
 
 export const {
