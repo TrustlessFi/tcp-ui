@@ -1,15 +1,7 @@
 import { Button } from 'carbon-components-react'
 import { useHistory, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import {
-  waitForRewards,
-  waitForPoolsMetadata,
-  waitForContracts,
-  waitForBalances,
-  waitForLiquidityPositions,
-  waitForPoolsCurrentData,
-  waitForCurrentChainInfo,
-} from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import InputPicker from '../library/InputPicker'
 import { IncreaseDecreaseOption } from './'
@@ -48,17 +40,29 @@ const CreateLiquidityPosition = () => {
   const positionID = Number(params.positionID)
   const poolAddress = params.poolAddress
 
-  const contracts = waitForContracts(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
-  const balances = waitForBalances(selector, dispatch)
-  const rewardsInfo = waitForRewards(selector, dispatch)
-  const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
-  const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
-  const liquidityPositions = waitForLiquidityPositions(selector, dispatch)
-  const currentChainInfo = waitForCurrentChainInfo(selector, dispatch)
+  const {
+    contracts,
+    userAddress,
+    balances,
+    rewardsInfo,
+    poolsMetadata,
+    poolsCurrentData,
+    currentChainInfo,
+    liquidityPositions,
+  } = waitFor([
+    'contracts',
+    'userAddress',
+    'balances',
+    'rewardsInfo',
+    'poolsMetadata',
+    'poolsCurrentData',
+    'currentChainInfo',
+    'liquidityPositions',
+  ], selector, dispatch)
 
-  const chainID = selector(state => state.chainID.chainID)
-  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
+  const chainID = selector(state => state.chainID)
+  const rootContracts = selector(state => state.rootContracts)
+  const trustlessMulticall = rootContracts === null ? null : rootContracts.trustlessMulticall
 
   const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 

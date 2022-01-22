@@ -1,23 +1,25 @@
 import { AppDispatch, store } from '../../app/store'
-import { connected, connectionFailed, connecting } from '../../slices/wallet'
-import { equalStringsCaseInsensitive , toChecksumAddress } from '../../utils/index';
+import { walletConnecting, walletConnected, walletConnectionFailed } from '../../slices/wallet'
+import { userAddressFound } from '../../slices/userAddress'
+import { equalStringsCaseInsensitive } from '../../utils/index';
 import { clearUserData } from './index';
 
 
 export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: string[]) => {
   const account = accounts.length > 0 ? accounts[0] : null
-  const currentAccount = store.getState().wallet.address
+  const currentAccount = store.getState().userAddress
 
   if (currentAccount === null && account === null) return
   if (currentAccount !== null && account !== null && equalStringsCaseInsensitive(currentAccount, account)) return
 
-  dispatch(connected(account === null ? null : toChecksumAddress(account)))
+  dispatch(walletConnected())
+  dispatch(userAddressFound(account))
 
   clearUserData(dispatch)
 }
 
 export const connectWallet = async (dispatch: AppDispatch) => {
-  dispatch(connecting())
+  dispatch(walletConnecting())
 
   const walletConnected = getWalletConnectedFunction(dispatch)
 
@@ -33,6 +35,6 @@ export const connectWallet = async (dispatch: AppDispatch) => {
           console.error(`Encountered unexpected error ${error.code}: '${error.message}'.`)
       }
 
-      dispatch(connectionFailed())
+      dispatch(walletConnectionFailed())
     })
 }

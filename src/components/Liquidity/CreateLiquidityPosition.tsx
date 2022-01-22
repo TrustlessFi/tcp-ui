@@ -2,14 +2,7 @@ import { Button } from 'carbon-components-react'
 import { useParams } from 'react-router-dom'
 import { Subtract16, Add16 } from '@carbon/icons-react';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import {
-  waitForPoolsCurrentData,
-  waitForRewards,
-  waitForPoolsMetadata,
-  waitForContracts,
-  waitForBalances,
-  waitForCurrentChainInfo
-} from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import {
   numDisplay, getSpaceForFee, tickToPriceDisplay, displaySymbol,
@@ -73,16 +66,27 @@ const CreateLiquidityPosition = () => {
 
   const { poolAddress }: MatchParams = useParams()
 
-  const contracts = waitForContracts(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
-  const balances = waitForBalances(selector, dispatch)
-  const rewardsInfo = waitForRewards(selector, dispatch)
-  const poolsMetadata = waitForPoolsMetadata(selector, dispatch)
-  const poolsCurrentData = waitForPoolsCurrentData(selector, dispatch)
-  const currentChainInfo = waitForCurrentChainInfo(selector, dispatch)
+  const {
+    contracts,
+    userAddress,
+    balances,
+    rewardsInfo,
+    poolsMetadata,
+    poolsCurrentData,
+    currentChainInfo,
+  } = waitFor([
+    'contracts',
+    'userAddress',
+    'balances',
+    'rewardsInfo',
+    'poolsMetadata',
+    'poolsCurrentData',
+    'currentChainInfo',
+  ], selector, dispatch)
 
-  const chainID = selector(state => state.chainID.chainID)
-  const trustlessMulticall = selector(state => state.chainID.trustlessMulticall)
+  const chainID = selector(state => state.chainID)
+  const rootContracts = selector(state => state.rootContracts)
+  const trustlessMulticall = rootContracts === null ? null : rootContracts.trustlessMulticall
 
   const pool = poolsMetadata === null ? null : poolsMetadata[poolAddress]
 

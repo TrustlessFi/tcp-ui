@@ -1,50 +1,39 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
+import { RootState } from '../../app/store'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
-
 import { Accounting } from '@trustlessfi/typechain';
-import { ProtocolContract, contractsInfo } from '../contracts'
-import { getLocalStorage } from '../../utils'
+import ProtocolContract from '../contracts/ProtocolContract'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
-export type systemDebtInfo = {
+export interface sdi {
   debt: number
   totalTCPRewards: number
   cumulativeDebt: number
   debtExchangeRate: number
 }
 
-export type systemDebtArgs = {
-  contracts: contractsInfo
-}
+const partialSystemDebtSlice = createChainDataSlice({
+  name: 'systemDent',
+  dependencies: ['contracts'],
+  thunkFunction:
+    async (args: thunkArgs<'contracts'>) => {
+      const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
 
-export interface SystemDebtState extends sliceState<systemDebtInfo> {}
+      const sdi = await accounting.getSystemDebtInfo()
 
-export const getSystemDebtInfo = createAsyncThunk(
-  'systemDebt/getSystemDebtInfo',
-  async (args: systemDebtArgs) => {
-    const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
-
-    const sdi = await accounting.getSystemDebtInfo()
-
-    return {
-      debt: unscale(sdi.debt),
-      totalTCPRewards: unscale(sdi.totalTCPRewards),
-      cumulativeDebt: unscale(sdi.cumulativeDebt),
-      debtExchangeRate: unscale(sdi.debtExchangeRate),
-    }
-  }
-)
-
-const name = 'systemDebt'
-
-export const systemDebtSlice = createSlice({
-  name,
-  initialState: getStateWithValue<systemDebtInfo>(getLocalStorage(name, null)) as SystemDebtState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getSystemDebtInfo)
-  },
+      return {
+        debt: unscale(sdi.debt),
+        totalTCPRewards: unscale(sdi.totalTCPRewards),
+        cumulativeDebt: unscale(sdi.cumulativeDebt),
+        debtExchangeRate: unscale(sdi.debtExchangeRate),
+      }
+    },
 })
 
-export default systemDebtSlice.reducer
+export const systemDebtSlice = {
+  ...partialSystemDebtSlice,
+  stateSelector: (state: RootState) => state.systemDebt
+}
+
+export default partialSystemDebtSlice.slice.reducer

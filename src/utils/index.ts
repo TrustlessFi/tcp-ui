@@ -1,5 +1,4 @@
 import { BigNumber, BigNumberish, utils, Contract } from "ethers"
-import { ChainID } from '@trustlessfi/addresses'
 import JSBI from "jsbi"
 import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
@@ -139,6 +138,17 @@ export const uint255Max = '57896044618658097711785492504343953926634992332820282
 // ======================= Typescript ============================
 export type Nullable<T> = { [K in keyof T]: T[K] | null }
 
+export type IfEquals<T, U, Y=unknown, N=never> =
+  (<G>() => G extends T ? 1 : 2) extends
+  (<G>() => G extends U ? 1 : 2) ? Y : N;
+
+  /*
+export declare const exactType: <T, U>(
+  draft: T & IfEquals<T, U>,
+  expected: U & IfEquals<T, U>
+) => IfEquals<T, U>
+  */
+
 // ======================= Uniswap Data Formatting ============================
 export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
 
@@ -160,21 +170,6 @@ export const msToS = (ms: number) => Math.floor(ms / 1000)
 
 export const timeS = () => msToS(timeMS())
 
-// ======================= Local Storage ============================
-export const getLocalStorage = (key: string, defaultValue: any = null) => {
-  const rawValue = localStorage.getItem(key)
-
-  if (rawValue === null) return defaultValue
-
-  const sliceStateWithExpiration = JSON.parse(rawValue)
-
-  if (sliceStateWithExpiration.expiration < timeS()) {
-    localStorage.removeItem(key)
-    return defaultValue
-  }
-
-  return sliceStateWithExpiration.sliceState
-}
 
 export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 
@@ -201,8 +196,10 @@ export const unique = <T>(array: Array<T>): Array<T> =>
 export const arrayToObject = (array: Array<unknown>) =>
   Object.fromEntries(array.map((value, index) => [index, value]))
 
+/// TYPES
 export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
-// type PromiseType = PromiseType<typeof promisedOne> // => number
+
+export type Merge<A, B> = { [K in keyof (A | B)]: K extends keyof B ? B[K] : A[K] };
 
 
 export const parseMetamaskError = (error: any): string[] => {

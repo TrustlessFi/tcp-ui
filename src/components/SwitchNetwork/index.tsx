@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react"
-import React, { useState } from "react"
+import { useState } from "react"
 
 import { Button } from "carbon-components-react"
 import { ChainID, chainIDToName } from '@trustlessfi/addresses'
@@ -9,10 +9,11 @@ import SpacedList from '../library/SpacedList'
 
 import { useAppSelector as selector } from "../../app/hooks"
 import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
+import { getNullableProvider } from '../../utils/getProvider'
 
 
 const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
-  const chainID = selector((state) => state.chainID.chainID)
+  const chainID = selector(state => state.chainID)
 
   const [ clicked, setClicked ] = useState(false)
 
@@ -27,7 +28,7 @@ const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
     }).catch(_e => setClicked(false))
   }
 
-  return chainID === null
+  return chainID === null && getNullableProvider() !== null
     ? <SpacedList style={{marginTop: '20%'}}>
         <Center>
           <Button kind='danger' onClick={switchNetwork}>

@@ -1,58 +1,46 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { sliceState, getStateWithValue, getGenericReducerBuilder } from '../'
+import { RootState } from '../../app/store'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-
 import { Liquidations } from '@trustlessfi/typechain'
-import { ProtocolContract, contractsInfo } from '../contracts'
-import { getLocalStorage } from '../../utils'
+import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { thunkArgs } from '../fetchNodes'
+import { createChainDataSlice } from '../'
 
-export type liquidationsInfo = {
-  twapDuration: number,
-  discoveryIncentive: number,
-  liquidationIncentive: number,
+export interface liquidationsInfo {
+  twapDuration: number
+  discoveryIncentive: number
+  liquidationIncentive: number
 }
 
-export type liquidationsArgs = {
-  contracts: contractsInfo,
-  trustlessMulticall: string,
+const partialLiquidationsSlice = createChainDataSlice({
+  name: 'liquidations',
+  dependencies: ['contracts', 'rootContracts'],
+  thunkFunction:
+    async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
+      const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
+      const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
+
+      const { liquidationsInfo } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          liquidationsInfo: oneContractManyFunctionMC(
+            liquidations,
+            {
+              twapDuration: rc.Number,
+              discoveryIncentive: rc.BigNumberUnscale,
+              liquidationIncentive: rc.BigNumberUnscale,
+            },
+          ),
+        }
+      )
+
+      return liquidationsInfo
+    },
+})
+
+export const liquidationsSlice = {
+  ...partialLiquidationsSlice,
+  stateSelector: (state: RootState) => state.liquidations
 }
 
-export interface LiquidationsState extends sliceState<liquidationsInfo> {}
-
-export const getLiquidationsInfo = createAsyncThunk(
-  'liquidations/getLiquidationsInfo',
-  async (args: liquidationsArgs): Promise<liquidationsInfo> => {
-    const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
-    const trustlessMulticall = getMulticallContract(args.trustlessMulticall)
-
-    const { liquidationsInfo } = await executeMulticalls(
-      trustlessMulticall,
-      {
-        liquidationsInfo: oneContractManyFunctionMC(
-          liquidations,
-          {
-            twapDuration: rc.Number,
-            discoveryIncentive: rc.BigNumberUnscale,
-            liquidationIncentive: rc.BigNumberUnscale,
-          },
-        ),
-      }
-    )
-
-    return liquidationsInfo
-  }
-)
-
-const name = 'liquidations'
-
-export const liquidationsSlice = createSlice({
-  name,
-  initialState: getStateWithValue<liquidationsInfo>(getLocalStorage(name, null)) as LiquidationsState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder = getGenericReducerBuilder(builder, getLiquidationsInfo)
-  },
-});
-
-export default liquidationsSlice.reducer
+export default partialLiquidationsSlice.slice.reducer

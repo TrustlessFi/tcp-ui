@@ -5,14 +5,7 @@ import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 
-import {
-  waitForBalances,
-  waitForMarket,
-  waitForRates,
-  waitForPrices,
-  waitForLiquidations,
-  waitForContracts,
-} from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
 import PositionInfoItem from '../library/PositionInfoItem'
 import { reason } from '../library/ErrorMessage'
@@ -30,13 +23,23 @@ const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a4
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
 
-  const liquidations = waitForLiquidations(selector, dispatch)
-  const balances = waitForBalances(selector, dispatch)
-  const priceInfo = waitForPrices(selector, dispatch)
-  const market = waitForMarket(selector, dispatch)
-  const rates = waitForRates(selector, dispatch)
-  const contracts = waitForContracts(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
+  const {
+    liquidationsInfo,
+    balances,
+    pricesInfo,
+    marketInfo,
+    ratesInfo,
+    contracts,
+    userAddress,
+  } = waitFor([
+    'liquidationsInfo',
+    'balances',
+    'pricesInfo',
+    'marketInfo',
+    'ratesInfo',
+    'contracts',
+    'userAddress',
+  ], selector, dispatch)
 
   const defaultCollateralizationRatio = 2.5
   const [collateralCount, setCollateralCount] = useState(0)
@@ -46,25 +49,25 @@ const CreatePosition = () => {
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
 
   const dataNull =
-    liquidations === null ||
+    liquidationsInfo === null ||
     balances === null ||
-    priceInfo === null ||
-    market === null ||
-    rates === null ||
+    pricesInfo === null ||
+    marketInfo === null ||
+    ratesInfo === null ||
     contracts === null
 
-  const collateralization = dataNull ? null : (collateralCount * priceInfo.ethPrice) / debtCount
+  const collateralization = dataNull ? null : (collateralCount * pricesInfo.ethPrice) / debtCount
   const collateralizationDisplay = collateralization === null ? '-%' : numDisplay(collateralization * 100, 0) + '%'
 
-  const liquidationPrice = dataNull ? 0 : (debtCount * market.collateralizationRequirement) / (collateralCount)
+  const liquidationPrice = dataNull ? 0 : (debtCount * marketInfo.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
 
-  const collateralizationRequirement = market === null ? null : market.collateralizationRequirement
+  const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
-  const interestRate = dataNull ? 0 : (rates.positiveInterestRate ? rates.interestRateAbsoluteValue : -rates.interestRateAbsoluteValue) * 100
+  const interestRate = dataNull ? 0 : (ratesInfo.positiveInterestRate ? ratesInfo.interestRateAbsoluteValue : -ratesInfo.interestRateAbsoluteValue) * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
-  const ethPrice = priceInfo === null ? null : priceInfo.ethPrice
+  const ethPrice = pricesInfo === null ? null : pricesInfo.ethPrice
   const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
 
   const txCostBuffer = 0.05
@@ -113,16 +116,16 @@ const CreatePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: 'Position has less than ' + numDisplay(market.minPositionSize) + ' Hue.',
-      failing: !debtIsFocused && 0 < debtCount && debtCount < market.minPositionSize,
+      message: 'Position has less than ' + numDisplay(marketInfo.minPositionSize) + ' Hue.',
+      failing: !debtIsFocused && 0 < debtCount && debtCount < marketInfo.minPositionSize,
     },
     undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(market.collateralizationRequirement * 100) + '%.',
+      message: 'Position has a collateralization less than ' + numDisplay(marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
         !debtIsFocused &&
         !collateralIsFocused &&
         collateralization !== null &&
-        collateralization < market.collateralizationRequirement,
+        collateralization < marketInfo.collateralizationRequirement,
     },
     insufficientEth: {
       message: 'Connected wallet does not have enough Eth.',

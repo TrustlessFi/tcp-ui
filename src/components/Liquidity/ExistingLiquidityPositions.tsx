@@ -3,7 +3,7 @@ import { MouseEvent, useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { waitForLiquidityPositions, waitForPoolsMetadata, waitForPoolsCurrentData, waitForContracts } from '../../slices/waitFor'
+import waitFor from '../../slices/waitFor'
 import { LiquidityPosition } from '../../slices/liquidityPositions'
 import { bnf, tickToPriceDisplay, unscale, numDisplay, displaySymbol } from '../../utils/'
 import { poolMetadata } from '../../slices/poolsMetadata'
@@ -14,8 +14,7 @@ import { TransactionType } from '../../slices/transactions'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 
-
-const comparator = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
+const sortPoolsByPositionID = (a: LiquidityPosition, b: LiquidityPosition) => bnf(a.positionID).lt(bnf(b.positionID)) ? -1 : 1
 
 const LiquidityPositionsTable = (
   { pool }: {
@@ -24,21 +23,23 @@ const LiquidityPositionsTable = (
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const contracts = waitForContracts(selector, dispatch)
-  const allLiquidityPositions = waitForLiquidityPositions(selector, dispatch)
-  const poolCurrentData = waitForPoolsCurrentData(selector, dispatch)
-  const userAddress = selector(state => state.wallet.address)
+  const {
+    contracts,
+    liquidityPositions,
+    poolsCurrentData,
+    userAddress
+  } = waitFor(['contracts', 'liquidityPositions', 'poolsCurrentData', 'userAddress'], selector, dispatch)
 
-  const liquidityPositions =
-    allLiquidityPositions === null
+  const poolLiquidityPositions =
+    liquidityPositions === null
     ? []
-    : Object.values(allLiquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(comparator)
+    : Object.values(liquidityPositions).filter(lqPos => lqPos.poolID === pool.poolID).sort(sortPoolsByPositionID)
 
   const [inverted, setInverted] = useState(false)
 
   useEffect(() => {
-    if (liquidityPositions.length === 0) return
-    setInverted(liquidityPositions[0].tickLower + liquidityPositions[0].tickUpper < 0)
+    if (poolLiquidityPositions.length === 0) return
+    setInverted(poolLiquidityPositions[0].tickLower + poolLiquidityPositions[0].tickUpper < 0)
   }, [liquidityPositions])
 
   const invert = () => setInverted(!inverted)
@@ -55,7 +56,7 @@ const LiquidityPositionsTable = (
     ? token0Symbol + ' per ' + token1Symbol
     : token1Symbol + ' per ' + token0Symbol
 
-  const poolTick = poolCurrentData && poolCurrentData[pool.address]?.twapTick
+  const poolTick = poolsCurrentData && poolsCurrentData[pool.address]?.twapTick
 
   let table =
     <Center style={{padding: 32}}>
@@ -83,8 +84,8 @@ const LiquidityPositionsTable = (
   const positionIDsWithRewards: string[] = []
   let totalRewards = 0
 
-  if (poolCurrentData !== null && Object.values(liquidityPositions).length > 0) {
-    const rows = Object.values(liquidityPositions).map((lqPos) => {
+  if (poolsCurrentData !== null && Object.values(poolLiquidityPositions).length > 0) {
+    const rows = Object.values(poolLiquidityPositions).map((lqPos) => {
 
       const isInRange = poolTick === null || (lqPos.tickLower < poolTick && poolTick < lqPos.tickUpper)
 
@@ -173,12 +174,12 @@ const LiquidityPositionsTable = (
 const ExistingLiquidityPositions = () => {
   const dispatch = useAppDispatch()
 
-  const pools = waitForPoolsMetadata(selector, dispatch)
+  const { poolsMetadata } = waitFor(['poolsMetadata'], selector, dispatch)
 
   const sortedPools =
-    pools === null
+    poolsMetadata === null
     ? []
-    : Object.values(pools).sort((a, b) => b.rewardsPortion - a.rewardsPortion)
+    : Object.values(poolsMetadata).sort((a, b) => b.rewardsPortion - a.rewardsPortion)
 
   return (
     <SpacedList spacing={32}>

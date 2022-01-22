@@ -15,22 +15,21 @@ const ConnectWalletButton = ({
 }) => {
   const dispatch = useAppDispatch()
 
+  const userAddress = selector(state => state.userAddress)
   const wallet = selector(state => state.wallet)
 
   const text = wallet.connecting
     ? 'Waiting for User in Metamask...'
-    : (wallet.address !== null
+    : (userAddress !== null
         ? 'Connected'
         : 'Connect a Wallet')
 
-  const onClick = async () => {
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      await connectWallet(dispatch)
-    } else {
-      // Set onboarding state?
-      (new MetaMaskOnboarding()).startOnboarding()
-    }
-  }
+  const metamaskInstalled = MetaMaskOnboarding.isMetaMaskInstalled()
+
+  const onClick = async () =>
+    metamaskInstalled
+    ? await connectWallet(dispatch)
+    : (new MetaMaskOnboarding()).startOnboarding()
 
   return (
     <Button
@@ -39,7 +38,7 @@ const ConnectWalletButton = ({
       size={size}
       kind={kind}
       style={style}>
-      {text}
+      {metamaskInstalled ? text : 'Install Metamask'}
     </Button>
   )
 }
