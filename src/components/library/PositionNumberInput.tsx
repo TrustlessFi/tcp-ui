@@ -1,9 +1,6 @@
-import {
-  NumberInput,
-  TextInput,
-} from 'carbon-components-react'
-import { CSSProperties, ReactNode } from 'react';
-import { Row, Col } from 'react-flexbox-grid'
+import { NumberInput } from 'carbon-components-react'
+import { CSSProperties } from 'react';
+import { Row } from 'react-flexbox-grid'
 import { onNumChange }  from '../../utils/'
 import Center from './Center'
 import Text from './Text'
