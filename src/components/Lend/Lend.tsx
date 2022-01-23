@@ -14,6 +14,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import TwoColumnDisplay from '../library/TwoColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
+import { Button } from "carbon-components-react"
 
 const Lend = () => {
   const dispatch = useAppDispatch()
@@ -47,7 +48,8 @@ const Lend = () => {
         : balances.tokens[contracts.Hue].balances.Accounting
   })
 
-  const newWalletBalance = dataNull ? 0 : balances.tokens[contracts.Hue].userBalance - amount
+  const currentWalletBalance = dataNull ? 0 : balances.tokens[contracts.Hue].userBalance
+  const newWalletBalance = dataNull ? 0 : currentWalletBalance - amount
   const lentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance! * marketInfo.valueOfLendTokensInHue
   const newLentHueCount = lentHueCount + amount
 
@@ -69,10 +71,10 @@ const Lend = () => {
   const metadataItems = [
     {
       title: 'Current Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)) + ' Hue',
+      value: (dataNull ? '-' : numDisplay(currentWalletBalance, 2)) + ' Hue',
     }, {
       title: 'New Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance - amount, 2)) + ' Hue',
+      value: (dataNull ? '-' : numDisplay(newWalletBalance, 2)) + ' Hue',
       failing: failures.notEnoughInWallet.failing,
     }, {
       title: 'Current Hue Lent',
@@ -93,8 +95,19 @@ const Lend = () => {
           id="lendInput"
           action={(value: number) => setAmount(value)}
           value={amount}
+          max={currentWalletBalance}
         />
-        Hue
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <div>Hue</div>
+          <Button
+            kind='secondary'
+            onClick={() => setAmount(currentWalletBalance)}
+            size='sm'
+            style={{padding: '0 8px'}}
+          >
+            Lend Max Hue
+          </Button>
+        </div>
       </SpacedList>
       <PositionMetadata2 items={metadataItems} />
       {
@@ -126,7 +139,7 @@ const Lend = () => {
 
   const columnTwo =
     <LargeText>
-      You have {dataNull ? '-' : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)} Hue available to deposit.
+      You have {dataNull ? '-' : numDisplay(currentWalletBalance, 2)} Hue available to deposit.
 
       <ParagraphDivider />
 

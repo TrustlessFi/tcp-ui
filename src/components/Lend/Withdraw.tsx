@@ -14,6 +14,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import TwoColumnDisplay from '../library/TwoColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import SpacedList from '../library/SpacedList'
+import { Button } from "carbon-components-react"
 
 const Withdraw = () => {
   const dispatch = useAppDispatch()
@@ -97,8 +98,19 @@ const Withdraw = () => {
           id="lendInput"
           action={(value: number) => setAmount(value)}
           value={amount}
+          max={lentHueCount}
         />
-        Hue
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <div>Hue</div>
+          <Button
+            kind='secondary'
+            onClick={() => setAmount(lentHueCount)}
+            size='sm'
+            style={{padding: '0 8px'}}
+          >
+            Withdraw Max Hue
+          </Button>
+        </div>
       </SpacedList>
       <PositionMetadata2 items={metadataItems} />
       {
