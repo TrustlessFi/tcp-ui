@@ -1,6 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 import { ChainID, getAddress } from '@trustlessfi/addresses'
-import { createLocalSlice } from '../'
+import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 
 import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
@@ -16,6 +16,7 @@ const rootContractsSlice = createLocalSlice({
   name: 'rootContracts',
   initialState: null as null | rootContracts,
   stateSelector: (state: RootState) => state.rootContracts,
+  cacheDuration: CacheDuration.NONE,
   reducers: {
     chainIDFoundForRootContracts: (_state, action: PayloadAction<ChainID>) => {
       const chainID = action.payload

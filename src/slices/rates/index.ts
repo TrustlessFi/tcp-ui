@@ -3,7 +3,7 @@ import { Rates } from '@trustlessfi/typechain/'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface ratesInfo {
   positiveInterestRate: boolean
@@ -15,6 +15,7 @@ const ratesInfoSlice = createChainDataSlice({
   name: 'rates',
   dependencies: ['contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.ratesInfo,
+  cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates

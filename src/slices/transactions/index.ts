@@ -22,7 +22,7 @@ import { zeroAddress, bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
-import { createLocalSlice } from '../'
+import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 
 export enum WalletToken {
@@ -564,6 +564,7 @@ const transactionsSlice = createLocalSlice({
   name: 'transactions',
   initialState: {} as TransactionState,
   stateSelector: (state: RootState) => state.transactions,
+  cacheDuration: CacheDuration.INFINITE,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
       const userAddress = action.payload

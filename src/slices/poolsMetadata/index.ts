@@ -12,7 +12,7 @@ import {
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
 import { thunkArgs, RootState } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 
 export interface tokenMetadata {
@@ -37,6 +37,7 @@ const poolsMetadataSlice = createChainDataSlice({
   name: 'poolsMetadata',
   dependencies: ['contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.poolsMetadata,
+  cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const protocolDataAggregator = getContract(args.rootContracts.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator

@@ -1,4 +1,4 @@
-import { createLocalSlice } from '../'
+import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 
 export interface wallet {
@@ -10,6 +10,7 @@ const walletSlice = createLocalSlice({
   name: 'wallet',
   initialState: { connecting: false, waitingForMetamask: false} as wallet,
   stateSelector: (state: RootState) => state.wallet,
+  cacheDuration: CacheDuration.NONE,
   reducers: {
     walletConnecting: (state) => {
       state.connecting = true

@@ -80,6 +80,12 @@ export enum SliceDataType {
   Local,
 }
 
+const getCacheDuration = (cacheDuration?: CacheDuration) =>
+  cacheDuration === undefined
+  ? CacheDuration.SHORT
+  : cacheDuration
+
+
 export const createChainDataSlice = <
   Value,
   dependencyNodes extends FetchNode,
@@ -107,7 +113,7 @@ export const createChainDataSlice = <
   sliceType: SliceDataType.ChainData,
 } => {
   const { name, dependencies, thunkFunction, stateSelector } = sliceData
-  const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
+  const cacheDuration = getCacheDuration(sliceData.cacheDuration)
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
 
   const thunk = createAsyncThunk(`${sliceData.name}/fetch_${sliceData.name}`, thunkFunction)
@@ -154,7 +160,7 @@ export const createLocalSlice = <
   sliceType: SliceDataType.Local,
 } => {
   const { name, initialState, stateSelector } = sliceData
-  const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
+  const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.SHORT : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
 
   return {

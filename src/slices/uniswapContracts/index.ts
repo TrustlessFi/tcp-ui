@@ -5,7 +5,7 @@ import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/m
 import routerArtifact from "@trustlessfi/artifacts/dist/contracts/uniswap/uniswap-v3-periphery/contracts/SwapRouter.sol/SwapRouter.json"
 import getProvider from '../../utils/getProvider';
 import { thunkArgs, RootState  } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface uniswapContracts {
   weth: string
@@ -16,6 +16,7 @@ const uniswapContractsSlice = createChainDataSlice({
   name: 'uniswapContracts',
   dependencies: ['rootContracts'],
   stateSelector: (state: RootState) => state.uniswapContracts,
+  cacheDuration: CacheDuration.INFINITE,
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)

@@ -2,7 +2,8 @@ import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls,
+import {
+  executeMulticalls,
   rc,
   oneContractManyFunctionMC,
   manyContractOneFunctionMC,
