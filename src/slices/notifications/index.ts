@@ -22,7 +22,6 @@ export interface notificationInfo extends notificationArgs {
 
 export interface notificationState {[uid: string]: notificationInfo}
 
-
 const notificationsSlice = createLocalSlice({
   name: 'notifications',
   initialState: {} as notificationState,

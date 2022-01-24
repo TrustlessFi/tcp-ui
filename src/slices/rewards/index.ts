@@ -3,7 +3,7 @@ import { Rewards } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface rewardsInfo {
   twapDuration: number
@@ -22,6 +22,7 @@ const rewardsInfoSlice = createChainDataSlice({
       state.value = null
     },
   },
+  cacheDuration: CacheDuration.LONG,
   stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
