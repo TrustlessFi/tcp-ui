@@ -1,5 +1,6 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
-import { allSlices, RootState } from '../slices/fetchNodes'
+import { RootState } from '../slices/fetchNodes'
+import allSlices from '../slices/allSlices'
 
 export const store = configureStore({
   reducer:

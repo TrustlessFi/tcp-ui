@@ -12,11 +12,9 @@ export interface rootContracts {
   router: string
 }
 
-const initialState = null as null | rootContracts
-
 const rootContractsSlice = createLocalSlice({
   name: 'rootContracts',
-  initialState,
+  initialState: null as null | rootContracts,
   stateSelector: (state: RootState) => state.rootContracts,
   reducers: {
     chainIDFoundForRootContracts: (_state, action: PayloadAction<ChainID>) => {
