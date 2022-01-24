@@ -1,9 +1,8 @@
-import { RootState } from '../../app/store'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 
 export interface liquidationsInfo {
@@ -12,9 +11,10 @@ export interface liquidationsInfo {
   liquidationIncentive: number
 }
 
-const partialLiquidationsSlice = createChainDataSlice({
+const liquidationsSlice = createChainDataSlice({
   name: 'liquidations',
   dependencies: ['contracts', 'rootContracts'],
+  stateSelector: (state: RootState) => state.liquidationsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
@@ -38,9 +38,4 @@ const partialLiquidationsSlice = createChainDataSlice({
     },
 })
 
-export const liquidationsSlice = {
-  ...partialLiquidationsSlice,
-  stateSelector: (state: RootState) => state.liquidations
-}
-
-export default partialLiquidationsSlice.slice.reducer
+export default liquidationsSlice

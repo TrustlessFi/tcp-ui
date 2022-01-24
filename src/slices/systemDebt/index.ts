@@ -1,9 +1,8 @@
-import { RootState } from '../../app/store'
 import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 import { Accounting } from '@trustlessfi/typechain';
 import ProtocolContract from '../contracts/ProtocolContract'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 
 export interface sdi {
@@ -13,9 +12,10 @@ export interface sdi {
   debtExchangeRate: number
 }
 
-const partialSystemDebtSlice = createChainDataSlice({
+const systemDebtSlice = createChainDataSlice({
   name: 'systemDent',
   dependencies: ['contracts'],
+  stateSelector: (state: RootState) => state.sdi,
   thunkFunction:
     async (args: thunkArgs<'contracts'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -31,9 +31,4 @@ const partialSystemDebtSlice = createChainDataSlice({
     },
 })
 
-export const systemDebtSlice = {
-  ...partialSystemDebtSlice,
-  stateSelector: (state: RootState) => state.systemDebt
-}
-
-export default partialSystemDebtSlice.slice.reducer
+export default systemDebtSlice

@@ -1,5 +1,4 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { Governor } from '@trustlessfi/typechain'
 import { RootContract } from '../contracts/ProtocolContract'
 import getContract from '../../utils/getContract'
@@ -12,6 +11,7 @@ export interface governorInfo {
 const partialGovernorSlice = createChainDataSlice({
   name: 'governor',
   dependencies: ['rootContracts'],
+  stateSelector: (state: RootState) => state.governorInfo,
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
       const governor = getContract(args.rootContracts.governor, RootContract.Governor) as Governor
@@ -26,9 +26,4 @@ const partialGovernorSlice = createChainDataSlice({
     },
 })
 
-export const governorSlice = {
-  ...partialGovernorSlice,
-  stateSelector: (state: RootState) => state.governor
-}
-
-export default partialGovernorSlice.slice.reducer
+export default partialGovernorSlice

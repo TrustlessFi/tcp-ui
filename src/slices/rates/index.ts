@@ -1,9 +1,8 @@
-import { RootState } from '../../app/store'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rates } from '@trustlessfi/typechain/'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 
 export interface ratesInfo {
@@ -12,9 +11,10 @@ export interface ratesInfo {
   referencePools: string[]
 }
 
-const partialRatesInfoSlice = createChainDataSlice({
+const ratesInfoSlice = createChainDataSlice({
   name: 'rates',
   dependencies: ['contracts', 'rootContracts'],
+  stateSelector: (state: RootState) => state.ratesInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
@@ -42,9 +42,4 @@ const partialRatesInfoSlice = createChainDataSlice({
     },
 })
 
-export const ratesInfoSlice = {
-  ...partialRatesInfoSlice,
-  stateSelector: (state: RootState) => state.rates
-}
-
-export default partialRatesInfoSlice.slice.reducer
+export default ratesInfoSlice

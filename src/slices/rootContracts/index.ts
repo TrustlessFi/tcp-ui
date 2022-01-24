@@ -1,7 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 import { ChainID, getAddress } from '@trustlessfi/addresses'
 import { createLocalSlice } from '../'
-import { RootState } from '../../app/store'
+import { RootState } from '../fetchNodes'
 
 import localHardhatAddresses from '../../utils/localHardhatAddresses.json'
 
@@ -14,9 +14,10 @@ export interface rootContracts {
 
 const initialState = null as null | rootContracts
 
-const partialRootContractsSlice = createLocalSlice({
+const rootContractsSlice = createLocalSlice({
   name: 'rootContracts',
   initialState,
+  stateSelector: (state: RootState) => state.rootContracts,
   reducers: {
     chainIDFoundForRootContracts: (_state, action: PayloadAction<ChainID>) => {
       const chainID = action.payload
@@ -30,11 +31,6 @@ const partialRootContractsSlice = createLocalSlice({
   }
 })
 
-export const rootContractsSlice = {
-  ...partialRootContractsSlice,
-  stateSelector: (state: RootState) => state.rootContracts
-}
+export const { chainIDFoundForRootContracts } = rootContractsSlice.slice.actions
 
-export const { chainIDFoundForRootContracts } = partialRootContractsSlice.slice.actions
-
-export default partialRootContractsSlice.slice.reducer
+export default rootContractsSlice

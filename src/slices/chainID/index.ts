@@ -1,13 +1,12 @@
 import { PayloadAction } from '@reduxjs/toolkit'
-import { ChainID, getAddress } from '@trustlessfi/addresses'
+import { ChainID } from '@trustlessfi/addresses'
 import { createLocalSlice } from '../'
-import { RootState } from '../../app/store'
+import { RootState } from '../fetchNodes'
 
-const initialState = null as ChainID | null
-
-const partialChainIDSlice = createLocalSlice({
+const chainIDSlice = createLocalSlice({
   name: 'chainID',
-  initialState,
+  initialState: null as ChainID | null,
+  stateSelector: (state: RootState) => state.chainID,
   reducers: {
     chainIDFound: (_state, action: PayloadAction<number>) => {
       const chainID = action.payload
@@ -16,11 +15,6 @@ const partialChainIDSlice = createLocalSlice({
   }
 })
 
-export const chainIDSlice = {
-  ...partialChainIDSlice,
-  stateSelector: (state: RootState) => state.chainID
-}
+export const { chainIDFound } = chainIDSlice.slice.actions
 
-export const { chainIDFound } = partialChainIDSlice.slice.actions
-
-export default partialChainIDSlice.slice.reducer
+export default chainIDSlice

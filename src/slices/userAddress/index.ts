@@ -1,13 +1,14 @@
 import { PayloadAction } from '@reduxjs/toolkit'
 import { createLocalSlice } from '../'
-import { RootState } from '../../app/store'
+import { RootState } from '../fetchNodes'
 import { toChecksumAddress } from '../../utils/'
 
 const initialState = null as string | null
 
-const partialUserAddressSlice = createLocalSlice({
+const userAddressSlice = createLocalSlice({
   name: 'userAddress',
   initialState,
+  stateSelector: (state: RootState) => state.userAddress,
   reducers: {
     userAddressFound: (_state, action: PayloadAction<string | null>) => {
       const address = action.payload
@@ -16,11 +17,6 @@ const partialUserAddressSlice = createLocalSlice({
   }
 })
 
-export const userAddressSlice = {
-  ...partialUserAddressSlice,
-  stateSelector: (state: RootState) => state.userAddress
-}
+export const { userAddressFound } = userAddressSlice.slice.actions
 
-export const { userAddressFound } = partialUserAddressSlice.slice.actions
-
-export default partialUserAddressSlice.slice.reducer
+export default userAddressSlice

@@ -1,5 +1,4 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 import { getMulticallContract} from '../../utils/getContract'
 import {
@@ -17,6 +16,7 @@ export interface currentChainInfo {
 const partialCurrentChainInfoSlice = createChainDataSlice({
   name: 'currentChainInfo',
   dependencies: ['rootContracts'],
+  stateSelector: (state: RootState) => state.currentChainInfo,
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -43,9 +43,4 @@ const partialCurrentChainInfoSlice = createChainDataSlice({
     }
 })
 
-export const currentChainInfoSlice = {
-  ...partialCurrentChainInfoSlice,
-  stateSelector: (state: RootState) => state.currentChainInfo
-}
-
-export default partialCurrentChainInfoSlice.slice.reducer
+export default partialCurrentChainInfoSlice

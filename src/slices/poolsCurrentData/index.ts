@@ -1,5 +1,4 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 import { Contract } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
@@ -30,7 +29,7 @@ export interface poolsCurrentData {
   }
 }
 
-const partialPoolsCurrentDataSlice = createChainDataSlice({
+const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
   dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo'],
   reducers: {
@@ -38,6 +37,7 @@ const partialPoolsCurrentDataSlice = createChainDataSlice({
       state.value = null
     },
   },
+  stateSelector: (state: RootState) => state.poolsCurrentData,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const provider = getProvider()
@@ -104,11 +104,6 @@ const partialPoolsCurrentDataSlice = createChainDataSlice({
     },
 })
 
-export const poolsCurrentDataSlice = {
-  ...partialPoolsCurrentDataSlice,
-  stateSelector: (state: RootState) => state.poolsCurrentData
-}
+export const { clearPoolsCurrentData } = poolsCurrentDataSlice.slice.actions
 
-export const { clearPoolsCurrentData } = partialPoolsCurrentDataSlice.slice.actions
-
-export default partialPoolsCurrentDataSlice.slice.reducer
+export default poolsCurrentDataSlice

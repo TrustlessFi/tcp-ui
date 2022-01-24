@@ -8,7 +8,7 @@ import {
   Slice,
 } from '@reduxjs/toolkit'
 import { timeS, minutes } from '../utils'
-import { FetchNode, thunkDependencies, getThunkDependencies } from './fetchNodes'
+import { FetchNode, thunkDependencies, getThunkDependencies, RootState } from './fetchNodes'
 
 export interface sliceState<T> {
   loading: boolean
@@ -75,10 +75,16 @@ export enum CacheDuration {
   LONG = minutes(30),
 }
 
+export enum SliceDataType {
+  ChainData,
+  Local,
+}
+
 export const createChainDataSlice = <
   Value,
   dependencyNodes extends FetchNode,
   dependencies extends thunkDependencies<dependencyNodes>,
+  stateSelector extends (state: RootState) => sliceState<Value>,
   Args extends NonNullValues<dependencies>,
   reducers extends SliceCaseReducers<sliceState<Value>>,
   SliceType extends Slice<sliceState<Value>, {[reducer in keyof reducers]: reducers[reducer]}>,
@@ -86,6 +92,7 @@ export const createChainDataSlice = <
   sliceData: {
     name: string,
     dependencies: dependencyNodes[],
+    stateSelector: stateSelector,
     thunkFunction: (args: Args) => Promise<Value>
     reducers?: reducers
     cacheDuration?: CacheDuration
@@ -93,11 +100,13 @@ export const createChainDataSlice = <
 ): {
   name: string,
   slice: SliceType,
+  stateSelector: stateSelector,
   thunk: AsyncThunk<Value, Args, {}>
   dependencies: dependencies,
   cacheDuration: CacheDuration,
+  sliceType: SliceDataType.ChainData,
 } => {
-  const { name, dependencies, thunkFunction } = sliceData
+  const { name, dependencies, thunkFunction, stateSelector } = sliceData
   const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
 
@@ -105,6 +114,7 @@ export const createChainDataSlice = <
 
   return {
     name,
+    stateSelector,
     slice: createSlice({
       name,
       initialState:
@@ -119,31 +129,37 @@ export const createChainDataSlice = <
     thunk,
     dependencies: getThunkDependencies(dependencies) as dependencies,
     cacheDuration,
+    sliceType: SliceDataType.ChainData,
   }
 }
 
 export const createLocalSlice = <
   Value,
+  stateSelector extends (state: RootState) => Value | null,
   reducers extends SliceCaseReducers<Value>,
   SliceType extends Slice<Value, {[reducer in keyof reducers]: reducers[reducer]}>,
 >(
   sliceData: {
     name: string,
     initialState: Value,
+    stateSelector: stateSelector
     reducers?: reducers
     cacheDuration?: CacheDuration
   }
 ): {
   name: string,
   slice: SliceType,
+  stateSelector: stateSelector,
   cacheDuration: CacheDuration,
+  sliceType: SliceDataType.Local,
 } => {
-  const { name, initialState } = sliceData
+  const { name, initialState, stateSelector } = sliceData
   const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
 
   return {
     name,
+    stateSelector,
     slice: createSlice({
       name,
       initialState:
@@ -153,5 +169,6 @@ export const createLocalSlice = <
       reducers,
     }) as SliceType,
     cacheDuration,
+    sliceType: SliceDataType.Local,
   }
 }

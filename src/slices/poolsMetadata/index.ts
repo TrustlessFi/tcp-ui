@@ -1,4 +1,3 @@
-import { RootState } from '../../app/store'
 import {
   Fee, addressToERC20, zeroAddress, unique, addressToV3Pool, sum,
 } from '../../utils/'
@@ -12,7 +11,7 @@ import {
 } from '@trustlessfi/multicall'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { ProtocolDataAggregator, Rewards } from '@trustlessfi/typechain/'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 
 
@@ -34,9 +33,10 @@ export interface poolMetadata {
 
 export interface poolsMetadata { [key: string]: poolMetadata }
 
-const partialPoolsMetadataSlice = createChainDataSlice({
+const poolsMetadataSlice = createChainDataSlice({
   name: 'poolsMetadata',
   dependencies: ['contracts', 'rootContracts'],
+  stateSelector: (state: RootState) => state.poolsMetadata,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const protocolDataAggregator = getContract(args.rootContracts.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
@@ -101,9 +101,4 @@ const partialPoolsMetadataSlice = createChainDataSlice({
     },
 })
 
-export const poolsMetadataSlice = {
-  ...partialPoolsMetadataSlice,
-  stateSelector: (state: RootState) => state.poolsMetadata
-}
-
-export default partialPoolsMetadataSlice.slice.reducer
+export default poolsMetadataSlice

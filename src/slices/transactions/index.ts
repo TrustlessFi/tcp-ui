@@ -1,7 +1,6 @@
 import { Contract } from 'ethers'
 import { PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { assertUnreachable } from '../../utils'
-import { getLocalStorageState } from '../'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
@@ -24,7 +23,7 @@ import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice } from '../'
-import { RootState } from '../../app/store'
+import { RootState } from '../fetchNodes'
 
 export enum WalletToken {
   Hue = 'Hue',
@@ -561,9 +560,10 @@ export const submitTransaction = createAsyncThunk(
     await waitForTransaction(tx, provider, dispatch)
   })
 
-const partialTransactionsSlice = createLocalSlice({
+const transactionsSlice = createLocalSlice({
   name: 'transactions',
   initialState: {} as TransactionState,
+  stateSelector: (state: RootState) => state.transactions,
   reducers: {
     clearUserTransactions: (state, action: PayloadAction<string>) => {
       const userAddress = action.payload
@@ -591,16 +591,11 @@ const partialTransactionsSlice = createLocalSlice({
   }
 })
 
-export const transactionsSlice = {
-  ...partialTransactionsSlice,
-  stateSelector: (state: RootState) => state.transactions
-}
-
 export const {
   clearUserTransactions,
   transactionCreated,
   transactionSucceeded,
   transactionFailed,
-} = partialTransactionsSlice.slice.actions
+} = transactionsSlice.slice.actions
 
-export default partialTransactionsSlice.slice.reducer
+export default transactionsSlice
