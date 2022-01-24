@@ -1,10 +1,9 @@
-import { RootState } from '../../app/store'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rewards } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
-import { thunkArgs } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { thunkArgs, RootState  } from '../fetchNodes'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface rewardsInfo {
   twapDuration: number
@@ -15,7 +14,7 @@ export interface rewardsInfo {
   periodLength: number
 }
 
-const partialRewardsInfoSlice = createChainDataSlice({
+const rewardsInfoSlice = createChainDataSlice({
   name: 'rewards',
   dependencies: ['contracts', 'rootContracts'],
   reducers: {
@@ -23,6 +22,8 @@ const partialRewardsInfoSlice = createChainDataSlice({
       state.value = null
     },
   },
+  cacheDuration: CacheDuration.LONG,
+  stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
@@ -49,11 +50,6 @@ const partialRewardsInfoSlice = createChainDataSlice({
     },
 })
 
-export const rewardsInfoSlice = {
-  ...partialRewardsInfoSlice,
-  stateSelector: (state: RootState) => state.rewards
-}
+export const { clearRewardsInfo } = rewardsInfoSlice.slice.actions
 
-export const { clearRewardsInfo } = partialRewardsInfoSlice.slice.actions
-
-export default partialRewardsInfoSlice.slice.reducer
+export default rewardsInfoSlice

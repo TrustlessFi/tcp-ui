@@ -4,18 +4,19 @@ import { getMulticallContract } from '../../utils/getContract';
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import routerArtifact from "@trustlessfi/artifacts/dist/contracts/uniswap/uniswap-v3-periphery/contracts/SwapRouter.sol/SwapRouter.json"
 import getProvider from '../../utils/getProvider';
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { thunkArgs, RootState  } from '../fetchNodes'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface uniswapContracts {
   weth: string
   factory: string
 }
 
-const partialUniswapContractsSlice = createChainDataSlice({
+const uniswapContractsSlice = createChainDataSlice({
   name: 'uniswapContracts',
   dependencies: ['rootContracts'],
+  stateSelector: (state: RootState) => state.uniswapContracts,
+  cacheDuration: CacheDuration.INFINITE,
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -41,9 +42,4 @@ const partialUniswapContractsSlice = createChainDataSlice({
     }
 })
 
-export const uniswapContractsSlice = {
-  ...partialUniswapContractsSlice,
-  stateSelector: (state: RootState) => state.uniswapContracts
-}
-
-export default partialUniswapContractsSlice.slice.reducer
+export default uniswapContractsSlice

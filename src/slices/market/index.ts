@@ -1,5 +1,4 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { createChainDataSlice, CacheDuration } from '../'
 import { Market } from '@trustlessfi/typechain'
@@ -18,10 +17,11 @@ export interface marketInfo {
   valueOfLendTokensInHue: number
 }
 
-const partialMarketSlice = createChainDataSlice({
+const marketSlice = createChainDataSlice({
   name: 'market',
   dependencies: ['contracts', 'rootContracts'],
   cacheDuration: CacheDuration.SHORT,
+  stateSelector: (state: RootState) => state.marketInfo,
   reducers: {
     clearMarketInfo: (state) => {
       state.value = null
@@ -58,11 +58,6 @@ const partialMarketSlice = createChainDataSlice({
     },
 })
 
-export const { clearMarketInfo } = partialMarketSlice.slice.actions
+export const { clearMarketInfo } = marketSlice.slice.actions
 
-export const marketSlice = {
-  ...partialMarketSlice,
-  stateSelector: (state: RootState) => state.market
-}
-
-export default partialMarketSlice.slice.reducer
+export default marketSlice

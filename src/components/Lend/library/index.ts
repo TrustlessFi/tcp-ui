@@ -1,10 +1,11 @@
-import { FetchNodes } from '../../../slices/fetchNodes'
-
+import { marketInfo } from '../../../slices/market'
+import { ratesInfo } from '../../../slices/rates'
+import { sdi } from '../../../slices/systemDebt'
 
 export const getAPR = (args: {
-  marketInfo: FetchNodes['marketInfo'],
-  ratesInfo: FetchNodes['ratesInfo'],
-  sdi: FetchNodes['sdi'],
+  marketInfo: marketInfo,
+  ratesInfo: ratesInfo,
+  sdi: sdi,
   lentHue: number,
 }) => {
   if (args.marketInfo.interestPortionToLenders === 0) return 0

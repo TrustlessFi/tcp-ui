@@ -1,18 +1,19 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { Governor } from '@trustlessfi/typechain'
 import { RootContract } from '../contracts/ProtocolContract'
 import getContract from '../../utils/getContract'
-import { createChainDataSlice } from '../'
-import { getMulticallContract } from '../../utils/getContract';
+import { createChainDataSlice, CacheDuration } from '../'
+import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
 import  ProtocolContract from './ProtocolContract'
 
 export type contractsInfo = { [key in ProtocolContract]: string }
 
-const partialContractsSlice = createChainDataSlice({
+const contractsSlice = createChainDataSlice({
   name: 'contracts',
   dependencies: ['rootContracts'],
+  stateSelector: (state: RootState) => state.contracts,
+  cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'rootContracts' >) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -67,9 +68,4 @@ const partialContractsSlice = createChainDataSlice({
     },
 })
 
-export const contractsSlice = {
-  ...partialContractsSlice,
-  stateSelector: (state: RootState) => state.contracts
-}
-
-export default partialContractsSlice.slice.reducer
+export default contractsSlice

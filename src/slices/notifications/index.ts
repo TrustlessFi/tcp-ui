@@ -4,7 +4,7 @@ import { timeMS } from '../../utils'
 import { TransactionStatus, TransactionType } from '../transactions'
 import { ChainID } from '@trustlessfi/addresses'
 import { createLocalSlice, CacheDuration } from '../'
-import { RootState } from '../../app/store'
+import { RootState } from '../fetchNodes'
 
 export interface notificationArgs {
   hash?: string
@@ -22,11 +22,11 @@ export interface notificationInfo extends notificationArgs {
 
 export interface notificationState {[uid: string]: notificationInfo}
 
-
-const partialNotificationsSlice = createLocalSlice({
+const notificationsSlice = createLocalSlice({
   name: 'notifications',
   initialState: {} as notificationState,
   cacheDuration: CacheDuration.INFINITE,
+  stateSelector: (state: RootState) => state.notifications,
   reducers: {
     addNotification: (state, action: PayloadAction<notificationArgs>) => {
       const args = action.payload
@@ -40,11 +40,6 @@ const partialNotificationsSlice = createLocalSlice({
   }
 })
 
-export const notificationsSlice = {
-  ...partialNotificationsSlice,
-  stateSelector: (state: RootState) => state.notifications
-}
+export const { addNotification, notificationClosed } = notificationsSlice.slice.actions
 
-export const { addNotification, notificationClosed } = partialNotificationsSlice.slice.actions
-
-export default partialNotificationsSlice.slice.reducer
+export default notificationsSlice

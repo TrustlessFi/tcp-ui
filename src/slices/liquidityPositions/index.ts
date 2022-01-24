@@ -1,8 +1,8 @@
-import { RootState } from '../../app/store'
+import { } from '../../app/store'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 import { PromiseType } from '@trustlessfi/utils'
 import { oneContractOneFunctionMC } from '@trustlessfi/multicall'
@@ -24,7 +24,7 @@ export interface liquidityPositions {
   [id: string]: LiquidityPosition
 }
 
-const partialLiquidityPositionsSlice = createChainDataSlice({
+const liquidityPositionsSlice = createChainDataSlice({
   name: 'liquidityPositions',
   dependencies: ['contracts', 'rootContracts', 'userAddress', 'poolsCurrentData', 'poolsMetadata', 'rewardsInfo'],
   reducers: {
@@ -32,6 +32,7 @@ const partialLiquidityPositionsSlice = createChainDataSlice({
       state.value = null
     },
   },
+  stateSelector: (state: RootState) => state.liquidityPositions,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsCurrentData' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -87,11 +88,6 @@ const partialLiquidityPositionsSlice = createChainDataSlice({
   }
 })
 
-export const liquidityPositionsSlice = {
-  ...partialLiquidityPositionsSlice,
-  stateSelector: (state: RootState) => state.liquidityPositions
-}
+export const { clearLiquidityPositions } = liquidityPositionsSlice.slice.actions
 
-export const { clearLiquidityPositions } = partialLiquidityPositionsSlice.slice.actions
-
-export default partialLiquidityPositionsSlice.slice.reducer
+export default liquidityPositionsSlice

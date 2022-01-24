@@ -1,5 +1,4 @@
-import { RootState } from '../../app/store'
-import { FetchNodes } from '../fetchNodes'
+import { RootState  } from '../fetchNodes'
 import { BigNumber } from "ethers"
 import { timeToPeriod, unscale, scale } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
@@ -26,9 +25,10 @@ export interface Position {
 
 export interface positions { [key: number]: Position }
 
-const partialPositionsSlice = createChainDataSlice({
+const positionsSlice = createChainDataSlice({
   name: 'positions',
   dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts'],
+  stateSelector: (state: RootState) => state.positions,
   reducers: {
     clearPositions: (state) => {
       state.value = null
@@ -97,17 +97,12 @@ const partialPositionsSlice = createChainDataSlice({
         } as Position
       })
 
-      const positionsMap: FetchNodes['positions'] = {}
+      const positionsMap: positions = {}
       positionsInfo.forEach(positionInfo => positionsMap[positionInfo.id] = positionInfo)
       return positionsMap
     },
 })
 
-export const positionsSlice = {
-  ...partialPositionsSlice,
-  stateSelector: (state: RootState) => state.positions
-}
+export const { clearPositions } = positionsSlice.slice.actions
 
-export const { clearPositions } = partialPositionsSlice.slice.actions
-
-export default partialPositionsSlice.slice.reducer
+export default positionsSlice

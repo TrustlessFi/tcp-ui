@@ -1,9 +1,9 @@
-import { RootState } from '../../app/store'
-import { thunkArgs } from '../fetchNodes'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls,
+import {
+  executeMulticalls,
   rc,
   oneContractManyFunctionMC,
   manyContractOneFunctionMC,
@@ -35,9 +35,10 @@ export interface balances {
   }
 }
 
-const partialBalancesSlice = createChainDataSlice({
+const balancesSlice = createChainDataSlice({
   name: 'balances',
   dependencies: ['contracts', 'rootContracts', 'userAddress', 'poolsMetadata', 'rewardsInfo'],
+  stateSelector: (state: RootState) => state.balances,
   reducers: {
     clearBalances: (state) => {
       state.value = null
@@ -177,11 +178,6 @@ const partialBalancesSlice = createChainDataSlice({
     }
 })
 
-export const balancesSlice = {
-  ...partialBalancesSlice,
-  stateSelector: (state: RootState) => state.balances
-}
+export const { clearBalances } = balancesSlice.slice.actions
 
-export const { clearBalances } = partialBalancesSlice.slice.actions
-
-export default partialBalancesSlice.slice.reducer
+export default balancesSlice
