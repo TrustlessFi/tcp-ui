@@ -12,6 +12,5 @@ export const store = configureStore({
 })
 
 export type AppDispatch = typeof store.dispatch
-// TODO change to fetchNodes root state
-// type RootState = ReturnType<typeof store.getState> // NOTE: defined in slices/fetchNodes.ts
+// type RootState = ReturnType<typeof store.getState> // NOTE: now defined in slices/fetchNodes.ts
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>

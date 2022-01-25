@@ -20,7 +20,6 @@ export interface marketInfo {
 const marketSlice = createChainDataSlice({
   name: 'market',
   dependencies: ['contracts', 'rootContracts'],
-  cacheDuration: CacheDuration.SHORT,
   stateSelector: (state: RootState) => state.marketInfo,
   reducers: {
     clearMarketInfo: (state) => {

@@ -41,13 +41,13 @@ const getLocalDataSelector = <Value>(slice: {stateSelector: (state: RootState) =
 
   // TODO avoid using any
 const waitForImpl = Object.fromEntries(
-      Object.entries(allSlices)
-        .map(([sliceName, slice]) => [
-          sliceName,
-          slice.sliceType === SliceDataType.ChainData
-          ? getWaitFunction(slice as any)
-          : getLocalDataSelector(slice as any)
-        ])) as {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => sliceStateValues[key]}
+  Object.entries(allSlices)
+    .map(([sliceName, slice]) => [
+      sliceName,
+      slice.sliceType === SliceDataType.ChainData
+      ? getWaitFunction(slice as any)
+      : getLocalDataSelector(slice as any)
+    ])) as {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => sliceStateValues[key]}
 
 const waitFor = <RequestedNodes extends FetchNode>(
   requestedNodes: RequestedNodes[],
