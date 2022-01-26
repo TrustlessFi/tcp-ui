@@ -93,7 +93,7 @@ const ExistingPositions = () => {
     'contracts',
   ], selector, dispatch)
 
-
+  console.log({positions})
   const positionsIDsWithRewards =
     positions === null
     ? []

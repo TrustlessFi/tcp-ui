@@ -29,11 +29,7 @@ const positionsSlice = createChainDataSlice({
   name: 'positions',
   dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.positions,
-  reducers: {
-    clearPositions: (state) => {
-      state.value = null
-    },
-  },
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -102,7 +98,5 @@ const positionsSlice = createChainDataSlice({
       return positionsMap
     },
 })
-
-export const { clearPositions } = positionsSlice.slice.actions
 
 export default positionsSlice

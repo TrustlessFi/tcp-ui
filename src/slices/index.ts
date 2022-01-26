@@ -6,6 +6,8 @@ import {
   createSlice,
   SliceCaseReducers,
   Slice,
+  CaseReducer,
+  PayloadAction,
 } from '@reduxjs/toolkit'
 import { timeS, minutes } from '../utils'
 import { FetchNode, thunkDependencies, getThunkDependencies, RootState } from './fetchNodes'
@@ -52,7 +54,7 @@ export type NonNullValues<O> = {
   [K in keyof O]-?: NonNullable<O[K]>
 }
 
-export const getGenericReducerBuilder = <Args extends {}, Value>(
+const getGenericReducerBuilder = <Args extends {}, Value>(
   builder: ActionReducerMapBuilder<sliceState<Value>>,
   thunk: AsyncThunk<Value, Args, {}>,
 ): ActionReducerMapBuilder<sliceState<Value>> =>
@@ -76,15 +78,15 @@ export enum CacheDuration {
 }
 
 export enum SliceDataType {
-  ChainData,
   Local,
+  ChainData,
+  ChainUserData,
 }
 
 const getCacheDuration = (cacheDuration?: CacheDuration) =>
   cacheDuration === undefined
   ? CacheDuration.SHORT
   : cacheDuration
-
 
 export const createChainDataSlice = <
   Value,
@@ -93,7 +95,13 @@ export const createChainDataSlice = <
   stateSelector extends (state: RootState) => sliceState<Value>,
   Args extends NonNullValues<dependencies>,
   reducers extends SliceCaseReducers<sliceState<Value>>,
-  SliceType extends Slice<sliceState<Value>, {[reducer in keyof reducers]: reducers[reducer]}>,
+  reducersType extends
+    {clearData: CaseReducer<sliceState<Value>, PayloadAction<void>>}
+    & {[reducer in keyof reducers]: reducers[reducer]},
+  SliceType extends Slice<
+    sliceState<Value>,
+    {[reducer in keyof reducersType]: reducersType[reducer]}
+  >
 >(
   sliceData: {
     name: string,
@@ -102,6 +110,7 @@ export const createChainDataSlice = <
     thunkFunction: (args: Args) => Promise<Value>
     reducers?: reducers
     cacheDuration?: CacheDuration
+    isUserData?: boolean
   }
 ): {
   name: string,
@@ -110,40 +119,54 @@ export const createChainDataSlice = <
   thunk: AsyncThunk<Value, Args, {}>
   dependencies: dependencies,
   cacheDuration: CacheDuration,
-  sliceType: SliceDataType.ChainData,
+  sliceType: SliceDataType.ChainData | SliceDataType.ChainUserData,
 } => {
-  const { name, dependencies, thunkFunction, stateSelector } = sliceData
+  const { name, dependencies, thunkFunction, stateSelector, isUserData } = sliceData
   const cacheDuration = getCacheDuration(sliceData.cacheDuration)
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
 
   const thunk = createAsyncThunk(`${sliceData.name}/fetch_${sliceData.name}`, thunkFunction)
 
+  const slice = createSlice({
+    name,
+    initialState:
+      (cacheDuration === CacheDuration.NONE
+        ? getStateWithValue<Value>(null)
+        : getLocalStorageSliceState<Value>(name)),
+    reducers: {
+      clearData: state => {
+        console.log(`inside clearData for slice ${name}`)
+        console.log("theState: ", {...state, value: state.value})
+        state.value = null
+        console.log("theState: ", {...state, value: state.value})
+      },
+      ...reducers,
+    },
+    extraReducers: builder => {
+      builder = getGenericReducerBuilder<Args, Value>(builder, thunk)
+    },
+  })
+
   return {
     name,
     stateSelector,
-    slice: createSlice({
-      name,
-      initialState:
-        (cacheDuration === CacheDuration.NONE
-          ? getStateWithValue<Value>(null)
-          : getLocalStorageSliceState<Value>(name)),
-      reducers,
-      extraReducers: (builder) => {
-        builder = getGenericReducerBuilder<Args, Value>(builder, thunk)
-      },
-    }) as SliceType,
+    slice: slice as SliceType,
     thunk,
     dependencies: getThunkDependencies(dependencies) as dependencies,
     cacheDuration,
-    sliceType: SliceDataType.ChainData,
+    sliceType: isUserData === true ? SliceDataType.ChainUserData : SliceDataType.ChainData,
   }
 }
 
 export const createLocalSlice = <
   Value,
+  Args,
   stateSelector extends (state: RootState) => Value | null,
   reducers extends SliceCaseReducers<Value>,
-  SliceType extends Slice<Value, {[reducer in keyof reducers]: reducers[reducer]}>,
+  SliceType extends Slice<
+    Value,
+    {clearData: CaseReducer<Value, PayloadAction<void>>}
+    & {[reducer in keyof reducers]: reducers[reducer]}>
 >(
   sliceData: {
     name: string,
@@ -151,6 +174,7 @@ export const createLocalSlice = <
     stateSelector: stateSelector
     reducers?: reducers
     cacheDuration?: CacheDuration
+    thunkFunction?: (args: Args) => Promise<Value>
   }
 ): {
   name: string,
@@ -162,18 +186,22 @@ export const createLocalSlice = <
   const { name, initialState, stateSelector } = sliceData
   const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.SHORT : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
+  const slice = createSlice({
+    name,
+    initialState:
+      (cacheDuration === CacheDuration.NONE
+        ? initialState
+        : getLocalStorageState(name, initialState)),
+    reducers: {
+      clearData: _state => { throw new Error(`clearData reducer not defined for slice ${name}`)},
+      ...reducers
+    },
+  })
 
   return {
     name,
     stateSelector,
-    slice: createSlice({
-      name,
-      initialState:
-        (cacheDuration === CacheDuration.NONE
-          ? initialState
-          : getLocalStorageState(name, initialState)),
-      reducers,
-    }) as SliceType,
+    slice: slice as SliceType,
     cacheDuration,
     sliceType: SliceDataType.Local,
   }

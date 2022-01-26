@@ -1,7 +1,4 @@
 import { TransactionInfo, TransactionState } from '../../slices/transactions'
-import { AppDispatch } from '../../app/store'
-import { clearPositions } from '../../slices/positions'
-import { clearBalances } from '../../slices/balances'
 import { ChainID } from '@trustlessfi/addresses'
 
 export enum UserTxSortOption {
@@ -42,9 +39,4 @@ export const getOpacityTransition = (durationSeconds: number) => {
       OTransition: transition,
       transition,
   }
-}
-
-export const clearUserData = (dispatch: AppDispatch) => {
-  dispatch(clearBalances())
-  dispatch(clearPositions())
 }
