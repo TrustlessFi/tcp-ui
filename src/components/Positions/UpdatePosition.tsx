@@ -256,8 +256,9 @@ const UpdatePosition = () => {
           Object.values(failures)
             .filter(failure => !failure.silent)
             .filter(failure => failure.failing)
-            .map(failure =>
+            .map((failure, index) =>
               <InlineNotification
+                key={index}
                 notificationType='inline'
                 kind='error'
                 title={failure.message}

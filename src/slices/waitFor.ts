@@ -33,8 +33,6 @@ const getWaitFunction = <
       dispatch(thunk(inputArgs as NonNullValues<Dependencies>))
     }
 
-    console.log({state})
-
     return state.value
   }
 
