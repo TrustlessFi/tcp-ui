@@ -3,8 +3,7 @@ import { useAppDispatch, useAppSelector as selector } from './app/hooks'
 import { getNullableProvider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
-import Lend from './components/Lend/Lend'
-import Withdraw from './components/Lend/Withdraw'
+import Stake from './components/Stake/'
 import RecentTransactions from './components/RecentTransactions'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
@@ -25,8 +24,7 @@ declare global {
 
 export enum Tab {
   Positions = 'Positions',
-  Lend = 'Lend',
-  Withdraw = 'Withdraw',
+  Stake = 'Stake',
   Liquidity = 'Liquidity',
   Transactions = 'Transactions',
 }
@@ -36,8 +34,7 @@ export const tabDisplay: { [key in Tab]?: string } = {
 
 const tabToRender: {[key in Tab]: ReactNode} = {
   Positions: <Positions />,
-  Lend: <Lend />,
-  Withdraw: <Withdraw />,
+  Stake: <Stake />,
   Liquidity: <Liquidity />,
   Transactions: <RecentTransactions />,
 }

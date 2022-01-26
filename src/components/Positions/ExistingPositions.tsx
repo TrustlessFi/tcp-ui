@@ -28,8 +28,6 @@ const ExistingPositionsTable = () => {
     'contracts',
   ], selector, dispatch)
 
-  console.log({positions, pricesInfo, userAddress, contracts})
-
   if (positions === null || pricesInfo === null || userAddress === null || contracts === null) {
     return (
       <div style={{position: 'relative'}}>
@@ -93,7 +91,6 @@ const ExistingPositions = () => {
     'contracts',
   ], selector, dispatch)
 
-  console.log({positions})
   const positionsIDsWithRewards =
     positions === null
     ? []

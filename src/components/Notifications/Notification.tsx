@@ -102,6 +102,7 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
   return (
     <div style={{
       width: totalWidth,
+      zIndex: 1e6,
       opacity: visible ? 1 : 0,
       backgroundColor: '#161616',
       marginBottom: 12,

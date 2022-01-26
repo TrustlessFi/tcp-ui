@@ -3,6 +3,7 @@ import {
 } from 'carbon-components-react'
 import { ReactNode } from 'react';
 import Text from './Text'
+import Center from './Center'
 import PositionNumberInput from './PositionNumberInput'
 import SpacedList from './SpacedList'
 
@@ -15,8 +16,11 @@ const FullNumberInput = ({
   defaultButton,
   subTitle,
   onFocusUpdate,
+  light,
+  max,
+  center,
 }: {
-  title: string
+  title?: string
   action: (value: number) => void
   value: number
 
@@ -28,6 +32,9 @@ const FullNumberInput = ({
   }
   subTitle?: string | ReactNode
   onFocusUpdate?: (isFocused: boolean) => void
+  light?: boolean
+  max?: number
+  center?: boolean
 }) => {
 
   const input =
@@ -38,11 +45,16 @@ const FullNumberInput = ({
       fontSize={fontSize}
       unit={unit}
       onFocusUpdate={onFocusUpdate}
+      light={light}
+      max={max}
     />
 
   return (
     <SpacedList>
-      <Text size={fontSize}>{title}</Text>
+      { title === undefined
+        ? null
+        : <Text size={fontSize}>{title}</Text>
+      }
       {
         defaultButton === undefined
         ? <div style={{marginRight: 8}}>{input}</div>
@@ -55,7 +67,13 @@ const FullNumberInput = ({
             </div>
           </div>
       }
-      {subTitle}
+      {
+        center === true
+        ? <Center>
+            {subTitle}
+          </Center>
+        : subTitle
+      }
     </SpacedList>
   )
 }

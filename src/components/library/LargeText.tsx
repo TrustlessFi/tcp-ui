@@ -6,18 +6,20 @@ const LargeText = ({
   bold,
   color,
   style,
+  size,
   children,
 }: {
   monospace?: boolean,
   bold?: boolean,
   color?: string,
   style?: CSSProperties,
+  size?: number
   children: ReactNode
 }) => {
   return (
     <Text
       style={style}
-      size={20}
+      size={size}
       lineHeight="26px"
       monospace={monospace}
       bold={bold}
@@ -25,6 +27,10 @@ const LargeText = ({
       {children}
     </Text>
   )
+}
+
+LargeText.defaultProps = {
+  size: 20
 }
 
 export default LargeText

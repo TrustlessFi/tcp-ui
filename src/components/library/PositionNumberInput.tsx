@@ -16,6 +16,7 @@ const PositionNumberInput = ({
   style,
   max,
   onFocusUpdate,
+  light,
 }: {
   id: string
   value: number
@@ -27,6 +28,7 @@ const PositionNumberInput = ({
   style?: CSSProperties
   max?: number
   onFocusUpdate?: (isFocused: boolean) => void
+  light?: boolean
 }) => {
   const invalidText = <></>
   const itemStyle = small
@@ -35,6 +37,7 @@ const PositionNumberInput = ({
 
   const rawInput =
     <NumberInput
+      light={light}
       hideSteppers={!showSteppers}
       id={id}
       invalidText={invalidText}
