@@ -13,9 +13,10 @@ export interface sdi {
 }
 
 const systemDebtSlice = createChainDataSlice({
-  name: 'systemDent',
+  name: 'systemDebt',
   dependencies: ['contracts'],
   stateSelector: (state: RootState) => state.sdi,
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting

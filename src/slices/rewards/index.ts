@@ -17,11 +17,6 @@ export interface rewardsInfo {
 const rewardsInfoSlice = createChainDataSlice({
   name: 'rewards',
   dependencies: ['contracts', 'rootContracts'],
-  reducers: {
-    clearRewardsInfo: (state) => {
-      state.value = null
-    },
-  },
   cacheDuration: CacheDuration.LONG,
   stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
@@ -49,7 +44,5 @@ const rewardsInfoSlice = createChainDataSlice({
       return rewardsInfo
     },
 })
-
-export const { clearRewardsInfo } = rewardsInfoSlice.slice.actions
 
 export default rewardsInfoSlice

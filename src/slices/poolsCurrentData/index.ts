@@ -32,11 +32,6 @@ export interface poolsCurrentData {
 const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
   dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo'],
-  reducers: {
-    clearPoolsCurrentData: (state) => {
-      state.value = null
-    },
-  },
   stateSelector: (state: RootState) => state.poolsCurrentData,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo'>) => {
@@ -103,7 +98,5 @@ const poolsCurrentDataSlice = createChainDataSlice({
       }]))
     },
 })
-
-export const { clearPoolsCurrentData } = poolsCurrentDataSlice.slice.actions
 
 export default poolsCurrentDataSlice

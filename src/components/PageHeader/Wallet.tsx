@@ -8,10 +8,38 @@ import { chainIDFound } from '../../slices/chainID'
 import { chainIDFoundForRootContracts } from '../../slices/rootContracts'
 import { getSortedUserTxs } from '../library'
 import ConnectWalletButton from '../library/ConnectWalletButton'
-import { getWalletConnectedFunction } from '../library/WalletConnection'
 import { TransactionStatus } from '../../slices/transactions'
-import { clearEphemeralStorage } from '../library/LocalStorageManager'
 import WalletButton from '../library/WalletButton'
+import { AppDispatch } from '../../app/store'
+import { walletConnected } from '../../slices/wallet'
+import { userAddressFound } from '../../slices/userAddress'
+import { equalStringsCaseInsensitive } from '../../utils/index';
+import allSlices from '../../slices/allSlices'
+import { SliceDataType, CacheDuration } from '../../slices/'
+
+export const clearUserData = (dispatch: AppDispatch) =>
+  Object.values(allSlices)
+    .filter(slice => slice.sliceType === SliceDataType.UserData)
+      .map(slice => dispatch(slice.slice.actions.clearData()))
+
+export const clearEphemeralStorage = () =>
+  Object.values(allSlices)
+    .filter(slice => slice.cacheDuration !== CacheDuration.INFINITE)
+      .map(slice => localStorage.removeItem(slice.name))
+
+
+export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: string[]) => {
+  const account = accounts.length > 0 ? accounts[0] : null
+  const currentAccount = store.getState().userAddress
+
+  if (currentAccount === null && account === null) return
+  if (currentAccount !== null && account !== null && equalStringsCaseInsensitive(currentAccount, account)) return
+
+  dispatch(walletConnected())
+  dispatch(userAddressFound(account))
+
+  // clearUserData(dispatch)
+}
 
 const Wallet = () => {
   const dispatch = useAppDispatch()
@@ -44,6 +72,7 @@ const Wallet = () => {
   useEffect(() => {
     const { ethereum } = window
     if (!ethereum) return
+    // TODO if metamask not installed return
 
     ethereum.request({ method: 'eth_chainId' }).then(chainChanged)
 
@@ -52,11 +81,12 @@ const Wallet = () => {
     ethereum.on('connect', (provider: any) => chainChanged(provider.chainId))
     ethereum.on('accountsChanged', walletConnected)
 
-    ethereum.autoRefreshOnNetworkChange = false
-
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
       ethereum.request({ method: "eth_accounts" }).then(walletConnected)
     }
+
+    ethereum.autoRefreshOnNetworkChange = false
+
   })
 
   const countPendingTxs =

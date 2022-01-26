@@ -27,12 +27,8 @@ export interface liquidityPositions {
 const liquidityPositionsSlice = createChainDataSlice({
   name: 'liquidityPositions',
   dependencies: ['contracts', 'rootContracts', 'userAddress', 'poolsCurrentData', 'poolsMetadata', 'rewardsInfo'],
-  reducers: {
-    clearLiquidityPositions: (state) => {
-      state.value = null
-    },
-  },
   stateSelector: (state: RootState) => state.liquidityPositions,
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsCurrentData' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -87,7 +83,5 @@ const liquidityPositionsSlice = createChainDataSlice({
     ))
   }
 })
-
-export const { clearLiquidityPositions } = liquidityPositionsSlice.slice.actions
 
 export default liquidityPositionsSlice

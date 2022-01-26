@@ -1,5 +1,5 @@
 import { thunkArgs, RootState } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, SliceDataType } from '../'
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
 import {
@@ -39,11 +39,7 @@ const balancesSlice = createChainDataSlice({
   name: 'balances',
   dependencies: ['contracts', 'rootContracts', 'userAddress', 'poolsMetadata', 'rewardsInfo'],
   stateSelector: (state: RootState) => state.balances,
-  reducers: {
-    clearBalances: (state) => {
-      state.value = null
-    },
-  },
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -177,7 +173,5 @@ const balancesSlice = createChainDataSlice({
       }
     }
 })
-
-export const { clearBalances } = balancesSlice.slice.actions
 
 export default balancesSlice

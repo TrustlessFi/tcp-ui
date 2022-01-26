@@ -33,6 +33,8 @@ const getWaitFunction = <
       dispatch(thunk(inputArgs as NonNullValues<Dependencies>))
     }
 
+    console.log({state})
+
     return state.value
   }
 
@@ -44,7 +46,7 @@ const waitForImpl = Object.fromEntries(
   Object.entries(allSlices)
     .map(([sliceName, slice]) => [
       sliceName,
-      slice.sliceType === SliceDataType.ChainData
+      slice.sliceType === SliceDataType.ChainData || slice.sliceType === SliceDataType.UserData
       ? getWaitFunction(slice as any)
       : getLocalDataSelector(slice as any)
     ])) as {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => sliceStateValues[key]}

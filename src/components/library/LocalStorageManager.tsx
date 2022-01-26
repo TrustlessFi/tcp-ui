@@ -22,6 +22,6 @@ const LocalStorageManager = () => {
 export const clearEphemeralStorage = () =>
   Object.values(allSlices)
     .filter(slice => slice.cacheDuration !== CacheDuration.INFINITE)
-    .map(slice => localStorage.removeItem(slice.name))
+      .map(slice => localStorage.removeItem(slice.name))
 
 export default LocalStorageManager

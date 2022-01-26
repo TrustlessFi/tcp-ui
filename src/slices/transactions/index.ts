@@ -4,12 +4,6 @@ import { assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
-import { clearPositions } from '../positions'
-import { clearLiquidityPositions } from '../liquidityPositions'
-import { clearBalances } from '../balances'
-import { clearRewardsInfo } from '../rewards'
-import { clearMarketInfo } from '../market'
-import { clearPoolsCurrentData } from '../poolsCurrentData'
 import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -24,6 +18,7 @@ import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
+import allSlices from '../allSlices'
 
 export enum WalletToken {
   Hue = 'Hue',
@@ -465,40 +460,47 @@ export const waitForTransaction = async (
     if (succeeded) {
       const type = tx.type
 
+      const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
+      const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
+      const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
+      const clearLiquidityPositions = () => dispatch(allSlices.liquidityPositions.slice.actions.clearData())
+      const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
+      const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
+
       switch (type) {
         case TransactionType.CreatePosition:
         case TransactionType.UpdatePosition:
-          dispatch(clearPositions())
-          dispatch(clearMarketInfo())
-          dispatch(clearBalances())
+          clearPositions()
+          clearMarketInfo()
+          clearBalances()
           break
         case TransactionType.ClaimAllPositionRewards:
-          dispatch(clearPositions())
-          dispatch(clearMarketInfo())
-          dispatch(clearBalances())
+          clearPositions()
+          clearMarketInfo()
+          clearBalances()
           break
         case TransactionType.Lend:
         case TransactionType.Withdraw:
-          dispatch(clearBalances())
+          clearBalances()
           break
         case TransactionType.CreateLiquidityPosition:
         case TransactionType.IncreaseLiquidityPosition:
         case TransactionType.DecreaseLiquidityPosition:
         case TransactionType.DeleteLiquidityPosition:
-          dispatch(clearLiquidityPositions())
-          dispatch(clearRewardsInfo())
-          dispatch(clearPoolsCurrentData())
-          dispatch(clearBalances())
+          clearLiquidityPositions()
+          clearRewardsInfo()
+          clearPoolsCurrentData()
+          clearBalances()
           break
         case TransactionType.ClaimAllLiquidityPositionRewards:
-          dispatch(clearLiquidityPositions())
-          dispatch(clearRewardsInfo())
-          dispatch(clearBalances())
+          clearLiquidityPositions()
+          clearRewardsInfo()
+          clearBalances()
           break
         case TransactionType.ApprovePoolToken:
         case TransactionType.ApproveHue:
         case TransactionType.ApproveLendHue:
-          dispatch(clearBalances())
+          clearBalances()
           break
       default:
         assertUnreachable(type)

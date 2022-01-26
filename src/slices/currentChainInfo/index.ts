@@ -13,7 +13,7 @@ export interface currentChainInfo {
   chainID: number
 }
 
-const partialCurrentChainInfoSlice = createChainDataSlice({
+const currentChainInfoSlice = createChainDataSlice({
   name: 'currentChainInfo',
   dependencies: ['rootContracts'],
   stateSelector: (state: RootState) => state.currentChainInfo,
@@ -44,4 +44,4 @@ const partialCurrentChainInfoSlice = createChainDataSlice({
     }
 })
 
-export default partialCurrentChainInfoSlice
+export default currentChainInfoSlice
