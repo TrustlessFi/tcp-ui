@@ -3,11 +3,25 @@ import { useState, useEffect, useRef } from 'react'
 import { getSpaceForFee } from '../utils'
 import { poolMetadata } from '../slices/poolsMetadata'
 
+const DEFAULT_RANGE = 10;
+
 export default function usePoolDisplayInfo (pool?: poolMetadata | null, tick?: number | null) {
   const spacing = getSpaceForFee(!pool ? 0 : pool.fee)
   const nearestTick = nearestUsableTick(!tick ? 0 : tick, spacing)
-  const nextLowest = typeof tick !== 'number' ? null : nearestTick < tick ? nearestTick : nearestTick - spacing
-  const nextHighest = typeof tick !== 'number' ? null : nearestTick > tick ? nearestTick : nearestTick + spacing
+
+  let nextLowest: number | null = null;
+  let nextHighest: number | null = null;
+
+  if(typeof tick === 'number') {
+    nextLowest = nearestTick - spacing * DEFAULT_RANGE / 2
+    nextHighest = nearestTick + spacing * DEFAULT_RANGE / 2
+
+    if(nearestTick > tick) {
+      nextLowest -= spacing;
+    } else {
+      nextHighest += spacing;
+    }
+  }
 
   const [inverted, setInverted] = useState(false)
   const [tickLower, setTickLower] = useState(0)

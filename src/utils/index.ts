@@ -314,7 +314,7 @@ export const getSpaceForFee = (fee: Fee) => {
 
 export const feeToFee = (fee: number): Fee => {
   if (fee in Fee) return fee as Fee
-  else throw new Error('invalid fee: ' + fee)
+  else throw new Error(`invalid fee: ${fee}`)
 }
 
 export const tickToSqrtPriceX96 = (tick: number) => bnf(TickMath.getSqrtRatioAtTick(tick).toString())
