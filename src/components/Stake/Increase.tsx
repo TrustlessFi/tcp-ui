@@ -14,6 +14,7 @@ import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
+import { red, green } from '@carbon/colors';
 
 const Increase = () => {
   const dispatch = useAppDispatch()
@@ -43,9 +44,10 @@ const Increase = () => {
     ratesInfo,
     sdi,
     lentHue:
-      balances === null || contracts === null
+      (isZeroish(amount) ? 0 : amount) +
+      (balances === null || contracts === null
         ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting
+        : balances.tokens[contracts.Hue].balances.Accounting)
   })
 
   const currentWalletBalance =
@@ -55,7 +57,7 @@ const Increase = () => {
         ? 0
         : balances.tokens[contracts.Hue].userBalance - 1e-4)
 
-  const newWalletBalance = dataNull ? 0 : currentWalletBalance - amount
+  const newWalletBalance = dataNull ? 0 : currentWalletBalance - (isZeroish(amount) ? 0 : amount)
   const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
   const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount - 1e-4
 
@@ -154,11 +156,14 @@ const Increase = () => {
           <Text>
             You have
             {' '}
-            <Bold>
-              {numDisplay(currentWalletBalance, 2)}
-            </Bold>
+            <Text color={currentWalletBalance < amount ? red[50]: undefined}>
+              <Bold>
+                {numDisplay(currentWalletBalance, 2)}{' '}
+                Hue
+              </Bold>
+            </Text>
             {' '}
-            Hue in your wallet available to stake
+            in your wallet available to stake
           </Text>
         }
       />

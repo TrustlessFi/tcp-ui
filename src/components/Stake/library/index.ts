@@ -1,6 +1,7 @@
 import { marketInfo } from '../../../slices/market'
 import { ratesInfo } from '../../../slices/rates'
 import { sdi } from '../../../slices/systemDebt'
+import { isZeroish } from '../../../utils'
 
 export const getAPR = (args: {
   marketInfo: marketInfo,
@@ -13,6 +14,9 @@ export const getAPR = (args: {
   if (totalInterestRate === 0) return 0
 
   const totalLendYearlyIncrease = totalInterestRate * args.marketInfo.interestPortionToLenders * args.sdi.debt
-  if (args.lentHue === 0 || args.lentHue === undefined) return 0
-  return totalLendYearlyIncrease / args.lentHue
+  return (
+    isZeroish(args.lentHue)
+    ? 0
+    : totalLendYearlyIncrease / args.lentHue
+  )
 }
