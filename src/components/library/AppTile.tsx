@@ -14,7 +14,7 @@ interface AppTileProps {
 
 const AppTile = ({className, title, style, children, rightElement, subTitle}: AppTileProps ) => (
   <ErrorBoundary>
-    <Tile style={{ ...style, padding: 0  }} className={className}>
+    <Tile style={{ minWidth: 550, padding: 0, ...style }} className={className}>
       <div style={{display: 'flex', alignItems: 'center', height: 68, paddingLeft: 32, paddingRight: 12}} >
         <div>
           <LargeText>{title}</LargeText>
