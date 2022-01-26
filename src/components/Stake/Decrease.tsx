@@ -168,7 +168,6 @@ const Increase = () => {
             title='Approve'
             disabled={isFailing || dataNull}
             showDisabledInsteadOfConnectWallet={true}
-            shouldOpenTxTab={false}
             txArgs={{
               type: TransactionType.ApproveLendHue,
               LendHue: contracts === null ? '' : contracts.LendHue,
@@ -182,6 +181,7 @@ const Increase = () => {
   return (
     <OneColumnDisplay
       columnOne={columnOne}
+      light
       loading={userAddress !== null && dataNull}
       breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Lend']}
     />

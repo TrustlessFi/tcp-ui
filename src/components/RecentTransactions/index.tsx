@@ -75,7 +75,7 @@ const RecentTransactions = () => {
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
   return (
-    <AppTile title={tableTitle} rightElement={clearTransactionsButton}>
+    <AppTile title={tableTitle} rightElement={clearTransactionsButton} style={{minWidth: 550}}>
       {table}
     </AppTile>
   )

@@ -7,14 +7,16 @@ const OneColumnDisplay = ({
   columnOne,
   loading,
   breadCrumbItems,
+  light,
 }:{
   columnOne: ReactNode
   loading: boolean
   breadCrumbItems?:  BreadcrumbItemType[]
+  light?: boolean
 }) => {
   return (
     <div style={{ position: 'relative' }}>
-      <RelativeLoading show={loading} />
+      <RelativeLoading light={light} show={loading} />
       <div style={{ width: 500, margin: '0 auto', float: 'none' }}>
         {
           UI_VERSION === 1

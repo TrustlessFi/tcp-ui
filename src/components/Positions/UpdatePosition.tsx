@@ -314,7 +314,6 @@ const UpdatePosition = () => {
               title={"Approve Payback"}
               disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
               showDisabledInsteadOfConnectWallet={true}
-              shouldOpenTxTab={false}
               txArgs={{
                 type: TransactionType.ApproveHue,
                 Hue: contracts === null ? '' : contracts.Hue,

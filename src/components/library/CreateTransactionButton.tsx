@@ -11,7 +11,7 @@ const CreateTransactionButton = ({
   txArgs,
   title,
   disabled,
-  shouldOpenTxTab,
+  openTxTab,
   kind,
   size,
   style,
@@ -20,7 +20,7 @@ const CreateTransactionButton = ({
   txArgs: TransactionArgs
   title: string
   disabled: boolean
-  shouldOpenTxTab: boolean
+  openTxTab: boolean
   kind: ButtonKind
   size: ButtonSize
   style: CSSProperties
@@ -51,13 +51,14 @@ const CreateTransactionButton = ({
     ? 'Waiting for Metamask Confirmation...'
     : title
 
-  const openTxTab = shouldOpenTxTab
-    ? () => history.push('/transactions')
-    : () => {}
+  const openTxTabAction =
+    openTxTab
+      ? () => history.push('/transactions')
+      : () => {}
 
   const txData = {
     args: txArgs,
-    openTxTab,
+    openTxTab: openTxTabAction,
     userAddress: userAddress!,
     chainID,
   }
@@ -86,7 +87,7 @@ const CreateTransactionButton = ({
 CreateTransactionButton.defaultProps = {
   title: 'Confirm in Metamask',
   disabled: false,
-  shouldOpenTxTab: true,
+  openTxTab: false,
   kind: 'primary',
   size: 'default',
   style: {},

@@ -20,7 +20,7 @@ import {
   // HeaderSideNavItems,
   Button,
 } from 'carbon-components-react'
-import { Menu32 } from '@carbon/icons-react'
+import { Menu32, List32 } from '@carbon/icons-react'
 import { Tab, tabDisplay } from '../../App'
 import { UI_VERSION } from '../../constants'
 
@@ -144,6 +144,13 @@ const PageHeader = () => {
               <span style={{marginLeft: 8}}>
                 <Wallet />
               </span>
+              <Button
+                hasIconOnly
+                renderIcon={List32}
+                iconDescription='List Checked'
+                kind='ghost'
+                onClick={() => history.push('/transactions')}
+              />
             </div>
           </Header>
       )} />
@@ -152,7 +159,7 @@ const PageHeader = () => {
         ? <Center>
             <div style={{marginTop: 111}}>
             {
-              Object.values(Tab).map((tab, index) => {
+              Object.values(Tab).filter(tab => tab !== Tab.Transactions).map((tab, index) => {
                 const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
                 const display = tabDisplay[tab]
                 const link = index === 0 ? '/' : '/' + tab.toLowerCase()

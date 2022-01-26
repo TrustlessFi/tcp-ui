@@ -147,7 +147,6 @@ const CreateLiquidityPosition = () => {
         title={"Approve " + symbol}
         disabled={disabled}
         showDisabledInsteadOfConnectWallet={true}
-        shouldOpenTxTab={false}
         txArgs={{
           type: TransactionType.ApprovePoolToken,
           tokenAddress: token === null ? '' : token.address,
