@@ -78,9 +78,9 @@ export enum CacheDuration {
 }
 
 export enum SliceDataType {
-  UserData,
-  ChainData,
   Local,
+  ChainData,
+  ChainUserData,
 }
 
 const getCacheDuration = (cacheDuration?: CacheDuration) =>
@@ -119,7 +119,7 @@ export const createChainDataSlice = <
   thunk: AsyncThunk<Value, Args, {}>
   dependencies: dependencies,
   cacheDuration: CacheDuration,
-  sliceType: SliceDataType.ChainData | SliceDataType.UserData,
+  sliceType: SliceDataType.ChainData | SliceDataType.ChainUserData,
 } => {
   const { name, dependencies, thunkFunction, stateSelector, isUserData } = sliceData
   const cacheDuration = getCacheDuration(sliceData.cacheDuration)
@@ -154,7 +154,7 @@ export const createChainDataSlice = <
     thunk,
     dependencies: getThunkDependencies(dependencies) as dependencies,
     cacheDuration,
-    sliceType: isUserData === true ? SliceDataType.UserData : SliceDataType.ChainData,
+    sliceType: isUserData === true ? SliceDataType.ChainUserData : SliceDataType.ChainData,
   }
 }
 

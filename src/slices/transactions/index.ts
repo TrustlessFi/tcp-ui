@@ -482,6 +482,7 @@ export const waitForTransaction = async (
         case TransactionType.Lend:
         case TransactionType.Withdraw:
           clearBalances()
+          clearMarketInfo()
           break
         case TransactionType.CreateLiquidityPosition:
         case TransactionType.IncreaseLiquidityPosition:

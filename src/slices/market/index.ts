@@ -21,7 +21,6 @@ const marketSlice = createChainDataSlice({
   name: 'market',
   dependencies: ['contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.marketInfo,
-  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
       const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market

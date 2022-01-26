@@ -46,9 +46,9 @@ const waitForImpl = Object.fromEntries(
   Object.entries(allSlices)
     .map(([sliceName, slice]) => [
       sliceName,
-      slice.sliceType === SliceDataType.ChainData || slice.sliceType === SliceDataType.UserData
-      ? getWaitFunction(slice as any)
-      : getLocalDataSelector(slice as any)
+      slice.sliceType === SliceDataType.Local
+      ? getLocalDataSelector(slice as any)
+      : getWaitFunction(slice as any)
     ])) as {[key in FetchNode]: (selector: AppSelector, _dispatch: AppDispatch) => sliceStateValues[key]}
 
 const waitFor = <RequestedNodes extends FetchNode>(
