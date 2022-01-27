@@ -2572,6 +2572,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/jazzicon@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@metamask/jazzicon@npm:2.0.0"
+  dependencies:
+    color: ^0.11.3
+    mersenne-twister: ^1.1.0
+  checksum: 0b5add49e8d28270e4f8ca6159aa4ea0848f70cbb1cb217de2b0c13799a45fb27b8a6f0b3f72b6a76cbb55446764f79daf71e7d2a830a14b8e5e54d5e57bf7d1
+  languageName: node
+  linkType: hard
+
 "@metamask/onboarding@npm:^1.0.1":
   version: 1.0.1
   resolution: "@metamask/onboarding@npm:1.0.1"
@@ -6993,7 +7003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color@npm:^0.11.1":
+"color@npm:^0.11.3":
   version: 0.11.4
   resolution: "color@npm:0.11.4"
   dependencies:
@@ -9468,13 +9478,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eve-raphael@npm:0.5.0":
-  version: 0.5.0
-  resolution: "eve-raphael@npm:0.5.0"
-  checksum: 50a4bde612443563997faedcf2b1b815ad8c132081db3fb6510a297a459ae473d514cf50dfc04783953f060de63a9556c57b8121ecfa28e75204ecc9863f03f0
-  languageName: node
-  linkType: hard
-
 "eventemitter3@npm:4.0.7, eventemitter3@npm:^4.0.0":
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
@@ -11892,17 +11895,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jazzicon@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "jazzicon@npm:1.5.0"
-  dependencies:
-    color: ^0.11.1
-    mersenne-twister: ^1.0.1
-    raphael: ^2.2.0
-  checksum: dddeed6a2140f2cf384a8572b38770fecd5d6792ed375e9d9f90cede1abc80555ce1044c5dce147543244a8f229c5cc5d0a011ed524c6f6bdf70262007c24714
-  languageName: node
-  linkType: hard
-
 "jest-changed-files@npm:^26.6.2":
   version: 26.6.2
   resolution: "jest-changed-files@npm:26.6.2"
@@ -13465,7 +13457,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mersenne-twister@npm:^1.0.1":
+"mersenne-twister@npm:^1.1.0":
   version: 1.1.0
   resolution: "mersenne-twister@npm:1.1.0"
   checksum: 7de1940ded117f2aad9320ae4d21d647b0ecf0667abbadcfe6a2835c669feb674ef46cb7a72da7af69a56d8b19e50e95e2fb7ef6d780efab7a6acd4d87f4cb2d
@@ -16221,15 +16213,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"raphael@npm:^2.2.0":
-  version: 2.3.0
-  resolution: "raphael@npm:2.3.0"
-  dependencies:
-    eve-raphael: 0.5.0
-  checksum: bb8a5f2ecfca610e1726295d4d4cd4050a0f220f8e24b5db0786240478214cdf697445538c8509c34b11d96029cebce2b0bbed2b684d707f77005c1e421042be
-  languageName: node
-  linkType: hard
-
 "raw-body@npm:2.4.0":
   version: 2.4.0
   resolution: "raw-body@npm:2.4.0"
@@ -18643,6 +18626,7 @@ resolve@^2.0.0-next.3:
     "@carbon/icons-react": ^10.43.0
     "@carbon/themes": ^10.47.0
     "@ethersproject/experimental": ^5.5.0
+    "@metamask/jazzicon": ^2.0.0
     "@metamask/onboarding": ^1.0.1
     "@reduxjs/toolkit": ^1.6.2
     "@testing-library/jest-dom": ^5.15.0
@@ -18681,7 +18665,6 @@ resolve@^2.0.0-next.3:
     carbon-components-react: ^7.48.1
     carbon-icons: ^7.0.7
     ethers: ^5.5.1
-    jazzicon: ^1.5.0
     jsbi: ^4.1.0
     react: ^17.0.2
     react-copy-to-clipboard: ^5.0.4

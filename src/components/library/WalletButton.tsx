@@ -1,41 +1,48 @@
+import { useHistory, useLocation } from 'react-router-dom'
 import { abbreviateAddress } from '../../utils'
-import { getEtherscanAddressLink } from '../library/ExplorerLink'
 import { Tag } from 'carbon-components-react'
-import Jazzicon from 'jazzicon'
+import jazzicon from '@metamask/jazzicon'
 import { CSSProperties, useEffect, useRef, useState } from 'react'
 
 const WalletButton = ({
   address,
-  chainID,
   style
 }: {
   address: string,
-  chainID: number,
   style: CSSProperties,
 }) => {
-  const diameter = 24
+  const history = useHistory()
+  const location = useLocation()
+
   // Convert '0x...' (hexadecimal) wallet address string to an integer.
   const radix = 16
-  const identifier = parseInt(address.slice(2, 10), radix)
-  const identicon = Jazzicon(diameter, identifier)
+  const diameter = 24
+  const identicon = jazzicon(diameter, parseInt(address.slice(2, 10), radix))
 
-  // Trigger an immediate rerender on this compoenent so that useRef().current exists.
+  const inTransactions = location.pathname.includes('transactions')
+
+  // Trigger an immediate rerender on this component so that useRef().current exists.
   const [shouldUpdate, setShouldUpdate] = useState(true)
   useEffect(() => {
     if (shouldUpdate) setShouldUpdate(false)
   }, [shouldUpdate])
 
-  let ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
   if (ref.current) {
     ref.current.innerHTML = ''
     ref.current.appendChild(identicon)
   }
   return (
     <Tag
-      onClick={() => window.open(getEtherscanAddressLink(address, chainID), '_blank')}
-      style={style}>
-        <div ref={ref} style={{display: "inline-block", verticalAlign: "middle", marginTop: "4px", marginRight: "4px"}} />
-        <div style={{display: "inline", verticalAlign: "middle", fontSize: "16px", fontWeight: 400}}>{abbreviateAddress(address)}</div>
+      onClick={inTransactions ? () => {} : () => history.push('/transactions')}
+      style={{cursor: inTransactions ? 'default' : 'pointer', ...style}}>
+      <div
+        ref={ref}
+        style={{display: 'inline-block', verticalAlign: 'middle', marginTop: 4, marginRight: 4}}
+      />
+      <div style={{display: 'inline', verticalAlign: 'middle', fontSize: 16, fontWeight: 400}}>
+        {abbreviateAddress(address)}
+      </div>
     </Tag>
   )
 }

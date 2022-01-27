@@ -144,17 +144,6 @@ const PageHeader = () => {
               <span style={{marginLeft: 8}}>
                 <Wallet />
               </span>
-              {
-                UI_VERSION === 2
-                ? <Button
-                    hasIconOnly
-                    renderIcon={List32}
-                    iconDescription='List Checked'
-                    kind='ghost'
-                    onClick={() => history.push('/transactions')}
-                  />
-                : null
-              }
             </div>
           </Header>
       )} />

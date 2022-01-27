@@ -108,7 +108,6 @@ const Wallet = () => {
             </Button>
           : <WalletButton
               address={userAddress}
-              chainID={chainID}
               style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}} />
         )
       : <ConnectWalletButton size="sm" />
