@@ -23,6 +23,7 @@ import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import { Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
+import { getCollateralRatioColor } from './'
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
@@ -195,13 +196,10 @@ const UpdatePosition = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = failureReasons.filter(reason => reason.failing).length > 0 || dataNull
 
-  let collateralColor: undefined | string = undefined
-  if (collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)) {
-    if (collateralization < collateralizationRequirement) collateralColor = red[50]
-    else if (collateralization < collateralizationRequirement * 1.34) collateralColor = orange
-    else if (collateralization < collateralizationRequirement * 1.66) collateralColor = yellow
-    else collateralColor = green[50]
-  }
+  const collateralColor =
+    collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)
+    ? getCollateralRatioColor(collateralization, collateralizationRequirement)
+    : undefined
 
   const columnOne =
     <SpacedList spacing={64} style={{display: 'relative'}}>

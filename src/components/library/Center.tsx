@@ -10,7 +10,7 @@ const Center = ({ style, children }: { style?: CSSProperties, children: ReactNod
     flexWrap: 'nowrap',
     justifyContent: 'center',
     ...style
-    }}>
+  }}>
     {children}
   </div>
 )

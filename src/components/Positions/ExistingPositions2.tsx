@@ -1,36 +1,37 @@
 import { Button, Tile } from 'carbon-components-react'
 import { useHistory } from 'react-router-dom'
-import AppTile from '../library/AppTile'
 import { Row, Col } from 'react-flexbox-grid'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import Center from '../library/Center'
-import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import RelativeLoading from '../library/RelativeLoading'
-import { numDisplay, sum } from '../../utils'
-import ConnectWalletButton from '../library/ConnectWalletButton'
+import { numDisplay } from '../../utils'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
 import SpacedList from '../library/SpacedList'
-import { Add16 } from '@carbon/icons-react'
+import { getCollateralRatioColor } from './'
 
 const PositionCard = ({
   positionID,
   debtCount,
   collateralCount,
   interestRate,
-  collateralizationRatio,
+  collateralRatio,
+  collateralRatioRequirement,
   approximateRewards
 }: {
   positionID: number
   debtCount: number
   collateralCount: number
   interestRate: number
-  collateralizationRatio: number
+  collateralRatio: number
+  collateralRatioRequirement: number
   approximateRewards: number
 }) => {
   const history = useHistory()
   const margin = 32
+
+  const collateralColor = getCollateralRatioColor(collateralRatio, collateralRatioRequirement)
 
   return (
     <Tile
@@ -61,7 +62,7 @@ const PositionCard = ({
         </SpacedList>
         <SpacedList spacing={2}>
           <>Collateral Ratio:</>
-          <LargeText>{numDisplay(collateralizationRatio * 100, 0)}%</LargeText>
+          <LargeText color={collateralColor}>{numDisplay(collateralRatio * 100, 0)}%</LargeText>
         </SpacedList>
         <SpacedList spacing={2}>
           <>Approximate Rewards:</>
@@ -80,49 +81,32 @@ const ExistingPositions2 = () => {
     positions,
     pricesInfo,
     userAddress,
+    marketInfo,
     contracts,
   } = waitFor([
     'positions',
     'pricesInfo',
     'userAddress',
+    'marketInfo',
     'contracts',
   ], selector, dispatch)
 
-  if (positions === null || pricesInfo === null || userAddress === null || contracts === null) {
-    return (
-      <div style={{position: 'relative', width: 550, height: 550}}>
-        <RelativeLoading show={userAddress !== null} />
-      </div>
-    )
-  }
-
-  if (Object.values(positions).length === 0) {
-    return (
-      <Center style={{padding: 24}}>
-        <Text>
-          You have no positions.
-        </Text>
-      </Center>
-    )
-  }
-
-  // TODO why is position type any??
-  const positionCards = Object.values(positions).map(position => (
-    <Col>
-      <PositionCard
-        positionID={position.id}
-        debtCount={position.debtCount}
-        collateralCount={position.collateralCount}
-        interestRate={40}
-        collateralizationRatio={(position.collateralCount * pricesInfo.ethPrice) / position.debtCount}
-        approximateRewards={position.approximateRewards}
-      />
-    </Col>
-  ))
+  const dataNull =
+    positions === null ||
+    pricesInfo === null ||
+    userAddress === null ||
+    marketInfo === null ||
+    contracts === null
 
   return (
-    <Center>
+    <Center style={{position: 'relative'}}>
+      <RelativeLoading show={dataNull && userAddress !== null} />
       <SpacedList spacing={64} style={{maxWidth: 1200, position: 'relative'}}>
+        {
+          positions !== null && Object.values(positions).length === 0 && userAddress !== null
+          ? <LargeText>You have no positions.</LargeText>
+          : null
+        }
         <Center>
           <Button
             iconDescription='Create Position'
@@ -131,9 +115,27 @@ const ExistingPositions2 = () => {
             <Text size={16}>Create Position</Text>
           </Button>
         </Center>
-        <Row center="xs">
-          {positionCards}
-        </Row>
+        {
+          dataNull || Object.values(positions).length === 0
+          ? null
+          : <Row center="xs">
+              {
+                Object.values(positions).map(position => (
+                  <Col>
+                    <PositionCard
+                      positionID={position.id}
+                      debtCount={position.debtCount}
+                      collateralCount={position.collateralCount}
+                      interestRate={40}
+                      collateralRatio={(position.collateralCount * pricesInfo.ethPrice) / position.debtCount}
+                      collateralRatioRequirement={marketInfo.collateralizationRequirement}
+                      approximateRewards={position.approximateRewards}
+                    />
+                  </Col>
+                ))
+              }
+            </Row>
+        }
       </SpacedList>
     </Center>
   )

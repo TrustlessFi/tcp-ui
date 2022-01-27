@@ -4,6 +4,7 @@ import CreatePosition from './CreatePosition'
 import ExistingPositions from './ExistingPositions'
 import ExistingPositions2 from './ExistingPositions2'
 import { UI_VERSION } from '../../constants'
+import { red, orange, green, yellow } from '@carbon/colors';
 
 const Positions = () => (
   <Switch>
@@ -22,5 +23,14 @@ const Positions = () => (
     </Route>
   </Switch>
 )
+
+export const getCollateralRatioColor = (
+  collateralization: number,
+  collateralRatioRequirement: number,
+) => {
+    if (collateralization < collateralRatioRequirement * 1.1) return red[50]
+    else if (collateralization < collateralRatioRequirement * 1.5) return orange
+    else return green[50]
+}
 
 export default Positions
