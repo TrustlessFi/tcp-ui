@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react'
+import { MouseEvent, useCallback } from 'react'
 import { ChainID } from "@trustlessfi/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
 import { useAppSelector as selector } from '../../app/hooks'
@@ -112,7 +112,7 @@ const PageHeader = () => {
   return (
     <>
       <HeaderContainer
-        render={() => (
+        render={useCallback(() => (
           <Header aria-label="Site Header">
             <div style={areNavLinksHidden ? {marginLeft: 8 } : {marginLeft: 8, display: 'none'}}>
               <OverflowMenu
@@ -147,7 +147,7 @@ const PageHeader = () => {
               </span>
             </div>
           </Header>
-      )} />
+      ), [areNavLinksHidden, chainID, isSmallViewport])} />
       {
         UI_VERSION === 2
         ? <Center>
