@@ -16,7 +16,7 @@ import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { red, green } from '@carbon/colors';
 
-const Increase = () => {
+const DecreaseStake = () => {
   const dispatch = useAppDispatch()
 
   const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
@@ -30,7 +30,6 @@ const Increase = () => {
   const userAddress = selector(state => state.userAddress)
 
   const [amount, setAmount] = useState(0)
-  const [multiplier, setMultiplier] = useState(1.0)
 
   const dataNull =
     balances === null ||
@@ -44,33 +43,21 @@ const Increase = () => {
     ratesInfo,
     sdi,
     lentHue:
-      (isZeroish(amount) ? 0 : amount) +
-      (balances === null || contracts === null
+      balances === null || contracts === null
         ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting)
+        : balances.tokens[contracts.Hue].balances.Accounting
   })
 
-  const currentWalletBalance =
+  const lendHueWalletBalance =
     dataNull
     ? 0
-    : (balances.tokens[contracts.Hue].userBalance < 1e-3
+    : (balances.tokens[contracts.LendHue].userBalance < 1e-3
         ? 0
-        : balances.tokens[contracts.Hue].userBalance - 1e-4)
+        : balances.tokens[contracts.LendHue].userBalance - 1e-4)
 
-  const newWalletBalance = dataNull ? 0 : currentWalletBalance - (isZeroish(amount) ? 0 : amount)
-  const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
-  const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount - 1e-4
-
-  const UPDATE_FREQUENCY_MS = 100
-
-  useEffect(() => {
-    const aprPerInterval = 1 + ((apr / years(1)) / (1000 / UPDATE_FREQUENCY_MS))
-    const interval = setInterval(() => {
-      setMultiplier(multiplier => multiplier * aprPerInterval)
-    }, UPDATE_FREQUENCY_MS);
-
-    return () => clearInterval(interval);
-  }, [apr])
+  const lentHueCount = (dataNull ? 0 : lendHueWalletBalance * marketInfo.valueOfLendTokensInHue)
+  const newLentHueCount = lentHueCount - amount
+  const lendHueToPayBack = marketInfo === null ? 0 : amount / marketInfo.valueOfLendTokensInHue
 
   const failures: { [key in string]: reason } = {
     noValueEntered: {
@@ -78,9 +65,10 @@ const Increase = () => {
       failing: isZeroish(amount),
       silent: true,
     },
-    notEnoughInWallet: {
-      message: 'Not enough in wallet.',
-      failing: newWalletBalance < 0,
+    notEnoughLent: {
+      message: 'Withdrawal is more than the total amount lent.',
+      failing: newLentHueCount < 0,
+      silent: true,
     },
   }
 
@@ -108,7 +96,7 @@ const Increase = () => {
 
   const aprDisplay = numDisplay(apr * 100, 2)
 
-  const hueApproved = !dataNull && balances.tokens[contracts.Hue].approval.Market.approved
+  const lendHueApproved = !dataNull && balances.tokens[contracts.LendHue].approval.Market.approved
 
   const columnOne =
     <SpacedList spacing={48}>
@@ -121,14 +109,14 @@ const Increase = () => {
         <Center>
           <Row bottom="xs">
             <Col>
-              <Text size={32}>
+              <Text color={failures.notEnoughLent.failing ? red[50] : undefined} size={32}>
                 <Bold>
-                  {numDisplay((lentHueCount * multiplier) + (isZeroish(amount) ? 0 : amount), 8)}
+                  {numDisplay(newLentHueCount, 2)}
                 </Bold>
               </Text>
             </Col>
             <Col style={{paddingBottom: 2, paddingLeft: 4}}>
-              <Text>
+              <Text color={failures.notEnoughLent.failing ? red[50] : undefined}>
                 Hue
               </Text>
             </Col>
@@ -136,8 +124,8 @@ const Increase = () => {
         </Center>
         <Center>
           <Text size={16}>
-            Currently APR{' '}
-            <Bold>{aprDisplay}%</Bold>
+            Currently earning{' '}
+            <Bold>{aprDisplay}%</Bold>{' '}APR
           </Text>
         </Center>
       </SpacedList>
@@ -150,32 +138,29 @@ const Increase = () => {
         center
         defaultButton={{
           title: 'Max',
-          action: () => setAmount(currentWalletBalance),
+          action: () => setAmount(lentHueCount),
         }}
         subTitle={
           <Text>
             You have
             {' '}
-            <Text color={currentWalletBalance < amount ? red[50]: undefined}>
-              <Bold>
-                {numDisplay(currentWalletBalance, 2)}{' '}
-                Hue
-              </Bold>
-            </Text>
+            <Bold>
+              {numDisplay(lentHueCount, 2)}
+            </Bold>
             {' '}
-            in your wallet available to stake
+            Hue staked available to withdraw
           </Text>
         }
       />
     <Center>
       {
-        hueApproved
+        lendHueApproved
         ? <CreateTransactionButton
-            title='Stake'
+            title='Withdraw'
             disabled={isFailing || dataNull}
             txArgs={{
-              type: TransactionType.Lend,
-              count: amount,
+              type: TransactionType.Withdraw,
+              count: lendHueToPayBack,
               Market: contracts === null ? '' : contracts.Market,
             }}
           />
@@ -184,15 +169,14 @@ const Increase = () => {
             disabled={isFailing || dataNull}
             showDisabledInsteadOfConnectWallet={true}
             txArgs={{
-              type: TransactionType.ApproveHue,
-              Hue: contracts === null ? '' : contracts.Hue,
+              type: TransactionType.ApproveLendHue,
+              LendHue: contracts === null ? '' : contracts.LendHue,
               spenderAddress: contracts === null ? '' : contracts.Market,
             }}
           />
       }
     </Center>
   </SpacedList>
-
 
   return (
     <OneColumnDisplay
@@ -204,4 +188,4 @@ const Increase = () => {
   )
 }
 
-export default Increase
+export default DecreaseStake

@@ -3,8 +3,8 @@ import Center from '../library/Center'
 import LargeText from '../library/LargeText'
 import SpacedList from '../library/SpacedList'
 import { Button, Tile } from "carbon-components-react"
-import Increase from './Increase'
-import Decrease from './Decrease'
+import IncreaseStake from './IncreaseStake'
+import DecreaseStake from './DecreaseStake'
 
 const Stake = () => {
   const [increaseStake, setIncreaseStake] = useState(true)
@@ -36,8 +36,8 @@ const Stake = () => {
         </Center>
         {
           increaseStake
-          ? <Increase />
-          : <Decrease />
+          ? <IncreaseStake />
+          : <DecreaseStake />
         }
         </SpacedList>
       </Tile>
