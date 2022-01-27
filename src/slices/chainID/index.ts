@@ -11,7 +11,8 @@ const chainIDSlice = createLocalSlice({
   reducers: {
     chainIDFound: (_state, action: PayloadAction<number>) => {
       const chainID = action.payload
-      if (ChainID[chainID] !== undefined) return chainID as ChainID
+      const isKnownChainID = ChainID[chainID] !== undefined
+      if (isKnownChainID) return chainID as ChainID
     },
   }
 })
