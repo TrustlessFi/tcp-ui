@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Add32, Tag32, Locked32, ErrorOutline32, ChartLine32, MisuseOutline32 } from '@carbon/icons-react';
+import { useHistory } from 'react-router-dom'
+import { Tag32, Locked32, ErrorOutline32, Close32 } from '@carbon/icons-react';
 import { red, orange, green, yellow } from '@carbon/colors';
 import Center from '../library/Center'
 import Bold from '../library/Bold'
@@ -22,6 +23,7 @@ const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a4
 
 const CreatePosition = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const {
     liquidationsInfo,
@@ -146,6 +148,16 @@ const CreatePosition = () => {
 
   const columnOne =
     <SpacedList spacing={64}>
+      <div
+        onClick={() => history.push('/')}
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          cursor: 'pointer',
+        }}>
+        <Close32 />
+      </div>
       <Center>
         <Text size={36}>
           Create Position

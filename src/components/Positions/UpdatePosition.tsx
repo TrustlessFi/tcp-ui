@@ -4,6 +4,7 @@ import {
   Tag32,
   Locked32,
   ErrorOutline32,
+  Close32,
 } from '@carbon/icons-react';
 import { red, orange, green, yellow } from '@carbon/colors';
 import FullNumberInput from '../library/FullNumberInput'
@@ -203,12 +204,24 @@ const UpdatePosition = () => {
   }
 
   const columnOne =
-    <SpacedList spacing={64}>
-      <Center>
-        <Text size={36}>
-          Update Position
-        </Text>
-      </Center>
+    <SpacedList spacing={64} style={{display: 'relative'}}>
+      <div
+        onClick={() => history.push('/')}
+        style={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          cursor: 'pointer',
+        }}>
+        <Close32 />
+      </div>
+      <div>
+        <Center>
+          <Text size={36}>
+            Update Position {position === null ? '' : position.id}
+          </Text>
+        </Center>
+      </div>
       <FullNumberInput
         title='Collateral'
         action={updateCollateralCount}

@@ -61,28 +61,30 @@ const App: FunctionComponent<{}> = () => {
 
 
   return (
-    <ErrorBoundary>
-      <HashRouter>
-        <PageHeader />
-        <SwitchNetwork>
-          <div style={{padding: 48 }}>
-            <Switch>
-              {Object.values(Tab).map((tab, index) => {
-                const path = '/' + tab.toLowerCase()
-                const paths = index === 0 ? ['/', path] : [path]
-                return paths.map(path => (
-                  <Route exact={path === '/'} path={path} key={path}>
-                    {tabToRender[tab]}
-                  </Route>
-                ))
-              })}
-            </Switch>
-          </div>
-        </SwitchNetwork>
-      </HashRouter>
-      <Notifications />
-      <LocalStorageManager />
-    </ErrorBoundary>
+    <div style={{minWidth: 550}}>
+      <ErrorBoundary>
+        <HashRouter>
+          <PageHeader />
+          <SwitchNetwork>
+            <div style={{padding: 48 }}>
+              <Switch>
+                {Object.values(Tab).map((tab, index) => {
+                  const path = '/' + tab.toLowerCase()
+                  const paths = index === 0 ? ['/', path] : [path]
+                  return paths.map(path => (
+                    <Route exact={path === '/'} path={path} key={path}>
+                      {tabToRender[tab]}
+                    </Route>
+                  ))
+                })}
+              </Switch>
+            </div>
+          </SwitchNetwork>
+        </HashRouter>
+        <Notifications />
+        <LocalStorageManager />
+      </ErrorBoundary>
+    </div>
   )
 }
 

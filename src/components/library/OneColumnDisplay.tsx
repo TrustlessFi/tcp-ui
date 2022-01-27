@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import { ReactNode, CSSProperties } from "react"
 import Breadcrumbs, { BreadcrumbItemType } from '../library/Breadcrumbs'
 import RelativeLoading from '../library/RelativeLoading'
 import { UI_VERSION } from '../../constants'
@@ -8,11 +8,13 @@ const OneColumnDisplay = ({
   loading,
   breadCrumbItems,
   light,
+  innerStyle,
 }:{
   columnOne: ReactNode
   loading: boolean
   breadCrumbItems?:  BreadcrumbItemType[]
   light?: boolean
+  innerStyle?: CSSProperties
 }) => {
   return (
     <div style={{ position: 'relative' }}>
@@ -23,7 +25,7 @@ const OneColumnDisplay = ({
           ? <Breadcrumbs crumbs={breadCrumbItems} />
           : null
         }
-        <div style={{marginTop: 64}}>
+        <div style={{marginTop: 64, position: 'relative', ...innerStyle}}>
           {columnOne}
         </div>
       </div>
