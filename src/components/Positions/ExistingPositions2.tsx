@@ -5,11 +5,12 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import Center from '../library/Center'
 import RelativeLoading from '../library/RelativeLoading'
-import { numDisplay } from '../../utils'
+import { numDisplay, isZeroish } from '../../utils'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
 import SpacedList from '../library/SpacedList'
 import { getCollateralRatioColor } from './'
+import { getAPR } from '../Stake/library'
 
 const PositionCard = ({
   positionID,
@@ -57,12 +58,12 @@ const PositionCard = ({
           </SpacedList>
         </Text>
         <SpacedList spacing={2}>
-          <>Current Interest Rate:</>
-          <LargeText>{numDisplay(interestRate, 0)}%</LargeText>
-        </SpacedList>
-        <SpacedList spacing={2}>
           <>Collateral Ratio:</>
           <LargeText color={collateralColor}>{numDisplay(collateralRatio * 100, 0)}%</LargeText>
+        </SpacedList>
+        <SpacedList spacing={2}>
+          <>Current Interest Rate:</>
+          <LargeText>{numDisplay(interestRate * 100, 2)}%</LargeText>
         </SpacedList>
         <SpacedList spacing={2}>
           <>Approximate Rewards:</>
@@ -80,12 +81,14 @@ const ExistingPositions2 = () => {
   const {
     positions,
     pricesInfo,
+    ratesInfo,
     userAddress,
     marketInfo,
     contracts,
   } = waitFor([
     'positions',
     'pricesInfo',
+    'ratesInfo',
     'userAddress',
     'marketInfo',
     'contracts',
@@ -94,6 +97,7 @@ const ExistingPositions2 = () => {
   const dataNull =
     positions === null ||
     pricesInfo === null ||
+    ratesInfo === null ||
     userAddress === null ||
     marketInfo === null ||
     contracts === null
@@ -126,7 +130,7 @@ const ExistingPositions2 = () => {
                       positionID={position.id}
                       debtCount={position.debtCount}
                       collateralCount={position.collateralCount}
-                      interestRate={40}
+                      interestRate={ratesInfo.interestRate}
                       collateralRatio={(position.collateralCount * pricesInfo.ethPrice) / position.debtCount}
                       collateralRatioRequirement={marketInfo.collateralizationRequirement}
                       approximateRewards={position.approximateRewards}

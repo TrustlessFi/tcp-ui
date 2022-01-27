@@ -6,8 +6,7 @@ import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
 export interface ratesInfo {
-  positiveInterestRate: boolean
-  interestRateAbsoluteValue: number
+  interestRate: number
   referencePools: string[]
 }
 
@@ -36,8 +35,10 @@ const ratesInfoSlice = createChainDataSlice({
       )
 
       return {
-        positiveInterestRate: ratesInfo.positiveInterestRate,
-        interestRateAbsoluteValue: ratesInfo.interestRateAbsoluteValue,
+        interestRate:
+          ratesInfo.positiveInterestRate
+          ? ratesInfo.interestRateAbsoluteValue
+          : -ratesInfo.interestRateAbsoluteValue,
         referencePools: ratesInfo.getReferencePools,
       }
     },

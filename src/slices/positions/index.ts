@@ -66,11 +66,14 @@ const positionsSlice = createChainDataSlice({
         const lastTimeUpdated = position.lastTimeUpdated.toNumber()
         const lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
+
         if (lastPeriodUpdated < marketLastUpdatePeriod)   {
           let avgDebtPerPeriod =
             scale(args.sdi.cumulativeDebt)
               .sub(position.startCumulativeDebt)
               .div(marketLastUpdatePeriod - lastPeriodUpdated)
+
+          console.log({avgDebtPerPeriod: unscale(avgDebtPerPeriod), args, position})
 
           if (!avgDebtPerPeriod.eq(0)) {
             approximateRewards =
@@ -79,11 +82,13 @@ const positionsSlice = createChainDataSlice({
                 .div(avgDebtPerPeriod)
           }
         }
+        const theRewards = unscale(approximateRewards)
+        console.log({theRewards})
 
         return {
           collateralCount: unscale(position.collateral),
           debtCount: unscale(positionDebt),
-          approximateRewards: Math.round(unscale(approximateRewards)),
+          approximateRewards: unscale(approximateRewards),
           id: positionID.toNumber(),
           lastBorrowTime: position.lastBorrowTime.toNumber(),
           updating: false,

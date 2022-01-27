@@ -10,7 +10,7 @@ export const getAPR = (args: {
   lentHue: number,
 }) => {
   if (args.marketInfo.interestPortionToLenders === 0) return 0
-  const totalInterestRate = (args.ratesInfo.positiveInterestRate ? args.ratesInfo.interestRateAbsoluteValue : 0)
+  const totalInterestRate = args.ratesInfo.interestRate > 0 ? args.ratesInfo.interestRate : 0
   if (totalInterestRate === 0) return 0
 
   const totalLendYearlyIncrease = totalInterestRate * args.marketInfo.interestPortionToLenders * args.sdi.debt

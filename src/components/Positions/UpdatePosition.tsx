@@ -111,7 +111,7 @@ const UpdatePosition = () => {
 
   const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
-  const interestRate = dataNull ? 0 : (ratesInfo.positiveInterestRate ? ratesInfo.interestRateAbsoluteValue : -ratesInfo.interestRateAbsoluteValue) * 100
+  const interestRate = dataNull ? 0 : ratesInfo.interestRate * 100
   const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
 
   const ethPrice = pricesInfo === null ? null : pricesInfo.ethPrice
