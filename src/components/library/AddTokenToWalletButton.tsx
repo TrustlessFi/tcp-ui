@@ -1,90 +1,107 @@
 import { SyntheticEvent } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
+import { Button, ButtonSize } from 'carbon-components-react'
 import waitFor from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
 import { CSSProperties } from 'react';
 import { WalletToken } from '../../slices/transactions'
-import { addTokenToWallet, convertSVGtoURI } from '../../utils'
+import { addTokenToWallet, convertSVGtoURI, assertUnreachable } from '../../utils'
 import TrustlessLogos from '../../utils/trustless_logos'
+import { ChainID } from '@trustlessfi/addresses'
+
+export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contractsInfo) => {
+  switch(walletToken) {
+    case WalletToken.Hue:
+      return contractsInfo.Hue
+    case WalletToken.LendHue:
+      return contractsInfo.LendHue
+    case WalletToken.Tcp:
+      return contractsInfo.Tcp
+    default:
+      assertUnreachable(walletToken)
+      throw new Error('')
+  }
+}
+
+export const getTokenIcon = (walletToken: WalletToken | 'Eth') => {
+  switch(walletToken) {
+    case WalletToken.Hue:
+    case WalletToken.LendHue:
+      return convertSVGtoURI(TrustlessLogos.black.hue)
+    case WalletToken.Tcp:
+      return convertSVGtoURI(TrustlessLogos.black.tcp)
+    case 'Eth':
+      return convertSVGtoURI(TrustlessLogos.black.eth)
+    default:
+      assertUnreachable(walletToken)
+      throw new Error('')
+  }
+}
+
+export const getAddTokenToWalletOnClick = (
+  walletToken: WalletToken,
+  contracts: contractsInfo | null,
+  chainID: ChainID | null,
+  userAddress: string | null,
+) => async (event: SyntheticEvent) => {
+  event.preventDefault()
+  event.stopPropagation()
+  if (contracts === null || chainID === null || userAddress === null) return
+  await addTokenToWallet({
+    address: getTokenAddress(walletToken, contracts),
+    symbol: walletToken,
+    decimals: 18,
+    image: getTokenIcon(walletToken),
+  })
+}
+
+export const TokenIcon = ({
+  walletToken,
+  size,
+}: {
+  walletToken: WalletToken | 'Eth'
+  size?: number
+}) => {
+  return <img src={getTokenIcon(walletToken)} width={size === undefined ? 32 : size} />
+}
 
 const AddTokenToWalletButton = ({
   walletToken,
-  // title,
   disabled,
-  // kind,
   size,
   style,
 }: {
-  walletToken: WalletToken | null
-  title?: string
+  walletToken: WalletToken
   disabled?: boolean
-  kind?: ButtonKind
   size?: ButtonSize
   style?: CSSProperties
 }) => {
   const dispatch = useAppDispatch()
 
-  const { contracts } = waitFor(['contracts'], selector, dispatch)
-  const chainID = selector(state => state.chainID)
-  // const tokensAddedToWallet = selector(state => state.tokensAddedToWallet)
-  const userAddress = selector(state => state.userAddress)
-
   if (walletToken === null) return <></>
 
-  const getTokenAddress = (contractsInfo: contractsInfo) => {
-    switch(walletToken) {
-      case WalletToken.Hue:
-        return contractsInfo.Hue
-      case WalletToken.LendHue:
-        return contractsInfo.LendHue
-      case WalletToken.TCP:
-        return contractsInfo.Tcp
-    }
-  }
-
-  const getTokenIcon = () => {
-    switch(walletToken) {
-      case WalletToken.Hue:
-      case WalletToken.LendHue:
-        return convertSVGtoURI(TrustlessLogos.black.hue)
-      case WalletToken.TCP:
-        return convertSVGtoURI(TrustlessLogos.black.tcp)
-    }
-  }
-
-  const onClick = async (event: SyntheticEvent) => {
-    event.preventDefault()
-    event.stopPropagation()
-    if (contracts === null || chainID === null || userAddress === null) return
-    await addTokenToWallet({
-      address: getTokenAddress(contracts),
-      symbol: walletToken,
-      decimals: 18,
-      image: getTokenIcon(),
-    })
-  }
-
-  /*
-  const alreadyAdded =
-    chainID !== null &&
-    userAddress !== null &&
-    tokensAddedToWallet[walletToken][chainID] !== undefined &&
-    tokensAddedToWallet[walletToken][chainID][userAddress] === true
-  */
+  const {
+    contracts,
+    chainID,
+    userAddress,
+  } = waitFor([
+    'contracts',
+    'chainID',
+    'userAddress',
+  ], selector, dispatch)
 
   return (
     <Button
       kind='ghost'
       size={size}
       style={style}
-      onClick={onClick}
+      onClick={getAddTokenToWalletOnClick(walletToken, contracts, chainID, userAddress)}
       disabled={disabled ||
         chainID === null ||
         userAddress === null
       }>
-      <img src={getTokenIcon()} width={32}/>
-      </Button>
+      <TokenIcon walletToken={walletToken} />
+    </Button>
   )
 }
 

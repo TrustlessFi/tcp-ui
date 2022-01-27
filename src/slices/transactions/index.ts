@@ -23,7 +23,7 @@ import allSlices from '../allSlices'
 export enum WalletToken {
   Hue = 'Hue',
   LendHue = 'LendHue',
-  TCP = 'TCP',
+  Tcp = 'Tcp',
 }
 
 export enum TransactionType {
@@ -275,6 +275,7 @@ export const getTxShortName = (type: TransactionType) => {
   return ''
 }
 
+// TODO remove
 export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
   switch(type) {
     case TransactionType.CreatePosition:
@@ -287,7 +288,7 @@ export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | n
       return WalletToken.LendHue
     case TransactionType.ClaimAllPositionRewards:
     case TransactionType.ClaimAllLiquidityPositionRewards:
-      return WalletToken.TCP
+      return WalletToken.Tcp
     case TransactionType.CreateLiquidityPosition:
     case TransactionType.IncreaseLiquidityPosition:
     case TransactionType.DecreaseLiquidityPosition:

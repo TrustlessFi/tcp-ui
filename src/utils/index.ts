@@ -148,7 +148,9 @@ export declare const exactType: <T, U>(
 ) => IfEquals<T, U>
 
 // ======================= Uniswap Data Formatting ============================
-export const assertUnreachable = (_x: never): never => { throw new Error('Didn\'t expect to get here') }
+export const assertUnreachable = (_x: never): never => {
+  throw new Error('Didn\'t expect to get here')
+}
 
 export const enforce = (conditional: boolean, errorMessage: string) => {
   if (!conditional) throw new Error(errorMessage)

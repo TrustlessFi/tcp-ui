@@ -28,6 +28,7 @@ import DebugUtils from '../library/DebugUtils'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
 import LargeText from '../library/LargeText'
+import SpacedList from '../library/SpacedList'
 import Center from '../library/Center'
 import { first } from '../../utils'
 
@@ -150,7 +151,7 @@ const PageHeader = () => {
       {
         UI_VERSION === 2
         ? <Center>
-            <div style={{marginTop: 111}}>
+            <SpacedList row spacing={1} style={{marginTop: 111}}>
             {
               Object.values(Tab).filter(tab => tab !== Tab.Transactions).map((tab, index) => {
                 const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
@@ -168,7 +169,7 @@ const PageHeader = () => {
                 )
               })
             }
-            </div>
+            </SpacedList>
           </Center>
         : null
       }

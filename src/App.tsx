@@ -65,7 +65,7 @@ const App: FunctionComponent<{}> = () => {
       <HashRouter>
         <PageHeader />
         <SwitchNetwork>
-          <div style={{marginTop: 47, padding: 48 }}>
+          <div style={{padding: 48 }}>
             <Switch>
               {Object.values(Tab).map((tab, index) => {
                 const path = '/' + tab.toLowerCase()
