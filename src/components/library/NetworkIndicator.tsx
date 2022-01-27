@@ -12,6 +12,7 @@ const chainIDColor: {[key in ChainID]: TagTypeName} = {
 
 const NetworkIndicator = ({style}: {style?: CSSProperties}) => {
   const chainID = selector(state => state.chainID)
+  const rootContracts = selector(state => state.rootContracts)
   // smallest number chain ID
   const correctChainID =
     first((Object.values(ChainID).filter(id => Number.isInteger(id)) as number[]).sort((a, b) => a - b))
@@ -21,6 +22,11 @@ const NetworkIndicator = ({style}: {style?: CSSProperties}) => {
       chainId: numberToHex(correctChainID as number),
     })
   }
+
+  const isInitialLoad = chainID === null && rootContracts === null
+  // Prevent flashing initial state on first load.
+  if (isInitialLoad) return null
+
   return (
     chainID === null
     ? <Tag type="red" style={style} onClick={switchNetwork}>{`Switch to ${chainIDToName(correctChainID)}`}</Tag>

@@ -51,21 +51,19 @@ const Wallet = () => {
 
   const walletConnected = getWalletConnectedFunction(dispatch)
 
-  const chainChanged = (chainID: number | string) => {
-    const getCurrentChainID = () => store.getState().chainID
+  const chainChanged = (newChainID: number | string | null) => {
+    // Transform type to `number | null`.
+    if (typeof newChainID === 'string') newChainID = parseInt(newChainID)
 
-    if (typeof chainID === 'string') chainID = parseInt(chainID)
+    // Return if chainID did not change.
+    if (newChainID === store.getState().chainID) return
 
-    const currentChainID = getCurrentChainID()
-
-    if (currentChainID !== chainID) {
-      if (currentChainID === null) {
-        dispatch(chainIDFound(chainID))
-        dispatch(chainIDFoundForRootContracts(chainID))
-      } else {
-        clearEphemeralStorage()
-        window.location.reload()
-      }
+    if (newChainID !== null) {
+      dispatch(chainIDFound(newChainID))
+      dispatch(chainIDFoundForRootContracts(newChainID))
+    } else {
+      clearEphemeralStorage()
+      window.location.reload()
     }
   }
 
@@ -89,29 +87,27 @@ const Wallet = () => {
 
   })
 
-  const countPendingTxs =
-    getSortedUserTxs(chainID, userAddress, txs)
+  const countPendingTxs = getSortedUserTxs(chainID, userAddress, txs)
       .filter(tx => tx.status === TransactionStatus.Pending)
       .length
+  if (countPendingTxs > 0) {
+    return <Button
+      size="small"
+      onClick={() => history.push('/transactions/')}
+      style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
+      <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
+        {countPendingTxs} Pending
+      </div>
+      <InlineLoading />
+    </Button>
+  }
 
-  return (
-    userAddress !== null && chainID !== null
-      ? (countPendingTxs > 0
-          ? <Button
-              size="small"
-              onClick={() => history.push('/transactions/')}
-              style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
-              <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
-                {countPendingTxs} Pending
-              </div>
-              <InlineLoading />
-            </Button>
-          : <WalletButton
-              address={userAddress}
-              style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}} />
-        )
-      : <ConnectWalletButton size="sm" />
-  )
+  const shouldConnectWallet = userAddress === null || chainID === null 
+  if (shouldConnectWallet) return <ConnectWalletButton size="sm" />
+
+  return <WalletButton
+    address={userAddress}
+    style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}} />
 }
 
 export default Wallet
