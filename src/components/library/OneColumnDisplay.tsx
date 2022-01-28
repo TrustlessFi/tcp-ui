@@ -25,7 +25,7 @@ const OneColumnDisplay = ({
           ? <Breadcrumbs crumbs={breadCrumbItems} />
           : null
         }
-        <div style={{marginTop: 64, position: 'relative', ...innerStyle}}>
+        <div style={{position: 'relative', ...innerStyle}}>
           {columnOne}
         </div>
       </div>

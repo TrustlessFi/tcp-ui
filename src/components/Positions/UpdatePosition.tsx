@@ -75,8 +75,6 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
-
-
   let position =
     positions === null
     ? null
