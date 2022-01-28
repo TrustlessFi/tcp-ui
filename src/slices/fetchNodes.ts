@@ -21,12 +21,10 @@ import { notificationState } from './notifications'
 import { TransactionState } from './transactions'
 import { wallet } from './wallet'
 
-export type canBeNull<T> = T | null
-
-export interface RootState {
-  chainID: canBeNull<ChainID>
-  rootContracts: canBeNull<rootContracts>
-  userAddress: canBeNull<string>
+export type RootState = {
+  chainID: ChainID | null
+  rootContracts: rootContracts | null
+  userAddress: string | null
   notifications: notificationState
   transactions: TransactionState
   wallet: wallet
