@@ -13,6 +13,7 @@ import { getNullableProvider } from '../../utils/getProvider'
 
 
 const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
+  const rootContracts = selector(state => state.rootContracts)
   const chainID = selector(state => state.chainID)
 
   const [ clicked, setClicked ] = useState(false)
@@ -27,6 +28,10 @@ const SwitchNetwork: FunctionComponent<{}> = ({ children }) => {
       chainId: numberToHex(correctChainID as number),
     }).catch(_e => setClicked(false))
   }
+
+  const isInitialLoad = chainID === null && rootContracts === null
+  // Prevent flashing initial state on first load.
+  if (isInitialLoad) return null
 
   return chainID === null && getNullableProvider() !== null
     ? <SpacedList style={{marginTop: '20%'}}>
