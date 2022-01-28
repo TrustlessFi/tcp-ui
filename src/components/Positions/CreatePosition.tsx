@@ -255,7 +255,7 @@ const CreatePosition = () => {
       </Center>
       <Accordion>
         <AccordionItem title="How does this work?">
-            Creating a position menas that you are depositing your Eth as collateral to borrow Hue.
+            Creating a position means that you are depositing your Eth as collateral to borrow Hue.
             <ParagraphDivider />
             Hue can be traded for other assets on zkSync, or staked into the protocol to earn interest.{' '}
             As long as your position stays collateralized, you will always own the deposited Eth.{' '}
