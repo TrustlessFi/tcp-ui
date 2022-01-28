@@ -146,8 +146,7 @@ const CreatePosition = () => {
     else collateralColor = green[50]
   }
 
-  const columnOne =
-    <SpacedList spacing={64}>
+  /*
       <div
         onClick={() => history.push('/')}
         style={{
@@ -158,6 +157,10 @@ const CreatePosition = () => {
         }}>
         <Close32 />
       </div>
+  */
+
+  const columnOne =
+    <SpacedList spacing={64}>
       <Center>
         <Text size={36}>
           Create Position

@@ -173,17 +173,22 @@ export const timeS = () => msToS(timeMS())
 
 export const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min)
 
-export const firstOrNull = <T>(array: Array<T>): T | null => {
+export const firstOrNull = <T>(array: Array<T>) => {
   if (array.length === 0) return null
   return array[0]
 }
 
-export const first = <T>(array: Array<T>): T => {
+export const first = <T>(array: Array<T>) => {
   enforce(array.length > 0, 'First for empty array')
   return array[0]
 }
 
-export const last = <T>(array: Array<T>): T => {
+export const lastOrNull = <T>(array: Array<T>) => {
+  if (array.length === 0) return null
+  return array[array.length - 1]
+}
+
+export const last = <T>(array: Array<T>) => {
   enforce(array.length > 0, 'Last for empty array')
   return array[array.length - 1]
 }

@@ -6,15 +6,16 @@ import {
   ErrorOutline32,
   Close32,
 } from '@carbon/icons-react';
-import { red, orange, green, yellow } from '@carbon/colors';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
+import ConnectWalletButton from '../library/ConnectWalletButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import waitFor from '../../slices/waitFor'
-import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
+import { Position } from '../../slices/positions'
+import { numDisplay, roundToXDecimals, isZeroish, lastOrNull } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
@@ -22,7 +23,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
-import { Accordion, AccordionItem, InlineNotification } from 'carbon-components-react'
+import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
@@ -74,17 +75,34 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
-  const position = positions === null || positions[positionID] === undefined ? null : positions[positionID]
+
+
+  let position =
+    positions === null
+    ? null
+    : (isZeroish(positionID)
+        ? lastOrNull(Object.values(positions)) as Position
+        : (positions[positionID] === undefined ? null : positions[positionID] as Position))
+
+  const areMultiplePositions = positions === null ? false : Object.values(positions).length > 1
+
 
   useEffect(() => {
-    if (positions !== null && positions[positionID] === undefined) history.push('/positions/')
-  }, [positions])
+    console.log({positions})
+    if (positions === null) return
+    if (position === null) {
+      history.push('/positions/new')
+    } else if (positionID === undefined) {
+      history.push(`/positions/${position.id}`)
+    } else {
+      setCollateralCount(position.collateralCount)
+      updateDebtCountImpl(position.debtCount)
+    }
+  }, [positions, position])
 
-  useEffect(() => {
-    if (position === null) return
-    setCollateralCount(position.collateralCount)
-    updateDebtCountImpl(position.debtCount)
-  }, [position])
+  if (userAddress === null) {
+    return <Center><ConnectWalletButton /></Center>
+  }
 
   const collateralIncrease = position === null ? null : collateralCount - position.collateralCount
   const debtIncrease = position === null ? null : debtCount - position.debtCount
@@ -201,8 +219,7 @@ const UpdatePosition = () => {
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
 
-  const columnOne =
-    <SpacedList spacing={64} style={{display: 'relative'}}>
+    /*
       <div
         onClick={() => history.push('/')}
         style={{
@@ -213,6 +230,31 @@ const UpdatePosition = () => {
         }}>
         <Close32 />
       </div>
+    */
+
+  const columnOne =
+    <SpacedList spacing={64} style={{display: 'relative'}}>
+      {
+        areMultiplePositions && positions !== null
+        ? <Dropdown
+            ariaLabel="Dropdown position ID selector"
+            id='dropdown'
+            items={Object.values(positions).map((position: Position) => position.id)}
+            onChange={(data: OnChangeData<number>) => {
+              const positionID = data.selectedItem
+              if (positions === null || positionID === null || positionID === undefined) return
+              const path = `/positions/${positionID}`
+              history.push(path)
+              // window.location.reload()
+            }}
+            itemToString={(itemID: number) => `Position ${itemID}`}
+            initialSelectedItem={positionID}
+            label='Select Position'
+            titleText={<></>}
+            // style={undefined}
+          />
+        : null
+      }
       <div>
         <Center>
           <Text size={36}>
