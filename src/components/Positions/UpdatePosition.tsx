@@ -81,6 +81,13 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
+  const setNewPosition = (newPosition: Position) => {
+    setPosition(newPosition)
+    setCollateralCount(newPosition.collateralCount)
+    updateDebtCountImpl(newPosition.debtCount)
+    setInInitialState(true)
+  }
+
   useEffect(() => {
     if (positions === null) return
     const countPositions = Object.values(positions).length
@@ -91,11 +98,7 @@ const UpdatePosition = () => {
     } else if (isNaN(positionID) || !Object.keys(positions).includes(positionID.toString())) {
       history.push(`/positions/${last(Object.keys(positions))}`)
     } else {
-      const selectedPosition = positions[positionID]
-      setPosition(selectedPosition)
-      setCollateralCount(selectedPosition.collateralCount)
-      updateDebtCountImpl(selectedPosition.debtCount)
-      setInInitialState(true)
+      setNewPosition(positions[positionID])
     }
   }, [positions])
 
@@ -251,10 +254,7 @@ const UpdatePosition = () => {
               const positionID = data.selectedItem
               if (positions === null || positionID === null || positionID === undefined) return
               history.push(`/positions/${positionID}`)
-              const selectedPosition = positions[positionID]
-              setPosition(selectedPosition)
-              setCollateralCount(selectedPosition.collateralCount)
-              updateDebtCountImpl(selectedPosition.debtCount)
+              setNewPosition(positions[positionID])
             }}
             itemToString={(itemID: number) => `Position ${itemID}`}
             initialSelectedItem={positionID}
