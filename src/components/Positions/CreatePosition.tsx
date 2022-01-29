@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { Tag32, Locked32, ErrorOutline32, Close32 } from '@carbon/icons-react';
 import { red, orange, green, yellow } from '@carbon/colors';
@@ -7,7 +7,7 @@ import Bold from '../library/Bold'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 
 import waitFor from '../../slices/waitFor'
-import { numDisplay, roundToXDecimals, isZeroish } from '../../utils/'
+import { numDisplay, roundToXDecimals, isZeroish, last } from '../../utils/'
 import PositionInfoItem from '../library/PositionInfoItem'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
@@ -29,6 +29,7 @@ const CreatePosition = () => {
     liquidationsInfo,
     balances,
     pricesInfo,
+    positions,
     marketInfo,
     ratesInfo,
     contracts,
@@ -37,6 +38,7 @@ const CreatePosition = () => {
     'liquidationsInfo',
     'balances',
     'pricesInfo',
+    'positions',
     'marketInfo',
     'ratesInfo',
     'contracts',
@@ -49,6 +51,13 @@ const CreatePosition = () => {
   const [userUpdatedDebtCount, setUserUpdatedDebtCount] = useState(false)
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
+
+  useEffect(() => {
+    if (positions === null) return
+    if (Object.values(positions).length === 0) return
+    history.push(`/positions/${last(Object.keys(positions))}`)
+    window.location.reload()
+  }, [positions])
 
   const dataNull =
     liquidationsInfo === null ||

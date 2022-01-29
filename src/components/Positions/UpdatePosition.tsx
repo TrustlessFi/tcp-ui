@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
+import { Row, Col } from 'react-flexbox-grid'
 import {
   Tag32,
   Locked32,
   ErrorOutline32,
   Close32,
+  Renew24,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
@@ -25,6 +27,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
+import { gray } from '@carbon/colors';
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
@@ -66,6 +69,7 @@ const UpdatePosition = () => {
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
   const [position, setPosition] = useState<Position | null>(null)
   const [areMultiplePositions, setAreMultiplePositions] = useState(false)
+  const [inInitialState, setInInitialState] = useState(true)
 
   const dataNull =
     liquidationsInfo === null ||
@@ -77,6 +81,13 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
+  const setNewPosition = (newPosition: Position) => {
+    setPosition(newPosition)
+    setCollateralCount(newPosition.collateralCount)
+    updateDebtCountImpl(newPosition.debtCount)
+    setInInitialState(true)
+  }
+
   useEffect(() => {
     if (positions === null) return
     const countPositions = Object.values(positions).length
@@ -87,10 +98,7 @@ const UpdatePosition = () => {
     } else if (isNaN(positionID) || !Object.keys(positions).includes(positionID.toString())) {
       history.push(`/positions/${last(Object.keys(positions))}`)
     } else {
-      const selectedPosition = positions[positionID]
-      setPosition(selectedPosition)
-      setCollateralCount(selectedPosition.collateralCount)
-      updateDebtCountImpl(selectedPosition.debtCount)
+      setNewPosition(positions[positionID])
     }
   }, [positions])
 
@@ -148,6 +156,7 @@ const UpdatePosition = () => {
   }
 
   const updateCollateralCount = (countCollateral: number) => {
+    setInInitialState(false)
     setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
   }
 
@@ -161,7 +170,14 @@ const UpdatePosition = () => {
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
+    setInInitialState(false)
     setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
+  }
+
+  const reset = () => {
+    updateDebtCountImpl(position!.debtCount)
+    updateCollateralCount(position!.collateralCount)
+    setInInitialState(true)
   }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
@@ -238,10 +254,7 @@ const UpdatePosition = () => {
               const positionID = data.selectedItem
               if (positions === null || positionID === null || positionID === undefined) return
               history.push(`/positions/${positionID}`)
-              const selectedPosition = positions[positionID]
-              setPosition(selectedPosition)
-              setCollateralCount(selectedPosition.collateralCount)
-              updateDebtCountImpl(selectedPosition.debtCount)
+              setNewPosition(positions[positionID])
             }}
             itemToString={(itemID: number) => `Position ${itemID}`}
             initialSelectedItem={positionID}
@@ -251,13 +264,25 @@ const UpdatePosition = () => {
           />
         : null
       }
-      <div>
         <Center>
-          <Text size={36}>
-             Position {areMultiplePositions && position !== null ? position.id : ''}
-          </Text>
+          <Row middle='xs'>
+            <Col>
+              <Text size={36}>
+                 Position {areMultiplePositions && position !== null ? position.id : ''}
+              </Text>
+            </Col>
+            <Col style={{marginLeft: 16}}>
+              {
+                position === null
+                ? null
+                : <div style={{cursor: 'pointer'}} onClick={reset}>
+                    <Renew24
+                      color={inInitialState ? gray[60] : undefined} />
+                  </div>
+              }
+            </Col>
+          </Row>
         </Center>
-      </div>
       <FullNumberInput
         title='Collateral'
         action={updateCollateralCount}
