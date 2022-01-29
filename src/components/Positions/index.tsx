@@ -9,13 +9,13 @@ const Positions = () => {
   if (UI_VERSION === 2) {
     return (
       <Switch>
-        <Route exact path={['/', '/positions']}>
+        <Route exact path={['/', '/borrow']}>
           <UpdatePosition />
         </Route>
-        <Route path='/positions/new'>
+        <Route path='/borrow/new'>
           <CreatePosition />
         </Route>
-        <Route path='/positions/:positionID'>
+        <Route path='/borrow/:positionID'>
           <UpdatePosition />
         </Route>
       </Switch>

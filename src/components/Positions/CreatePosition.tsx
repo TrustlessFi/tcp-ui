@@ -55,7 +55,7 @@ const CreatePosition = () => {
   useEffect(() => {
     if (positions === null) return
     if (Object.values(positions).length === 0) return
-    history.push(`/positions/${last(Object.keys(positions))}`)
+    history.push(`/borrow/${last(Object.keys(positions))}`)
     window.location.reload()
   }, [positions])
 
@@ -172,7 +172,7 @@ const CreatePosition = () => {
     <SpacedList spacing={64}>
       <Center>
         <Text size={36}>
-          Create Position
+          Borrow
         </Text>
       </Center>
       <FullNumberInput

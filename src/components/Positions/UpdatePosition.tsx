@@ -94,9 +94,9 @@ const UpdatePosition = () => {
     if (countPositions > 1) setAreMultiplePositions(true)
 
     if (Object.values(positions).length === 0) {
-      history.push('/positions/new')
+      history.push('/borrow/new')
     } else if (isNaN(positionID) || !Object.keys(positions).includes(positionID.toString())) {
-      history.push(`/positions/${last(Object.keys(positions))}`)
+      history.push(`/borrow/${last(Object.keys(positions))}`)
     } else {
       setNewPosition(positions[positionID])
     }
@@ -253,7 +253,7 @@ const UpdatePosition = () => {
             onChange={(data: OnChangeData<number>) => {
               const positionID = data.selectedItem
               if (positions === null || positionID === null || positionID === undefined) return
-              history.push(`/positions/${positionID}`)
+              history.push(`/borrow/${positionID}`)
               setNewPosition(positions[positionID])
             }}
             itemToString={(itemID: number) => `Position ${itemID}`}
@@ -268,7 +268,7 @@ const UpdatePosition = () => {
           <Row middle='xs'>
             <Col>
               <Text size={36}>
-                 Position {areMultiplePositions && position !== null ? position.id : ''}
+                 Borrow
               </Text>
             </Col>
             <Col style={{marginLeft: 16}}>
