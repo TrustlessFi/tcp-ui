@@ -376,7 +376,7 @@ const UpdatePosition = () => {
                 type: TransactionType.UpdatePosition,
                 positionID,
                 collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-                debtIncrease: position !== null && isDebtChanged ? debtCount - position.debtCount: 0,
+                debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
                 Market: contracts === null ? '' : contracts.Market,
               }}
             />
