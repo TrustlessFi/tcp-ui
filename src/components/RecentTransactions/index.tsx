@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react'
+import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -171,7 +171,7 @@ const RecentTransactions = () => {
     'chainID',
   ], selector, dispatch)
 
-  const txs = getSortedUserTxs(chainID, userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
+  const [ timeDisplays, setTimeDisplays ] = useState<null | {[txHash: string]: string}>(null)
 
   const getRecencyString = (timeInMS: number) => {
     const getRawString = (secondsAgo: number) => {
@@ -184,6 +184,15 @@ const RecentTransactions = () => {
     }
     return `${getRawString(Math.round((timeMS() - timeInMS) / 1000))} ago`
   }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeDisplays(Object.fromEntries(Object.values(transactions).map((tx) => [tx.hash, getRecencyString(tx.startTimeMS)])))
+    }, 50)
+    return () => clearInterval(interval)
+  })
+
+  const txs = getSortedUserTxs(chainID, userAddress, transactions, UserTxSortOption.NONCE_DESCENDING)
 
   const table =
     userAddress === null || txs.length === 0
@@ -202,7 +211,7 @@ const RecentTransactions = () => {
           key: tx.hash,
           data: {
             'Transaction': getTxLongName(tx.args),
-            'Start Time': getRecencyString(tx.startTimeMS),
+            'Start Time': timeDisplays === null ? '-' : timeDisplays[tx.hash],
             'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
           },
           onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
