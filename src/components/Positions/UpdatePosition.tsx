@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
-import { numDisplay, roundToXDecimals, isZeroish, lastOrNull } from '../../utils/'
+import { numDisplay, roundToXDecimals, isZeroish, last } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType } from '../../slices/transactions'
@@ -64,6 +64,8 @@ const UpdatePosition = () => {
   const [debtCount, setDebtCount] = useState(0)
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
+  const [position, setPosition] = useState<Position | null>(null)
+  const [areMultiplePositions, setAreMultiplePositions] = useState(false)
 
   const dataNull =
     liquidationsInfo === null ||
@@ -75,28 +77,22 @@ const UpdatePosition = () => {
     positions === null ||
     userAddress === null
 
-  let position =
-    positions === null
-    ? null
-    : (isZeroish(positionID)
-        ? lastOrNull(Object.values(positions)) as Position
-        : (positions[positionID] === undefined ? null : positions[positionID] as Position))
-
-  const areMultiplePositions = positions === null ? false : Object.values(positions).length > 1
-
-
   useEffect(() => {
-    console.log({positions})
     if (positions === null) return
-    if (position === null) {
+    const countPositions = Object.values(positions).length
+    if (countPositions > 1) setAreMultiplePositions(true)
+
+    if (Object.values(positions).length === 0) {
       history.push('/positions/new')
-    } else if (positionID === undefined) {
-      history.push(`/positions/${position.id}`)
+    } else if (isNaN(positionID) || !Object.keys(positions).includes(positionID.toString())) {
+      history.push(`/positions/${last(Object.keys(positions))}`)
     } else {
-      setCollateralCount(position.collateralCount)
-      updateDebtCountImpl(position.debtCount)
+      const selectedPosition = positions[positionID]
+      setPosition(selectedPosition)
+      setCollateralCount(selectedPosition.collateralCount)
+      updateDebtCountImpl(selectedPosition.debtCount)
     }
-  }, [positions, position])
+  }, [positions])
 
   if (userAddress === null) {
     return <Center><ConnectWalletButton /></Center>
@@ -241,9 +237,11 @@ const UpdatePosition = () => {
             onChange={(data: OnChangeData<number>) => {
               const positionID = data.selectedItem
               if (positions === null || positionID === null || positionID === undefined) return
-              const path = `/positions/${positionID}`
-              history.push(path)
-              // window.location.reload()
+              history.push(`/positions/${positionID}`)
+              const selectedPosition = positions[positionID]
+              setPosition(selectedPosition)
+              setCollateralCount(selectedPosition.collateralCount)
+              updateDebtCountImpl(selectedPosition.debtCount)
             }}
             itemToString={(itemID: number) => `Position ${itemID}`}
             initialSelectedItem={positionID}
@@ -256,7 +254,7 @@ const UpdatePosition = () => {
       <div>
         <Center>
           <Text size={36}>
-            Update Position {position === null ? '' : position.id}
+             Position {areMultiplePositions && position !== null ? position.id : ''}
           </Text>
         </Center>
       </div>
