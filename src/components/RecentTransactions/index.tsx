@@ -14,6 +14,7 @@ import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/Explorer
 import { getRecencyString, numDisplay } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
+import { Row, Col } from 'react-flexbox-grid'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -191,7 +192,7 @@ const RecentTransactions = () => {
     userAddress === null || txs.length === 0
       ? (
         <div style={{ position: 'relative' }}>
-          <TableHeaderOnly headers={['Transaction', 'Start Time', 'Status']} />
+          <TableHeaderOnly headers={['Description', 'Start Time']} />
           <Center>
             <div style={{ margin: 32 }}>
               <ViewOnEtherscanButton />
@@ -203,9 +204,16 @@ const RecentTransactions = () => {
         txs.map(tx => ({
           key: tx.hash,
           data: {
-            'Transaction': getTxLongName(tx.args),
+            'Description':
+              <Row middle='xs'>
+                <Col style={{paddingLeft: 8, paddingRight: 8}}>
+                  <InlineLoading status={txStatusToLoadingStatus[tx.status]} style={{display: 'inline'}}/>
+                </Col>
+                <Col>
+                  {getTxLongName(tx.args)}
+                </Col>
+              </Row>,
             'Start Time': timeDisplays[tx.hash] === undefined ? '-' : timeDisplays[tx.hash],
-            'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
           },
           onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
         }))
@@ -218,7 +226,7 @@ const RecentTransactions = () => {
         small
         kind="tertiary"
         onClick={() => dispatch(clearUserTransactions(userAddress))}>
-        Clear all
+        Clear
       </Button>
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
