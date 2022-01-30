@@ -11,7 +11,7 @@ import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
-import { timeMS, minutes, hours, days, weeks, numDisplay } from '../../utils'
+import { getRecencyString, numDisplay } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 
@@ -171,24 +171,17 @@ const RecentTransactions = () => {
     'chainID',
   ], selector, dispatch)
 
-  const [ timeDisplays, setTimeDisplays ] = useState<null | {[txHash: string]: string}>(null)
+  const getTimeDisplays = () =>
+    Object.fromEntries(
+      Object.values(transactions)
+        .map((tx) => [tx.hash, getRecencyString(tx.startTimeMS)]))
 
-  const getRecencyString = (timeInMS: number) => {
-    const getRawString = (secondsAgo: number) => {
-      if (secondsAgo <= 0) return 'now'
-      if (secondsAgo < minutes(1)) return `${secondsAgo}s`
-      if (secondsAgo < hours(1)) return `${Math.floor(secondsAgo / minutes(1))}m`
-      if (secondsAgo < days(1)) return `${Math.floor(secondsAgo / hours(1))}h`
-      if (secondsAgo < weeks(1)) return `${Math.floor(secondsAgo / days(1))}d`
-      return `${Math.floor(secondsAgo / weeks(1))}d`
-    }
-    return `${getRawString(Math.round((timeMS() - timeInMS) / 1000))} ago`
-  }
+  const [ timeDisplays, setTimeDisplays ] = useState<{[txHash: string]: string}>(getTimeDisplays())
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeDisplays(Object.fromEntries(Object.values(transactions).map((tx) => [tx.hash, getRecencyString(tx.startTimeMS)])))
-    }, 50)
+      setTimeDisplays(getTimeDisplays())
+    }, 200)
     return () => clearInterval(interval)
   })
 
@@ -211,7 +204,7 @@ const RecentTransactions = () => {
           key: tx.hash,
           data: {
             'Transaction': getTxLongName(tx.args),
-            'Start Time': timeDisplays === null ? '-' : timeDisplays[tx.hash],
+            'Start Time': timeDisplays[tx.hash] === undefined ? '-' : timeDisplays[tx.hash],
             'Status': <InlineLoading status={txStatusToLoadingStatus[tx.status]} />,
           },
           onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
