@@ -210,7 +210,7 @@ const UpdatePosition = () => {
         : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
     },
     undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
+      message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
         collateralIsFocused ||
         debtIsFocused ||

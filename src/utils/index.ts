@@ -519,3 +519,15 @@ export const numberToHex = (val: number) => '0x' + val.toString(16)
 
 export const convertSVGtoURI = (svg: string) =>
   `data:image/svg+xml;base64,${Buffer.from(svg, 'binary').toString('base64')}`
+
+export const getRecencyString = (timeInMS: number) => {
+  const getRawString = (secondsAgo: number) => {
+    if (secondsAgo <= 0) return 'now'
+    if (secondsAgo < minutes(1)) return `${secondsAgo}s`
+    if (secondsAgo < hours(1)) return `${Math.floor(secondsAgo / minutes(1))}m`
+    if (secondsAgo < days(1)) return `${Math.floor(secondsAgo / hours(1))}h`
+    if (secondsAgo < weeks(1)) return `${Math.floor(secondsAgo / days(1))}d`
+    return `${Math.floor(secondsAgo / weeks(1))}d`
+  }
+  return `${getRawString(Math.round((timeMS() - timeInMS) / 1000))} ago`
+}

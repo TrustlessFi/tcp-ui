@@ -131,7 +131,7 @@ const CreatePosition = () => {
       failing: !debtIsFocused && 0 < debtCount && debtCount < marketInfo.minPositionSize,
     },
     undercollateralized: {
-      message: 'Position has a collateralization less than ' + numDisplay(marketInfo.collateralizationRequirement * 100) + '%.',
+      message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
         !debtIsFocused &&
         !collateralIsFocused &&
