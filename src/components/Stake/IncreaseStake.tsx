@@ -5,7 +5,8 @@ import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
-import { TransactionType } from '../../slices/transactions/index'
+import { TransactionType } from '../../slices/transactions'
+import { setIncreaseAmount } from '../../slices/stakeState'
 import { getAPR } from './library'
 import { isZeroish, years } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
@@ -19,17 +20,20 @@ import { red } from '@carbon/colors';
 const IncreaseStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+  const { balances, marketInfo, ratesInfo, sdi, contracts, stakeState } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'stakeState',
   ], selector, dispatch)
+
+  console.log({stakeState})
+  const amount = stakeState.increaseAmount
 
   const userAddress = selector(state => state.userAddress)
 
-  const [amount, setAmount] = useState(0)
   const [multiplier, setMultiplier] = useState(1.0)
 
   const dataNull =
@@ -142,7 +146,7 @@ const IncreaseStake = () => {
         </Center>
       </SpacedList>
       <FullNumberInput
-        action={setAmount}
+        action={(value: number) => dispatch(setIncreaseAmount(value))}
         light
         value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
         unit='Hue'
@@ -150,7 +154,7 @@ const IncreaseStake = () => {
         center
         defaultButton={{
           title: 'Max',
-          action: () => setAmount(currentWalletBalance),
+          action: () => dispatch(setIncreaseAmount(currentWalletBalance)),
         }}
         subTitle={
           <Text>
@@ -174,7 +178,7 @@ const IncreaseStake = () => {
             title='Stake'
             disabled={isFailing || dataNull}
             txArgs={{
-              type: TransactionType.Lend,
+              type: TransactionType.IncreaseStake,
               count: amount,
               Market: contracts === null ? '' : contracts.Market,
             }}

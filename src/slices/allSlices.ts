@@ -15,6 +15,7 @@ import ratesSlice from './rates'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
+import stakeStateSlice from './stakeState'
 import uniswapContractsSlice from './uniswapContracts'
 import notificationsSlice from './notifications'
 import transactionsSlice from './transactions'
@@ -26,6 +27,7 @@ const allSlicesRaw = {
   rootContracts: rootContractsSlice,
   userAddress: userAddressSlice,
   notifications: notificationsSlice,
+  stakeState: stakeStateSlice,
   transactions: transactionsSlice,
   wallet: walletSlice,
 

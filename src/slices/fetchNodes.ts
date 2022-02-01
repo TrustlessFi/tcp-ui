@@ -16,6 +16,7 @@ import { ratesInfo } from './rates'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
+import { stakeState } from './stakeState'
 import { uniswapContracts } from './uniswapContracts'
 import { notificationState } from './notifications'
 import { TransactionState } from './transactions'
@@ -26,6 +27,7 @@ export type RootState = {
   rootContracts: rootContracts | null
   userAddress: string | null
   notifications: notificationState
+  stakeState: stakeState
   transactions: TransactionState
   wallet: wallet
 

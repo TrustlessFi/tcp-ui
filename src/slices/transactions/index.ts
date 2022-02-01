@@ -17,6 +17,7 @@ import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
+import { clearStakeState } from '../../slices/stakeState'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
 
@@ -29,8 +30,8 @@ export enum WalletToken {
 export enum TransactionType {
   CreatePosition,
   UpdatePosition,
-  Lend,
-  Withdraw,
+  IncreaseStake,
+  DecreaseStake,
   ApproveHue,
   ApproveLendHue,
   CreateLiquidityPosition,
@@ -64,13 +65,13 @@ export interface txUpdatePositionArgs {
 }
 
 export interface txLendArgs {
-  type: TransactionType.Lend
+  type: TransactionType.IncreaseStake
   count: number,
   Market: string,
 }
 
 export interface txWithdrawArgs {
-  type: TransactionType.Withdraw
+  type: TransactionType.DecreaseStake
   count: number,
   Market: string,
 }
@@ -213,9 +214,9 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Create Position with ' + numDisplay(args.debtCount) + ' Hue debt'
     case TransactionType.UpdatePosition:
       return 'Update position ' + args.positionID
-    case TransactionType.Lend:
+    case TransactionType.IncreaseStake:
       return 'Lend ' + numDisplay(args.count) + ' Hue'
-    case TransactionType.Withdraw:
+    case TransactionType.DecreaseStake:
       return 'Withdraw ' + numDisplay(args.count) + ' Hue'
     case TransactionType.ApproveHue:
       return 'Approve Hue'
@@ -247,9 +248,9 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Create Position'
     case TransactionType.UpdatePosition:
       return 'Update position'
-    case TransactionType.Lend:
+    case TransactionType.IncreaseStake:
       return 'Lend Hue'
-    case TransactionType.Withdraw:
+    case TransactionType.DecreaseStake:
       return 'Withdraw Hue'
     case TransactionType.ApproveHue:
       return 'Approve Hue'
@@ -280,11 +281,11 @@ export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | n
   switch(type) {
     case TransactionType.CreatePosition:
     case TransactionType.UpdatePosition:
-    case TransactionType.Withdraw:
+    case TransactionType.DecreaseStake:
     case TransactionType.ApproveHue:
       return WalletToken.Hue
     case TransactionType.ApproveLendHue:
-    case TransactionType.Lend:
+    case TransactionType.IncreaseStake:
       return WalletToken.LendHue
     case TransactionType.ClaimAllPositionRewards:
     case TransactionType.ClaimAllLiquidityPositionRewards:
@@ -336,10 +337,10 @@ const executeTransaction = async (
         UIID,
         { value: (args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0) }
       )
-    case TransactionType.Lend:
+    case TransactionType.IncreaseStake:
       return await getMarket(args.Market).lend(scale(args.count))
 
-    case TransactionType.Withdraw:
+    case TransactionType.DecreaseStake:
       return await getMarket(args.Market).unlend(scale(args.count))
 
     case TransactionType.CreateLiquidityPosition:
@@ -480,8 +481,9 @@ export const waitForTransaction = async (
           clearMarketInfo()
           clearBalances()
           break
-        case TransactionType.Lend:
-        case TransactionType.Withdraw:
+        case TransactionType.IncreaseStake:
+        case TransactionType.DecreaseStake:
+          dispatch(clearStakeState())
           clearBalances()
           clearMarketInfo()
           break

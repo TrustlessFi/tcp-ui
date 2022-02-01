@@ -6,6 +6,7 @@ import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions/index'
+import { setDecreaseAmount } from '../../slices/stakeState'
 import { getAPR } from './library'
 import { isZeroish, years } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
@@ -19,17 +20,18 @@ import { red, green } from '@carbon/colors';
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+  const { balances, marketInfo, ratesInfo, sdi, contracts, stakeState } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'stakeState',
   ], selector, dispatch)
 
   const userAddress = selector(state => state.userAddress)
 
-  const [amount, setAmount] = useState(0)
+  const amount = stakeState.decreaseAmount
 
   const dataNull =
     balances === null ||
@@ -130,7 +132,7 @@ const DecreaseStake = () => {
         </Center>
       </SpacedList>
       <FullNumberInput
-        action={setAmount}
+        action={(value: number) => dispatch(setDecreaseAmount(value))}
         light
         value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
         unit='Hue'
@@ -138,7 +140,7 @@ const DecreaseStake = () => {
         center
         defaultButton={{
           title: 'Max',
-          action: () => setAmount(lentHueCount),
+          action: () => dispatch(setDecreaseAmount(lentHueCount)),
         }}
         subTitle={
           <Text>
@@ -159,7 +161,7 @@ const DecreaseStake = () => {
             title='Withdraw'
             disabled={isFailing || dataNull}
             txArgs={{
-              type: TransactionType.Withdraw,
+              type: TransactionType.DecreaseStake,
               count: lendHueToPayBack,
               Market: contracts === null ? '' : contracts.Market,
             }}
