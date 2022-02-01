@@ -136,7 +136,7 @@ const IncreaseStake = () => {
         </Center>
         <Center>
           <Text size={16}>
-            Currently APR{' '}
+            Current APR{' '}
             <Bold>{aprDisplay}%</Bold>
           </Text>
         </Center>
