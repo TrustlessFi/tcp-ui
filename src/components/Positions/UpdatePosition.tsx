@@ -7,11 +7,14 @@ import {
   ErrorOutline32,
   Close32,
   Renew24,
+  Undo32,
+  Reset24,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
+import LargeText from '../library/LargeText'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
@@ -25,7 +28,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
-import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData } from 'carbon-components-react'
+import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 import { gray } from '@carbon/colors';
 
@@ -70,6 +73,7 @@ const UpdatePosition = () => {
   const [position, setPosition] = useState<Position | null>(null)
   const [areMultiplePositions, setAreMultiplePositions] = useState(false)
   const [inInitialState, setInInitialState] = useState(true)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   const dataNull =
     liquidationsInfo === null ||
@@ -174,10 +178,11 @@ const UpdatePosition = () => {
     setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
   }
 
-  const reset = () => {
+  const cancel = () => {
     updateDebtCountImpl(position!.debtCount)
     updateCollateralCount(position!.collateralCount)
     setInInitialState(true)
+    setIsUpdating(false)
   }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
@@ -256,7 +261,7 @@ const UpdatePosition = () => {
               history.push(`/borrow/${positionID}`)
               setNewPosition(positions[positionID])
             }}
-            itemToString={(itemID: number) => `Position ${itemID}`}
+            itemToString={(itemID: number) => `Vault ${itemID}`}
             initialSelectedItem={positionID}
             label='Select Position'
             titleText={<></>}
@@ -264,30 +269,26 @@ const UpdatePosition = () => {
           />
         : null
       }
-        <Center>
-          <Row middle='xs'>
-            <Col>
-              <Text size={36}>
-                 Borrow
-              </Text>
-            </Col>
-            <Col style={{marginLeft: 16}}>
-              {
-                position === null
-                ? null
-                : <div style={{cursor: 'pointer'}} onClick={reset}>
-                    <Renew24
-                      color={inInitialState ? gray[60] : undefined} />
-                  </div>
-              }
-            </Col>
-          </Row>
-        </Center>
+      <Center>
+        <Row middle='xs'>
+          <Col>
+            <Text size={36}>
+              Vault
+            </Text>
+          </Col>
+          <Col style={{marginLeft: 16}}>
+            <div style={isUpdating ? {cursor: 'pointer'} : undefined} onClick={cancel}>
+              <Reset24 color={isUpdating ? undefined : gray[60]} />
+            </div>
+          </Col>
+        </Row>
+      </Center>
       <FullNumberInput
         title='Collateral'
         action={updateCollateralCount}
         value={collateralCount}
         unit='Eth'
+        frozen={!isUpdating}
         defaultButton={{
           title: 'Max',
           action: setCollateralCountToMax
@@ -310,6 +311,7 @@ const UpdatePosition = () => {
         action={updateDebtCount}
         value={debtCount}
         unit='Hue'
+        frozen={!isUpdating}
         defaultButton={{
           title: `${defaultCollateralizationRatio * 100}%`,
           action: setDebtToHighCollateralRatio,
@@ -383,28 +385,33 @@ const UpdatePosition = () => {
       </SpacedList>
       <Center>
         {
-          isDebtDecrease && !hueApproved
-          ? <CreateTransactionButton
-              title={"Approve Payback"}
-              disabled={debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
-              showDisabledInsteadOfConnectWallet={true}
-              txArgs={{
-                type: TransactionType.ApproveHue,
-                Hue: contracts === null ? '' : contracts.Hue,
-                spenderAddress: contracts === null ? '' : contracts.Market,
-              }}
-            />
-          : <CreateTransactionButton
-              title='Confirm'
-              disabled={isFailing}
-              txArgs={{
-                type: TransactionType.UpdatePosition,
-                positionID,
-                collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-                debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
-                Market: contracts === null ? '' : contracts.Market,
-              }}
-            />
+          isUpdating
+          ? (isDebtDecrease && !hueApproved
+              ? <CreateTransactionButton
+                  title='Approve Payback'
+                  disabled={debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+                  showDisabledInsteadOfConnectWallet={true}
+                  txArgs={{
+                    type: TransactionType.ApproveHue,
+                    Hue: contracts === null ? '' : contracts.Hue,
+                    spenderAddress: contracts === null ? '' : contracts.Market,
+                  }}
+                />
+              : <CreateTransactionButton
+                  title='Confirm'
+                  disabled={isFailing}
+                  txArgs={{
+                    type: TransactionType.UpdatePosition,
+                    positionID,
+                    collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
+                    debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
+                    Market: contracts === null ? '' : contracts.Market,
+                  }}
+                />
+            )
+          : <Button onClick={() => setIsUpdating(true)}>
+              Adjust
+            </Button>
         }
       </Center>
       <Accordion>
