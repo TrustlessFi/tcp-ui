@@ -126,8 +126,9 @@ const DecreaseStake = () => {
         </Center>
         <Center>
           <Text size={16}>
-            Currently earning{' '}
-            <Bold>{aprDisplay}%</Bold>{' '}APR
+            Current APR:
+            {' '}
+            <Bold>{aprDisplay}%</Bold>
           </Text>
         </Center>
       </SpacedList>

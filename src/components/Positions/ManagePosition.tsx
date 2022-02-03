@@ -253,7 +253,7 @@ const ManagePosition = () => {
               if (positions === null || positionID === null || positionID === undefined) return
               updatePosition(positions[positionID])
             }}
-            itemToString={(itemID: number) => `Vault ${itemID}`}
+            itemToString={(itemID: number) => `Position ${itemID}`}
             initialSelectedItem={position.id}
             label='Select Position'
             titleText={<></>}
@@ -262,7 +262,7 @@ const ManagePosition = () => {
       }
       <Center>
         <Text size={36}>
-          Vault
+          Borrow Hue
         </Text>
       </Center>
       <FullNumberInput

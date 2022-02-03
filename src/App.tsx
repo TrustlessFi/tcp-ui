@@ -64,9 +64,9 @@ const App: FunctionComponent<{}> = () => {
     <div style={{minWidth: 550}}>
       <ErrorBoundary>
         <HashRouter>
+          <div style={{padding: 48 }}>
           <PageHeader />
           <SwitchNetwork>
-            <div style={{padding: 48 }}>
               <Switch>
                 {Object.values(Tab).map((tab, index) => {
                   const path = '/' + tab.toLowerCase()
@@ -78,8 +78,8 @@ const App: FunctionComponent<{}> = () => {
                   ))
                 })}
               </Switch>
-            </div>
           </SwitchNetwork>
+            </div>
         </HashRouter>
         <Notifications />
         <LocalStorageManager />

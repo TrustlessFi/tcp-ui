@@ -182,7 +182,7 @@ const ExistingLiquidityPositions = () => {
     : Object.values(poolsMetadata).sort((a, b) => b.rewardsPortion - a.rewardsPortion)
 
   return (
-    <SpacedList spacing={32}>
+    <SpacedList spacing={32} style={{marginTop: 64}}>
       {sortedPools.map((pool) => (
         <LiquidityPositionsTable pool={pool} />
       ))}

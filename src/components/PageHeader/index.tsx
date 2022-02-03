@@ -151,7 +151,7 @@ const PageHeader = () => {
       {
         UI_VERSION === 2
         ? <Center>
-            <SpacedList row spacing={1} style={{marginTop: 79}}>
+            <SpacedList row spacing={1} style={{marginTop: 31}}>
             {
               Object.values(Tab).filter(tab => tab !== Tab.Transactions).map((tab, index) => {
                 const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
