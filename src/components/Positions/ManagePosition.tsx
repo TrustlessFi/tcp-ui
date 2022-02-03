@@ -262,7 +262,7 @@ const ManagePosition = () => {
       }
       <Center>
         <Text size={36}>
-          Borrow Hue
+          {isCreating ? 'Borrow Hue' : 'Manage Position'}
         </Text>
       </Center>
       <FullNumberInput
