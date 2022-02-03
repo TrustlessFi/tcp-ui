@@ -2,7 +2,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { abbreviateAddress } from '../../utils'
 import { Tag } from 'carbon-components-react'
 import jazzicon from '@metamask/jazzicon'
-import { CSSProperties, useEffect, useRef, useState } from 'react'
+import { CSSProperties } from 'react'
 
 const WalletButton = ({
   address,
@@ -21,24 +21,13 @@ const WalletButton = ({
 
   const inTransactions = location.pathname.includes('transactions')
 
-  // Trigger an immediate rerender on this component so that useRef().current exists.
-  const [shouldUpdate, setShouldUpdate] = useState(true)
-  useEffect(() => {
-    if (shouldUpdate) setShouldUpdate(false)
-  }, [shouldUpdate])
-
-  const ref = useRef<HTMLDivElement>(null)
-  if (ref.current) {
-    ref.current.innerHTML = ''
-    ref.current.appendChild(identicon)
-  }
   return (
     <Tag
       onClick={inTransactions ? () => {} : () => history.push('/transactions')}
       style={{cursor: inTransactions ? 'default' : 'pointer', ...style}}>
       <div
-        ref={ref}
         style={{display: 'inline-block', verticalAlign: 'middle', marginTop: 4, marginRight: 4}}
+        dangerouslySetInnerHTML={{ __html: identicon.outerHTML }}
       />
       <div style={{display: 'inline', verticalAlign: 'middle', fontSize: 16, fontWeight: 400}}>
         {abbreviateAddress(address)}
