@@ -416,7 +416,7 @@ const ManagePosition = () => {
                         }}
                       />
                 ) : <Button onClick={() => dispatch(setIsUpdating(true))}>
-                      Adjust
+                      Edit
                     </Button>
               )
             }
