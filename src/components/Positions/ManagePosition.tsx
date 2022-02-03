@@ -89,14 +89,6 @@ const ManagePosition = () => {
     updatePosition(last(Object.values(positions)))
   }, [positions])
 
-
-  // TODO move to outer wrapper
-  /*
-  if (userAddress === null) {
-    return <Center><ConnectWalletButton /></Center>
-  }
-  */
-
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
   const debtIncrease = debtCount - (position === null ? 0 : position.debtCount)
   const isCollateralChanged = Math.abs(collateralIncrease) > 0.001
@@ -217,19 +209,6 @@ const ManagePosition = () => {
     collateralizationRequirement !== null && collateralization !== null && !isZeroish(collateralization)
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
-
-    /*
-      <div
-        onClick={() => history.push('/')}
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: 0,
-          cursor: 'pointer',
-        }}>
-        <Close32 />
-      </div>
-    */
 
   const allowGoBackToNotUpdating =
     isUpdating &&
