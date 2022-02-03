@@ -10,6 +10,7 @@ import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
+import LargeText from '../library/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
@@ -22,7 +23,7 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
-import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button } from 'carbon-components-react'
+import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 import { gray } from '@carbon/colors';
 
@@ -58,6 +59,7 @@ const ManagePosition = () => {
   const defaultCollateralizationRatio = 2.5
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
+  const [deleteSelected, setDeleteSelected] = useState(false)
 
   const { collateralCount, debtCount, isUpdating, position } = positionState
 
@@ -139,6 +141,7 @@ const ManagePosition = () => {
   }
 
   const updateCollateralCount = (countCollateral: number) => {
+    if (countCollateral !== 0) setDeleteSelected(false)
     dispatch(setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true))))
   }
 
@@ -152,13 +155,26 @@ const ManagePosition = () => {
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
+    if (countDebt !== 0) setDeleteSelected(false)
     dispatch(setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true))))
   }
 
   const cancel = () => {
+    if (!empty(
+      Object.values(transactions)
+        .filter(tx => tx.status === TransactionStatus.Pending)
+        .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
+    ) return
+
     updateDebtCountImpl(position!.debtCount)
     updateCollateralCount(position!.collateralCount)
+    setDeleteSelected(false)
     dispatch(setIsUpdating(false))
+  }
+
+  const reset = () => {
+    updateDebtCountImpl(0)
+    updateCollateralCount(0)
   }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
@@ -193,8 +209,8 @@ const ManagePosition = () => {
     undercollateralized: {
       message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
-        collateralIsFocused ||
         debtIsFocused ||
+        collateralIsFocused ||
         marketInfo === null ||
         collateralization === null
         ? false
@@ -210,198 +226,225 @@ const ManagePosition = () => {
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
 
-  const allowGoBackToNotUpdating =
-    isUpdating &&
-    empty(
-      Object.values(transactions)
-        .filter(tx => tx.status === TransactionStatus.Pending)
-        .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
-
   const isCreating = positions !== null && position === null
 
+  const cancelButton =
+    <Button onClick={cancel} kind='secondary'>
+      Cancel
+    </Button>
+
+  const editButton =
+    <Button onClick={() => dispatch(setIsUpdating(true))} small kind='secondary'>
+      Edit
+    </Button>
+
+  const resetButton =
+    <Button onClick={reset} kind='secondary'>
+      Reset
+    </Button>
+
+  const deleteButton =
+    <Button
+      disabled={deleteSelected}
+      onClick={() => {
+        dispatch(setDebtCount(0))
+        dispatch(setCollateralCount(0))
+        setDeleteSelected(true)
+      }}
+      kind='tertiary'
+      size='sm'>
+      Delete
+    </Button>
+
+  const createPositionButton =
+    <CreateTransactionButton
+        title='Confirm'
+        disabled={isFailing}
+        txArgs={{
+          type: TransactionType.CreatePosition,
+          collateralCount,
+          debtCount,
+          Market: contracts === null ? '' : contracts.Market,
+        }}
+      />
+
+  const updatePositionButton =
+    <CreateTransactionButton
+      title='Confirm'
+      disabled={isFailing}
+      txArgs={{
+        type: TransactionType.UpdatePosition,
+        positionID: position === null ? 0 :  position.id,
+        collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
+        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
+        Market: contracts === null ? '' : contracts.Market,
+      }}
+    />
+
+  const getApproveHueButton = (small = false) =>
+    <CreateTransactionButton
+      title='Approve'
+      size={small ? 'sm' : undefined}
+      disabled={debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+      showDisabledInsteadOfConnectWallet={true}
+      txArgs={{
+        type: TransactionType.ApproveHue,
+        Hue: contracts === null ? '' : contracts.Hue,
+        spenderAddress: contracts === null ? '' : contracts.Market,
+      }}
+    />
+
   const columnOne =
-    <SpacedList spacing={64} style={{display: 'relative'}}>
-      {
-        position !== null && positions !== null && Object.values(positions).length > 1
-        ? <Dropdown
-            ariaLabel="Dropdown position ID selector"
-            id='dropdown'
-            items={Object.values(positions).map((position: Position) => position.id)}
-            onChange={(data: OnChangeData<number>) => {
-              const positionID = data.selectedItem
-              if (positions === null || positionID === null || positionID === undefined) return
-              updatePosition(positions[positionID])
-            }}
-            itemToString={(itemID: number) => `Position ${itemID}`}
-            initialSelectedItem={position.id}
-            label='Select Position'
-            titleText={<></>}
-          />
-        : null
-      }
-      <Center>
-        <Text size={36}>
-          {isCreating ? 'Borrow Hue' : 'Manage Position'}
-        </Text>
-      </Center>
-      <FullNumberInput
-        title='Collateral'
-        action={updateCollateralCount}
-        value={collateralCount}
-        unit='Eth'
-        frozen={!isUpdating}
-        defaultButton={{
-          title: 'Max',
-          action: setCollateralCountToMax
-        }}
-        onFocusUpdate={setCollateralIsFocused}
-        subTitle={
-          <Text>
-            You have
-            {' '}
-            <Bold>
-              {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
-            </Bold>
-            {' '}
-            Eth in your wallet
-          </Text>
-        }
-      />
-      <FullNumberInput
-        title='Debt'
-        action={updateDebtCount}
-        value={debtCount}
-        unit='Hue'
-        frozen={!isUpdating}
-        defaultButton={{
-          title: `${defaultCollateralizationRatio * 100}%`,
-          action: setDebtToHighCollateralRatio,
-        }}
-        onFocusUpdate={setDebtIsFocused}
-        subTitle={
-          <Text>
-            <Bold>
-              {interestRateDisplay}
-            </Bold>
-            {' '}
-            current APR to borrow Hue
-          </Text>
-        }
-      />
-      <SpacedList spacing={16}>
-        {
-          Object.values(failures)
-            .filter(failure => !failure.silent)
-            .filter(failure => failure.failing)
-            .map((failure, index) =>
-              <InlineNotification
-                key={index}
-                notificationType='inline'
-                kind='error'
-                title={failure.message}
-                lowContrast
-                hideCloseButton
-              />
-            )
-        }
-      </SpacedList>
-      <SpacedList spacing={16}>
-        <PositionInfoItem
-          icon={<ErrorOutline32 />}
-          title='Liquidation Price'
-          value={liquidationPriceDisplay}
-          unit='Hue/Eth'
-          changeData={
-            previousLiquidationPrice !== null
-            ? {
-              previous: previousLiquidationPrice,
-              next: liquidationPrice,
-              increaseIsGood: false,
-            } : undefined
-          }
-        />
-        <PositionInfoItem
-          icon={<Tag32 />}
-          title='Current Price'
-          value={ethPriceDisplay}
-          unit='Hue/Eth'
-        />
-        <PositionInfoItem
-          icon={<Locked32 />}
-          title='Collateral Ratio'
-          value={collateralizationDisplay}
-          color={collateralColor}
-          changeData={
-            previousCollateralization === null ||
-            collateralization === null
-            ? undefined
-            : {
-              previous: previousCollateralization * 100,
-              next: collateralization * 100,
-              increaseIsGood: true,
-              showChangeWithUnit: '%'
-            }
-          }
-        />
-      </SpacedList>
-      <Center>
-        <Row middle='xs'>
-          {
-            isCreating
-            ? null
-            : <Col style={{marginRight: 16}}>
-                <div
-                  style={allowGoBackToNotUpdating ? {cursor: 'pointer'} : undefined}
-                  onClick={allowGoBackToNotUpdating ? cancel : () => {}}>
-                  <Reset24 color={allowGoBackToNotUpdating ? undefined : gray[60]} />
-                </div>
-              </Col>
-          }
-          <Col>
+    <SpacedList spacing={64} style={{marginTop: 64}}>
+      <Tile style={{padding: 36}}>
+        <SpacedList spacing={64} style={{display: 'relative'}}>
+          <div style={{display: 'float', alignItems: 'center'}}>
+            <div style={{float: 'right'}}>
+              {isUpdating ? deleteButton : editButton}
+            </div>
             {
-              isCreating
-              ? <CreateTransactionButton
-                  title='Confirm'
-                  disabled={isFailing}
-                  txArgs={{
-                    type: TransactionType.CreatePosition,
-                    collateralCount,
-                    debtCount,
-                    Market: contracts === null ? '' : contracts.Market,
+              position !== null && positions !== null && Object.values(positions).length > 1
+              ? <Dropdown
+                  ariaLabel="Dropdown position ID selector"
+                  inline
+                  id='dropdown'
+                  items={Object.values(positions).map((position: Position) => position.id)}
+                  onChange={(data: OnChangeData<number>) => {
+                    const positionID = data.selectedItem
+                    if (positions === null || positionID === null || positionID === undefined) return
+                    updatePosition(positions[positionID])
                   }}
+                  style={{width: 250}}
+                  itemToString={(itemID: number) => `Position ${itemID}`}
+                  initialSelectedItem={position.id}
+                  label='Select Position'
+                  titleText={<></>}
                 />
-              : (
-                isUpdating
-                ? (isDebtDecrease && !hueApproved
-                    ? <CreateTransactionButton
-                        title='Approve'
-                        disabled={debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
-                        showDisabledInsteadOfConnectWallet={true}
-                        txArgs={{
-                          type: TransactionType.ApproveHue,
-                          Hue: contracts === null ? '' : contracts.Hue,
-                          spenderAddress: contracts === null ? '' : contracts.Market,
-                        }}
-                      />
-                    : <CreateTransactionButton
-                        title='Confirm'
-                        disabled={isFailing}
-                        txArgs={{
-                          type: TransactionType.UpdatePosition,
-                          positionID: position === null ? 0 :  position.id,
-                          collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-                          debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
-                          Market: contracts === null ? '' : contracts.Market,
-                        }}
-                      />
-                ) : <Button onClick={() => dispatch(setIsUpdating(true))}>
-                      Edit
-                    </Button>
-              )
+              : <LargeText size={24}>
+                  Position
+                </LargeText>
             }
-          </Col>
-        </Row>
-      </Center>
+          </div>
+          <FullNumberInput
+            title='Collateral'
+            action={updateCollateralCount}
+            value={collateralCount}
+            unit='Eth'
+            light
+            frozen={!isUpdating || deleteSelected}
+            defaultButton={{
+              title: 'Max',
+              action: setCollateralCountToMax
+            }}
+            onFocusUpdate={setCollateralIsFocused}
+            subTitle={
+              <Text>
+                You have
+                {' '}
+                <Bold>
+                  {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
+                </Bold>
+                {' '}
+                Eth in your wallet
+              </Text>
+            }
+          />
+          <FullNumberInput
+            title='Debt'
+            action={updateDebtCount}
+            value={debtCount}
+            unit='Hue'
+            light
+            frozen={!isUpdating || deleteSelected}
+            defaultButton={{
+              title: `${defaultCollateralizationRatio * 100}%`,
+              action: setDebtToHighCollateralRatio,
+            }}
+            onFocusUpdate={setDebtIsFocused}
+            subTitle={
+              <Text>
+                <Bold>
+                  {interestRateDisplay}
+                </Bold>
+                {' '}
+                current APR to borrow Hue
+              </Text>
+            }
+          />
+          <SpacedList spacing={16}>
+            {
+              Object.values(failures)
+                .filter(failure => !failure.silent)
+                .filter(failure => failure.failing)
+                .map((failure, index) =>
+                  <InlineNotification
+                    key={index}
+                    notificationType='inline'
+                    kind='error'
+                    title={failure.message}
+                    lowContrast
+                    hideCloseButton
+                  />
+                )
+            }
+          </SpacedList>
+          <SpacedList spacing={16}>
+            <PositionInfoItem
+              icon={<ErrorOutline32 />}
+              title='Liquidation Price'
+              value={liquidationPriceDisplay}
+              unit='Hue/Eth'
+              changeData={
+                previousLiquidationPrice !== null
+                ? {
+                  previous: previousLiquidationPrice,
+                  next: liquidationPrice,
+                  increaseIsGood: false,
+                } : undefined
+              }
+            />
+            <PositionInfoItem
+              icon={<Tag32 />}
+              title='Current Price'
+              value={ethPriceDisplay}
+              unit='Hue/Eth'
+            />
+            <PositionInfoItem
+              icon={<Locked32 />}
+              title='Collateral Ratio'
+              value={collateralizationDisplay}
+              color={collateralColor}
+              changeData={
+                previousCollateralization === null ||
+                collateralization === null
+                ? undefined
+                : {
+                  previous: previousCollateralization * 100,
+                  next: collateralization * 100,
+                  increaseIsGood: true,
+                  showChangeWithUnit: '%'
+                }
+              }
+            />
+          </SpacedList>
+          <Center>
+            <SpacedList row>
+              {
+                isCreating
+                ? [resetButton, createPositionButton]
+                : (
+                    isUpdating
+                    ? (
+                        isDebtDecrease && !hueApproved
+                        ? [cancelButton, getApproveHueButton()]
+                        : [cancelButton, updatePositionButton]
+                    ) : null
+                )
+              }
+            </SpacedList>
+          </Center>
+        </SpacedList>
+      </Tile>
       <Accordion>
         <AccordionItem title="How does this work?">
             Creating a position means that you are depositing your Eth as collateral to borrow Hue.

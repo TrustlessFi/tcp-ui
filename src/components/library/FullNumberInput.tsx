@@ -14,7 +14,6 @@ const FullNumberInput = ({
   action,
   value,
   fontSize,
-  inputFontSize,
   unit,
   defaultButton,
   subTitle,
@@ -29,7 +28,6 @@ const FullNumberInput = ({
   value: number
 
   fontSize?: number
-  inputFontSize?: number
   unit?: string
   defaultButton?: {
     title: string,
@@ -64,7 +62,7 @@ const FullNumberInput = ({
       {
         frozen
         ? <Row style={{position: 'relative', marginLeft: 0}}>
-            <div style={{width: '100%', padding: 16, paddingTop: 14, height: 48, backgroundColor: '#262626'}}>
+            <div style={{width: '100%', padding: 16, paddingTop: 14, height: 48, backgroundColor: light? '#323232' : '#262626'}}>
               <Text size={fontSize}>
                 {value}
               </Text>

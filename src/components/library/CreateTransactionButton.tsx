@@ -48,7 +48,7 @@ const CreateTransactionButton = ({
 
   const buttonTitle =
     waitingForMetamask
-    ? 'Waiting for Metamask Confirmation...'
+    ? 'Confirm in Metamask...'
     : title
 
   const openTxTabAction =
