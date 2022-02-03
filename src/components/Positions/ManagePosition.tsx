@@ -301,11 +301,11 @@ const ManagePosition = () => {
         onFocusUpdate={setDebtIsFocused}
         subTitle={
           <Text>
-            The interest rate is
-            {' '}
             <Bold>
               {interestRateDisplay}
             </Bold>
+            {' '}
+            current APR to borrow Hue
           </Text>
         }
       />
