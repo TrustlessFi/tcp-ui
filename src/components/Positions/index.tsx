@@ -1,4 +1,5 @@
 import { Switch, Route } from 'react-router-dom'
+import ManagePosition from './ManagePosition'
 import UpdatePosition from './UpdatePosition'
 import CreatePosition from './CreatePosition'
 import ExistingPositions from './ExistingPositions'
@@ -8,17 +9,7 @@ import { red, orange, green } from '@carbon/colors';
 const Positions = () => {
   if (UI_VERSION === 2) {
     return (
-      <Switch>
-        <Route exact path={['/', '/borrow']}>
-          <UpdatePosition />
-        </Route>
-        <Route path='/borrow/new'>
-          <CreatePosition />
-        </Route>
-        <Route path='/borrow/:positionID'>
-          <UpdatePosition />
-        </Route>
-      </Switch>
+      <ManagePosition />
     )
   }
 

@@ -102,7 +102,7 @@ const Wallet = () => {
     </Button>
   }
 
-  const shouldConnectWallet = userAddress === null || chainID === null 
+  const shouldConnectWallet = userAddress === null || chainID === null
   if (shouldConnectWallet) return <ConnectWalletButton size="sm" />
 
   return <WalletButton

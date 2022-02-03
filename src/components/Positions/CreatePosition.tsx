@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
-import { Tag32, Locked32, ErrorOutline32, Close32 } from '@carbon/icons-react';
+import { Tag32, Locked32, ErrorOutline32 } from '@carbon/icons-react';
 import { red, orange, green, yellow } from '@carbon/colors';
 import Center from '../library/Center'
 import Bold from '../library/Bold'
