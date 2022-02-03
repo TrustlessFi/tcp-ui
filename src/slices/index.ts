@@ -184,7 +184,7 @@ export const createLocalSlice = <
   sliceType: SliceDataType.Local,
 } => {
   const { name, initialState, stateSelector } = sliceData
-  const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.SHORT : sliceData.cacheDuration
+  const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
   const slice = createSlice({
     name,

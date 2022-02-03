@@ -10,6 +10,7 @@ import marketSlice from './market'
 import poolsCurrentDataSlice from './poolsCurrentData'
 import poolsMetadataSlice from './poolsMetadata'
 import positionsSlice from './positions'
+import positionStateSlice from './positionState'
 import pricesSlice from './prices'
 import ratesSlice from './rates'
 import rewardsSlice from './rewards'
@@ -27,6 +28,7 @@ const allSlicesRaw = {
   rootContracts: rootContractsSlice,
   userAddress: userAddressSlice,
   notifications: notificationsSlice,
+  positionState: positionStateSlice,
   stakeState: stakeStateSlice,
   transactions: transactionsSlice,
   wallet: walletSlice,

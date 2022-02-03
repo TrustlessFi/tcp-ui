@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
 import { numDisplay, roundToXDecimals, isZeroish, last, empty } from '../../utils/'
+import { setPosition, setIsUpdating, setDebtCount, setCollateralCount } from '../../slices/positionState'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
@@ -40,6 +41,7 @@ const ManagePosition = () => {
     positions,
     userAddress,
     transactions,
+    positionState,
   } = waitFor([
     'liquidationsInfo',
     'balances',
@@ -50,15 +52,14 @@ const ManagePosition = () => {
     'positions',
     'userAddress',
     'transactions',
+    'positionState',
   ], selector, dispatch)
 
   const defaultCollateralizationRatio = 2.5
-  const [collateralCount, setCollateralCount] = useState(0)
-  const [debtCount, setDebtCount] = useState(0)
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [position, setPosition] = useState<Position | null>(null)
+
+  const { collateralCount, debtCount, isUpdating, position } = positionState
 
   const dataNull =
     liquidationsInfo === null ||
@@ -71,8 +72,8 @@ const ManagePosition = () => {
     userAddress === null
 
   const updatePosition = (newPosition: Position) => {
-    setPosition(newPosition)
-    setCollateralCount(newPosition.collateralCount)
+    dispatch(setPosition(newPosition))
+    dispatch(setCollateralCount(newPosition.collateralCount))
     updateDebtCountImpl(newPosition.debtCount)
   }
 
@@ -80,8 +81,8 @@ const ManagePosition = () => {
     if (positions === null) return
     const countPositions = Object.values(positions).length
     if (countPositions === 0) {
-      setIsUpdating(true)
-      setPosition(null)
+      dispatch(setIsUpdating(true))
+      dispatch(setPosition(null))
       return
     }
 
@@ -146,7 +147,7 @@ const ManagePosition = () => {
   }
 
   const updateCollateralCount = (countCollateral: number) => {
-    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
+    dispatch(setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true))))
   }
 
   const updateDebtCount = (countDebt: number) => {
@@ -159,13 +160,13 @@ const ManagePosition = () => {
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
-    setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
+    dispatch(setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true))))
   }
 
   const cancel = () => {
     updateDebtCountImpl(position!.debtCount)
     updateCollateralCount(position!.collateralCount)
-    setIsUpdating(false)
+    dispatch(setIsUpdating(false))
   }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
@@ -414,7 +415,7 @@ const ManagePosition = () => {
                           Market: contracts === null ? '' : contracts.Market,
                         }}
                       />
-                ) : <Button onClick={() => setIsUpdating(true)}>
+                ) : <Button onClick={() => dispatch(setIsUpdating(true))}>
                       Adjust
                     </Button>
               )
