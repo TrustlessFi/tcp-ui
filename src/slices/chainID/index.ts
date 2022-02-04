@@ -3,16 +3,17 @@ import { ChainID } from '@trustlessfi/addresses'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 
+export type chainIDState = ChainID | null
+
 const chainIDSlice = createLocalSlice({
   name: 'chainID',
-  initialState: null as ChainID | null,
+  initialState: null as chainIDState,
   stateSelector: (state: RootState) => state.chainID,
   cacheDuration: CacheDuration.NONE,
   reducers: {
     chainIDFound: (_state, action: PayloadAction<number>) => {
       const chainID = action.payload
-      const isKnownChainID = ChainID[chainID] !== undefined
-      if (isKnownChainID) return chainID as ChainID
+      return ChainID[chainID] === undefined ? null : chainID as ChainID
     },
   }
 })

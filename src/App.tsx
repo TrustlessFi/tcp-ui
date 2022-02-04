@@ -5,12 +5,12 @@ import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Stake from './components/Stake/'
 import RecentTransactions from './components/RecentTransactions'
+import WalletChecker from './components/WalletChecker'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
 import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
-import SwitchNetwork from './components/SwitchNetwork'
 import { TransactionStatus, waitForTransaction } from './slices/transactions'
 import { getSortedUserTxs } from './components/library'
 import waitFor from './slices/waitFor'
@@ -73,8 +73,8 @@ const App: FunctionComponent<{}> = () => {
       <ErrorBoundary>
         <HashRouter>
           <div style={{padding: 48 }}>
-          <PageHeader />
-          <SwitchNetwork>
+            <PageHeader />
+            <WalletChecker>
               <Switch>
                 {Object.values(Tab).map((tab, index) => {
                   const path = '/' + tab.toLowerCase()
@@ -86,8 +86,8 @@ const App: FunctionComponent<{}> = () => {
                   ))
                 })}
               </Switch>
-          </SwitchNetwork>
-            </div>
+            </WalletChecker>
+          </div>
         </HashRouter>
         <Notifications />
         <LocalStorageManager />

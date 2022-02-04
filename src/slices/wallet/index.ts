@@ -2,8 +2,9 @@ import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 
 export interface wallet {
-  connecting: boolean,
+  connecting: boolean
   waitingForMetamask: boolean
+  initialized: boolean
 }
 
 const walletSlice = createLocalSlice({
@@ -27,6 +28,9 @@ const walletSlice = createLocalSlice({
     metamaskComplete: (state) => {
       state.waitingForMetamask = false
     },
+    appInitialized: (state) => {
+      state.initialized = true
+    },
   },
 })
 
@@ -36,6 +40,7 @@ export const {
   walletConnectionFailed,
   waitingForMetamask,
   metamaskComplete,
+  appInitialized,
 } = walletSlice.slice.actions
 
 export default walletSlice

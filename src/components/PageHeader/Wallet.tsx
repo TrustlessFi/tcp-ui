@@ -5,6 +5,7 @@ import { Button, InlineLoading } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { store } from '../../app/store'
 import { chainIDFound } from '../../slices/chainID'
+import { appInitialized } from '../../slices/wallet'
 import { chainIDFoundForRootContracts } from '../../slices/rootContracts'
 import { getSortedUserTxs } from '../library'
 import ConnectWalletButton from '../library/ConnectWalletButton'
@@ -39,6 +40,7 @@ export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: 
   dispatch(userAddressFound(account))
 
   clearUserData(dispatch)
+  dispatch(appInitialized())
 }
 
 const Wallet = () => {
@@ -61,6 +63,7 @@ const Wallet = () => {
     if (newChainID !== null) {
       dispatch(chainIDFound(newChainID))
       dispatch(chainIDFoundForRootContracts(newChainID))
+      dispatch(appInitialized())
     } else {
       clearEphemeralStorage()
       window.location.reload()
@@ -70,26 +73,23 @@ const Wallet = () => {
   useEffect(() => {
     const { ethereum } = window
     if (!ethereum) return
-    // TODO if metamask not installed return
+    if (!MetaMaskOnboarding.isMetaMaskInstalled()) return
 
     ethereum.request({ method: 'eth_chainId' }).then(chainChanged)
+    ethereum.request({ method: "eth_accounts" }).then(walletConnected)
 
     ethereum.on('chainChanged', chainChanged)
-    // TODO remove any
-    ethereum.on('connect', (provider: any) => chainChanged(provider.chainId))
     ethereum.on('accountsChanged', walletConnected)
-
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      ethereum.request({ method: "eth_accounts" }).then(walletConnected)
-    }
+    ethereum.on('connect', (provider: any) => chainChanged(provider.chainId))
 
     ethereum.autoRefreshOnNetworkChange = false
-
   })
 
-  const countPendingTxs = getSortedUserTxs(chainID, userAddress, txs)
+  const countPendingTxs =
+    getSortedUserTxs(chainID, userAddress, txs)
       .filter(tx => tx.status === TransactionStatus.Pending)
       .length
+
   if (countPendingTxs > 0) {
     return <Button
       size="small"
@@ -105,9 +105,12 @@ const Wallet = () => {
   const shouldConnectWallet = userAddress === null || chainID === null
   if (shouldConnectWallet) return <ConnectWalletButton size="sm" />
 
-  return <WalletButton
-    address={userAddress}
-    style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}} />
+  return (
+    <WalletButton
+      address={userAddress}
+      style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}}
+    />
+  )
 }
 
 export default Wallet

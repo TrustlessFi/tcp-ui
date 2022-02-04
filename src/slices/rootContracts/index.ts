@@ -20,11 +20,15 @@ const rootContractsSlice = createLocalSlice({
   reducers: {
     chainIDFoundForRootContracts: (_state, action: PayloadAction<ChainID>) => {
       const chainID = action.payload
-      return {
-        governor: getAddress(chainID, 'TCP', 'Governor', localHardhatAddresses),
-        trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
-        protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
-        router: getAddress(chainID, 'Uniswap', 'router', localHardhatAddresses),
+      try {
+        return {
+          governor: getAddress(chainID, 'TCP', 'Governor', localHardhatAddresses),
+          trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
+          protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
+          router: getAddress(chainID, 'Uniswap', 'router', localHardhatAddresses),
+        }
+      } catch(e) {
+        return null
       }
     },
   }

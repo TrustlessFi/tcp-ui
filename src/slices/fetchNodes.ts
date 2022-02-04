@@ -1,7 +1,7 @@
-import { ChainID } from '@trustlessfi/addresses'
 import { NonNullValues, sliceState } from './'
 
 import { balances } from './balances'
+import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { governorInfo } from './governor'
@@ -24,7 +24,7 @@ import { TransactionState } from './transactions'
 import { wallet } from './wallet'
 
 export type RootState = {
-  chainID: ChainID | null
+  chainID: chainIDState
   rootContracts: rootContracts | null
   userAddress: string | null
   notifications: notificationState
