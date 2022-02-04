@@ -2,10 +2,12 @@ import { CSSProperties } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory } from 'react-router-dom'
 import { TransactionArgs, TransactionStatus } from '../../slices/transactions'
+import waitFor from '../../slices/waitFor'
 import ConnectWalletButton from './ConnectWalletButton'
 import { Button,  ButtonKind, ButtonSize, InlineLoading } from 'carbon-components-react'
 import { submitTransaction } from '../../slices/transactions'
 import { notEmpty } from '../../utils'
+import { getSortedUserTxs } from './'
 
 const CreateTransactionButton = ({
   txArgs,
@@ -29,25 +31,31 @@ const CreateTransactionButton = ({
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const waitingForMetamask = selector(state => state.wallet.waitingForMetamask)
-  const userAddress = selector(state => state.userAddress)
-  const chainID = selector(state => state.chainID)
-  const transactions = selector(state => state.transactions)
+  const {
+    chainID,
+    userAddress,
+    transactions,
+    wallet,
+  } = waitFor([
+    'chainID',
+    'userAddress',
+    'transactions',
+    'wallet'
+  ], selector, dispatch)
 
   if (chainID === null || (userAddress === null && !showDisabledInsteadOfConnectWallet)) {
     return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
-  // TODO filter for transactions that are relevant to this address and chain
   const pendingTxExists =
     notEmpty(
-      Object.values(transactions)
+      getSortedUserTxs(chainID, userAddress, transactions)
         .filter(tx => tx.status === TransactionStatus.Pending)
         .filter(tx => tx.type === txArgs.type)
     )
 
   const buttonTitle =
-    waitingForMetamask
+    wallet.waitingForMetamask
     ? 'Confirm in Metamask...'
     : title
 
@@ -63,6 +71,12 @@ const CreateTransactionButton = ({
     chainID,
   }
 
+  const showDisabled =
+    pendingTxExists ||
+    wallet.waitingForMetamask ||
+    disabled === true ||
+    userAddress === null
+
   return (
     <Button
       kind={kind}
@@ -70,7 +84,7 @@ const CreateTransactionButton = ({
       style={style}
       renderIcon={pendingTxExists ? InlineLoading : undefined}
       onClick={() => dispatch(submitTransaction(txData))}
-      disabled={pendingTxExists || waitingForMetamask || disabled === true || userAddress === null}>
+      disabled={showDisabled}>
       {buttonTitle}
     </Button>
   )
