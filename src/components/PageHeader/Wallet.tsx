@@ -11,12 +11,14 @@ import { getSortedUserTxs } from '../library'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { TransactionStatus } from '../../slices/transactions'
 import WalletButton from '../library/WalletButton'
+import SwitchNetworkButton from '../library/SwitchNetworkButton'
 import { AppDispatch } from '../../app/store'
 import { walletConnected } from '../../slices/wallet'
 import { userAddressFound } from '../../slices/userAddress'
 import { equalStringsCaseInsensitive } from '../../utils/index';
 import allSlices from '../../slices/allSlices'
 import { SliceDataType, CacheDuration } from '../../slices/'
+import waitFor from '../../slices/waitFor'
 
 export const clearUserData = (dispatch: AppDispatch) =>
   Object.values(allSlices)
@@ -47,9 +49,17 @@ const Wallet = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
 
-  const userAddress = selector(state => state.userAddress)
-  const chainID = selector(state => state.chainID)
-  const txs = selector(state => state.transactions)
+  const {
+    chainID,
+    wallet,
+    userAddress,
+    transactions,
+  } = waitFor([
+    'chainID',
+    'wallet',
+    'userAddress',
+    'transactions',
+  ], selector, dispatch)
 
   const walletConnected = getWalletConnectedFunction(dispatch)
 
@@ -86,7 +96,7 @@ const Wallet = () => {
   })
 
   const countPendingTxs =
-    getSortedUserTxs(chainID, userAddress, txs)
+    getSortedUserTxs(chainID, userAddress, transactions)
       .filter(tx => tx.status === TransactionStatus.Pending)
       .length
 
@@ -102,13 +112,13 @@ const Wallet = () => {
     </Button>
   }
 
-  const shouldConnectWallet = userAddress === null || chainID === null
-  if (shouldConnectWallet) return <ConnectWalletButton size="sm" />
+  if (chainID === null && wallet.initialized) return <SwitchNetworkButton size='sm' />
+  if (userAddress === null || chainID === null) return <ConnectWalletButton size='sm' />
 
   return (
     <WalletButton
       address={userAddress}
-      style={{height: 32, backgroundColor: "#FFFFFF", color: "#000000"}}
+      style={{height: 32, backgroundColor: '#FFFFFF', color: '#000000'}}
     />
   )
 }

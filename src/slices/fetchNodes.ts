@@ -21,7 +21,7 @@ import { stakeState } from './stakeState'
 import { uniswapContracts } from './uniswapContracts'
 import { notificationState } from './notifications'
 import { TransactionState } from './transactions'
-import { wallet } from './wallet'
+import { walletState } from './wallet'
 
 export type RootState = {
   chainID: chainIDState
@@ -31,7 +31,7 @@ export type RootState = {
   positionState: positionState
   stakeState: stakeState
   transactions: TransactionState
-  wallet: wallet
+  wallet: walletState
 
   balances: sliceState<balances>
   contracts: sliceState<contractsInfo>

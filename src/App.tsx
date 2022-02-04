@@ -12,6 +12,7 @@ import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
 import { TransactionStatus, waitForTransaction } from './slices/transactions'
+import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
 import waitFor from './slices/waitFor'
 
@@ -67,6 +68,10 @@ const App: FunctionComponent<{}> = () => {
     if (provider === null) return
     fetchTransactions(provider)
   }, [userTxs])
+
+  useEffect(() => {
+    if (chainID !== null) dispatch(setSwitchNetworkButtonClicked(false))
+  }, [chainID])
 
   return (
     <div style={{minWidth: 550}}>
