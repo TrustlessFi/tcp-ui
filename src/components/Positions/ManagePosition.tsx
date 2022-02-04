@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react"
-import { Row, Col } from 'react-flexbox-grid'
 import {
   Tag32,
   Locked32,
   ErrorOutline32,
-  Reset24,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
@@ -25,7 +23,6 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import ParagraphDivider from '../library/ParagraphDivider'
 import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
-import { gray } from '@carbon/colors';
 
 const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
@@ -166,10 +163,13 @@ const ManagePosition = () => {
         .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
     ) return
 
-    updateDebtCountImpl(position!.debtCount)
-    updateCollateralCount(position!.collateralCount)
     setDeleteSelected(false)
     dispatch(setIsUpdating(false))
+
+    if (position === null) return
+
+    updateDebtCountImpl(position!.debtCount)
+    updateCollateralCount(position!.collateralCount)
   }
 
   const reset = () => {
@@ -321,7 +321,7 @@ const ManagePosition = () => {
                   titleText={<></>}
                 />
               : <LargeText size={24}>
-                  Position
+                  {isCreating ? 'Borrow' : 'Position'}
                 </LargeText>
             }
           </div>
