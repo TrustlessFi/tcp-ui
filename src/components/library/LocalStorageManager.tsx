@@ -9,7 +9,11 @@ const year2120 = 4733539200
 const LocalStorageManager = () => {
   Object.values(allSlices).map(slice => {
     const rawState = selector(slice.stateSelector as (state: RootState) => sliceState<unknown>)
-    const sliceState = slice.sliceType === SliceDataType.Local ? rawState : rawState.value
+    const sliceState =
+      slice.sliceType === SliceDataType.Local ||
+      slice.sliceType === SliceDataType.LocalUserData
+      ? rawState
+      : rawState.value
     if (sliceState !== null && slice.cacheDuration !== CacheDuration.NONE) {
       const expiration = slice.cacheDuration === CacheDuration.INFINITE ? year2120 : timeS() + slice.cacheDuration
       const stateWithTimestamp = { expiration, sliceState }
