@@ -444,76 +444,76 @@ export const waitForTransaction = async (
   provider: ethers.providers.Web3Provider,
   dispatch: ThunkDispatch<unknown, unknown, AnyAction>
 ) => {
-    const receipt = await provider.waitForTransaction(tx.hash)
+  const receipt = await provider.waitForTransaction(tx.hash)
 
-    const succeeded = receipt.status === 1
-    if (succeeded) {
-      dispatch(transactionSucceeded(tx.hash))
-    } else {
-      dispatch(addNotification({
-        type: tx.type,
-        userAddress: tx.userAddress,
-        status: TransactionStatus.Failure,
-        hash: tx.hash,
-        chainID: tx.chainID,
-      }))
-      dispatch(transactionFailed(tx.hash))
+  const succeeded = receipt.status === 1
+  if (succeeded) {
+    dispatch(transactionSucceeded(tx.hash))
+  } else {
+    dispatch(addNotification({
+      type: tx.type,
+      userAddress: tx.userAddress,
+      status: TransactionStatus.Failure,
+      hash: tx.hash,
+      chainID: tx.chainID,
+    }))
+    dispatch(transactionFailed(tx.hash))
+  }
+
+  if (succeeded) {
+    const type = tx.type
+
+    const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
+    const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
+    const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
+    const clearLiquidityPositions = () => dispatch(allSlices.liquidityPositions.slice.actions.clearData())
+    const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
+    const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
+
+    switch (type) {
+      case TransactionType.CreatePosition:
+      case TransactionType.UpdatePosition:
+        dispatch(clearPositionState())
+        clearPositions()
+        clearMarketInfo()
+        clearBalances()
+        break
+      case TransactionType.ClaimAllPositionRewards:
+        clearPositions()
+        clearMarketInfo()
+        clearBalances()
+        break
+      case TransactionType.IncreaseStake:
+      case TransactionType.DecreaseStake:
+        dispatch(clearStakeState())
+        clearBalances()
+        clearMarketInfo()
+        break
+      case TransactionType.CreateLiquidityPosition:
+      case TransactionType.IncreaseLiquidityPosition:
+      case TransactionType.DecreaseLiquidityPosition:
+      case TransactionType.DeleteLiquidityPosition:
+        clearLiquidityPositions()
+        clearRewardsInfo()
+        clearPoolsCurrentData()
+        clearBalances()
+        break
+      case TransactionType.ClaimAllLiquidityPositionRewards:
+        clearLiquidityPositions()
+        clearRewardsInfo()
+        clearBalances()
+        break
+      case TransactionType.ApprovePoolToken:
+      case TransactionType.ApproveHue:
+      case TransactionType.ApproveLendHue:
+        clearBalances()
+        break
+    default:
+      assertUnreachable(type)
     }
+  }
 
-    if (succeeded) {
-      const type = tx.type
-
-      const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
-      const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
-      const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
-      const clearLiquidityPositions = () => dispatch(allSlices.liquidityPositions.slice.actions.clearData())
-      const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
-      const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
-
-      switch (type) {
-        case TransactionType.CreatePosition:
-        case TransactionType.UpdatePosition:
-          dispatch(clearPositionState())
-          clearPositions()
-          clearMarketInfo()
-          clearBalances()
-          break
-        case TransactionType.ClaimAllPositionRewards:
-          clearPositions()
-          clearMarketInfo()
-          clearBalances()
-          break
-        case TransactionType.IncreaseStake:
-        case TransactionType.DecreaseStake:
-          dispatch(clearStakeState())
-          clearBalances()
-          clearMarketInfo()
-          break
-        case TransactionType.CreateLiquidityPosition:
-        case TransactionType.IncreaseLiquidityPosition:
-        case TransactionType.DecreaseLiquidityPosition:
-        case TransactionType.DeleteLiquidityPosition:
-          clearLiquidityPositions()
-          clearRewardsInfo()
-          clearPoolsCurrentData()
-          clearBalances()
-          break
-        case TransactionType.ClaimAllLiquidityPositionRewards:
-          clearLiquidityPositions()
-          clearRewardsInfo()
-          clearBalances()
-          break
-        case TransactionType.ApprovePoolToken:
-        case TransactionType.ApproveHue:
-        case TransactionType.ApproveLendHue:
-          clearBalances()
-          break
-      default:
-        assertUnreachable(type)
-      }
-    }
-
-    return succeeded
+  return succeeded
 }
 
 export const submitTransaction = createAsyncThunk(
@@ -565,7 +565,7 @@ export const submitTransaction = createAsyncThunk(
 
     data.openTxTab()
 
-    await waitForTransaction(tx, provider, dispatch)
+    // await waitForTransaction(tx, provider, dispatch)
   })
 
 const transactionsSlice = createLocalSlice({

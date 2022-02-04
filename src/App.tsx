@@ -1,6 +1,6 @@
 import { ReactNode, FunctionComponent, useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from './app/hooks'
-import { getNullableProvider } from './utils/getProvider'
+import { getNullableProvider, provider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Stake from './components/Stake/'
@@ -54,18 +54,19 @@ const App: FunctionComponent<{}> = () => {
     'transactions',
   ], selector, dispatch)
 
+  const userTxs =
+    getSortedUserTxs(chainID, userAddress, transactions)
+      .filter(tx => tx.status === TransactionStatus.Pending)
+
+  const fetchTransactions = (provider: provider) =>
+    Promise.all(userTxs.map(tx => waitForTransaction(tx, provider, dispatch)))
+
   useEffect(() => {
+    if (userTxs.length === 0) return
     const provider = getNullableProvider()
-    if (provider !== null) {
-      const fetchTransactions = () =>
-        Promise.all(
-          getSortedUserTxs(chainID, userAddress, transactions)
-            .filter(tx => tx.status === TransactionStatus.Pending)
-            .map(tx => waitForTransaction(tx, provider, dispatch))
-        )
-      fetchTransactions()
-    }
-  }, [])
+    if (provider === null) return
+    fetchTransactions(provider)
+  }, [userTxs])
 
   return (
     <div style={{minWidth: 550}}>
