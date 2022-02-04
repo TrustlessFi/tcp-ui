@@ -42,7 +42,7 @@ const ConnectWalletButton = ({
   const wallet = selector(state => state.wallet)
 
   const text = wallet.connecting
-    ? 'Waiting for User in Metamask...'
+    ? 'Confirm in Metamask...'
     : (userAddress !== null
         ? 'Connected'
         : 'Connect a Wallet')
