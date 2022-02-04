@@ -78,6 +78,7 @@ const ManagePosition = () => {
 
   useEffect(() => {
     if (positions === null) return
+    if (positionState.position !== null) return
     const countPositions = Object.values(positions).length
     if (countPositions === 0) {
       dispatch(setIsUpdating(true))
