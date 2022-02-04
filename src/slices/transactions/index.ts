@@ -278,7 +278,7 @@ export const getTxShortName = (type: TransactionType) => {
 }
 
 // TODO remove
-export const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
+const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
   switch(type) {
     case TransactionType.CreatePosition:
     case TransactionType.UpdatePosition:
