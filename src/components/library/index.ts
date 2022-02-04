@@ -10,7 +10,7 @@ export const getSortedUserTxs = (
   chainID: ChainID | null,
   userAddress: string | null,
   txs: TransactionState | null,
-  sortOption: UserTxSortOption = UserTxSortOption.NONCE_ASCENDING,
+  sortOption: UserTxSortOption = UserTxSortOption.NONCE_DESCENDING,
 ): TransactionInfo[] => {
   if (chainID === null) return []
   if (userAddress === null) return []

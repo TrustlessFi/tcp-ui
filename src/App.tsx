@@ -12,6 +12,8 @@ import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
 import SwitchNetwork from './components/SwitchNetwork'
 import { TransactionStatus, waitForTransaction } from './slices/transactions'
+import { getSortedUserTxs } from './components/library'
+import waitFor from './slices/waitFor'
 
 import './App.css'
 import './styles/night_app.scss'
@@ -41,24 +43,29 @@ const tabToRender: {[key in Tab]: ReactNode} = {
 
 const App: FunctionComponent<{}> = () => {
   const dispatch = useAppDispatch()
-  const transactions = selector(state => state.transactions)
 
-  // TODO have this filter on only transactions that are relevant to this view: chainID and address
-  // use getAllUserTxs helper function
+  const {
+    chainID,
+    userAddress,
+    transactions,
+  } = waitFor([
+    'chainID',
+    'userAddress',
+    'transactions',
+  ], selector, dispatch)
+
   useEffect(() => {
     const provider = getNullableProvider()
     if (provider !== null) {
       const fetchTransactions = () =>
         Promise.all(
-          Object.values(transactions)
+          getSortedUserTxs(chainID, userAddress, transactions)
             .filter(tx => tx.status === TransactionStatus.Pending)
             .map(tx => waitForTransaction(tx, provider, dispatch))
         )
-
       fetchTransactions()
     }
   }, [])
-
 
   return (
     <div style={{minWidth: 550}}>
