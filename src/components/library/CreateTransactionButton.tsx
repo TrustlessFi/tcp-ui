@@ -68,18 +68,10 @@ const CreateTransactionButton = ({
       kind={kind}
       size={size}
       style={style}
+      renderIcon={pendingTxExists ? InlineLoading : undefined}
       onClick={() => dispatch(submitTransaction(txData))}
       disabled={pendingTxExists || waitingForMetamask || disabled === true || userAddress === null}>
-      {
-        pendingTxExists
-        ? <>
-            <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
-              {buttonTitle}
-            </div>
-            <InlineLoading />
-          </>
-        : buttonTitle
-      }
+      {buttonTitle}
     </Button>
   )
 }
