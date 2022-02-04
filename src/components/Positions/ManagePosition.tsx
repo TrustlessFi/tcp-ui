@@ -429,7 +429,7 @@ const ManagePosition = () => {
             />
           </SpacedList>
           <Center>
-            <SpacedList row>
+            <SpacedList row spacing={1}>
               {
                 isCreating
                 ? [resetButton, createPositionButton]
