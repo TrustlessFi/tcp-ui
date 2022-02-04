@@ -232,7 +232,7 @@ const RecentTransactions = () => {
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
   return (
-    <SpacedList spacing={32}>
+    <SpacedList spacing={32} style={{marginTop: 32}}>
       <WalletInfo />
       <AppTile
         title={tableTitle}
