@@ -79,6 +79,7 @@ export enum CacheDuration {
 
 export enum SliceDataType {
   Local,
+  LocalUserData,
   ChainData,
   ChainUserData,
 }
@@ -175,15 +176,16 @@ export const createLocalSlice = <
     reducers?: reducers
     cacheDuration?: CacheDuration
     thunkFunction?: (args: Args) => Promise<Value>
+    isUserData?: boolean
   }
 ): {
   name: string,
   slice: SliceType,
   stateSelector: stateSelector,
   cacheDuration: CacheDuration,
-  sliceType: SliceDataType.Local,
+  sliceType: SliceDataType.Local | SliceDataType.LocalUserData,
 } => {
-  const { name, initialState, stateSelector } = sliceData
+  const { name, initialState, stateSelector, isUserData } = sliceData
   const cacheDuration = sliceData.cacheDuration === undefined ? CacheDuration.NONE : sliceData.cacheDuration
   const reducers = sliceData.reducers === undefined ? {} : sliceData.reducers
   const slice = createSlice({
@@ -193,7 +195,7 @@ export const createLocalSlice = <
         ? initialState
         : getLocalStorageState(name, initialState)),
     reducers: {
-      clearData: _state => { throw new Error(`clearData reducer not defined for slice ${name}`)},
+      clearData: _state => initialState,
       ...reducers
     },
   })
@@ -203,6 +205,6 @@ export const createLocalSlice = <
     stateSelector,
     slice: slice as SliceType,
     cacheDuration,
-    sliceType: SliceDataType.Local,
+    sliceType: isUserData === true ? SliceDataType.LocalUserData : SliceDataType.Local,
   }
 }

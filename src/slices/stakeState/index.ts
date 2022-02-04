@@ -14,6 +14,7 @@ const stakeStateSlice = createLocalSlice({
   initialState,
   stateSelector: (state: RootState) => state.stakeState,
   cacheDuration: CacheDuration.SHORT,
+  isUserData: true,
   reducers: {
     setIncreaseAmount: (state, action: PayloadAction<number>) => {
       state.increaseAmount = action.payload

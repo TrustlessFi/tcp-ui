@@ -1,4 +1,4 @@
-import { createLocalSlice } from '../'
+import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { Position } from '../positions'
@@ -21,6 +21,8 @@ const positionStateSlice = createLocalSlice({
   name: 'positionState',
   initialState,
   stateSelector: (state: RootState) => state.positionState,
+  cacheDuration: CacheDuration.SHORT,
+  isUserData: true,
   reducers: {
     setPosition: (state, action: PayloadAction<Position | null>) => {
       state.position = action.payload

@@ -19,7 +19,7 @@ import { SliceDataType, CacheDuration } from '../../slices/'
 
 export const clearUserData = (dispatch: AppDispatch) =>
   Object.values(allSlices)
-    .filter(slice => slice.sliceType === SliceDataType.ChainUserData)
+    .filter(slice => slice.sliceType === SliceDataType.ChainUserData || slice.sliceType === SliceDataType.LocalUserData)
       .map(slice => dispatch(slice.slice.actions.clearData()))
 
 export const clearEphemeralStorage = () =>
