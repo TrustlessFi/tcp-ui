@@ -74,6 +74,7 @@ const ManagePosition = () => {
     dispatch(setPosition(newPosition))
     dispatch(setCollateralCount(newPosition.collateralCount))
     updateDebtCountImpl(newPosition.debtCount)
+    dispatch(setIsUpdating(false))
   }
 
   useEffect(() => {
@@ -178,6 +179,8 @@ const ManagePosition = () => {
     updateCollateralCount(0)
   }
 
+  console.log({debtIsFocused, balances, contracts, debtIncrease})
+
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noChange: {
       message: '.',
@@ -203,9 +206,7 @@ const ManagePosition = () => {
         debtIsFocused ||
         balances === null ||
         contracts === null ||
-        debtIncrease === null
-        ? false
-        : balances.tokens[contracts.Hue].userBalance + debtIncrease < 0,
+        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0),
     },
     undercollateralized: {
       message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
@@ -429,7 +430,7 @@ const ManagePosition = () => {
             />
           </SpacedList>
           <Center>
-            <SpacedList row spacing={1}>
+            <SpacedList row>
               {
                 isCreating
                 ? [resetButton, createPositionButton]
