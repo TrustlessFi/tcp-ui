@@ -302,7 +302,7 @@ const ManagePosition = () => {
         <SpacedList spacing={64} style={{display: 'relative'}}>
           <div style={{display: 'float', alignItems: 'center'}}>
             <div style={{float: 'right'}}>
-              {isUpdating ? deleteButton : editButton}
+              {isCreating ? null : (isUpdating ? deleteButton : editButton)}
             </div>
             {
               position !== null && positions !== null && Object.values(positions).length > 1
