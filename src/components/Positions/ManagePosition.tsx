@@ -456,7 +456,7 @@ const ManagePosition = () => {
             The interest rate to borrow Hue can be positive or negative (it's possible to owe less than you borrowed).{' '}
             <ParagraphDivider />
             Positions can be adjusted anytime by increasing or decreasing the collateral, or repaying or borrowing more Hue.{' '}
-            Holding a position earns you TCP tokens propostional to the position's contribution to the protocol's overall debt.{' '}
+            Holding a position earns you TCP tokens proportional to the position's contribution to the protocol's overall debt.{' '}
             Learn more about borrowing <a href={notionURL} target='_blank'>here</a>.
         </AccordionItem>
       </Accordion>
