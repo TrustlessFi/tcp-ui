@@ -196,7 +196,7 @@ const ManagePosition = () => {
     },
     notBigEnough: {
       message: `Position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue.`,
-      failing: debtIsFocused || marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize,
+      failing: !debtIsFocused && (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
     },
     insufficientEthInWallet: {
       message: 'Not enough Eth in wallet.',
@@ -205,20 +205,20 @@ const ManagePosition = () => {
     insufficientHueInWallet: {
       message: 'Connected wallet does not have enough Hue.',
       failing:
-        debtIsFocused ||
-        balances === null ||
+        !debtIsFocused &&
+        (balances === null ||
         contracts === null ||
-        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0),
+        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0)),
     },
     undercollateralized: {
       message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
       failing:
-        debtIsFocused ||
-        collateralIsFocused ||
-        marketInfo === null ||
+        !debtIsFocused &&
+        !collateralIsFocused &&
+        (marketInfo === null ||
         collateralization === null
         ? false
-        : debtCount !== 0 && collateralization < marketInfo.collateralizationRequirement,
+        : debtCount !== 0 && collateralization < marketInfo.collateralizationRequirement),
     },
   }
 
@@ -289,7 +289,7 @@ const ManagePosition = () => {
     <CreateTransactionButton
       title='Approve'
       size={small ? 'sm' : undefined}
-      disabled={debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+      disabled={isFailing || debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
         type: TransactionType.ApproveHue,
