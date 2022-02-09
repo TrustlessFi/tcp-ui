@@ -130,9 +130,13 @@ const ManagePosition = () => {
     balances.tokens[contracts.Hue].approval.Market.approved
 
   const setCollateralCountToMax = () => {
-    if (position !== null && balances !== null && balances.userEthBalance > txCostBuffer) {
-      updateCollateralCount((balances.userEthBalance + position.collateralCount) - txCostBuffer)
-    }
+    const userEthBalance =
+      balances !== null && balances.userEthBalance > txCostBuffer
+      ? balances.userEthBalance - txCostBuffer
+      : 0
+    const positionCollateral = position === null ? 0 : position.collateralCount
+
+    updateCollateralCount(userEthBalance + positionCollateral)
   }
 
   const setDebtToHighCollateralRatio = () => {
@@ -178,8 +182,6 @@ const ManagePosition = () => {
     updateDebtCountImpl(0)
     updateCollateralCount(0)
   }
-
-  console.log({debtIsFocused, balances, contracts, debtIncrease})
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noChange: {
