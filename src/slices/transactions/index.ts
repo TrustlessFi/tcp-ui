@@ -530,22 +530,23 @@ export const submitTransaction = createAsyncThunk(
       rawTransaction = await executeTransaction(args, provider)
       dispatch(metamaskComplete())
     } catch (e) {
-
       const errorMessages = parseMetamaskError(e)
-      console.error("failureMessages: " + errorMessages.join(', '))
+      console.error("failureMessages: " + errorMessages.messages.join(', '))
 
       const reasonString =
-        errorMessages.length > 0
-        ? extractRevertReasonString(errorMessages[0])
+        errorMessages.messages.length > 0
+        ? extractRevertReasonString(errorMessages.messages[0])
         : null
 
-      dispatch(addNotification({
-        type: args.type,
-        userAddress,
-        status: TransactionStatus.Failure,
-        chainID: data.chainID,
-        message: reasonString ? reasonString : errorMessages.join(', ')
-      }))
+      if (errorMessages.code !== 4001) {
+        dispatch(addNotification({
+          type: args.type,
+          userAddress,
+          status: TransactionStatus.Failure,
+          chainID: data.chainID,
+          message: reasonString ? reasonString : errorMessages.messages.join(', ')
+        }))
+      }
       dispatch(metamaskComplete())
       return
     }
@@ -564,8 +565,6 @@ export const submitTransaction = createAsyncThunk(
     dispatch(transactionCreated(tx))
 
     data.openTxTab()
-
-    // await waitForTransaction(tx, provider, dispatch)
   })
 
 const transactionsSlice = createLocalSlice({

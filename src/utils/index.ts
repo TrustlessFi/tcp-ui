@@ -209,49 +209,49 @@ export type PromiseType<T> = T extends PromiseLike<infer U> ? U : T
 export type Merge<A, B> = { [K in keyof (A | B)]: K extends keyof B ? B[K] : A[K] };
 
 
-export const parseMetamaskError = (error: any): string[] => {
+export const parseMetamaskError = (error: any): {messages: string[], code?: number } => {
   const metamaskError = error
   if (error.hasOwnProperty('error')) error = error.error
 
   if (error.hasOwnProperty('data')) {
     if (error.data.hasOwnProperty('message')) {
-      return [error.data.message as string]
+      return {messages: [error.data.message as string] }
     }
   }
 
   const userRejectedMessage = ['Please accept in Metamask']
 
   if (error.hasOwnProperty('code') && error.code === 4001) {
-    return userRejectedMessage
+    return {messages: userRejectedMessage, code: error.code}
   }
 
   if (error.hasOwnProperty('message')) {
-    if ((error.message as string).indexOf('{') === -1) return [error.message]
+    if ((error.message as string).indexOf('{') === -1) return {messages: [error.message], code: error.code }
     const message = error.message as string
     const begin = message.indexOf('{')
     const end = message.lastIndexOf('}')
-    if (end < begin ) return [message]
+    if (end < begin ) return {messages: [message], code: error.code}
 
     const jsonString = message.substr(begin, (end - begin)+ 1)
     const innerObject = JSON.parse(jsonString)
-    if (innerObject.hasOwnProperty('message')) return [innerObject.message]
+    if (innerObject.hasOwnProperty('message')) return {messages: [innerObject.message], code: error.code}
     if (innerObject.hasOwnProperty('value')) {
       const innerObjectValue = innerObject.value
       if (innerObjectValue.hasOwnProperty('data')) {
         const innerObjectValueData = innerObjectValue.data
         const code = innerObjectValueData.hasOwnProperty('code') ? innerObjectValueData.code as number : null
-        if (code === 4001) return userRejectedMessage
+        if (code === 4001) return {messages: userRejectedMessage, code: 4001 }
         if (innerObjectValueData.hasOwnProperty('message')) {
           const returnData = [innerObjectValueData.message]
           if (code !== null) returnData.push('Metamask error code ' + code + ')')
-          return returnData
+          return { messages: returnData }
         }
       }
     }
   }
 
   console.error({metamaskError})
-  return ['Unknown metamask error']
+  return {messages: ['Unknown metamask error']}
 }
 
 export const extractRevertReasonString  = (input: string): string | null => {
