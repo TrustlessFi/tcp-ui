@@ -320,9 +320,9 @@ const ManagePosition = () => {
       ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, 4)} Eth`}
       : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), 4)} Eth`})
 
-  const successDisplay: ReactFragment =
+  const successDisplay: ReactFragment | null =
     debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
-    ? ''
+    ? null
     : (debtChangeSuccessDisplay !== null && collateralChangeSuccessDisplay !== null
         ? <Text>
             You will {collateralChangeSuccessDisplay.action} <Bold>{collateralChangeSuccessDisplay.amount}</Bold>{' '}
@@ -484,7 +484,8 @@ const ManagePosition = () => {
               : null
           }
           {
-            Object.values(failures).filter(failure => failure.failing).length === 0
+            successDisplay !== null
+            && Object.values(failures).filter(failure => failure.failing).length === 0
             ? <InlineNotification
                 key='success_indicator'
                 notificationType='inline'
