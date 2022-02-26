@@ -92,11 +92,15 @@ const FullNumberInput = ({
         : input
       }
       {
-        center === true
-        ? <Center>
-            {subTitle}
-          </Center>
-        : subTitle
+        <Text color='white' style={{opacity: 0.7}}>
+          {
+            center === true
+            ? <Center>
+                {subTitle}
+              </Center>
+            : subTitle
+          }
+        </Text>
       }
     </SpacedList>
   )

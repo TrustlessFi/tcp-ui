@@ -3,6 +3,8 @@ import {
   Tag32,
   Locked32,
   ErrorOutline32,
+  Percentage32,
+  Calculation32,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
@@ -113,7 +115,7 @@ const ManagePosition = () => {
   const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
   const interestRate = dataNull ? 0 : ratesInfo.interestRate * 100
-  const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
+  const interestRateDisplay = dataNull ? '-' : numDisplay(interestRate, 2)
 
   const ethPrice = pricesInfo === null ? null : pricesInfo.ethPrice
   const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
@@ -377,11 +379,17 @@ const ManagePosition = () => {
             onFocusUpdate={setDebtIsFocused}
             subTitle={
               <Text>
+                You have
+                {' '}
                 <Bold>
-                  {interestRateDisplay}
+                  {
+                    contracts === null
+                    || balances === null
+                    ? '-'
+                    : roundToXDecimals(balances.tokens[contracts.Hue].userBalance, 2, true)}
                 </Bold>
                 {' '}
-                current APR to borrow Hue
+                Hue in your wallet
               </Text>
             }
           />
@@ -439,6 +447,12 @@ const ManagePosition = () => {
                   showChangeWithUnit: '%'
                 }
               }
+            />
+            <PositionInfoItem
+              icon={<Calculation32 />}
+              title='Current Borrow APR'
+              value={interestRateDisplay}
+              unit='%'
             />
           </SpacedList>
           <div style={{display: 'flex'}}>
