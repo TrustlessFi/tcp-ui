@@ -55,7 +55,7 @@ const FullNumberInput = ({
     />
 
   return (
-    <SpacedList>
+    <SpacedList style={{marginRight: 8}}>
       { title === undefined
         ? null
         : <Text size={fontSize}>{title}</Text>

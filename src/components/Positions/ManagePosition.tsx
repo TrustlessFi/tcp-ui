@@ -10,6 +10,7 @@ import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Bold from '../library/Bold'
 import LargeText from '../library/LargeText'
+import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
@@ -204,11 +205,11 @@ const ManagePosition = () => {
       failing: (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
     },
     insufficientEthInWallet: {
-      message: 'You do not have enough Eth in your wallet.',
+      message: 'You don\'t have enough Eth in your wallet.',
       failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
-      message: 'You do not have enough Hue in your wallet.',
+      message: 'You don\'t have enough Hue in your wallet.',
       silent: debtIsFocused,
       failing:
         (balances === null ||
@@ -257,7 +258,7 @@ const ManagePosition = () => {
     ? null
     : <Button
         onClick={() => dispatch(setIsUpdating(true))}
-        size='md'
+        size='sm'
         small
         kind='primary'>
         Edit
@@ -324,8 +325,8 @@ const ManagePosition = () => {
     ? ''
     : (debtChangeSuccessDisplay !== null && collateralChangeSuccessDisplay !== null
         ? <Text>
-            You will {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>{' '}
-            and {collateralChangeSuccessDisplay.action} <Bold>{collateralChangeSuccessDisplay.amount}</Bold>.
+            You will {collateralChangeSuccessDisplay.action} <Bold>{collateralChangeSuccessDisplay.amount}</Bold>{' '}
+            and {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>.
           </Text>
         : (
           debtChangeSuccessDisplay !== null
@@ -342,12 +343,14 @@ const ManagePosition = () => {
 
 
   const columnOne =
-    <SpacedList spacing={64} style={{marginTop: 64}}>
-      <Tile style={{padding: 36}}>
-        <SpacedList spacing={64} style={{display: 'relative'}}>
+    <SpacedList spacing={40} style={{marginTop: 40}}>
+      <Tile style={{padding: 40}}>
+        <SpacedList spacing={40} style={{display: 'relative'}}>
           <div style={{display: 'float', alignItems: 'center'}}>
             <div style={{float: 'right'}}>
+              <Center>
               {isCreating ? null : editButton}
+              </Center>
             </div>
             {
               position !== null && positions !== null && Object.values(positions).length > 1
@@ -424,7 +427,7 @@ const ManagePosition = () => {
               </Text>
             }
           />
-          <SpacedList spacing={16}>
+          <SpacedList spacing={20}>
             <PositionInfoItem
               icon={<ErrorOutline32 />}
               title='Liquidation Price'
@@ -497,6 +500,7 @@ const ManagePosition = () => {
           <div style={{display: 'flex'}}>
             <SpacedList
               row
+              spacing={10}
               style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
               {
                 isCreating
