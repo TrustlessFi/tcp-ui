@@ -56,7 +56,7 @@ const CreateTransactionButton = ({
 
   const buttonTitle =
     wallet.waitingForMetamask
-    ? 'Confirm in Metamask...'
+    ? `${title}...`
     : title
 
   const openTxTabAction =
@@ -91,7 +91,7 @@ const CreateTransactionButton = ({
 }
 
 CreateTransactionButton.defaultProps = {
-  title: 'Confirm in Metamask',
+  title: 'Confirm',
   disabled: false,
   openTxTab: false,
   kind: 'primary',

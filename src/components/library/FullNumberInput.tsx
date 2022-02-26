@@ -43,18 +43,19 @@ const FullNumberInput = ({
 
   const input =
     <PositionNumberInput
-      id="collateralInput"
+      id='collateralInput'
       action={action}
       value={value}
       fontSize={fontSize}
       unit={unit}
       onFocusUpdate={onFocusUpdate}
+      defaultButton={defaultButton}
       light={light}
       max={max}
     />
 
   return (
-    <SpacedList>
+    <SpacedList style={{marginRight: 8}}>
       { title === undefined
         ? null
         : <Text size={fontSize}>{title}</Text>
@@ -67,37 +68,39 @@ const FullNumberInput = ({
                 {value}
               </Text>
             </div>
-            <Center>
-              <Text
-                size={fontSize}
-                style={{
-                  top: 14,
-                  right: 48,
-                  position: 'absolute',
-                }}>
-                {unit}
-              </Text>
-            </Center>
+            <Text
+              size={12}
+              style={{
+                color: '#ffffff',
+                opacity: 0.6,
+                top: 18,
+                right: 18,
+                position: 'absolute',
+              }}>
+              {unit}
+            </Text>
+            <div
+              style={{
+                borderLeft: '1px solid #222222',
+                width: 1,
+                height: 48,
+                right: 52,
+                position: 'absolute',
+              }}
+            />
           </Row>
-        : (
-          defaultButton === undefined
-          ? <div style={{marginRight: 8}}>{input}</div>
-          : <div style={{display: 'flex'}}>
-              <div style={{float: 'left', width: '100%', marginRight: '1em'}}>
-                {input}
-              </div>
-              <div style={{float: 'right'}}>
-                <Button style={{width: 100}} kind='secondary' onClick={defaultButton.action}>{defaultButton.title}</Button>
-              </div>
-            </div>
-        )
+        : input
       }
       {
-        center === true
-        ? <Center>
-            {subTitle}
-          </Center>
-        : subTitle
+        <Text color='white' style={{opacity: 0.6}}>
+          {
+            center === true
+            ? <Center>
+                {subTitle}
+              </Center>
+            : subTitle
+          }
+        </Text>
       }
     </SpacedList>
   )

@@ -17,6 +17,7 @@ const PositionNumberInput = ({
   max,
   onFocusUpdate,
   light,
+  defaultButton,
 }: {
   id: string
   value: number
@@ -29,6 +30,10 @@ const PositionNumberInput = ({
   max?: number
   onFocusUpdate?: (isFocused: boolean) => void
   light?: boolean
+  defaultButton?: {
+    title: string,
+    action: () => void,
+  }
 }) => {
   const invalidText = <></>
   const itemStyle = small
@@ -64,14 +69,46 @@ const PositionNumberInput = ({
           {rawInput}
           <Center>
             <Text
-              size={fontSize}
+              size={12}
               style={{
-                top: 14,
-                right: 48,
+                color: '#ffffff',
+                opacity: 0.6,
+                top: 18,
+                right: 18,
                 position: 'absolute',
               }}>
               {unit}
             </Text>
+            <div
+              style={{
+                borderLeft: '1px solid #222222',
+                width: 1,
+                height: 48,
+                bottom: 0,
+                right: 52,
+                position: 'absolute',
+              }}
+            />
+            {
+              defaultButton === undefined
+              ? null
+              : <span
+                  style={{cursor: 'pointer'}}
+                  onClick={defaultButton.action}>
+                  <Text
+                    size={12}
+                    style={{
+                      color: '#ffffff',
+                      opacity: 0.6,
+                      top: 18,
+                      right: 74,
+                      textDecoration: 'underline',
+                      position: 'absolute',
+                    }}>
+                    {defaultButton.title}
+                  </Text>
+                </span>
+            }
           </Center>
         </Row>
       )

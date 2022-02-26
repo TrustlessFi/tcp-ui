@@ -26,7 +26,7 @@ declare global {
 }
 
 export enum Tab {
-  Borrow = 'Borrow',
+  Position = 'Position',
   Stake = 'Stake',
   Liquidity = 'Liquidity',
   Transactions = 'Transactions',
@@ -35,8 +35,12 @@ export enum Tab {
 export const tabDisplay: { [key in Tab]?: string } = {
 }
 
+export const tabHidden: { [key in Tab]?: true } = {
+  Transactions: true
+}
+
 const tabToRender: {[key in Tab]: ReactNode} = {
-  Borrow: <Positions />,
+  Position: <Positions />,
   Stake: <Stake />,
   Liquidity: <Liquidity />,
   Transactions: <RecentTransactions />,

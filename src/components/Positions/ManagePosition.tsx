@@ -1,14 +1,16 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactFragment } from "react"
 import {
   Tag32,
   Locked32,
   ErrorOutline32,
+  Percentage32,
+  Calculation32,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
-import Center from '../library/Center'
 import Bold from '../library/Bold'
 import LargeText from '../library/LargeText'
+import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
@@ -20,11 +22,8 @@ import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import ParagraphDivider from '../library/ParagraphDivider'
-import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
+import { InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
-
-const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
 const ManagePosition = () => {
   const dispatch = useAppDispatch()
@@ -81,6 +80,7 @@ const ManagePosition = () => {
     if (positions === null) return
     if (positionState.position !== null) return
     const countPositions = Object.values(positions).length
+    setDeleteSelected(false)
     if (countPositions === 0) {
       dispatch(setIsUpdating(true))
       dispatch(setPosition(null))
@@ -91,7 +91,7 @@ const ManagePosition = () => {
   }, [positions])
 
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
-  const debtIncrease = debtCount - (position === null ? 0 : position.debtCount)
+  const debtIncrease = parseFloat(roundToXDecimals(debtCount - (position === null ? 0 : position.debtCount), 2))
   const isCollateralChanged = Math.abs(collateralIncrease) > 0.001
   const isDebtChanged = Math.abs(debtIncrease) > 0.1
   const isDebtDecrease = isDebtChanged && debtIncrease < 0
@@ -116,7 +116,7 @@ const ManagePosition = () => {
   const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
   const interestRate = dataNull ? 0 : ratesInfo.interestRate * 100
-  const interestRateDisplay = dataNull ? '-%' : numDisplay(interestRate, 2) + '%'
+  const interestRateDisplay = dataNull ? '-' : numDisplay(interestRate, 2)
 
   const ethPrice = pricesInfo === null ? null : pricesInfo.ethPrice
   const ethPriceDisplay = ethPrice === null ? '-' : numDisplay(ethPrice, 0)
@@ -162,25 +162,30 @@ const ManagePosition = () => {
     dispatch(setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true))))
   }
 
-  const cancel = () => {
+  const cancelCreate = () => {
+    if (!empty(
+      Object.values(transactions)
+        .filter(tx => tx.status === TransactionStatus.Pending)
+        .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.CreatePosition))
+    ) return
+
+    updateDebtCountImpl(0)
+    updateCollateralCount(0)
+  }
+
+  const cancelUpdate = () => {
     if (!empty(
       Object.values(transactions)
         .filter(tx => tx.status === TransactionStatus.Pending)
         .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
     ) return
 
-    setDeleteSelected(false)
     dispatch(setIsUpdating(false))
 
-    if (position === null) return
-
-    updateDebtCountImpl(position!.debtCount)
-    updateCollateralCount(position!.collateralCount)
-  }
-
-  const reset = () => {
-    updateDebtCountImpl(0)
-    updateCollateralCount(0)
+    if (position !== null) {
+      updateDebtCountImpl(position!.debtCount)
+      updateCollateralCount(position!.collateralCount)
+    }
   }
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
@@ -195,26 +200,26 @@ const ManagePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: `Position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue.`,
-      failing: !debtIsFocused && (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
+      message: `Your position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue of debt.`,
+      silent: debtIsFocused,
+      failing: (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
     },
     insufficientEthInWallet: {
-      message: 'Not enough Eth in wallet.',
+      message: 'You don\'t have enough Eth in your wallet.',
       failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
-      message: 'Connected wallet does not have enough Hue.',
+      message: 'You don\'t have enough Hue in your wallet.',
+      silent: debtIsFocused,
       failing:
-        !debtIsFocused &&
         (balances === null ||
         contracts === null ||
         (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0)),
     },
     undercollateralized: {
-      message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
+      message: 'Your position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
+      silent: debtIsFocused || collateralIsFocused,
       failing:
-        !debtIsFocused &&
-        !collateralIsFocused &&
         (marketInfo === null ||
         collateralization === null
         ? false
@@ -232,50 +237,51 @@ const ManagePosition = () => {
 
   const isCreating = positions !== null && position === null
 
-  const cancelButton =
-    <Button onClick={cancel} kind='secondary'>
+  const cancelCreateButton =
+    <Button
+      onClick={cancelCreate}
+      kind='secondary'
+      size='md'>
+      Cancel
+    </Button>
+
+  const cancelUpdateButton =
+    <Button
+      onClick={cancelUpdate}
+      kind='secondary'
+      size='md'>
       Cancel
     </Button>
 
   const editButton =
-    <Button onClick={() => dispatch(setIsUpdating(true))} small kind='secondary'>
-      Edit
-    </Button>
-
-  const resetButton =
-    <Button onClick={reset} kind='secondary'>
-      Reset
-    </Button>
-
-  const deleteButton =
-    <Button
-      disabled={deleteSelected}
-      onClick={() => {
-        dispatch(setDebtCount(0))
-        dispatch(setCollateralCount(0))
-        setDeleteSelected(true)
-      }}
-      kind='tertiary'
-      size='sm'>
-      Delete
-    </Button>
+    isUpdating
+    ? null
+    : <Button
+        onClick={() => dispatch(setIsUpdating(true))}
+        size='sm'
+        small
+        kind='primary'>
+        Edit
+      </Button>
 
   const createPositionButton =
     <CreateTransactionButton
-        title='Confirm'
-        disabled={isFailing}
-        txArgs={{
-          type: TransactionType.CreatePosition,
-          collateralCount,
-          debtCount,
-          Market: contracts === null ? '' : contracts.Market,
-        }}
-      />
+      title='Confirm'
+      disabled={isFailing}
+      size='md'
+      txArgs={{
+        type: TransactionType.CreatePosition,
+        collateralCount,
+        debtCount,
+        Market: contracts === null ? '' : contracts.Market,
+      }}
+    />
 
   const updatePositionButton =
     <CreateTransactionButton
       title='Confirm'
       disabled={isFailing}
+      size='md'
       txArgs={{
         type: TransactionType.UpdatePosition,
         positionID: position === null ? 0 :  position.id,
@@ -285,11 +291,11 @@ const ManagePosition = () => {
       }}
     />
 
-  const getApproveHueButton = (small = false) =>
+  const approveHueButton =
     <CreateTransactionButton
       title='Approve'
-      size={small ? 'sm' : undefined}
-      disabled={isFailing || debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+      size='md'
+      disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
         type: TransactionType.ApproveHue,
@@ -298,171 +304,238 @@ const ManagePosition = () => {
       }}
     />
 
+  interface changeDisplay {amount: string, action: string}
+
+  const debtChangeSuccessDisplay: null | changeDisplay =
+    debtIncrease === 0
+    ? null
+    : (debtIncrease > 0
+      ? {action: 'receive', amount: `${numDisplay(debtIncrease, 2)} Hue`}
+      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), 2)} Hue`})
+
+  const collateralChangeSuccessDisplay: null | changeDisplay =
+    collateralIncrease === 0
+    ? null
+    : (collateralIncrease > 0
+      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, 4)} Eth`}
+      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), 4)} Eth`})
+
+  const successDisplay: ReactFragment =
+    debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
+    ? ''
+    : (debtChangeSuccessDisplay !== null && collateralChangeSuccessDisplay !== null
+        ? <Text>
+            You will {collateralChangeSuccessDisplay.action} <Bold>{collateralChangeSuccessDisplay.amount}</Bold>{' '}
+            and {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>.
+          </Text>
+        : (
+          debtChangeSuccessDisplay !== null
+          ? <Text>You will {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>.</Text>
+          : <Text>You will {collateralChangeSuccessDisplay!.action} <Bold>{collateralChangeSuccessDisplay!.amount}</Bold>.</Text>
+
+        )
+      )
+
+  const nonSilentFailures =
+    Object.values(failures)
+      .filter(failure => !failure.silent)
+      .filter(failure => failure.failing)
+
+
   const columnOne =
-    <SpacedList spacing={64} style={{marginTop: 64}}>
-      <Tile style={{padding: 36}}>
-        <SpacedList spacing={64} style={{display: 'relative'}}>
-          <div style={{display: 'float', alignItems: 'center'}}>
-            <div style={{float: 'right'}}>
-              {isCreating ? null : (isUpdating ? deleteButton : editButton)}
-            </div>
-            {
-              position !== null && positions !== null && Object.values(positions).length > 1
-              ? <Dropdown
-                  ariaLabel="Dropdown position ID selector"
-                  inline
-                  id='dropdown'
-                  items={Object.values(positions).map((position: Position) => position.id)}
-                  onChange={(data: OnChangeData<number>) => {
-                    const positionID = data.selectedItem
-                    if (positions === null || positionID === null || positionID === undefined) return
-                    updatePosition(positions[positionID])
-                  }}
-                  style={{width: 250}}
-                  itemToString={(itemID: number) => `Position ${itemID}`}
-                  initialSelectedItem={position.id}
-                  label='Select Position'
-                  titleText={<></>}
-                />
-              : <LargeText size={24}>
-                  {isCreating ? 'Borrow' : 'Position'}
-                </LargeText>
-            }
+    <Tile style={{padding: 40, marginTop: 40}}>
+      <SpacedList spacing={40} style={{display: 'relative'}}>
+        <div style={{display: 'float', alignItems: 'center'}}>
+          <div style={{float: 'right'}}>
+            <Center>
+            {isCreating ? null : editButton}
+            </Center>
           </div>
-          <FullNumberInput
-            title='Collateral'
-            action={updateCollateralCount}
-            value={collateralCount}
-            unit='Eth'
-            light
-            frozen={!isUpdating || deleteSelected}
-            defaultButton={{
-              title: 'Max',
-              action: setCollateralCountToMax
-            }}
-            onFocusUpdate={setCollateralIsFocused}
-            subTitle={
-              <Text>
-                You have
-                {' '}
-                <Bold>
-                  {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
-                </Bold>
-                {' '}
-                Eth in your wallet
-              </Text>
+          {
+            position !== null && positions !== null && Object.values(positions).length > 1
+            ? <Dropdown
+                ariaLabel="Dropdown position ID selector"
+                inline
+                id='dropdown'
+                items={Object.values(positions).map((position: Position) => position.id)}
+                onChange={(data: OnChangeData<number>) => {
+                  const positionID = data.selectedItem
+                  if (positions === null || positionID === null || positionID === undefined) return
+                  updatePosition(positions[positionID])
+                }}
+                style={{width: 250}}
+                itemToString={(itemID: number) => `Position ${itemID}`}
+                initialSelectedItem={position.id}
+                label='Select Position'
+                titleText={<></>}
+              />
+            : <LargeText size={24}>
+                {isCreating ? 'Create Position' : 'Your Position'}
+              </LargeText>
+          }
+        </div>
+        <FullNumberInput
+          title='Collateral'
+          action={updateCollateralCount}
+          value={collateralCount}
+          unit='Eth'
+          light
+          frozen={!isUpdating || deleteSelected}
+          defaultButton={{
+            title: 'Max',
+            action: setCollateralCountToMax
+          }}
+          onFocusUpdate={setCollateralIsFocused}
+          subTitle={
+            <Text>
+              You have
+              {' '}
+              <Bold>
+                {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
+              </Bold>
+              {' '}
+              Eth in your wallet
+            </Text>
+          }
+        />
+        <FullNumberInput
+          title='Debt'
+          action={updateDebtCount}
+          value={debtCount}
+          unit='Hue'
+          light
+          frozen={!isUpdating || deleteSelected}
+          defaultButton={{
+            title: `${defaultCollateralizationRatio * 100}%`,
+            action: setDebtToHighCollateralRatio,
+          }}
+          onFocusUpdate={setDebtIsFocused}
+          subTitle={
+            <Text>
+              You have
+              {' '}
+              <Bold>
+                {
+                  contracts === null
+                  || balances === null
+                  ? '-'
+                  : roundToXDecimals(balances.tokens[contracts.Hue].userBalance, 2, true)}
+              </Bold>
+              {' '}
+              Hue in your wallet
+            </Text>
+          }
+        />
+        <SpacedList spacing={20}>
+          <PositionInfoItem
+            icon={<ErrorOutline32 />}
+            title='Liquidation Price'
+            value={liquidationPriceDisplay}
+            unit='Hue/Eth'
+            changeData={
+              previousLiquidationPrice !== null
+              ? {
+                previous: previousLiquidationPrice,
+                next: liquidationPrice,
+                increaseIsGood: false,
+              } : undefined
             }
           />
-          <FullNumberInput
-            title='Debt'
-            action={updateDebtCount}
-            value={debtCount}
-            unit='Hue'
-            light
-            frozen={!isUpdating || deleteSelected}
-            defaultButton={{
-              title: `${defaultCollateralizationRatio * 100}%`,
-              action: setDebtToHighCollateralRatio,
-            }}
-            onFocusUpdate={setDebtIsFocused}
-            subTitle={
-              <Text>
-                <Bold>
-                  {interestRateDisplay}
-                </Bold>
-                {' '}
-                current APR to borrow Hue
-              </Text>
+          <PositionInfoItem
+            icon={<Tag32 />}
+            title='Current Price'
+            value={ethPriceDisplay}
+            unit='Hue/Eth'
+          />
+          <PositionInfoItem
+            icon={<Locked32 />}
+            title='Collateral Ratio'
+            value={collateralizationDisplay}
+            color={collateralColor}
+            changeData={
+              previousCollateralization === null ||
+              collateralization === null
+              ? undefined
+              : {
+                previous: previousCollateralization * 100,
+                next: collateralization * 100,
+                increaseIsGood: true,
+                showChangeWithUnit: '%'
+              }
             }
           />
-          <SpacedList spacing={16}>
-            {
-              Object.values(failures)
-                .filter(failure => !failure.silent)
-                .filter(failure => failure.failing)
-                .map((failure, index) =>
-                  <InlineNotification
-                    key={index}
-                    notificationType='inline'
-                    kind='error'
-                    title={failure.message}
-                    lowContrast
-                    hideCloseButton
-                  />
-                )
-            }
-          </SpacedList>
-          <SpacedList spacing={16}>
-            <PositionInfoItem
-              icon={<ErrorOutline32 />}
-              title='Liquidation Price'
-              value={liquidationPriceDisplay}
-              unit='Hue/Eth'
-              changeData={
-                previousLiquidationPrice !== null
-                ? {
-                  previous: previousLiquidationPrice,
-                  next: liquidationPrice,
-                  increaseIsGood: false,
-                } : undefined
-              }
-            />
-            <PositionInfoItem
-              icon={<Tag32 />}
-              title='Current Price'
-              value={ethPriceDisplay}
-              unit='Hue/Eth'
-            />
-            <PositionInfoItem
-              icon={<Locked32 />}
-              title='Collateral Ratio'
-              value={collateralizationDisplay}
-              color={collateralColor}
-              changeData={
-                previousCollateralization === null ||
-                collateralization === null
-                ? undefined
-                : {
-                  previous: previousCollateralization * 100,
-                  next: collateralization * 100,
-                  increaseIsGood: true,
-                  showChangeWithUnit: '%'
-                }
-              }
-            />
-          </SpacedList>
-          <Center>
-            <SpacedList row>
-              {
-                isCreating
-                ? [resetButton, createPositionButton]
-                : (
-                    isUpdating
-                    ? (
-                        isDebtDecrease && !hueApproved
-                        ? [cancelButton, getApproveHueButton()]
-                        : [cancelButton, updatePositionButton]
-                    ) : null
-                )
-              }
-            </SpacedList>
-          </Center>
+          <PositionInfoItem
+            icon={<Calculation32 />}
+            title='Current Borrow APR'
+            value={interestRateDisplay}
+            unit='%'
+          />
         </SpacedList>
-      </Tile>
-      <Accordion>
-        <AccordionItem title="How does this work?">
-            Creating a position means that you are depositing your Eth as collateral to borrow Hue.
-            <ParagraphDivider />
-            Hue can be traded for other assets on zkSync, or staked into the protocol to earn interest.{' '}
-            As long as your position stays collateralized, you will always own the deposited Eth.{' '}
-            The interest rate to borrow Hue can be positive or negative (it's possible to owe less than you borrowed).{' '}
-            <ParagraphDivider />
-            Positions can be adjusted anytime by increasing or decreasing the collateral, or repaying or borrowing more Hue.{' '}
-            Holding a position earns you TCP tokens proportional to the position's contribution to the protocol's overall debt.{' '}
-            Learn more about borrowing <a href={notionURL} target='_blank'>here</a>.
-        </AccordionItem>
-      </Accordion>
-    </SpacedList>
+        <SpacedList spacing={16}>
+          {
+            nonSilentFailures.length > 0
+              ? <InlineNotification
+                  notificationType='inline'
+                  kind='error'
+                  title={nonSilentFailures[0].message}
+                  lowContrast
+                  hideCloseButton
+                />
+              : null
+          }
+          {
+            Object.values(failures).filter(failure => failure.failing).length === 0
+            ? <InlineNotification
+                key='success_indicator'
+                notificationType='inline'
+                kind='success'
+                title={successDisplay}
+                lowContrast
+                hideCloseButton
+              />
+            : null
+          }
+        </SpacedList>
+        <div style={{display: 'flex'}}>
+          <SpacedList
+            row
+            spacing={10}
+            style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+            {
+              isCreating
+              ? [createPositionButton, cancelCreateButton]
+              : (
+                  isUpdating
+                  ? (
+                      isDebtDecrease && !hueApproved
+                      ? [approveHueButton, cancelUpdateButton]
+                      : [updatePositionButton, cancelUpdateButton]
+                  ) : null
+              )
+            }
+          </SpacedList>
+          {
+            isUpdating
+            && position !== null
+            ? <div
+                style={{float: 'right'}}>
+                <Button
+                  disabled={deleteSelected || (position.collateralCount === 0 && position.debtCount === 0)}
+                  onClick={() => {
+                    dispatch(setDebtCount(0))
+                    dispatch(setCollateralCount(0))
+                    setDeleteSelected(true)
+                  }}
+                  kind='danger--ghost'
+                  size='md'>
+                  Close
+                </Button>
+              </div>
+            : null
+          }
+        </div>
+      </SpacedList>
+    </Tile>
 
   return (
     <OneColumnDisplay
