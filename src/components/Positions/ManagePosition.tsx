@@ -239,6 +239,7 @@ const ManagePosition = () => {
 
   const cancelCreateButton =
     <Button
+      disabled={collateralIncrease === 0 && debtIncrease === 0}
       onClick={cancelCreate}
       kind='secondary'
       size='md'>
