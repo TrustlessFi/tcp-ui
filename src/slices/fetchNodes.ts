@@ -20,6 +20,7 @@ import { sdi } from './systemDebt'
 import { stakeState } from './stakeState'
 import { uniswapContracts } from './uniswapContracts'
 import { notificationState } from './notifications'
+import { tabsState } from './tabs'
 import { TransactionState } from './transactions'
 import { walletState } from './wallet'
 
@@ -31,6 +32,7 @@ export type RootState = {
   positionState: positionState
   stakeState: stakeState
   transactions: TransactionState
+  tabs: tabsState
   wallet: walletState
 
   balances: sliceState<balances>

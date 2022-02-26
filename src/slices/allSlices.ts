@@ -19,6 +19,7 @@ import systemDebtSlice from './systemDebt'
 import stakeStateSlice from './stakeState'
 import uniswapContractsSlice from './uniswapContracts'
 import notificationsSlice from './notifications'
+import tabsSlice from './tabs'
 import transactionsSlice from './transactions'
 import walletSlice from './wallet'
 import { RootState }  from './fetchNodes'
@@ -31,6 +32,7 @@ const allSlicesRaw = {
   positionState: positionStateSlice,
   stakeState: stakeStateSlice,
   transactions: transactionsSlice,
+  tabs: tabsSlice,
   wallet: walletSlice,
 
   balances: balancesSlice,
