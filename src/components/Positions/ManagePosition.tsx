@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactFragment } from "react"
 import {
   Tag32,
   Locked32,
@@ -187,13 +187,6 @@ const ManagePosition = () => {
     }
   }
 
-  const reset = () => {
-    updateDebtCountImpl(0)
-    updateCollateralCount(0)
-  }
-
-  console.log({balances, debtIncrease})
-
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noChange: {
       message: '.',
@@ -206,26 +199,26 @@ const ManagePosition = () => {
       silent: true,
     },
     notBigEnough: {
-      message: `Position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue.`,
-      failing: !debtIsFocused && (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
+      message: `Your position has less than ${marketInfo === null ? '-' : numDisplay(marketInfo.minPositionSize)} Hue of debt.`,
+      silent: debtIsFocused,
+      failing: (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
     },
     insufficientEthInWallet: {
-      message: 'Not enough Eth in wallet.',
+      message: 'You do not have enough Eth in your wallet.',
       failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
-      message: 'Connected wallet does not have enough Hue.',
+      message: 'You do not have enough Hue in your wallet.',
+      silent: debtIsFocused,
       failing:
-        !debtIsFocused &&
         (balances === null ||
         contracts === null ||
         (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0)),
     },
     undercollateralized: {
-      message: 'Position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
+      message: 'Your position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
+      silent: debtIsFocused || collateralIsFocused,
       failing:
-        !debtIsFocused &&
-        !collateralIsFocused &&
         (marketInfo === null ||
         collateralization === null
         ? false
@@ -301,7 +294,7 @@ const ManagePosition = () => {
     <CreateTransactionButton
       title='Approve'
       size='md'
-      disabled={isFailing || debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
+      disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
         type: TransactionType.ApproveHue,
@@ -309,6 +302,44 @@ const ManagePosition = () => {
         spenderAddress: contracts === null ? '' : contracts.Market,
       }}
     />
+
+  interface changeDisplay {amount: string, action: string}
+
+  const debtChangeSuccessDisplay: null | changeDisplay =
+    debtIncrease === 0
+    ? null
+    : (debtIncrease > 0
+      ? {action: 'receive', amount: `${numDisplay(debtIncrease, 2)} Hue`}
+      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), 2)} Hue`})
+
+  const collateralChangeSuccessDisplay: null | changeDisplay =
+    collateralIncrease === 0
+    ? null
+    : (collateralIncrease > 0
+      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, 4)} Eth`}
+      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), 4)} Eth`})
+
+  const successDisplay: ReactFragment =
+    debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
+    ? ''
+    : (debtChangeSuccessDisplay !== null && collateralChangeSuccessDisplay !== null
+        ? <Text>
+            You will {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>{' '}
+            and {collateralChangeSuccessDisplay.action} <Bold>{collateralChangeSuccessDisplay.amount}</Bold>.
+          </Text>
+        : (
+          debtChangeSuccessDisplay !== null
+          ? <Text>You will {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>.</Text>
+          : <Text>You will {collateralChangeSuccessDisplay!.action} <Bold>{collateralChangeSuccessDisplay!.amount}</Bold>.</Text>
+
+        )
+      )
+
+  const nonSilentFailures =
+    Object.values(failures)
+      .filter(failure => !failure.silent)
+      .filter(failure => failure.failing)
+
 
   const columnOne =
     <SpacedList spacing={64} style={{marginTop: 64}}>
@@ -394,23 +425,6 @@ const ManagePosition = () => {
             }
           />
           <SpacedList spacing={16}>
-            {
-              Object.values(failures)
-                .filter(failure => !failure.silent)
-                .filter(failure => failure.failing)
-                .map((failure, index) =>
-                  <InlineNotification
-                    key={index}
-                    notificationType='inline'
-                    kind='error'
-                    title={failure.message}
-                    lowContrast
-                    hideCloseButton
-                  />
-                )
-            }
-          </SpacedList>
-          <SpacedList spacing={16}>
             <PositionInfoItem
               icon={<ErrorOutline32 />}
               title='Liquidation Price'
@@ -454,6 +468,31 @@ const ManagePosition = () => {
               value={interestRateDisplay}
               unit='%'
             />
+          </SpacedList>
+          <SpacedList spacing={16}>
+            {
+              nonSilentFailures.length > 0
+                ? <InlineNotification
+                    notificationType='inline'
+                    kind='error'
+                    title={nonSilentFailures[0].message}
+                    lowContrast
+                    hideCloseButton
+                  />
+                : null
+            }
+            {
+              Object.values(failures).filter(failure => failure.failing).length === 0
+              ? <InlineNotification
+                  key='success_indicator'
+                  notificationType='inline'
+                  kind='success'
+                  title={successDisplay}
+                  lowContrast
+                  hideCloseButton
+                />
+              : null
+            }
           </SpacedList>
           <div style={{display: 'flex'}}>
             <SpacedList
