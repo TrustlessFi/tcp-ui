@@ -81,6 +81,7 @@ const ManagePosition = () => {
     if (positions === null) return
     if (positionState.position !== null) return
     const countPositions = Object.values(positions).length
+    setDeleteSelected(false)
     if (countPositions === 0) {
       dispatch(setIsUpdating(true))
       dispatch(setPosition(null))
@@ -91,7 +92,7 @@ const ManagePosition = () => {
   }, [positions])
 
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
-  const debtIncrease = debtCount - (position === null ? 0 : position.debtCount)
+  const debtIncrease = parseFloat(roundToXDecimals(debtCount - (position === null ? 0 : position.debtCount), 2))
   const isCollateralChanged = Math.abs(collateralIncrease) > 0.001
   const isDebtChanged = Math.abs(debtIncrease) > 0.1
   const isDebtDecrease = isDebtChanged && debtIncrease < 0
@@ -162,26 +163,38 @@ const ManagePosition = () => {
     dispatch(setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true))))
   }
 
-  const cancel = () => {
+  const cancelCreate = () => {
+    if (!empty(
+      Object.values(transactions)
+        .filter(tx => tx.status === TransactionStatus.Pending)
+        .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.CreatePosition))
+    ) return
+
+    updateDebtCountImpl(0)
+    updateCollateralCount(0)
+  }
+
+  const cancelUpdate = () => {
     if (!empty(
       Object.values(transactions)
         .filter(tx => tx.status === TransactionStatus.Pending)
         .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
     ) return
 
-    setDeleteSelected(false)
     dispatch(setIsUpdating(false))
 
-    if (position === null) return
-
-    updateDebtCountImpl(position!.debtCount)
-    updateCollateralCount(position!.collateralCount)
+    if (position !== null) {
+      updateDebtCountImpl(position!.debtCount)
+      updateCollateralCount(position!.collateralCount)
+    }
   }
 
   const reset = () => {
     updateDebtCountImpl(0)
     updateCollateralCount(0)
   }
+
+  console.log({balances, debtIncrease})
 
   const failures: { [key in string]: reason } = dataNull ? {} : {
     noChange: {
@@ -232,50 +245,51 @@ const ManagePosition = () => {
 
   const isCreating = positions !== null && position === null
 
-  const cancelButton =
-    <Button onClick={cancel} kind='secondary'>
+  const cancelCreateButton =
+    <Button
+      onClick={cancelCreate}
+      kind='secondary'
+      size='md'>
+      Cancel
+    </Button>
+
+  const cancelUpdateButton =
+    <Button
+      onClick={cancelUpdate}
+      kind='secondary'
+      size='md'>
       Cancel
     </Button>
 
   const editButton =
-    <Button onClick={() => dispatch(setIsUpdating(true))} small kind='secondary'>
-      Edit
-    </Button>
-
-  const resetButton =
-    <Button onClick={reset} kind='secondary'>
-      Reset
-    </Button>
-
-  const deleteButton =
-    <Button
-      disabled={deleteSelected}
-      onClick={() => {
-        dispatch(setDebtCount(0))
-        dispatch(setCollateralCount(0))
-        setDeleteSelected(true)
-      }}
-      kind='tertiary'
-      size='sm'>
-      Delete
-    </Button>
+    isUpdating
+    ? null
+    : <Button
+        onClick={() => dispatch(setIsUpdating(true))}
+        size='md'
+        small
+        kind='primary'>
+        Edit
+      </Button>
 
   const createPositionButton =
     <CreateTransactionButton
-        title='Confirm'
-        disabled={isFailing}
-        txArgs={{
-          type: TransactionType.CreatePosition,
-          collateralCount,
-          debtCount,
-          Market: contracts === null ? '' : contracts.Market,
-        }}
-      />
+      title='Confirm'
+      disabled={isFailing}
+      size='md'
+      txArgs={{
+        type: TransactionType.CreatePosition,
+        collateralCount,
+        debtCount,
+        Market: contracts === null ? '' : contracts.Market,
+      }}
+    />
 
   const updatePositionButton =
     <CreateTransactionButton
       title='Confirm'
       disabled={isFailing}
+      size='md'
       txArgs={{
         type: TransactionType.UpdatePosition,
         positionID: position === null ? 0 :  position.id,
@@ -285,10 +299,10 @@ const ManagePosition = () => {
       }}
     />
 
-  const getApproveHueButton = (small = false) =>
+  const approveHueButton =
     <CreateTransactionButton
       title='Approve'
-      size={small ? 'sm' : undefined}
+      size='md'
       disabled={isFailing || debtIncrease === null || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
@@ -304,7 +318,7 @@ const ManagePosition = () => {
         <SpacedList spacing={64} style={{display: 'relative'}}>
           <div style={{display: 'float', alignItems: 'center'}}>
             <div style={{float: 'right'}}>
-              {isCreating ? null : (isUpdating ? deleteButton : editButton)}
+              {isCreating ? null : editButton}
             </div>
             {
               position !== null && positions !== null && Object.values(positions).length > 1
@@ -325,7 +339,7 @@ const ManagePosition = () => {
                   titleText={<></>}
                 />
               : <LargeText size={24}>
-                  {isCreating ? 'Borrow' : 'Position'}
+                  {isCreating ? 'Create Position' : 'Your Position'}
                 </LargeText>
             }
           </div>
@@ -431,22 +445,43 @@ const ManagePosition = () => {
               }
             />
           </SpacedList>
-          <Center>
-            <SpacedList row>
+          <div style={{display: 'flex'}}>
+            <SpacedList
+              row
+              style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
               {
                 isCreating
-                ? [resetButton, createPositionButton]
+                ? [createPositionButton, cancelCreateButton]
                 : (
                     isUpdating
                     ? (
                         isDebtDecrease && !hueApproved
-                        ? [cancelButton, getApproveHueButton()]
-                        : [cancelButton, updatePositionButton]
+                        ? [approveHueButton, cancelUpdateButton]
+                        : [updatePositionButton, cancelUpdateButton]
                     ) : null
                 )
               }
             </SpacedList>
-          </Center>
+            {
+              isUpdating
+              && position !== null
+              ? <div
+                  style={{float: 'right'}}>
+                  <Button
+                    disabled={deleteSelected || (position.collateralCount === 0 && position.debtCount === 0)}
+                    onClick={() => {
+                      dispatch(setDebtCount(0))
+                      dispatch(setCollateralCount(0))
+                      setDeleteSelected(true)
+                    }}
+                    kind='danger--ghost'
+                    size='md'>
+                    Close
+                  </Button>
+                </div>
+              : null
+            }
+          </div>
         </SpacedList>
       </Tile>
       <Accordion>
