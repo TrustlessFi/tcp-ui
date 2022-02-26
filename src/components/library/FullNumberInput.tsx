@@ -92,7 +92,7 @@ const FullNumberInput = ({
         : input
       }
       {
-        <Text color='white' style={{opacity: 0.7}}>
+        <Text color='white' style={{opacity: 0.6}}>
           {
             center === true
             ? <Center>

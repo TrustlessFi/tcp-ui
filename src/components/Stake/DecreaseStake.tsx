@@ -1,37 +1,33 @@
-import { useState, useEffect } from "react"
-import { Row, Col } from 'react-flexbox-grid'
+import { useHistory } from 'react-router-dom'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions/index'
-import { setDecreaseAmount } from '../../slices/stakeState'
-import { getAPR } from './library'
-import { isZeroish, years } from '../../utils/'
+import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
-import Center from '../library/Center'
-import Bold from '../library/Bold'
-import { red, green } from '@carbon/colors';
+import { Tile, Button } from 'carbon-components-react'
 
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts, stakeState } = waitFor([
+  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
-    'stakeState',
   ], selector, dispatch)
 
   const userAddress = selector(state => state.userAddress)
 
-  const amount = stakeState.decreaseAmount
+  const [amount, setAmount] = useState(0)
 
   const dataNull =
     balances === null ||
@@ -39,16 +35,6 @@ const DecreaseStake = () => {
     ratesInfo === null ||
     sdi === null ||
     contracts === null
-
-  const apr = dataNull ? 0 : getAPR({
-    marketInfo,
-    ratesInfo,
-    sdi,
-    lentHue:
-      balances === null || contracts === null
-        ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting
-  })
 
   const lendHueWalletBalance =
     dataNull
@@ -77,109 +63,73 @@ const DecreaseStake = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
 
-  /*
-  const metadataItems = [
-    {
-      title: 'Current Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(currentWalletBalance, 2)) + ' Hue',
-    }, {
-      title: 'New Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(newWalletBalance, 2)) + ' Hue',
-      failing: failures.notEnoughInWallet.failing,
-    }, {
-      title: 'Current Hue Lent',
-      value: numDisplay(lentHueCount, 2),
-    }, {
-      title: 'New Hue Lent',
-      value: numDisplay(newLentHueCount, 2)
-    },
-  ]
-  */
-
-  const aprDisplay = numDisplay(apr * 100, 2)
-
   const lendHueApproved = !dataNull && balances.tokens[contracts.LendHue].approval.Market.approved
 
   const columnOne =
-    <SpacedList spacing={48}>
-      <SpacedList spacing={12}>
-        <Center>
-          <Text size={24}>
-            Total Vault Balance
+    <Tile style={{padding: 40, marginTop: 40}}>
+      <SpacedList spacing={40}>
+        <Text size={28}>
+          Withdraw
+        </Text>
+        <SpacedList spacing={5}>
+          <Text size={18}>
+            Current Balance
           </Text>
-        </Center>
-        <Center>
-          <Row bottom="xs">
-            <Col>
-              <Text color={failures.notEnoughLent.failing ? red[50] : undefined} size={32}>
-                <Bold>
-                  {numDisplay(newLentHueCount, 2)}
-                </Bold>
-              </Text>
-            </Col>
-            <Col style={{paddingBottom: 2, paddingLeft: 4}}>
-              <Text color={failures.notEnoughLent.failing ? red[50] : undefined}>
-                Hue
-              </Text>
-            </Col>
-          </Row>
-        </Center>
-        <Center>
-          <Text size={16}>
-            Current APR:
-            {' '}
-            <Bold>{aprDisplay}%</Bold>
-          </Text>
-        </Center>
-      </SpacedList>
-      <FullNumberInput
-        action={(value: number) => dispatch(setDecreaseAmount(value))}
-        light
-        value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
-        unit='Hue'
-        // onFocusUpdate={setCollateralIsFocused}
-        center
-        defaultButton={{
-          title: 'Max',
-          action: () => dispatch(setDecreaseAmount(lentHueCount)),
-        }}
-        subTitle={
-          <Text>
-            You have
-            {' '}
-            <Bold>
+          <SpacedList row spacing={5}>
+            <Text size={28}>
               {numDisplay(lentHueCount, 2)}
-            </Bold>
-            {' '}
-            Hue staked available to withdraw
-          </Text>
-        }
-      />
-    <Center>
-      {
-        lendHueApproved
-        ? <CreateTransactionButton
-            title='Withdraw'
-            disabled={isFailing || dataNull}
-            txArgs={{
-              type: TransactionType.DecreaseStake,
-              count: lendHueToPayBack,
-              Market: contracts === null ? '' : contracts.Market,
-            }}
-          />
-        : <CreateTransactionButton
-            title='Approve'
-            disabled={isFailing || dataNull}
-            showDisabledInsteadOfConnectWallet={true}
-            txArgs={{
-              type: TransactionType.ApproveLendHue,
-              LendHue: contracts === null ? '' : contracts.LendHue,
-              spenderAddress: contracts === null ? '' : contracts.Market,
-            }}
-          />
-      }
-    </Center>
-  </SpacedList>
+            </Text>
+            <Text size={12}>
+              Hue
+            </Text>
+          </SpacedList>
+        </SpacedList>
+        <FullNumberInput
+          title='Amount to Withdraw'
+          action={(value: number) => setAmount(value)}
+          light
+          value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
+          unit='Hue'
+          // onFocusUpdate={setCollateralIsFocused}
+          defaultButton={{
+            title: 'Max',
+            action: () => setAmount(lentHueCount),
+          }}
+        />
+        <SpacedList row spacing={20} style={{marginTop: 50}}>
+          {
+            lendHueApproved
+            ? <CreateTransactionButton
+                disabled={isFailing || dataNull}
+                size='md'
+                txArgs={{
+                  type: TransactionType.DecreaseStake,
+                  count: lendHueToPayBack,
+                  Market: contracts === null ? '' : contracts.Market,
+                }}
+              />
+            : <CreateTransactionButton
+                title='Approve'
+                size='md'
+                disabled={isFailing || dataNull}
+                showDisabledInsteadOfConnectWallet={true}
+                txArgs={{
+                  type: TransactionType.ApproveLendHue,
+                  LendHue: contracts === null ? '' : contracts.LendHue,
+                  spenderAddress: contracts === null ? '' : contracts.Market,
+                }}
+              />
+          }
+          <Button
+            key='withdraw'
+            onClick={() => history.replace('/stake')}
+            size='md'
+            kind='secondary'>
+            Cancel
+          </Button>
+        </SpacedList>
+      </SpacedList>
+    </Tile>
 
   return (
     <OneColumnDisplay

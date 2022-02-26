@@ -17,7 +17,6 @@ import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
-import { clearStakeState } from '../../slices/stakeState'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
 import { clearPositionState } from '../positionState'
@@ -485,7 +484,6 @@ export const waitForTransaction = async (
         break
       case TransactionType.IncreaseStake:
       case TransactionType.DecreaseStake:
-        dispatch(clearStakeState())
         clearBalances()
         clearMarketInfo()
         break

@@ -1,40 +1,36 @@
-import { useState, useEffect } from "react"
-import { Row, Col } from 'react-flexbox-grid'
+import { useHistory } from 'react-router-dom'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions'
-import { setIncreaseAmount } from '../../slices/stakeState'
 import { getAPR } from './library'
-import { isZeroish, years } from '../../utils/'
+import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
-import Center from '../library/Center'
 import Bold from '../library/Bold'
 import { red } from '@carbon/colors';
+import { Tile, Button } from 'carbon-components-react'
 
 const IncreaseStake = () => {
   const dispatch = useAppDispatch()
+  const history = useHistory()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts, stakeState } = waitFor([
+  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
-    'stakeState',
   ], selector, dispatch)
 
-  console.log({stakeState})
-  const amount = stakeState.increaseAmount
+  const [amount, setAmount] = useState(0)
 
   const userAddress = selector(state => state.userAddress)
-
-  const [multiplier, setMultiplier] = useState(1.0)
 
   const dataNull =
     balances === null ||
@@ -65,17 +61,6 @@ const IncreaseStake = () => {
   const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
   const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount - 1e-4
 
-  const UPDATE_FREQUENCY_MS = 100
-
-  useEffect(() => {
-    const aprPerInterval = 1 + ((apr / years(1)) / (1000 / UPDATE_FREQUENCY_MS))
-    const interval = setInterval(() => {
-      setMultiplier(multiplier => multiplier * aprPerInterval)
-    }, UPDATE_FREQUENCY_MS);
-
-    return () => clearInterval(interval);
-  }, [apr])
-
   const failures: { [key in string]: reason } = {
     noValueEntered: {
       message: 'Please insert a value.',
@@ -91,112 +76,87 @@ const IncreaseStake = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
 
-  /*
-  const metadataItems = [
-    {
-      title: 'Current Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(currentWalletBalance, 2)) + ' Hue',
-    }, {
-      title: 'New Wallet Balance',
-      value: (dataNull ? '-' : numDisplay(newWalletBalance, 2)) + ' Hue',
-      failing: failures.notEnoughInWallet.failing,
-    }, {
-      title: 'Current Hue Lent',
-      value: numDisplay(lentHueCount, 2),
-    }, {
-      title: 'New Hue Lent',
-      value: numDisplay(newLentHueCount, 2)
-    },
-  ]
-  */
-
-  const aprDisplay = numDisplay(apr * 100, 2)
-
   const hueApproved = !dataNull && balances.tokens[contracts.Hue].approval.Market.approved
 
   const columnOne =
-    <SpacedList spacing={48}>
-      <SpacedList spacing={12}>
-        <Center>
-          <Text size={24}>
-            Total Vault Balance
+    <Tile style={{padding: 40, marginTop: 40}}>
+      <SpacedList spacing={40}>
+        <Text size={28}>
+          Stake
+        </Text>
+        <SpacedList spacing={5}>
+          <Text size={18}>
+            Current Balance
           </Text>
-        </Center>
-        <Center>
-          <Row bottom="xs">
-            <Col>
-              <Text size={32}>
+          <SpacedList row spacing={5}>
+            <Text size={28}>
+              {numDisplay(lentHueCount, 2)}
+            </Text>
+            <Text size={12}>
+              Hue Staked
+            </Text>
+          </SpacedList>
+        </SpacedList>
+        <FullNumberInput
+          title='Amount to Stake'
+          action={(value: number) => setAmount(value)}
+          light
+          value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
+          unit='Hue'
+          // onFocusUpdate={setCollateralIsFocused}
+          defaultButton={{
+            title: 'Max',
+            action: () => setAmount(currentWalletBalance),
+          }}
+          subTitle={
+            <Text>
+              You have
+              {' '}
+              <Text color={currentWalletBalance < amount ? red[50]: undefined}>
                 <Bold>
-                  {numDisplay((lentHueCount * multiplier) + (isZeroish(amount) ? 0 : amount), 8)}
+                  {numDisplay(currentWalletBalance, 2)}{' '}
+                  Hue
                 </Bold>
               </Text>
-            </Col>
-            <Col style={{paddingBottom: 2, paddingLeft: 4}}>
-              <Text>
-                Hue
-              </Text>
-            </Col>
-          </Row>
-        </Center>
-        <Center>
-          <Text size={16}>
-            Current APR:
-            {' '}
-            <Bold>{aprDisplay}%</Bold>
-          </Text>
-        </Center>
-      </SpacedList>
-      <FullNumberInput
-        action={(value: number) => dispatch(setIncreaseAmount(value))}
-        light
-        value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
-        unit='Hue'
-        // onFocusUpdate={setCollateralIsFocused}
-        center
-        defaultButton={{
-          title: 'Max',
-          action: () => dispatch(setIncreaseAmount(currentWalletBalance)),
-        }}
-        subTitle={
-          <Text>
-            You have
-            {' '}
-            <Text color={currentWalletBalance < amount ? red[50]: undefined}>
-              <Bold>
-                {numDisplay(currentWalletBalance, 2)}{' '}
-                Hue
-              </Bold>
+              {' '}
+              in your wallet available to stake
             </Text>
-            {' '}
-            in your wallet available to stake
-          </Text>
-        }
-      />
-    <Center>
-      {
-        hueApproved
-        ? <CreateTransactionButton
-            title='Stake'
-            disabled={isFailing || dataNull}
-            txArgs={{
-              type: TransactionType.IncreaseStake,
-              count: amount,
-              Market: contracts === null ? '' : contracts.Market,
-            }}
-          />
-        : <CreateTransactionButton
-            title='Approve'
-            disabled={isFailing || dataNull}
-            showDisabledInsteadOfConnectWallet={true}
-            txArgs={{
-              type: TransactionType.ApproveHue,
-              Hue: contracts === null ? '' : contracts.Hue,
-              spenderAddress: contracts === null ? '' : contracts.Market,
-            }}
-          />
-      }
-    </Center>
-  </SpacedList>
+          }
+        />
+        <SpacedList row spacing={20} style={{marginTop: 50}}>
+          {
+            hueApproved
+            ? <CreateTransactionButton
+                disabled={isFailing || dataNull}
+                size='md'
+                txArgs={{
+                  type: TransactionType.IncreaseStake,
+                  count: amount,
+                  Market: contracts === null ? '' : contracts.Market,
+                }}
+              />
+            : <CreateTransactionButton
+                title='Approve'
+                disabled={isFailing || dataNull}
+                size='md'
+                showDisabledInsteadOfConnectWallet={true}
+                txArgs={{
+                  type: TransactionType.ApproveHue,
+                  Hue: contracts === null ? '' : contracts.Hue,
+                  spenderAddress: contracts === null ? '' : contracts.Market,
+                }}
+              />
+          }
+          <Button
+            key='withdraw'
+            onClick={() => history.replace('/stake')}
+            size='md'
+            kind='secondary'>
+            Cancel
+          </Button>
+        </SpacedList>
+      </SpacedList>
+    </Tile>
 
 
   return (

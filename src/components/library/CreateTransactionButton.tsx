@@ -91,7 +91,7 @@ const CreateTransactionButton = ({
 }
 
 CreateTransactionButton.defaultProps = {
-  title: 'Confirm in Metamask',
+  title: 'Confirm',
   disabled: false,
   openTxTab: false,
   kind: 'primary',
