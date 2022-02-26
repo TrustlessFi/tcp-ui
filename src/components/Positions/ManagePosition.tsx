@@ -6,7 +6,6 @@ import {
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
-import Center from '../library/Center'
 import Bold from '../library/Bold'
 import LargeText from '../library/LargeText'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
@@ -20,11 +19,8 @@ import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import ParagraphDivider from '../library/ParagraphDivider'
-import { Accordion, AccordionItem, InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
+import { InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
-
-const notionURL = 'https://trustlessfi.notion.site/Trustless-4be753d947b040a89a46998eca90b2c9'
 
 const ManagePosition = () => {
   const dispatch = useAppDispatch()
@@ -484,19 +480,6 @@ const ManagePosition = () => {
           </div>
         </SpacedList>
       </Tile>
-      <Accordion>
-        <AccordionItem title="How does this work?">
-            Creating a position means that you are depositing your Eth as collateral to borrow Hue.
-            <ParagraphDivider />
-            Hue can be traded for other assets on zkSync, or staked into the protocol to earn interest.{' '}
-            As long as your position stays collateralized, you will always own the deposited Eth.{' '}
-            The interest rate to borrow Hue can be positive or negative (it's possible to owe less than you borrowed).{' '}
-            <ParagraphDivider />
-            Positions can be adjusted anytime by increasing or decreasing the collateral, or repaying or borrowing more Hue.{' '}
-            Holding a position earns you TCP tokens proportional to the position's contribution to the protocol's overall debt.{' '}
-            Learn more about borrowing <a href={notionURL} target='_blank'>here</a>.
-        </AccordionItem>
-      </Accordion>
     </SpacedList>
 
   return (
