@@ -2,7 +2,7 @@ import { MouseEvent, useCallback } from 'react'
 import { ChainID } from "@trustlessfi/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
 import { useAppSelector as selector } from '../../app/hooks'
-import { useState, CSSProperties } from 'react'
+import { useState, useEffect, CSSProperties } from 'react'
 import { Row } from 'react-flexbox-grid'
 import useWindowWidth from '../../hooks/useWindowWidth'
 import {
@@ -21,7 +21,7 @@ import {
   Button,
 } from 'carbon-components-react'
 import { Menu32, List32 } from '@carbon/icons-react'
-import { Tab, tabDisplay } from '../../App'
+import { Tab, tabDisplay, tabHidden } from '../../App'
 import { UI_VERSION } from '../../constants'
 
 import DebugUtils from '../library/DebugUtils'
@@ -47,10 +47,11 @@ const PageHeader = () => {
   const history = useHistory()
   const location = useLocation()
 
-  const navigateToRoute = (path: string, e: MouseEvent<Element>) => {
-    history.push(path)
-    e.preventDefault()
-  }
+  const [currentTab, setCurrentTab] = useState<Tab | null>(null)
+
+  useEffect(() => {
+    setCurrentTab(pathToTab(location.pathname))
+  }, [])
 
   const extractPathBase = (path: string) => {
     path =
@@ -64,26 +65,38 @@ const PageHeader = () => {
       : path.substring(0, slashLocation)
   }
 
-  const pagePath = location.pathname
-  const currentPage =
-    pagePath === '/' || pagePath === ''
-    ? first(Object.values(Tab))
-    : extractPathBase(pagePath)
+  const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
 
-  const tabs = Object.values(Tab).map((tab, index) => {
-    const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
-    const display = tabDisplay[tab]
-    const link = index === 0 ? '/' : '/' + tab.toLowerCase()
-    return (
-      <HeaderMenuItem
-        key={index}
-        href={link}
-        onClick={navigateToRoute.bind(null, link)}
-        isCurrentPage={tabIsCurrentPage}>
-        {display === undefined ? tab : display}
-      </HeaderMenuItem>
-    )
-  })
+  const pathToTab = (path: string): Tab => {
+    if (path === '/' || path === '') return first(Object.values(Tab))
+    console.log({path})
+
+    return first(Object.values(Tab).filter(tab => tab.toLowerCase() === extractPathBase(path).toLowerCase()))
+  }
+
+  const updateTab = (tab: Tab, e: MouseEvent<Element>) => {
+    history.replace(tabToPath(tab))
+    setCurrentTab(tab)
+    e.preventDefault()
+  }
+
+  const tabs =
+    Object.values(Tab)
+      .filter(tab => tabHidden[tab] !== true)
+      .map((tab, index) => {
+        const display = tabDisplay[tab]
+        const link = index === 0 ? '/' : '/' + tab.toLowerCase()
+        const key = `${location.pathname}_tab_key_${tab}_${index}`
+        return (
+          <HeaderMenuItem
+            key={key}
+            href={link}
+            onClick={(e: MouseEvent<Element>) => updateTab(tab, e)}
+            isCurrentPage={tab === currentTab}>
+            {display === undefined ? tab : display}
+          </HeaderMenuItem>
+        )
+      })
 
   const tabsAsButtons = Object.values(Tab).map((tab, index) => {
     const link = index === 0 ? '/' : '/' + tab.toLowerCase()
@@ -98,7 +111,7 @@ const PageHeader = () => {
         className={isCurrentPage ? 'selectedOption' : ''}
         key={index}
         href={link}
-        onClick={navigateToRoute.bind(null, link)}
+        onClick={updateTab.bind(null, tab)}
         style={style}
         kind="secondary">
         {tab}
@@ -132,13 +145,9 @@ const PageHeader = () => {
                 </Row>
               </div>
             </HeaderName>
-            {
-              UI_VERSION === 1
-              ? <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
-                  {tabs}
-                </HeaderNavigation>
-              : null
-            }
+            <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
+              {tabs}
+            </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
               {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
               {isSmallViewport ? null : <NetworkIndicator />}
@@ -148,31 +157,6 @@ const PageHeader = () => {
             </div>
           </Header>
       ), [areNavLinksHidden, chainID, isSmallViewport])} />
-      {
-        UI_VERSION === 2
-        ? <Center>
-            <SpacedList row spacing={1} style={{marginTop: 31}}>
-            {
-              Object.values(Tab).filter(tab => tab !== Tab.Transactions).map((tab, index) => {
-                const tabIsCurrentPage = currentPage.toLowerCase() === tab.toLowerCase()
-                const display = tabDisplay[tab]
-                const link = index === 0 ? '/' : '/' + tab.toLowerCase()
-                return (
-                  <Button
-                    key={index}
-                    onClick={navigateToRoute.bind(null, link)}
-                    kind={tabIsCurrentPage ? 'primary' : 'secondary'}>
-                    <LargeText>
-                      {display === undefined ? tab : display}
-                    </LargeText>
-                  </Button>
-                )
-              })
-            }
-            </SpacedList>
-          </Center>
-        : null
-      }
     </>
   )
 }

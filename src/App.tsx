@@ -35,6 +35,10 @@ export enum Tab {
 export const tabDisplay: { [key in Tab]?: string } = {
 }
 
+export const tabHidden: { [key in Tab]?: true } = {
+  Transactions: true
+}
+
 const tabToRender: {[key in Tab]: ReactNode} = {
   Borrow: <Positions />,
   Stake: <Stake />,
