@@ -73,7 +73,6 @@ const PageHeader = () => {
 
   const pathToTab = (path: string): Tab => {
     if (path === '/' || path === '') return first(Object.values(Tab))
-    console.log({path})
 
     return first(Object.values(Tab).filter(tab => tab.toLowerCase() === extractPathBase(path).toLowerCase()))
   }
@@ -89,7 +88,6 @@ const PageHeader = () => {
       .filter(tab => tabHidden[tab] !== true)
       .map((tab, index) => {
         const display = tabDisplay[tab]
-        console.log({tab, tabs})
         return (
           <HeaderMenuItem
             key={`tab_key_${tab}_${index}`}

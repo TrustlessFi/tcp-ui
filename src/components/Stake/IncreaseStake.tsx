@@ -1,5 +1,3 @@
-import { useHistory } from 'react-router-dom'
-import { useState } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
@@ -15,20 +13,29 @@ import Text from '../library/Text'
 import Bold from '../library/Bold'
 import { red } from '@carbon/colors';
 import { Tile, Button } from 'carbon-components-react'
+import { setStakePage, StakePage, setIncreaseAmount } from '../../slices/staking'
 
 const IncreaseStake = () => {
   const dispatch = useAppDispatch()
-  const history = useHistory()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+  const {
+    balances,
+    marketInfo,
+    ratesInfo,
+    sdi,
+    contracts,
+    staking,
+  } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'staking',
   ], selector, dispatch)
 
-  const [amount, setAmount] = useState(0)
+  const amount = staking.increaseAmount
+  const setAmount = (value: number) => dispatch(setIncreaseAmount(value))
 
   const userAddress = selector(state => state.userAddress)
 
@@ -148,8 +155,8 @@ const IncreaseStake = () => {
               />
           }
           <Button
-            key='withdraw'
-            onClick={() => history.replace('/stake')}
+            key='cancel_add'
+            onClick={() => dispatch(setStakePage(StakePage.View))}
             size='md'
             kind='secondary'>
             Cancel

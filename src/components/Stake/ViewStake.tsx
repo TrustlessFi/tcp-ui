@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
@@ -10,11 +9,10 @@ import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import Bold from '../library/Bold'
 import { Tile, Button } from 'carbon-components-react'
+import { setStakePage, StakePage } from '../../slices/staking'
 
 const ViewStake = () => {
   const dispatch = useAppDispatch()
-
-  const history = useHistory()
 
   const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
     'balances',
@@ -85,14 +83,14 @@ const ViewStake = () => {
         <SpacedList row spacing={20}>
           <Button
             key='stake'
-            onClick={() => history.replace('/stake/add')}
+            onClick={() => dispatch(setStakePage(StakePage.Add))}
             size='md'
             kind='primary'>
             Deposit
           </Button>
           <Button
             key='withdraw'
-            onClick={() => history.replace('/stake/withdraw')}
+            onClick={() => dispatch(setStakePage(StakePage.Withdraw))}
             size='md'
             kind='primary'>
             Withdraw

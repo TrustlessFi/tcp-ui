@@ -1,5 +1,3 @@
-import { useHistory } from 'react-router-dom'
-import { useState } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
@@ -12,22 +10,24 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import { Tile, Button } from 'carbon-components-react'
+import { setStakePage, StakePage, setDecreaseAmount } from '../../slices/staking'
 
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
-  const history = useHistory()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+  const { balances, marketInfo, ratesInfo, sdi, contracts, staking } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'staking',
   ], selector, dispatch)
 
   const userAddress = selector(state => state.userAddress)
 
-  const [amount, setAmount] = useState(0)
+  const amount = staking.decreaseAmount
+  const setAmount = (value: number) => dispatch(setDecreaseAmount(value))
 
   const dataNull =
     balances === null ||
@@ -121,8 +121,8 @@ const DecreaseStake = () => {
               />
           }
           <Button
-            key='withdraw'
-            onClick={() => history.replace('/stake')}
+            key='cancel_button'
+            onClick={() => dispatch(setStakePage(StakePage.View))}
             size='md'
             kind='secondary'>
             Cancel
