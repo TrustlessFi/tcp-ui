@@ -5,7 +5,6 @@ import contractsSlice from './contracts'
 import currentChainInfoSlice from './currentChainInfo'
 import governorSlice from './governor'
 import liquidationsSlice from './liquidations'
-import liquidityPositionsSlice from './liquidityPositions'
 import marketSlice from './market'
 import poolsCurrentDataSlice from './poolsCurrentData'
 import poolsMetadataSlice from './poolsMetadata'
@@ -17,7 +16,6 @@ import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
 import stakingSlice from './staking'
-import uniswapContractsSlice from './uniswapContracts'
 import notificationsSlice from './notifications'
 import tabsSlice from './tabs'
 import transactionsSlice from './transactions'
@@ -40,7 +38,6 @@ const allSlicesRaw = {
   currentChainInfo: currentChainInfoSlice,
   governorInfo: governorSlice,
   liquidationsInfo: liquidationsSlice,
-  liquidityPositions: liquidityPositionsSlice,
   marketInfo: marketSlice,
   poolsCurrentData: poolsCurrentDataSlice,
   poolsMetadata: poolsMetadataSlice,
@@ -49,7 +46,6 @@ const allSlicesRaw = {
   ratesInfo: ratesSlice,
   rewardsInfo: rewardsSlice,
   sdi: systemDebtSlice,
-  uniswapContracts: uniswapContractsSlice,
 }
 
 const allSlices: {[key in keyof RootState]: (typeof allSlicesRaw)[key]} = allSlicesRaw

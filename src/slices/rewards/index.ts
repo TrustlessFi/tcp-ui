@@ -6,8 +6,6 @@ import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
 export interface rewardsInfo {
-  twapDuration: number
-  liquidationPenalty: number
   weth: string
   countPools: number
   firstPeriod: number
@@ -30,8 +28,6 @@ const rewardsInfoSlice = createChainDataSlice({
           rewardsInfo: oneContractManyFunctionMC(
             rewards,
             {
-              twapDuration: rc.Number,
-              liquidationPenalty: rc.BigNumberUnscale,
               weth: rc.String,
               countPools: rc.Number,
               firstPeriod: rc.BigNumberToNumber,
