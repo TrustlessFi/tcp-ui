@@ -6,7 +6,7 @@ import { poolMetadata } from '../slices/poolsMetadata'
 import getProvider from './getProvider'
 
 
-import erc20Artifact from '@trustlessfi/artifacts/dist/oz_contracts_4_4_1/token/ERC20/ERC20.sol/ERC20.json'
+import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import protocolTokenArtifact from '@trustlessfi/artifacts/dist/contracts/core/tokens/ProtocolToken.sol/ProtocolToken.json'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 

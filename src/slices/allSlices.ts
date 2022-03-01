@@ -5,6 +5,7 @@ import contractsSlice from './contracts'
 import currentChainInfoSlice from './currentChainInfo'
 import governorSlice from './governor'
 import liquidationsSlice from './liquidations'
+import liquidityPageSlice from './liquidityPage'
 import marketSlice from './market'
 import poolsCurrentDataSlice from './poolsCurrentData'
 import poolsMetadataSlice from './poolsMetadata'
@@ -26,6 +27,7 @@ const allSlicesRaw = {
   chainID: chainIDSlice,
   rootContracts: rootContractsSlice,
   userAddress: userAddressSlice,
+  liquidityPage: liquidityPageSlice,
   notifications: notificationsSlice,
   positionState: positionStateSlice,
   staking: stakingSlice,

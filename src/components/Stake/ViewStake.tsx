@@ -14,13 +14,25 @@ import { setStakePage, StakePage } from '../../slices/staking'
 const ViewStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts } = waitFor([
+  const {
+    balances,
+    marketInfo,
+    ratesInfo,
+    sdi,
+    contracts,
+    poolsCurrentData,
+    poolsMetadata,
+  } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'poolsCurrentData',
+    'poolsMetadata',
   ], selector, dispatch)
+
+  console.log({poolsCurrentData, poolsMetadata})
 
   const userAddress = selector(state => state.userAddress)
 

@@ -5,6 +5,7 @@ import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { governorInfo } from './governor'
+import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
 import { marketInfo } from './market'
 import { poolsCurrentData } from './poolsCurrentData'
@@ -29,6 +30,7 @@ export type RootState = {
   notifications: notificationState
   positionState: positionState
   transactions: TransactionState
+  liquidityPage: liquidityPageState
   staking: stakingState
   tabs: tabsState
   wallet: walletState
