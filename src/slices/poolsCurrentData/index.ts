@@ -20,7 +20,6 @@ import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
 export interface poolsCurrentData {
   [poolID: string]: {
     instantTick: number
-    twapTick: number
     poolLiquidity: string
     cumulativeLiquidity: string
     totalRewards: string
@@ -36,7 +35,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const provider = getProvider()
-      const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -46,7 +44,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
 
       const {
         sqrtPriceX96Instant,
-        tickTwapped,
         currentRewardsInfo,
         rs,
         poolsLiquidity
@@ -58,12 +55,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
             idToIdAndNoArg(poolAddresses),
             'slot0',
             rc.String,
-          ),
-          tickTwapped: oneContractOneFunctionMC(
-            prices,
-            'calculateInstantTwappedTick',
-            rc.Number,
-            Object.fromEntries(poolAddresses.map(address => [address, [address, args.rewardsInfo.twapDuration]]))
           ),
           currentRewardsInfo: oneContractManyFunctionMC(
             rewards,
@@ -89,7 +80,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
 
       return Object.fromEntries(poolAddresses.map(address => [address, {
         instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
-        twapTick: tickTwapped[address],
         poolLiquidity: poolsLiquidity[address],
         cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
         totalRewards: rs[address].totalRewards.toString(),

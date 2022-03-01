@@ -103,33 +103,33 @@ const WalletInfo = () => {
   return (
     <Tile style={{ minWidth: 550, padding: 32 }}>
       <SpacedList spacing={32}>
+        <LargeText>
+          Balances
+        </LargeText>
         <Center>
-          <LargeText>
-            Wallet
-          </LargeText>
+          <SpacedList>
+            <TokenCard
+              token='Eth'
+              decimals={4}
+              size={28}
+              style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
+              balance={balances === null ? undefined : balances.userEthBalance}
+            />
+            <TokenCard
+              token={WalletToken.Hue}
+              balance={getBalance(ProtocolContract.Hue)}
+            />
+            <TokenCard
+              token={WalletToken.Hue}
+              unit='Hue Staked'
+              balance={hueStaked}
+            />
+            <TokenCard
+              token={WalletToken.Tcp}
+              balance={getBalance(ProtocolContract.Tcp)}
+            />
+          </SpacedList>
         </Center>
-        <>
-          <TokenCard
-            token={WalletToken.Hue}
-            balance={getBalance(ProtocolContract.Hue)}
-          />
-          <TokenCard
-            token={WalletToken.Hue}
-            unit='Hue Staked'
-            balance={hueStaked}
-          />
-          <TokenCard
-            token={WalletToken.Tcp}
-            balance={getBalance(ProtocolContract.Tcp)}
-          />
-          <TokenCard
-            token='Eth'
-            decimals={4}
-            size={28}
-            style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
-            balance={balances === null ? undefined : balances.userEthBalance}
-          />
-        </>
       </SpacedList>
     </Tile>
   )
@@ -193,11 +193,6 @@ const RecentTransactions = () => {
       ? (
         <div style={{ position: 'relative' }}>
           <TableHeaderOnly headers={['Description', 'Start Time']} />
-          <Center>
-            <div style={{ margin: 32 }}>
-              <ViewOnEtherscanButton />
-            </div>
-          </Center>
         </div>
       )
       : <SimpleTable rows={
@@ -232,20 +227,19 @@ const RecentTransactions = () => {
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
   return (
-    <SpacedList spacing={32} style={{marginTop: 32}}>
+    <Center>
+    <SpacedList spacing={32} style={{marginTop: 32, width: 500}}>
       <WalletInfo />
       <AppTile
         title={tableTitle}
         rightElement={
-          <SpacedList row>
-            <ViewOnEtherscanButton title='View on Etherscan' />
-            {clearTransactionsButton}
-          </SpacedList>
+            clearTransactionsButton
         }
         style={{ minWidth: 550 }}>
         {table}
       </AppTile>
     </SpacedList>
+    </Center>
   )
 }
 

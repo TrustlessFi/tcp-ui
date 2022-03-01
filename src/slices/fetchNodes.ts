@@ -5,8 +5,8 @@ import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { governorInfo } from './governor'
+import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
-import { liquidityPositions } from './liquidityPositions'
 import { marketInfo } from './market'
 import { poolsCurrentData } from './poolsCurrentData'
 import { poolsMetadata } from './poolsMetadata'
@@ -17,7 +17,6 @@ import { ratesInfo } from './rates'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
-import { uniswapContracts } from './uniswapContracts'
 import { notificationState } from './notifications'
 import { stakingState } from './staking'
 import { tabsState } from './tabs'
@@ -31,6 +30,7 @@ export type RootState = {
   notifications: notificationState
   positionState: positionState
   transactions: TransactionState
+  liquidityPage: liquidityPageState
   staking: stakingState
   tabs: tabsState
   wallet: walletState
@@ -40,7 +40,6 @@ export type RootState = {
   currentChainInfo: sliceState<currentChainInfo>
   governorInfo: sliceState<governorInfo>
   liquidationsInfo: sliceState<liquidationsInfo>
-  liquidityPositions: sliceState<liquidityPositions>
   marketInfo: sliceState<marketInfo>
   poolsCurrentData: sliceState<poolsCurrentData>
   poolsMetadata: sliceState<poolsMetadata>
@@ -49,7 +48,6 @@ export type RootState = {
   ratesInfo: sliceState<ratesInfo>
   rewardsInfo: sliceState<rewardsInfo>
   sdi: sliceState<sdi>
-  uniswapContracts: sliceState<uniswapContracts>
 }
 
 export type FetchNode = keyof RootState

@@ -23,7 +23,6 @@ export interface tokenMetadata {
 }
 
 export interface poolMetadata {
-  fee: Fee
   rewardsPortion: number
   poolID: number
   address: string
@@ -50,12 +49,11 @@ const poolsMetadataSlice = createChainDataSlice({
 
       const poolContract = addressToV3Pool(zeroAddress)
 
-      const { token0, token1, fee, poolIDs } = await executeMulticalls(
+      const { token0, token1, poolIDs } = await executeMulticalls(
         trustlessMulticall,
         {
           token0: manyContractOneFunctionMC(poolContract, poolAddresses, 'token0', rc.String),
           token1: manyContractOneFunctionMC(poolContract, poolAddresses, 'token1', rc.String),
-          fee: manyContractOneFunctionMC(poolContract, poolAddresses, 'fee', rc.Number),
           poolIDs: oneContractOneFunctionMC(rewards, 'poolIDForPool', rc.Number, idToIdAndArg(poolAddresses)),
         }
       )
@@ -80,7 +78,6 @@ const poolsMetadataSlice = createChainDataSlice({
         return [
           poolConfig.pool,
           {
-            fee: fee[poolAddress],
             rewardsPortion: (poolConfig.rewardsPortion.toNumber() * 100) / totalRewardsPortion,
             poolID: poolIDs[poolAddress],
             address: poolAddress,

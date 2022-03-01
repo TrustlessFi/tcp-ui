@@ -1,30 +1,78 @@
-import CreateLiquidityPosition from './CreateLiquidityPosition'
-import IncreaseLiquidityPosition from './IncreaseLiquidityPosition'
-import DecreaseLiquidityPosition from './DecreaseLiquidityPosition'
-import ExistingLiquidityPositions from './ExistingLiquidityPositions'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { useHistory, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import waitFor from '../../slices/waitFor'
 import { Switch, Route } from 'react-router-dom'
+import { LiquidityPage, setLiquidityPage } from '../../slices/liquidityPage'
+import { assertUnreachable } from '../../utils'
+import ViewLiquidity from './ViewLiquidity'
+import AddLiquidity from './AddLiquidity'
+import RemoveLiquidity from './RemoveLiquidity'
 
-export enum IncreaseDecreaseOption {
-  Increase = 'Increase',
-  Decrease = 'Decrease',
+const liquidityPageToView = (liquidityPage: LiquidityPage) => {
+  switch(liquidityPage) {
+    case LiquidityPage.View:
+      return <ViewLiquidity />
+    case LiquidityPage.Add:
+      return <AddLiquidity />
+    case LiquidityPage.Remove:
+      return <RemoveLiquidity />
+    default:
+      assertUnreachable(liquidityPage)
+  }
 }
 
+const Stake = () => {
+  const dispatch = useAppDispatch()
+  const history = useHistory()
+  const currentLocation = useLocation()
 
-const LiquidityPositions = () => (
-  <Switch>
-    <Route exact path='/liquidity'>
-      <ExistingLiquidityPositions />
-    </Route>
-    <Route path='/liquidity/new/:poolAddress'>
-      <CreateLiquidityPosition />
-    </Route>
-    <Route path='/liquidity/increase/:poolAddress/:positionID'>
-      <IncreaseLiquidityPosition />
-    </Route>
-    <Route path='/liquidity/decrease/:poolAddress/:positionID'>
-      <DecreaseLiquidityPosition />
-    </Route>
-  </Switch>
-)
+  const {
+    liquidityPage,
+  } = waitFor([
+    'liquidityPage',
+  ], selector, dispatch)
 
-export default LiquidityPositions
+  console.log({liquidityPage})
+
+  const currentLiquidityPage = liquidityPage.liquidityPage
+
+  useEffect(() => {
+    const currentPath = currentLocation.pathname
+
+    if (currentPath.startsWith('/liquidity/add')) dispatch(setLiquidityPage(LiquidityPage.Add))
+    else if (currentPath.startsWith('/liquidity/remove')) dispatch(setLiquidityPage(LiquidityPage.Remove))
+    else if (currentPath.startsWith('/liquidity')) dispatch(setLiquidityPage(LiquidityPage.View))
+  }, [])
+
+
+  useEffect(() => {
+    const updatePath = (dest: string) => {
+      if (currentLocation.pathname !== dest) history.replace(dest)
+    }
+
+    switch(currentLiquidityPage) {
+      case LiquidityPage.View:
+        updatePath('/liquidity')
+        break
+      case LiquidityPage.Add:
+        updatePath('/liquidity/add')
+        break
+      case LiquidityPage.Remove:
+        updatePath('/liquidity/remove')
+        break
+      default:
+        assertUnreachable(currentLiquidityPage)
+    }
+  }, [currentLiquidityPage])
+
+  return (
+    <Switch>
+      <Route path={['/liquidity']}>
+        {liquidityPageToView(currentLiquidityPage)}
+      </Route>
+    </Switch>
+  )
+}
+
+export default Stake
