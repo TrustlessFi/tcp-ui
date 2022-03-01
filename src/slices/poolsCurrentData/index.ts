@@ -19,6 +19,7 @@ import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
 
 export interface poolsCurrentData {
   [poolID: string]: {
+    sqrtPriceX96: string
     instantTick: number
     poolLiquidity: string
     cumulativeLiquidity: string
@@ -79,6 +80,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
       )
 
       return Object.fromEntries(poolAddresses.map(address => [address, {
+        sqrtPriceX96: sqrtPriceX96Instant[address].toString(),
         instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
         poolLiquidity: poolsLiquidity[address],
         cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),

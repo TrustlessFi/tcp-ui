@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
+import { red, green } from '@carbon/colors';
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { sum, roundToXDecimals } from '../../utils/'
+import { sum, roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
@@ -40,13 +41,10 @@ const AddLiquidity = () => {
     'poolsMetadata',
     'balances',
   ], selector, dispatch)
-  console.log("here 1")
 
   const dataNull =
     poolsCurrentData === null ||
     poolsMetadata === null
-
-    console.log({poolIDString})
 
   const matchingPools =
     poolsMetadata === null
@@ -62,7 +60,7 @@ const AddLiquidity = () => {
     }
   }, [matchingPools])
 
-  if (matchingPools.length === 0 || dataNull) {
+  if (dataNull || matchingPools.length === 0 ) {
     return (
       <Center style={{ position: 'relative', marginTop: 40 }}>
         <RelativeLoading show={true} />
@@ -72,29 +70,82 @@ const AddLiquidity = () => {
   }
 
   const pool = matchingPools[0]
+  const poolPrice = unscale(getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96)))
+
+  const round = (value: number, decimals = 4, roundDown = true) =>
+    parseFloat(roundToXDecimals(value, decimals, roundDown))
+
+  const countToken0Updated = (value: number) => {
+    setToken0Count(round(value))
+    setToken1Count(round(value * poolPrice))
+  }
+
+  const countToken1Updated = (value: number) => {
+    setToken1Count(round(value))
+    setToken0Count(round(value / poolPrice))
+  }
+
   const token0IsWeth = pool.token0.symbol.toLowerCase() === 'weth'
   const token1IsWeth = pool.token1.symbol.toLowerCase() === 'weth'
 
   const token0UserBalance =
-    balances === null
-    ? '-'
-    : (token0IsWeth
-      ? roundToXDecimals(balances.userEthBalance, 4, true)
-      : roundToXDecimals(balances.tokens[pool.token0.address].userBalance, 2, true))
+      balances === null
+      ? null
+      : (token0IsWeth
+        ? balances.userEthBalance
+        : balances.tokens[pool.token0.address].userBalance)
 
   const token1UserBalance =
-    balances === null
-    ? '-'
-    : (token1IsWeth
-      ? roundToXDecimals(balances.userEthBalance, 4, true)
-      : roundToXDecimals(balances.tokens[pool.token1.address].userBalance, 2, true))
+      balances === null
+      ? null
+      : (token1IsWeth
+        ? balances.userEthBalance
+        : balances.tokens[pool.token1.address].userBalance)
 
+  const exceedsToken0Balance = token0UserBalance !== null && token0UserBalance < token0Count
+  const exceedsToken1Balance = token1UserBalance !== null && token1UserBalance < token1Count
+
+  const token0UserBalanceDisplay =
+    token0UserBalance === null
+    ? '-'
+    : roundToXDecimals(token0UserBalance, token0IsWeth ? 4 : 2, true)
+
+  const token1UserBalanceDisplay =
+    token1UserBalance === null
+    ? '-'
+    : roundToXDecimals(token1UserBalance, token1IsWeth ? 4 : 2, true)
+
+  const missingBalance =
+    token0UserBalance === null ||
+    token0UserBalance === 0 ||
+    token1UserBalance === null ||
+    token1UserBalance === 0
+
+  const setMaxForToken0 = () => {
+    if (missingBalance) {
+      setToken0Count(0)
+      setToken1Count(0)
+      return
+    } else {
+      countToken0Updated(token0UserBalance)
+    }
+  }
+
+  const setMaxForToken1 = () => {
+    if (missingBalance) {
+      setToken0Count(0)
+      setToken1Count(0)
+      return
+    } else {
+      countToken1Updated(token1UserBalance)
+    }
+  }
 
   return (
     <Center style={{marginTop: 40}}>
       <Tile style={{width: 500, padding: 40}}>
         <SpacedList spacing={40}>
-          <LargeText>{pool.title}</LargeText>
+          <LargeText>{pool.title} Liquidity</LargeText>
           <Center>
             <Button size='sm'>Add</Button>
             <Button
@@ -105,55 +156,56 @@ const AddLiquidity = () => {
             </Button>
           </Center>
           <FullNumberInput
-            title={pool.token0.symbol}
-            action={setToken0Count}
-            value={0}
-            unit={pool.token0.symbol}
+            title={pool.token0.displaySymbol}
+            action={countToken0Updated}
+            value={token0Count}
+            unit={pool.token0.displaySymbol}
             light
             frozen={false}
-            defaultButton={{
-              title: 'Max',
-              action: () => alert('default button clicked'),
-            }}
+            defaultButton={{ title: 'Max', action: setMaxForToken0 }}
             onFocusUpdate={setIsToken0Focused}
             subTitle={
               <Text>
                 You have
                 {' '}
                 <Bold>
-                  {token0UserBalance}
+                  <Text color={exceedsToken0Balance ? red[50] : undefined}>
+                    {token0UserBalanceDisplay}
+                  </Text>
                 </Bold>
                 {' '}
-                {pool.token0.symbol} in your wallet
+                {pool.token0.displaySymbol} in your wallet
               </Text>
             }
           />
           <FullNumberInput
-            title={pool.token1.symbol}
-            action={setToken1Count}
-            value={0}
-            unit={pool.token1.symbol}
+            title={pool.token1.displaySymbol}
+            action={countToken1Updated}
+            value={token1Count}
+            unit={pool.token1.displaySymbol}
             light
             frozen={false}
-            defaultButton={{
-              title: 'Max',
-              action: () => alert('default button clicked'),
-            }}
+            defaultButton={{ title: 'Max', action: setMaxForToken1 }}
             onFocusUpdate={setIsToken0Focused}
             subTitle={
               <Text>
                 You have
                 {' '}
                 <Bold>
-                  {token1UserBalance}
+                  <Text color={exceedsToken1Balance ? red[50] : undefined}>
+                    {token1UserBalanceDisplay}
+                  </Text>
                 </Bold>
                 {' '}
-                {pool.token1.symbol} in your wallet
+                {pool.token1.displaySymbol} in your wallet
               </Text>
             }
           />
           <SpacedList row spacing={10}>
-            <Button size='md'>
+            <Button
+              size='md'
+              disabled={dataNull || exceedsToken0Balance || exceedsToken1Balance}
+            >
               Add Liquidity
             </Button>
             <Button

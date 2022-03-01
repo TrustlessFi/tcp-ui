@@ -53,9 +53,10 @@ const ViewLiquidity = () => {
   return (
     <Center style={{marginTop: 40}}>
       <SpacedList row>
-        {poolsData.map(pool => {
+        {poolsData.map((pool, index) => {
           return (
             <Tile
+              key={index}
               style={{width: 200, height: 200}}
               onClick={() => history.push(`/liquidity/add/${pool.poolIDString}`)}>
               <SpacedList spacing={20}>

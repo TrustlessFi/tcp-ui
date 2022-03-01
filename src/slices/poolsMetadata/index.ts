@@ -16,9 +16,11 @@ import { createChainDataSlice, CacheDuration } from '../'
 
 
 export interface tokenMetadata {
+  isWeth: boolean
   address: string
   name: string
   symbol: string
+  displaySymbol: string
   decimals: number
 }
 
@@ -77,6 +79,15 @@ const poolsMetadataSlice = createChainDataSlice({
         const token0Address = token0[poolAddress]
         const token1Address = token1[poolAddress]
 
+        const token0Symbol = symbol[token0Address]
+        const token1Symbol = symbol[token1Address]
+
+        const token0IsWeth = token0Symbol.toLowerCase() === 'weth'
+        const token1IsWeth = token1Symbol.toLowerCase() === 'weth'
+
+        const token0DisplaySymbol = token0IsWeth ? 'Eth' : token0Symbol
+        const token1DisplaySymbol = token1IsWeth ? 'Eth' : token1Symbol
+
         return [
           poolConfig.pool,
           {
@@ -84,19 +95,23 @@ const poolsMetadataSlice = createChainDataSlice({
             poolID: poolIDs[poolAddress],
             address: poolAddress,
             token0: {
+              isWeth: token0IsWeth,
               address: token0Address,
               name: name[token0Address],
               symbol: symbol[token0Address],
+              displaySymbol: token0DisplaySymbol,
               decimals: decimals[token0Address],
             },
             token1: {
+              isWeth: token1IsWeth,
               address: token1Address,
               name: name[token1Address],
               symbol: symbol[token1Address],
+              displaySymbol: token1DisplaySymbol,
               decimals: decimals[token1Address],
             },
-            poolIDString: `${symbol[token0Address]}-${symbol[token1Address]}`,
-            title: `${symbol[token0Address]} / ${symbol[token1Address]}`,
+            poolIDString: `${token0DisplaySymbol}-${token1DisplaySymbol}`,
+            title: `${token0DisplaySymbol} / ${token1DisplaySymbol}`,
           }
         ]
       }))
