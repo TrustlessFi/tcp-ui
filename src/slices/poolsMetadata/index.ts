@@ -28,6 +28,8 @@ export interface poolMetadata {
   address: string
   token0: tokenMetadata
   token1: tokenMetadata
+  title: string
+  poolIDString: string
 }
 
 export interface poolsMetadata { [key: string]: poolMetadata }
@@ -93,6 +95,8 @@ const poolsMetadataSlice = createChainDataSlice({
               symbol: symbol[token1Address],
               decimals: decimals[token1Address],
             },
+            poolIDString: `${symbol[token0Address]}-${symbol[token1Address]}`,
+            title: `${symbol[token0Address]} / ${symbol[token1Address]}`,
           }
         ]
       }))

@@ -78,7 +78,7 @@ const PageHeader = () => {
   }
 
   const updateTab = (tab: Tab, e: MouseEvent<Element>) => {
-    history.replace(tabToPath(tab))
+    history.push(tabToPath(tab))
     dispatch(setTab(tab))
     e.preventDefault()
   }

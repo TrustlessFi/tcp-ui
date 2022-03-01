@@ -12,12 +12,14 @@ export interface liquidityPageState {
   increaseAmount: number
   decreaseAmount: number
   liquidityPage: LiquidityPage
+  currentPool: string | null
 }
 
 const initialState = {
   increaseAmount: 0,
   decreaseAmount: 0,
-  liquidityPage: LiquidityPage.View
+  liquidityPage: LiquidityPage.View,
+  currentPool: null,
 } as liquidityPageState
 
 const liquidityPageSlice = createLocalSlice({
@@ -36,6 +38,9 @@ const liquidityPageSlice = createLocalSlice({
     setLiquidityPage: (state, action: PayloadAction<LiquidityPage>) => {
       state.liquidityPage = action.payload
     },
+    setCurrentPool: (state, action: PayloadAction<string>) => {
+      state.currentPool = action.payload
+    },
   },
 })
 
@@ -43,6 +48,7 @@ export const {
   setIncreaseAmount,
   setDecreaseAmount,
   setLiquidityPage,
+  setCurrentPool,
   clearData
 } = liquidityPageSlice.slice.actions
 

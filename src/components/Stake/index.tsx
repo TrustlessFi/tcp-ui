@@ -50,7 +50,7 @@ const Stake = () => {
     console.log('about to switch on stake page', {stakePage, currentPath: currentLocation.pathname})
 
     const updatePath = (dest: string) => {
-      if (currentLocation.pathname !== dest) history.replace(dest)
+      if (currentLocation.pathname !== dest) history.push(dest)
     }
 
     switch(stakePage) {
