@@ -12,9 +12,10 @@
   },
   "Uniswap": {
     "router": "",
-    "positionManager": ""
+    "factory": ""
   },
   "Aux": {
-    "ethPriceProvider": ""
+    "ethPriceProvider": "",
+    "weth": ""
   }
 }
