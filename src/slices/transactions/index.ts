@@ -37,6 +37,7 @@ export enum TransactionType {
   ClaimAllLiquidityPositionRewards,
   ClaimAllPositionRewards,
   ApprovePoolToken,
+  AddLiquidity,
 }
 
 export enum TransactionStatus {
@@ -104,6 +105,25 @@ export interface txApproveLendHue {
   spenderAddress: string
 }
 
+interface tokenInfo {
+  count: number
+  decimals: number
+  isWeth: boolean
+}
+
+export interface txAddLiquidity {
+  type: TransactionType.AddLiquidity
+  poolID: number
+  token0: tokenInfo
+  token1: tokenInfo
+  Rewards: string
+}
+export interface txApproveLendHue {
+  type: TransactionType.ApproveLendHue
+  LendHue: string
+  spenderAddress: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -113,7 +133,8 @@ export type TransactionArgs =
   txClaimLiquidityPositionRewards |
   txApprovePoolToken |
   txApproveHue |
-  txApproveLendHue
+  txApproveLendHue |
+  txAddLiquidity
 
 export interface TransactionData {
   args: TransactionArgs
@@ -157,6 +178,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve ' + args.symbol
+    case TransactionType.AddLiquidity:
+      return 'Add liquidity to pool ' + args.poolID
     default:
       assertUnreachable(type)
   }
@@ -183,6 +206,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve Token'
+    case TransactionType.AddLiquidity:
+      return 'Add Liquidity'
     default:
       assertUnreachable(type)
   }
@@ -204,6 +229,7 @@ const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => 
     case TransactionType.ClaimAllLiquidityPositionRewards:
       return WalletToken.Tcp
     case TransactionType.ApprovePoolToken:
+    case TransactionType.AddLiquidity:
       return null
     default:
       assertUnreachable(type)
@@ -265,6 +291,28 @@ const executeTransaction = async (
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
       return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+
+    case TransactionType.AddLiquidity:
+      const amount0Desired = scale(args.token0.count, args.token0.decimals)
+      const amount1Desired = scale(args.token1.count, args.token1.decimals)
+      const amount0Min = amount0Desired.mul(95).div(100)
+      const amount1Min = amount1Desired.mul(95).div(100)
+
+      const token0Value = args.token0.isWeth ? amount0Desired : bnf(0)
+      const token1Value = args.token1.isWeth ? amount1Desired : bnf(0)
+      const value = token0Value.add(token1Value)
+
+      return await getRewards(args.Rewards).deposit(
+        {
+          poolID: args.poolID,
+          amount0Desired,
+          amount1Desired,
+          amount0Min,
+          amount1Min,
+        },
+        UIID,
+        { value },
+      )
 
     default:
       assertUnreachable(type)
@@ -329,6 +377,7 @@ export const waitForTransaction = async (
       case TransactionType.ApprovePoolToken:
       case TransactionType.ApproveHue:
       case TransactionType.ApproveLendHue:
+      case TransactionType.AddLiquidity:
         clearBalances()
         break
     default:

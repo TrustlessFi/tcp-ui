@@ -7,6 +7,7 @@ import waitFor from '../../slices/waitFor'
 import { sum, roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
 import Bold from '../library/Bold'
@@ -14,6 +15,7 @@ import RelativeLoading from '../library/RelativeLoading'
 import FullNumberInput from '../library/FullNumberInput'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
+import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import { setStakePage, StakePage } from '../../slices/staking'
 import { LiquidityPage, setLiquidityPage, setCurrentPool } from '../../slices/liquidityPage'
 
@@ -36,10 +38,12 @@ const AddLiquidity = () => {
     poolsCurrentData,
     poolsMetadata,
     balances,
+    contracts,
   } = waitFor([
     'poolsCurrentData', // TODO remove?
     'poolsMetadata',
     'balances',
+    'contracts',
   ], selector, dispatch)
 
   const dataNull =
@@ -202,12 +206,26 @@ const AddLiquidity = () => {
             }
           />
           <SpacedList row spacing={10}>
-            <Button
-              size='md'
-              disabled={dataNull || exceedsToken0Balance || exceedsToken1Balance}
-            >
-              Add Liquidity
-            </Button>
+              <CreateTransactionButton
+                title='Add Liquidity'
+                disabled={dataNull || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
+                size='md'
+                txArgs={{
+                  type: TransactionType.AddLiquidity,
+                  poolID: pool.poolID,
+                  Rewards: contracts === null ? '' : contracts.Rewards,
+                  token0: {
+                    count: token0Count,
+                    decimals: pool.token0.decimals,
+                    isWeth: token0IsWeth,
+                  },
+                  token1: {
+                    count: token1Count,
+                    decimals: pool.token1.decimals,
+                    isWeth: token1IsWeth,
+                  }
+                }}
+              />
             <Button
               size='md'
               kind='secondary'
