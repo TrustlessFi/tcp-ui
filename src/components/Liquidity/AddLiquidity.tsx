@@ -59,7 +59,7 @@ const AddLiquidity = () => {
       })).filter(pool => pool.poolIDString === poolIDString)
 
   useEffect(() => {
-    if (!poolsMetadata !== null && matchingPools.length === 0) {
+    if (poolsMetadata !== null && matchingPools.length === 0) {
       history.push('/liquidity')
     }
   }, [matchingPools])
