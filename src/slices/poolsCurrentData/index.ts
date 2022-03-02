@@ -13,8 +13,10 @@ import {
   idToIdAndNoArg,
   idToIdAndArg,
 } from '@trustlessfi/multicall'
-import { Prices, UniswapV3Pool, Accounting, Rewards } from '@trustlessfi/typechain'
+import { Prices, UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
+
 import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
 
 export interface poolsCurrentData {
@@ -40,8 +42,22 @@ const poolsCurrentDataSlice = createChainDataSlice({
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
+      const charmWrapper = new Contract(zeroAddress, charmWrapperArtifact.abi, provider) as CharmWrapper
 
-      const poolAddresses = Object.keys(args.poolsMetadata)
+      const charmPoolAddresses = Object.keys(args.poolsMetadata)
+
+      const { uniswapPoolAddresses } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          uniswapPoolAddresses: manyContractOneFunctionMC(
+            charmWrapper,
+            idToIdAndNoArg(charmPoolAddresses),
+            'pool',
+            rc.String,
+          ),
+        }
+      )
+
 
       const {
         sqrtPriceX96Instant,
@@ -53,7 +69,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           sqrtPriceX96Instant: manyContractOneFunctionMC(
             poolContract,
-            idToIdAndNoArg(poolAddresses),
+            idToIdAndNoArg(Object.values(uniswapPoolAddresses)),
             'slot0',
             rc.String,
           ),
@@ -68,20 +84,20 @@ const poolsCurrentDataSlice = createChainDataSlice({
             accounting,
             'getRewardStatus',
             (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
-            idToIdAndArg(poolAddresses),
+            idToIdAndArg(charmPoolAddresses),
           ),
           poolsLiquidity: oneContractOneFunctionMC(
             accounting,
             'poolLiquidity',
             rc.BigNumberToString,
-            idToIdAndArg(poolAddresses),
+            idToIdAndArg(charmPoolAddresses),
           ),
         }
       )
 
-      return Object.fromEntries(poolAddresses.map(address => [address, {
-        sqrtPriceX96: sqrtPriceX96Instant[address].toString(),
-        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
+      return Object.fromEntries(charmPoolAddresses.map(address => [address, {
+        sqrtPriceX96: sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString(),
+        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]]),
         poolLiquidity: poolsLiquidity[address],
         cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
         totalRewards: rs[address].totalRewards.toString(),
