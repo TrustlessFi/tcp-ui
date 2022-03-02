@@ -23,6 +23,8 @@ interface AddLiquidityParams {
   poolIDString: string
 }
 
+// TODO token approvals
+// TODO max for eth leaves some eth in the account
 const AddLiquidity = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()

@@ -58,7 +58,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
         }
       )
 
-
       const {
         sqrtPriceX96Instant,
         currentRewardsInfo,
