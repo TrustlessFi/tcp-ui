@@ -1,18 +1,16 @@
-import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { sum, roundToXDecimals } from '../../utils/'
-import OneColumnDisplay from '../library/OneColumnDisplay'
+import {
+  sum, roundToXDecimals, getE18PriceForSqrtX96Price, mnt, sqrtBigNumber, bnf,
+  numDisplay, unscale
+} from '../../utils/'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
-import Bold from '../library/Bold'
 import RelativeLoading from '../library/RelativeLoading'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
-import { setStakePage, StakePage } from '../../slices/staking'
-import { LiquidityPage, setLiquidityPage, setCurrentPool } from '../../slices/liquidityPage'
 
 
 const ViewLiquidity = () => {
@@ -23,7 +21,7 @@ const ViewLiquidity = () => {
     poolsCurrentData,
     poolsMetadata,
   } = waitFor([
-    'poolsCurrentData', // TODO remove?
+    'poolsCurrentData',
     'poolsMetadata',
   ], selector, dispatch)
 
@@ -48,6 +46,8 @@ const ViewLiquidity = () => {
       title: pool.title,
       address: address,
       poolIDString: pool.poolIDString,
+      token0: pool.token0,
+      token1: pool.token1,
     }
   })
 
@@ -55,13 +55,29 @@ const ViewLiquidity = () => {
     <Center style={{marginTop: 40}}>
       <SpacedList row>
         {poolsData.map((pool, index) => {
+
+          const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))
+          const userLiquidity = poolsCurrentData[pool.address].userLiquidityPosition.liquidity
+
+          const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
+          const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
+
           return (
             <Tile
               key={index}
-              style={{width: 300, height: 200}}>
+              style={{width: 300, }}>
               <SpacedList spacing={40}>
-                <LargeText>{pool.title}</LargeText>
+                <LargeText>{pool.title} Liquidity</LargeText>
                 <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
+                <Text>
+                  Your Position:
+                  <p>
+                    {numDisplay(unscale(positionToken0Value, pool.token0.decimals))} {pool.token0.displaySymbol}
+                  </p>
+                  <p>
+                    {numDisplay(unscale(positionToken1Value, pool.token1.decimals))} {pool.token1.displaySymbol}
+                  </p>
+                </Text>
                 <SpacedList row spacing={10}>
                   <Button
                     size='sm'
@@ -70,6 +86,7 @@ const ViewLiquidity = () => {
                   </Button>
                   <Button
                     size='sm'
+                    disabled={poolsCurrentData[pool.address].userLiquidityPosition.liquidity.isZero()}
                     onClick={() => history.push(`/liquidity/remove/${pool.poolIDString}`)}>
                     Remove
                   </Button>

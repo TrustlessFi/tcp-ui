@@ -406,9 +406,9 @@ export const waitForTransaction = async (
       case TransactionType.ApprovePoolToken:
       case TransactionType.ApproveHue:
       case TransactionType.ApproveLendHue:
-      case TransactionType.AddLiquidity:
         clearBalances()
         break
+      case TransactionType.AddLiquidity:
       case TransactionType.RemoveLiquidity:
         clearBalances()
         clearPoolsCurrentData()
