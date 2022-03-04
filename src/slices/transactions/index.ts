@@ -89,7 +89,6 @@ export interface txApprovePoolToken {
   type: TransactionType.ApprovePoolToken
   tokenAddress: string
   Rewards: string
-  poolAddress: string,
   symbol: string
 }
 

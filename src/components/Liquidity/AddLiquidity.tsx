@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import { red, green } from '@carbon/colors';
+import { tokenMetadata } from '../../slices/poolsMetadata'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { sum, roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
@@ -101,12 +102,26 @@ const AddLiquidity = () => {
         ? balances.userEthBalance
         : balances.tokens[pool.token0.address].userBalance)
 
+  const token0Approved =
+      balances === null || contracts === null
+      ? null
+      : (token0IsWeth
+        ? true
+        : balances.tokens[pool.token0.address].approval.Rewards.approved)
+
   const token1UserBalance =
       balances === null
       ? null
       : (token1IsWeth
         ? balances.userEthBalance
         : balances.tokens[pool.token1.address].userBalance)
+
+  const token1Approved =
+      balances === null || contracts === null
+      ? null
+      : (token1IsWeth
+        ? true
+        : balances.tokens[pool.token1.address].approval.Rewards.approved)
 
   const exceedsToken0Balance = token0UserBalance !== null && token0UserBalance < token0Count
   const exceedsToken1Balance = token1UserBalance !== null && token1UserBalance < token1Count
@@ -146,6 +161,46 @@ const AddLiquidity = () => {
       countToken1Updated(token1UserBalance)
     }
   }
+
+  const noInput = token0Count === 0 && token1Count === 0
+
+  const getApproveButton = (token: tokenMetadata, approval: boolean | null) =>
+    <CreateTransactionButton
+      title={`Approve ${token.displaySymbol}`}
+      size='md'
+      disabled={approval !== false || contracts === null || noInput}
+      showDisabledInsteadOfConnectWallet
+      txArgs={{
+        type: TransactionType.ApprovePoolToken,
+        tokenAddress: token.address,
+        Rewards: contracts === null ? '' : contracts.Rewards,
+        symbol: token.displaySymbol,
+      }}
+    />
+
+  const approveToken0Button = getApproveButton(pool.token0, token0Approved)
+  const approveToken1Button = getApproveButton(pool.token1, token1Approved)
+
+  const addLiquidityButton =
+    <CreateTransactionButton
+      disabled={dataNull || noInput || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
+      size='md'
+      txArgs={{
+        type: TransactionType.AddLiquidity,
+        poolID: pool.poolID,
+        Rewards: contracts === null ? '' : contracts.Rewards,
+        token0: {
+          count: token0Count,
+          decimals: pool.token0.decimals,
+          isWeth: token0IsWeth,
+        },
+        token1: {
+          count: token1Count,
+          decimals: pool.token1.decimals,
+          isWeth: token1IsWeth,
+        }
+      }}
+    />
 
   return (
     <Center style={{marginTop: 40}}>
@@ -199,25 +254,13 @@ const AddLiquidity = () => {
             }
           />
           <SpacedList row spacing={10}>
-              <CreateTransactionButton
-                disabled={dataNull || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
-                size='md'
-                txArgs={{
-                  type: TransactionType.AddLiquidity,
-                  poolID: pool.poolID,
-                  Rewards: contracts === null ? '' : contracts.Rewards,
-                  token0: {
-                    count: token0Count,
-                    decimals: pool.token0.decimals,
-                    isWeth: token0IsWeth,
-                  },
-                  token1: {
-                    count: token1Count,
-                    decimals: pool.token1.decimals,
-                    isWeth: token1IsWeth,
-                  }
-                }}
-              />
+            {
+              token0Approved === false
+              ? approveToken0Button
+              : (token1Approved === false
+                ? approveToken1Button
+                : addLiquidityButton)
+            }
             <Button
               size='md'
               kind='secondary'
