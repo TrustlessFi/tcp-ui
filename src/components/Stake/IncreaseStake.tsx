@@ -4,7 +4,6 @@ import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions'
-import { getAPR } from './library'
 import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
@@ -45,17 +44,6 @@ const IncreaseStake = () => {
     ratesInfo === null ||
     sdi === null ||
     contracts === null
-
-  const apr = dataNull ? 0 : getAPR({
-    marketInfo,
-    ratesInfo,
-    sdi,
-    lentHue:
-      (isZeroish(amount) ? 0 : amount) +
-      (balances === null || contracts === null
-        ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting)
-  })
 
   const currentWalletBalance =
     dataNull
