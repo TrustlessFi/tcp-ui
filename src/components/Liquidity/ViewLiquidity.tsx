@@ -57,7 +57,7 @@ const ViewLiquidity = () => {
         {poolsData.map((pool, index) => {
 
           const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))
-          const userLiquidity = poolsCurrentData[pool.address].userLiquidityPosition.liquidity
+          const userLiquidity = bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity)
 
           const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
           const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
@@ -86,7 +86,7 @@ const ViewLiquidity = () => {
                   </Button>
                   <Button
                     size='sm'
-                    disabled={poolsCurrentData[pool.address].userLiquidityPosition.liquidity.isZero()}
+                    disabled={bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity).isZero()}
                     onClick={() => history.push(`/liquidity/remove/${pool.poolIDString}`)}>
                     Remove
                   </Button>

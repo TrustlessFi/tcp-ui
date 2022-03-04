@@ -30,7 +30,16 @@ export interface poolsCurrentData {
     totalRewards: string
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
-    userLiquidityPosition: poolPosition
+    userLiquidityPosition: {
+      cumulativeLiquidity: string
+      kickbackPortion: string
+      kickbackDestination: string
+      lastBlockPositionIncreased: number
+      lastTimeRewarded: number
+      liquidity: string
+      owner: string
+      totalRewards: string
+    }
   }
 }
 
@@ -46,7 +55,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
       const charmWrapper = new Contract(zeroAddress, charmWrapperArtifact.abi, provider) as CharmWrapper
-
 
       const charmPoolAddresses = Object.keys(args.poolsMetadata)
 
@@ -116,7 +124,16 @@ const poolsCurrentDataSlice = createChainDataSlice({
         totalRewards: rs[address].totalRewards.toString(),
         lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
         currentPeriod: currentRewardsInfo.currentPeriod,
-        userLiquidityPosition: userLiquidityPositions[address],
+        userLiquidityPosition: {
+          cumulativeLiquidity: userLiquidityPositions[address].cumulativeLiquidity.toString(),
+          kickbackPortion: userLiquidityPositions[address].kickbackPortion.toString(),
+          kickbackDestination: userLiquidityPositions[address].kickbackDestination,
+          lastBlockPositionIncreased: userLiquidityPositions[address].lastBlockPositionIncreased.toNumber(),
+          lastTimeRewarded: userLiquidityPositions[address].lastTimeRewarded.toNumber(),
+          liquidity: userLiquidityPositions[address].liquidity.toString(),
+          owner: userLiquidityPositions[address].owner,
+          totalRewards: userLiquidityPositions[address].totalRewards.toString(),
+        }
       }]))
     },
 })
