@@ -49,6 +49,8 @@ const AddLiquidity = () => {
     'contracts',
   ], selector, dispatch)
 
+  const txCostBuffer = 0.05
+
   const dataNull =
     poolsCurrentData === null ||
     poolsMetadata === null
@@ -148,7 +150,11 @@ const AddLiquidity = () => {
       setToken1Count(0)
       return
     } else {
-      countToken0Updated(token0UserBalance)
+      const amount =
+        token0IsWeth
+        ? Math.max(0, token0UserBalance - txCostBuffer)
+        : token0UserBalance
+      countToken0Updated(amount)
     }
   }
 
@@ -158,7 +164,11 @@ const AddLiquidity = () => {
       setToken1Count(0)
       return
     } else {
-      countToken1Updated(token1UserBalance)
+      const amount =
+        token1IsWeth
+        ? Math.max(0, token1UserBalance - txCostBuffer)
+        : token1UserBalance
+      countToken1Updated(amount)
     }
   }
 
