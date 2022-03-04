@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { sum } from '../../utils/'
+import { sum, roundToXDecimals } from '../../utils/'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
@@ -42,6 +42,7 @@ const ViewLiquidity = () => {
   const totalRewardsPortion = Object.values(poolsMetadata).map(md => md.rewardsPortion).reduce(sum)
 
   const poolsData = Object.entries(poolsMetadata).map(([address, pool]) => {
+    console.log({pool, totalRewardsPortion})
     return {
       portion: pool.rewardsPortion / totalRewardsPortion,
       title: pool.title,
@@ -57,11 +58,22 @@ const ViewLiquidity = () => {
           return (
             <Tile
               key={index}
-              style={{width: 200, height: 200}}
-              onClick={() => history.push(`/liquidity/add/${pool.poolIDString}`)}>
-              <SpacedList spacing={20}>
+              style={{width: 300, height: 200}}>
+              <SpacedList spacing={40}>
                 <LargeText>{pool.title}</LargeText>
-                <Text>{pool.portion}% of Tcp rewards</Text>
+                <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
+                <SpacedList row spacing={10}>
+                  <Button
+                    size='sm'
+                    onClick={() => history.push(`/liquidity/add/${pool.poolIDString}`)}>
+                    Add
+                  </Button>
+                  <Button
+                    size='sm'
+                    onClick={() => history.push(`/liquidity/remove/${pool.poolIDString}`)}>
+                    Remove
+                  </Button>
+                </SpacedList>
               </SpacedList>
             </Tile>
           )

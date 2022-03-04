@@ -151,16 +151,7 @@ const AddLiquidity = () => {
     <Center style={{marginTop: 40}}>
       <Tile style={{width: 500, padding: 40}}>
         <SpacedList spacing={40}>
-          <LargeText>{pool.title} Liquidity</LargeText>
-          <Center>
-            <Button size='sm'>Add</Button>
-            <Button
-              size='sm'
-              kind='secondary'
-              onClick={() => history.push(`/liquidity/remove/${poolIDString}`)}>
-              Remove
-            </Button>
-          </Center>
+          <LargeText>Add {pool.title} Liquidity</LargeText>
           <FullNumberInput
             title={pool.token0.displaySymbol}
             action={countToken0Updated}
@@ -209,7 +200,6 @@ const AddLiquidity = () => {
           />
           <SpacedList row spacing={10}>
               <CreateTransactionButton
-                title='Add Liquidity'
                 disabled={dataNull || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
                 size='md'
                 txArgs={{
