@@ -1,4 +1,5 @@
 import { useHistory } from 'react-router-dom'
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import {
@@ -11,6 +12,7 @@ import LargeText from '../library/LargeText'
 import RelativeLoading from '../library/RelativeLoading'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
+import { resetNonce } from '../../slices/liquidityPage'
 
 
 const ViewLiquidity = () => {
@@ -18,12 +20,18 @@ const ViewLiquidity = () => {
   const history = useHistory()
 
   const {
+    liquidityPage,
     poolsCurrentData,
     poolsMetadata,
   } = waitFor([
+    'liquidityPage',
     'poolsCurrentData',
     'poolsMetadata',
   ], selector, dispatch)
+
+  useEffect(() => {
+    dispatch(resetNonce())
+  }, [])
 
   const dataNull =
     poolsCurrentData === null

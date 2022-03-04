@@ -35,10 +35,12 @@ const RemoveLiquidity = () => {
   const poolIDString = useParams<AddLiquidityParams>().poolIDString
 
   const {
+    liquidityPage,
     poolsCurrentData,
     poolsMetadata,
     contracts,
   } = waitFor([
+    'liquidityPage',
     'poolsCurrentData',
     'poolsMetadata',
     'contracts',
@@ -63,6 +65,12 @@ const RemoveLiquidity = () => {
       history.push('/liquidity')
     }
   }, [matchingPools])
+
+  useEffect(() => {
+    if (liquidityPage.liquidityPageNonce !== 0) {
+      history.push('/liquidity')
+    }
+  }, [liquidityPage.liquidityPageNonce])
 
   if (dataNull || matchingPools.length === 0 ) {
     return (

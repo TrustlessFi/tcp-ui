@@ -34,12 +34,14 @@ const AddLiquidity = () => {
   const [isToken1Focused, setIsToken1Focused] = useState(false)
 
   const {
+    liquidityPage,
     poolsCurrentData,
     poolsMetadata,
     balances,
     contracts,
   } = waitFor([
-    'poolsCurrentData', // TODO remove?
+    'liquidityPage',
+    'poolsCurrentData',
     'poolsMetadata',
     'balances',
     'contracts',
@@ -64,6 +66,12 @@ const AddLiquidity = () => {
       history.push('/liquidity')
     }
   }, [matchingPools])
+
+  useEffect(() => {
+    if (liquidityPage.liquidityPageNonce !== 0) {
+      history.push('/liquidity')
+    }
+  }, [liquidityPage.liquidityPageNonce])
 
   if (dataNull || matchingPools.length === 0 ) {
     return (

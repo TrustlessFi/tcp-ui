@@ -379,6 +379,7 @@ export const waitForTransaction = async (
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
     const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
+    const goToLiquidityBasePage = () => dispatch(allSlices.liquidityPage.slice.actions.incrementNonce())
 
     switch (type) {
       case TransactionType.CreatePosition:
@@ -412,6 +413,7 @@ export const waitForTransaction = async (
       case TransactionType.RemoveLiquidity:
         clearBalances()
         clearPoolsCurrentData()
+        goToLiquidityBasePage()
         break
     default:
       assertUnreachable(type)
