@@ -530,7 +530,9 @@ const ManagePosition = () => {
                   }}
                   kind='danger--ghost'
                   size='md'>
-                  Close
+                  <span style={{whiteSpace: 'nowrap'}}>
+                    Close Position
+                  </span>
                 </Button>
               </div>
             : null
