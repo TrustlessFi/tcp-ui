@@ -13,11 +13,13 @@ import {
   idToIdAndNoArg,
   idToIdAndArg,
 } from '@trustlessfi/multicall'
-import { Prices, UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
+import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
 
 import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
+
+type poolPosition = PromiseType<ReturnType<Accounting['getPoolPosition']>>
 
 export interface poolsCurrentData {
   [poolID: string]: {
@@ -28,15 +30,16 @@ export interface poolsCurrentData {
     totalRewards: string
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
+    userLiquidityPosition: poolPosition
   }
 }
 
 const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
-  dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo'],
+  dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo', 'userAddress'],
   stateSelector: (state: RootState) => state.poolsCurrentData,
   thunkFunction:
-    async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo'>) => {
+    async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo' | 'userAddress'>) => {
       const provider = getProvider()
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -44,9 +47,10 @@ const poolsCurrentDataSlice = createChainDataSlice({
       const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
       const charmWrapper = new Contract(zeroAddress, charmWrapperArtifact.abi, provider) as CharmWrapper
 
+
       const charmPoolAddresses = Object.keys(args.poolsMetadata)
 
-      const { uniswapPoolAddresses } = await executeMulticalls(
+      const { uniswapPoolAddresses, userLiquidityPositions } = await executeMulticalls(
         trustlessMulticall,
         {
           uniswapPoolAddresses: manyContractOneFunctionMC(
@@ -54,6 +58,16 @@ const poolsCurrentDataSlice = createChainDataSlice({
             idToIdAndNoArg(charmPoolAddresses),
             'pool',
             rc.String,
+          ),
+          userLiquidityPositions: oneContractOneFunctionMC(
+            accounting,
+            'getPoolPosition',
+            (result: any) => result as poolPosition,
+            Object.fromEntries(
+              charmPoolAddresses.map(
+                poolAddress => [poolAddress, [args.userAddress, poolAddress]]
+              )
+            ),
           ),
         }
       )
@@ -102,6 +116,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
         totalRewards: rs[address].totalRewards.toString(),
         lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
         currentPeriod: currentRewardsInfo.currentPeriod,
+        userLiquidityPosition: userLiquidityPositions[address],
       }]))
     },
 })

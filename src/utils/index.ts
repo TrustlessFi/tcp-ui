@@ -453,6 +453,22 @@ export const addressToV3Pool = (address: string) =>
   new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool
 
 
+export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
+  let y = bnf(input)
+  let z = bnf(0)
+  if (y.gt(3)) {
+    z = y
+    let x = (y.div(2)).add(1)
+    while(x.lt(z)) {
+      z = x
+      x = ((y.div(x)).add(x)).div(2)
+    }
+  } else if (!y.isZero()) {
+    z = bnf(1)
+  }
+  return z
+}
+
 // ======================= ETHEREUM TYPESCRIPT ============================
 interface EthereumRequestArguments {
   method: string

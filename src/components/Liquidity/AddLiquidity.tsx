@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
 import { useParams } from 'react-router-dom'
-import { red, green } from '@carbon/colors';
+import { red } from '@carbon/colors';
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { sum, roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
-import OneColumnDisplay from '../library/OneColumnDisplay'
+import { roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
 import SpacedList from '../library/SpacedList'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
@@ -17,15 +16,11 @@ import FullNumberInput from '../library/FullNumberInput'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
-import { setStakePage, StakePage } from '../../slices/staking'
-import { LiquidityPage, setLiquidityPage, setCurrentPool } from '../../slices/liquidityPage'
 
 interface AddLiquidityParams {
   poolIDString: string
 }
 
-// TODO token approvals
-// TODO max for eth leaves some eth in the account
 const AddLiquidity = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
@@ -34,6 +29,7 @@ const AddLiquidity = () => {
 
   const [token0Count, setToken0Count] = useState(0)
   const [token1Count, setToken1Count] = useState(0)
+  // TODO remove?
   const [isToken0Focused, setIsToken0Focused] = useState(false)
   const [isToken1Focused, setIsToken1Focused] = useState(false)
 
@@ -248,7 +244,7 @@ const AddLiquidity = () => {
             light
             frozen={false}
             defaultButton={{ title: 'Max', action: setMaxForToken1 }}
-            onFocusUpdate={setIsToken0Focused}
+            onFocusUpdate={setIsToken1Focused}
             subTitle={
               <Text>
                 You have
