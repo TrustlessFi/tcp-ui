@@ -9,10 +9,10 @@ import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
-import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
+import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
-import { days, minutes, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
-import { zeroAddress, bnf, uint256Max } from '../../utils/'
+import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
+import { bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
@@ -38,6 +38,7 @@ export enum TransactionType {
   ClaimAllPositionRewards,
   ApprovePoolToken,
   AddLiquidity,
+  RemoveLiquidity,
 }
 
 export enum TransactionStatus {
@@ -117,6 +118,18 @@ export interface txAddLiquidity {
   token1: tokenInfo
   Rewards: string
 }
+
+export interface txRemoveLiquidity {
+  type: TransactionType.RemoveLiquidity
+  poolID: number
+  Rewards: string
+  liquidity: string
+  amount0Min: string
+  amount1Min: string
+  liquidityPercentage: number
+  poolName: string
+}
+
 export interface txApproveLendHue {
   type: TransactionType.ApproveLendHue
   LendHue: string
@@ -133,7 +146,8 @@ export type TransactionArgs =
   txApprovePoolToken |
   txApproveHue |
   txApproveLendHue |
-  txAddLiquidity
+  txAddLiquidity |
+  txRemoveLiquidity
 
 export interface TransactionData {
   args: TransactionArgs
@@ -179,6 +193,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Approve ' + args.symbol
     case TransactionType.AddLiquidity:
       return 'Add liquidity to pool ' + args.poolID
+    case TransactionType.RemoveLiquidity:
+      return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
     default:
       assertUnreachable(type)
   }
@@ -207,6 +223,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Approve Token'
     case TransactionType.AddLiquidity:
       return 'Add Liquidity'
+    case TransactionType.RemoveLiquidity:
+      return 'Withdraw Liquidity'
     default:
       assertUnreachable(type)
   }
@@ -229,6 +247,7 @@ const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => 
       return WalletToken.Tcp
     case TransactionType.ApprovePoolToken:
     case TransactionType.AddLiquidity:
+    case TransactionType.RemoveLiquidity:
       return null
     default:
       assertUnreachable(type)
@@ -313,6 +332,17 @@ const executeTransaction = async (
         { value },
       )
 
+    case TransactionType.RemoveLiquidity:
+      return await getRewards(args.Rewards).withdraw(
+        {
+          poolID: args.poolID,
+          liquidity: args.liquidity,
+          amount0Min: args.amount0Min,
+          amount1Min: args.amount1Min,
+        },
+        UIID
+      )
+
     default:
       assertUnreachable(type)
   }
@@ -347,7 +377,7 @@ export const waitForTransaction = async (
     const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
     const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
-    // const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
+    const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
 
     switch (type) {
@@ -378,6 +408,10 @@ export const waitForTransaction = async (
       case TransactionType.ApproveLendHue:
       case TransactionType.AddLiquidity:
         clearBalances()
+        break
+      case TransactionType.RemoveLiquidity:
+        clearBalances()
+        clearPoolsCurrentData()
         break
     default:
       assertUnreachable(type)

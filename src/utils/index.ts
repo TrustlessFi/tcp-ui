@@ -129,9 +129,6 @@ export const numDisplay = (
   return addCommas(roundToXDecimals(val, decimals))
 }
 
-// ======================= Transactions =========================
-export const SLIPPAGE_TOLERANCE = 0.05
-
 // ======================= Constants ============================
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
 export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967'

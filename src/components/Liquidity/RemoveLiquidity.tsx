@@ -15,6 +15,7 @@ import {
   getE18PriceForSqrtX96Price, bnf, unscale, sqrtBigNumber, mnt, numDisplay,
   isZeroish,
 } from '../../utils/'
+import { SLIPPAGE_TOLERANCE_BIPS } from '../../constants'
 import {
   Tile, Button, Slider, SliderOnChangeArg,
   InlineNotification,
@@ -25,7 +26,7 @@ interface AddLiquidityParams {
   poolIDString: string
 }
 
-const maxSlippage = 0.95
+const slippageMultiplier = (1e4 - SLIPPAGE_TOLERANCE_BIPS) / 1e4
 
 const RemoveLiquidity = () => {
   const dispatch = useAppDispatch()
@@ -43,7 +44,7 @@ const RemoveLiquidity = () => {
     'contracts',
   ], selector, dispatch)
 
-  const [sliderValue, setSliderValue] = useState(50)
+  const [liquidityPercentage, setLiquidityPercentage] = useState(50)
 
   const dataNull =
     poolsCurrentData === null ||
@@ -82,8 +83,8 @@ const RemoveLiquidity = () => {
   const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
   const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
 
-  const token0Count = (unscale(positionToken0Value, pool.token0.decimals) * sliderValue) / 100
-  const token1Count = (unscale(positionToken1Value, pool.token1.decimals) * sliderValue) / 100
+  const token0Count = (unscale(positionToken0Value, pool.token0.decimals) * liquidityPercentage) / 100
+  const token1Count = (unscale(positionToken1Value, pool.token1.decimals) * liquidityPercentage) / 100
 
   const token0IsWeth = pool.token0.symbol.toLowerCase() === 'weth'
   const token1IsWeth = pool.token1.symbol.toLowerCase() === 'weth'
@@ -91,9 +92,9 @@ const RemoveLiquidity = () => {
   const successDisplay =
     <Text>
       You will receive at least{' '}
-      <Bold>{numDisplay(token0Count * maxSlippage)} {pool.token0.displaySymbol}</Bold>{' '}
+      <Bold>{numDisplay(token0Count * slippageMultiplier)} {pool.token0.displaySymbol}</Bold>{' '}
       and{' '}
-      <Bold>{numDisplay(token1Count * maxSlippage)} {pool.token1.displaySymbol}</Bold>
+      <Bold>{numDisplay(token1Count * slippageMultiplier)} {pool.token1.displaySymbol}</Bold>
       .
     </Text>
 
@@ -115,12 +116,12 @@ const RemoveLiquidity = () => {
                 max={100}
                 step={5}
                 invalid={userLiquidity.isZero()}
-                onChange={(changeData: SliderOnChangeArg) => setSliderValue(changeData.value)}
-                value={sliderValue}
+                onChange={(changeData: SliderOnChangeArg) => setLiquidityPercentage(changeData.value)}
+                value={liquidityPercentage}
                 light
               />
             </span>
-            <span onClick={() => setSliderValue(100)}>
+            <span onClick={() => setLiquidityPercentage(100)}>
               <Text
                 size={12}
                 style={{
@@ -155,22 +156,29 @@ const RemoveLiquidity = () => {
           }
           <SpacedList row spacing={10}>
             <CreateTransactionButton
-              disabled={dataNull || contracts === null}
+              disabled={dataNull || contracts === null || userLiquidity.isZero()}
               size='md'
               txArgs={{
-                type: TransactionType.AddLiquidity,
+                type: TransactionType.RemoveLiquidity,
                 poolID: pool.poolID,
                 Rewards: contracts === null ? '' : contracts.Rewards,
-                token0: {
-                  count: token0Count,
-                  decimals: pool.token0.decimals,
-                  isWeth: token0IsWeth,
-                },
-                token1: {
-                  count: token1Count,
-                  decimals: pool.token1.decimals,
-                  isWeth: token1IsWeth,
-                }
+                liquidity: userLiquidity.mul(liquidityPercentage).div(100).toString(),
+                amount0Min:
+                  positionToken0Value
+                    .mul(liquidityPercentage)
+                    .mul(1e4 - SLIPPAGE_TOLERANCE_BIPS)
+                    .div(100)
+                    .div(1e4)
+                    .toString(),
+                amount1Min:
+                  positionToken1Value
+                    .mul(liquidityPercentage)
+                    .mul(1e4 - SLIPPAGE_TOLERANCE_BIPS)
+                    .div(100)
+                    .div(1e4)
+                    .toString(),
+                liquidityPercentage,
+                poolName: pool.poolIDString,
               }}
             />
             <Button
