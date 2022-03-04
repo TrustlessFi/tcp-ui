@@ -1,6 +1,9 @@
 import { useHistory, useLocation } from 'react-router-dom'
+import { useAppDispatch } from '../../app/hooks'
 import { abbreviateAddress } from '../../utils'
 import { Tag } from 'carbon-components-react'
+import { setTab } from '../../slices/tabs'
+import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { CSSProperties } from 'react'
 
@@ -11,6 +14,7 @@ const WalletButton = ({
   address: string,
   style: CSSProperties,
 }) => {
+  const dispatch = useAppDispatch()
   const history = useHistory()
   const location = useLocation()
 
@@ -18,7 +22,14 @@ const WalletButton = ({
 
   return (
     <Tag
-      onClick={inTransactions ? () => {} : () => history.push('/transactions')}
+      onClick={
+        inTransactions ?
+        () => {}
+        : () => {
+          history.push(tabToPath(Tab.Transactions))
+          dispatch(setTab(Tab.Transactions))
+        }
+      }
       style={{cursor: inTransactions ? 'default' : 'pointer', ...style}}>
       <Jazzicon diameter={24} seed={jsNumberForAddress(address)} paperStyles={{marginRight: '4px', verticalAlign: 'middle'}} />
       <div style={{display: 'inline', verticalAlign: 'middle', fontSize: 16, fontWeight: 400}}>

@@ -39,6 +39,8 @@ export const tabHidden: { [key in Tab]?: true } = {
   Transactions: true
 }
 
+export const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
+
 const tabToRender: {[key in Tab]: ReactNode} = {
   Position: <Positions />,
   Stake: <Stake />,
