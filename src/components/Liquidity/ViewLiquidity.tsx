@@ -65,7 +65,7 @@ const ViewLiquidity = () => {
           return (
             <Tile
               key={index}
-              style={{width: 300, }}>
+              style={{width: 300, padding: 30 }}>
               <SpacedList spacing={40}>
                 <LargeText>{pool.title} Liquidity</LargeText>
                 <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
