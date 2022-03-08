@@ -99,12 +99,6 @@ const WalletInfo = () => {
     ? undefined
     : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
 
-  console.log({
-    balance: balances === null || contracts === null ? null : balances.tokens[contracts.LendHue].userBalance,
-    conversion: marketInfo === null ? null : marketInfo.valueOfLendTokensInHue,
-    result: hueStaked,
-  })
-
   return (
     <Tile style={{ minWidth: 550, padding: 32 }}>
       <SpacedList spacing={32}>

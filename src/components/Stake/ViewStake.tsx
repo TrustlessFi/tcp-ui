@@ -50,7 +50,7 @@ const ViewStake = () => {
   })
 
   const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
-  const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount - 1e-4
+  const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount
 
   const UPDATE_FREQUENCY_MS = 100
 

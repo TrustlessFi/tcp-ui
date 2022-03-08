@@ -41,7 +41,7 @@ const DecreaseStake = () => {
         ? 0
         : balances.tokens[contracts.LendHue].userBalance - 1e-4)
 
-  const lentHueCount = (dataNull ? 0 : lendHueWalletBalance * marketInfo.valueOfLendTokensInHue)
+  const lentHueCount = marketInfo === null ? 0 : lendHueWalletBalance * marketInfo.valueOfLendTokensInHue
   const newLentHueCount = lentHueCount - amount
   const lendHueToPayBack = marketInfo === null ? 0 : amount / marketInfo.valueOfLendTokensInHue
 
@@ -75,7 +75,7 @@ const DecreaseStake = () => {
           </Text>
           <SpacedList row spacing={5}>
             <Text size={28}>
-              {numDisplay(lentHueCount, 2)}
+              {numDisplay(lentHueCount, 4)}
             </Text>
             <Text size={12}>
               Hue
