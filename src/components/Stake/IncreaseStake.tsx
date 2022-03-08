@@ -140,7 +140,7 @@ const IncreaseStake = () => {
         <PositionInfoItem
           key='apr_info'
           icon={<Calculation32 />}
-          title='New Borrow APR'
+          title='New APR'
           value={numDisplay(apr * 100, 2)}
           unit='%'
         />
