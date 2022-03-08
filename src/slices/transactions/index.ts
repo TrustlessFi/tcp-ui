@@ -19,7 +19,6 @@ import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
-import { clearPositionState } from '../positionState'
 
 export enum WalletToken {
   Hue = 'Hue',
@@ -384,7 +383,6 @@ export const waitForTransaction = async (
     switch (type) {
       case TransactionType.CreatePosition:
       case TransactionType.UpdatePosition:
-        dispatch(clearPositionState())
         clearPositions()
         clearMarketInfo()
         clearBalances()

@@ -11,7 +11,6 @@ import { marketInfo } from './market'
 import { poolsCurrentData } from './poolsCurrentData'
 import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
-import { positionState } from './positionState'
 import { pricesInfo } from './prices'
 import { ratesInfo } from './rates'
 import { rewardsInfo } from './rewards'
@@ -28,7 +27,6 @@ export type RootState = {
   rootContracts: rootContracts | null
   userAddress: string | null
   notifications: notificationState
-  positionState: positionState
   transactions: TransactionState
   liquidityPage: liquidityPageState
   staking: stakingState
