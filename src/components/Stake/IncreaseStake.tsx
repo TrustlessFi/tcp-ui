@@ -21,14 +21,12 @@ const IncreaseStake = () => {
     balances,
     marketInfo,
     ratesInfo,
-    sdi,
     contracts,
     staking,
   } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
-    'sdi',
     'contracts',
     'staking',
   ], selector, dispatch)
@@ -42,7 +40,6 @@ const IncreaseStake = () => {
     balances === null ||
     marketInfo === null ||
     ratesInfo === null ||
-    sdi === null ||
     contracts === null
 
   const currentWalletBalance =

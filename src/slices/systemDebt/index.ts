@@ -1,22 +1,22 @@
-import { unscale } from '../../utils'
 import getContract from '../../utils/getContract'
 import { Accounting } from '@trustlessfi/typechain';
 import ProtocolContract from '../contracts/ProtocolContract'
 import { thunkArgs, RootState  } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 export interface sdi {
-  debt: number
-  totalTCPRewards: number
-  cumulativeDebt: number
-  debtExchangeRate: number
+  debt: string
+  totalTCPRewards: string
+  cumulativeDebt: string
+  debtExchangeRate: string
 }
 
 const systemDebtSlice = createChainDataSlice({
   name: 'systemDebt',
   dependencies: ['contracts'],
   stateSelector: (state: RootState) => state.sdi,
-  isUserData: true,
+  cacheDuration: CacheDuration.NONE,
+  isUserData: false,
   thunkFunction:
     async (args: thunkArgs<'contracts'>) => {
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
@@ -24,10 +24,10 @@ const systemDebtSlice = createChainDataSlice({
       const sdi = await accounting.getSystemDebtInfo()
 
       return {
-        debt: unscale(sdi.debt),
-        totalTCPRewards: unscale(sdi.totalTCPRewards),
-        cumulativeDebt: unscale(sdi.cumulativeDebt),
-        debtExchangeRate: unscale(sdi.debtExchangeRate),
+        debt: sdi.debt.toString(),
+        totalTCPRewards: sdi.totalTCPRewards.toString(),
+        cumulativeDebt: sdi.cumulativeDebt.toString(),
+        debtExchangeRate: sdi.debtExchangeRate.toString(),
       }
     },
 })

@@ -245,6 +245,7 @@ const ManagePosition = () => {
 
   const cancelCreateButton =
     <Button
+      key='cancel_create_button'
       disabled={collateralIncrease === 0 && debtIncrease === 0}
       onClick={cancelCreate}
       kind='secondary'
@@ -254,6 +255,7 @@ const ManagePosition = () => {
 
   const cancelUpdateButton =
     <Button
+      key='cancel_update_button'
       onClick={cancelUpdate}
       kind='secondary'
       size='md'>
@@ -264,6 +266,7 @@ const ManagePosition = () => {
     isEditing
     ? null
     : <Button
+        key='edit_button'
         onClick={() => setIsEditing(true)}
         size='sm'
         small
@@ -275,6 +278,7 @@ const ManagePosition = () => {
     position === null
     ? <CreateTransactionButton
         title='Confirm'
+        key='create_button'
         disabled={isFailing}
         size='md'
         txArgs={{
@@ -286,6 +290,7 @@ const ManagePosition = () => {
       />
     : <CreateTransactionButton
         title='Confirm'
+        key='update_button'
         disabled={isFailing}
         size='md'
         txArgs={{
@@ -300,6 +305,7 @@ const ManagePosition = () => {
   const updatePositionButton =
     <CreateTransactionButton
       title='Confirm'
+      key='update_button'
       disabled={isFailing}
       size='md'
       txArgs={{
@@ -314,6 +320,7 @@ const ManagePosition = () => {
   const approveHueButton =
     <CreateTransactionButton
       title='Approve'
+      key='approve_button'
       size='md'
       disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}

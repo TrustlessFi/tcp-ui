@@ -15,11 +15,10 @@ import { setStakePage, StakePage, setDecreaseAmount } from '../../slices/staking
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts, staking } = waitFor([
+  const { balances, marketInfo, ratesInfo, contracts, staking } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
-    'sdi',
     'contracts',
     'staking',
   ], selector, dispatch)
@@ -33,7 +32,6 @@ const DecreaseStake = () => {
     balances === null ||
     marketInfo === null ||
     ratesInfo === null ||
-    sdi === null ||
     contracts === null
 
   const lendHueWalletBalance =
