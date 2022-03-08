@@ -70,13 +70,16 @@ const Wallet = () => {
     // Return if chainID did not change.
     if (newChainID === store.getState().chainID) return
 
-    if (newChainID !== null) {
+    if (newChainID === null) {
+      clearUserData(dispatch)
+      clearEphemeralStorage()
+      window.location.reload()
+    } else {
       dispatch(chainIDFound(newChainID))
       dispatch(chainIDFoundForRootContracts(newChainID))
       dispatch(appInitialized())
-    } else {
+      clearUserData(dispatch)
       clearEphemeralStorage()
-      window.location.reload()
     }
   }
 
