@@ -115,7 +115,7 @@ const IncreaseStake = () => {
             </Text>
           }
         />
-        <SpacedList row spacing={20} style={{marginTop: 50}}>
+        <SpacedList row spacing={10} style={{marginTop: 50}}>
           {
             hueApproved
             ? <CreateTransactionButton
