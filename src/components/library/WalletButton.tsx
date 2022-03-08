@@ -3,7 +3,7 @@ import { useAppDispatch } from '../../app/hooks'
 import { abbreviateAddress } from '../../utils'
 import { Tag } from 'carbon-components-react'
 import { setTab } from '../../slices/tabs'
-import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
+import { Tab, tabToPath } from '../../App'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { CSSProperties } from 'react'
 

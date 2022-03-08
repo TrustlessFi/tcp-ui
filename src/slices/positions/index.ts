@@ -79,8 +79,7 @@ const positionsSlice = createChainDataSlice({
                 .div(avgDebtPerPeriod)
           }
         }
-        const theRewards = unscale(approximateRewards)
-
+        
         return {
           collateralCount: unscale(position.collateral),
           debtCount: unscale(positionDebt),

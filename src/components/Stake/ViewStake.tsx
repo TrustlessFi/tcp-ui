@@ -20,16 +20,12 @@ const ViewStake = () => {
     ratesInfo,
     sdi,
     contracts,
-    poolsCurrentData,
-    poolsMetadata,
   } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
-    'poolsCurrentData',
-    'poolsMetadata',
   ], selector, dispatch)
 
   const userAddress = selector(state => state.userAddress)

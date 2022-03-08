@@ -13,14 +13,13 @@ import RelativeLoading from '../library/RelativeLoading'
 import Center from '../library/Center'
 import {
   getE18PriceForSqrtX96Price, bnf, unscale, sqrtBigNumber, mnt, numDisplay,
-  isZeroish,
 } from '../../utils/'
 import { SLIPPAGE_TOLERANCE_BIPS } from '../../constants'
 import {
   Tile, Button, Slider, SliderOnChangeArg,
   InlineNotification,
 } from 'carbon-components-react'
-import { TransactionType, TransactionStatus } from '../../slices/transactions'
+import { TransactionType } from '../../slices/transactions'
 
 interface AddLiquidityParams {
   poolIDString: string

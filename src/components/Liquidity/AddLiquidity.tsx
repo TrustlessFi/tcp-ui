@@ -15,7 +15,7 @@ import RelativeLoading from '../library/RelativeLoading'
 import FullNumberInput from '../library/FullNumberInput'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
-import { TransactionType, TransactionStatus } from '../../slices/transactions'
+import { TransactionType } from '../../slices/transactions'
 
 interface AddLiquidityParams {
   poolIDString: string

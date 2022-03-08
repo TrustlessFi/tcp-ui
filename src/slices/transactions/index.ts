@@ -230,30 +230,6 @@ export const getTxShortName = (type: TransactionType) => {
   return ''
 }
 
-// TODO remove
-const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
-  switch(type) {
-    case TransactionType.CreatePosition:
-    case TransactionType.UpdatePosition:
-    case TransactionType.DecreaseStake:
-    case TransactionType.ApproveHue:
-      return WalletToken.Hue
-    case TransactionType.ApproveLendHue:
-    case TransactionType.IncreaseStake:
-      return WalletToken.LendHue
-    case TransactionType.ClaimAllPositionRewards:
-    case TransactionType.ClaimAllLiquidityPositionRewards:
-      return WalletToken.Tcp
-    case TransactionType.ApprovePoolToken:
-    case TransactionType.AddLiquidity:
-    case TransactionType.RemoveLiquidity:
-      return null
-    default:
-      assertUnreachable(type)
-  }
-  return null
-}
-
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
 const executeTransaction = async (

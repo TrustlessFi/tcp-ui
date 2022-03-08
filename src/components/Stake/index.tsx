@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import waitFor from '../../slices/waitFor'
 import { Switch, Route } from 'react-router-dom'
 import ViewStake from './ViewStake'

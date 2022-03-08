@@ -1,5 +1,5 @@
 import {
-  Fee, addressToERC20, zeroAddress, unique, addressToV3Pool, sum,
+  addressToERC20, zeroAddress, unique, addressToV3Pool, sum,
 } from '../../utils/'
 import ProtocolContract, { RootContract } from '../contracts/ProtocolContract';
 import {

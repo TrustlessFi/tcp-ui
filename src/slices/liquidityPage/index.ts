@@ -1,6 +1,5 @@
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
-import { PayloadAction } from '@reduxjs/toolkit'
 
 export enum LiquidityPage {
   View = 'View',

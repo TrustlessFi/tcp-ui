@@ -5,16 +5,12 @@ import {
   Tag32,
   Locked32,
   ErrorOutline32,
-  Close32,
-  Renew24,
-  Undo32,
   Reset24,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Center from '../library/Center'
 import Bold from '../library/Bold'
-import LargeText from '../library/LargeText'
 import ConnectWalletButton from '../library/ConnectWalletButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'

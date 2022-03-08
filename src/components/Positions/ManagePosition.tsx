@@ -3,7 +3,6 @@ import {
   Tag32,
   Locked32,
   ErrorOutline32,
-  Percentage32,
   Calculation32,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
@@ -14,14 +13,14 @@ import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
-import { numDisplay, roundToXDecimals, isZeroish, last, empty } from '../../utils/'
+import { numDisplay, roundToXDecimals, isZeroish, empty } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import { InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
+import { InlineNotification, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 
 const ManagePosition = () => {

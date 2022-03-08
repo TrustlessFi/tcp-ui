@@ -20,11 +20,9 @@ const ViewLiquidity = () => {
   const history = useHistory()
 
   const {
-    liquidityPage,
     poolsCurrentData,
     poolsMetadata,
   } = waitFor([
-    'liquidityPage',
     'poolsCurrentData',
     'poolsMetadata',
   ], selector, dispatch)

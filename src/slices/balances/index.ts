@@ -1,5 +1,5 @@
 import { thunkArgs, RootState } from '../fetchNodes'
-import { createChainDataSlice, SliceDataType } from '../'
+import { createChainDataSlice } from '../'
 import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
 import {
