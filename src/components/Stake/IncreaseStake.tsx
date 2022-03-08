@@ -4,15 +4,23 @@ import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
 import { TransactionType } from '../../slices/transactions'
+import { getAPR } from './library'
 import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
+import PositionInfoItem from '../library/PositionInfoItem'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import Bold from '../library/Bold'
 import { red } from '@carbon/colors';
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage, setIncreaseAmount } from '../../slices/staking'
+import {
+  Tag32,
+  Locked32,
+  ErrorOutline32,
+  Calculation32,
+} from '@carbon/icons-react';
 
 const IncreaseStake = () => {
   const dispatch = useAppDispatch()
@@ -23,12 +31,14 @@ const IncreaseStake = () => {
     ratesInfo,
     contracts,
     staking,
+    sdi,
   } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'contracts',
     'staking',
+    'sdi',
   ], selector, dispatch)
 
   const amount = staking.increaseAmount
@@ -40,7 +50,19 @@ const IncreaseStake = () => {
     balances === null ||
     marketInfo === null ||
     ratesInfo === null ||
-    contracts === null
+    contracts === null ||
+    sdi === null
+
+  const apr = dataNull ? 0 : getAPR({
+    marketInfo,
+    ratesInfo,
+    sdi,
+    lentHue:
+      balances === null || contracts === null
+        ? 0
+        : balances.tokens[contracts.Hue].balances.Accounting,
+    additional: amount,
+  })
 
   const currentWalletBalance =
     dataNull
@@ -114,6 +136,13 @@ const IncreaseStake = () => {
               in your wallet available to stake
             </Text>
           }
+        />
+        <PositionInfoItem
+          key='apr_info'
+          icon={<Calculation32 />}
+          title='New Borrow APR'
+          value={numDisplay(apr * 100, 2)}
+          unit='%'
         />
         <SpacedList row spacing={10} style={{marginTop: 50}}>
           {
