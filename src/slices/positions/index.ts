@@ -1,11 +1,11 @@
 import { RootState  } from '../fetchNodes'
 import { BigNumber } from "ethers"
-import { timeToPeriod, unscale, scale } from '../../utils'
+import { timeToPeriod, unscale, bnf } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { oneContractOneFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 import { thunkArgs } from '../fetchNodes'
-import { createChainDataSlice } from '../'
+import { createChainDataSlice, CacheDuration } from '../'
 
 import { Accounting, HuePositionNFT } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
@@ -16,8 +16,6 @@ export interface Position {
   approximateRewards: number,
   rewards: number,
   id: number,
-  updating: boolean,
-  updated: boolean,
   claimingRewards: boolean,
   claimedRewards: boolean,
 }
@@ -28,6 +26,7 @@ const positionsSlice = createChainDataSlice({
   name: 'positions',
   dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.positions,
+  cacheDuration: CacheDuration.SHORT,
   isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts'>) => {
@@ -55,9 +54,8 @@ const positionsSlice = createChainDataSlice({
         let positionDebt = position.debt
 
         // calcuate estimated position debt
-        const debtExchangeRate = scale(args.sdi.debtExchangeRate)
-        if (!position.startDebtExchangeRate.eq(0) && !position.startDebtExchangeRate.eq(debtExchangeRate)) {
-          positionDebt = positionDebt.mul(debtExchangeRate).div(position.startDebtExchangeRate)
+        if (!position.startDebtExchangeRate.eq(0) && !position.startDebtExchangeRate.eq(args.sdi.debtExchangeRate)) {
+          positionDebt = positionDebt.mul(args.sdi.debtExchangeRate).div(position.startDebtExchangeRate)
         }
 
         // calcuate estimated borrow rewards
@@ -68,29 +66,23 @@ const positionsSlice = createChainDataSlice({
 
         if (lastPeriodUpdated < marketLastUpdatePeriod)   {
           let avgDebtPerPeriod =
-            scale(args.sdi.cumulativeDebt)
+            bnf(args.sdi.cumulativeDebt)
               .sub(position.startCumulativeDebt)
               .div(marketLastUpdatePeriod - lastPeriodUpdated)
-
-          console.log({avgDebtPerPeriod: unscale(avgDebtPerPeriod), args, position})
 
           if (!avgDebtPerPeriod.eq(0)) {
             approximateRewards =
               position.debt
-                .mul(scale(args.sdi.totalTCPRewards).sub(position.startTCPRewards))
+                .mul(bnf(args.sdi.totalTCPRewards).sub(position.startTCPRewards))
                 .div(avgDebtPerPeriod)
           }
         }
-        const theRewards = unscale(approximateRewards)
-        console.log({theRewards})
-
+        
         return {
           collateralCount: unscale(position.collateral),
           debtCount: unscale(positionDebt),
           approximateRewards: unscale(approximateRewards),
           id: positionID.toNumber(),
-          updating: false,
-          updated: false,
           claimingRewards: false,
           claimedRewards: false,
         } as Position

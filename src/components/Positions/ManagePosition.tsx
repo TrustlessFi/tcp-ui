@@ -3,7 +3,6 @@ import {
   Tag32,
   Locked32,
   ErrorOutline32,
-  Percentage32,
   Calculation32,
 } from '@carbon/icons-react';
 import FullNumberInput from '../library/FullNumberInput'
@@ -14,16 +13,21 @@ import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
-import { numDisplay, roundToXDecimals, isZeroish, last, empty } from '../../utils/'
-import { setPosition, setIsUpdating, setDebtCount, setCollateralCount } from '../../slices/positionState'
+import {
+  numDisplay, roundToXDecimals, isZeroish, empty, hours, years,
+} from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import { InlineNotification, Dropdown, OnChangeData, Button, Tile } from 'carbon-components-react'
+import { InlineNotification, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
+
+const COLLATERAL_DECIMALS = 4
+const DEBT_DECIMALS = 4
+const DEFAULT_COLLATERALIZATION_RATIO = 2.5
 
 const ManagePosition = () => {
   const dispatch = useAppDispatch()
@@ -38,7 +42,6 @@ const ManagePosition = () => {
     positions,
     userAddress,
     transactions,
-    positionState,
   } = waitFor([
     'liquidationsInfo',
     'balances',
@@ -49,15 +52,17 @@ const ManagePosition = () => {
     'positions',
     'userAddress',
     'transactions',
-    'positionState',
   ], selector, dispatch)
 
-  const defaultCollateralizationRatio = 2.5
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
-  const [deleteSelected, setDeleteSelected] = useState(false)
 
-  const { collateralCount, debtCount, isUpdating, position } = positionState
+  const [deleteSelected, setDeleteSelected] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isCreating, setIsCreating] = useState(false)
+
+  const [collateralCount, setCollateralCount] = useState(0)
+  const [debtCount, setDebtCount] = useState(0)
 
   const dataNull =
     liquidationsInfo === null ||
@@ -69,29 +74,45 @@ const ManagePosition = () => {
     positions === null ||
     userAddress === null
 
-  const updatePosition = (newPosition: Position) => {
-    dispatch(setPosition(newPosition))
-    dispatch(setCollateralCount(newPosition.collateralCount))
-    updateDebtCountImpl(newPosition.debtCount)
-    dispatch(setIsUpdating(false))
-  }
+  const getHourAPR = () =>
+    ratesInfo === null || ratesInfo.interestRate <= 0
+    ? 1
+    : 1 + ((ratesInfo.interestRate * hours(1)) / years(1))
 
   useEffect(() => {
-    if (positions === null) return
-    if (positionState.position !== null) return
-    const countPositions = Object.values(positions).length
+    if (positions === null || ratesInfo === null) return
     setDeleteSelected(false)
-    if (countPositions === 0) {
-      dispatch(setIsUpdating(true))
-      dispatch(setPosition(null))
-      return
+    const noPositions = Object.values(positions).length === 0
+
+    const setCreating = (isCreating: boolean, collateralCount = 0, debtCount = 0) => {
+      setCollateralCount(isCreating ? 0 : collateralCount)
+      setDebtCount(isCreating ? 0 : debtCount)
+      setIsCreating(isCreating)
+      setIsEditing(isCreating)
     }
 
-    updatePosition(last(Object.values(positions)))
-  }, [positions])
+    if (noPositions) {
+      setCreating(true)
+    } else {
+      const position: Position = Object.values(positions)[0]
+      if (position.collateralCount === 0 && position.debtCount === 0) {
+        setCreating(true)
+      } else {
+        setCreating(false, position.collateralCount, position.debtCount * getHourAPR())
+      }
+    }
+  }, [positions, ratesInfo])
+
+  console.log({positions})
+
+  const position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
+  const positionDebtCount =
+    position === null
+    ? 0
+    : position.debtCount * getHourAPR()
 
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
-  const debtIncrease = parseFloat(roundToXDecimals(debtCount - (position === null ? 0 : position.debtCount), 2))
+  const debtIncrease = parseFloat(roundToXDecimals(debtCount - positionDebtCount, DEBT_DECIMALS))
   const isCollateralChanged = Math.abs(collateralIncrease) > 0.001
   const isDebtChanged = Math.abs(debtIncrease) > 0.1
   const isDebtDecrease = isDebtChanged && debtIncrease < 0
@@ -102,7 +123,7 @@ const ManagePosition = () => {
   const previousCollateralization =
     pricesInfo === null || position === null
     ? null
-    : (position.collateralCount * pricesInfo.ethPrice) / position.debtCount
+    : (position.collateralCount * pricesInfo.ethPrice) / positionDebtCount
 
   const liquidationPrice = marketInfo === null ? 0 : (debtCount * marketInfo.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
@@ -111,7 +132,7 @@ const ManagePosition = () => {
     marketInfo === null
     || position === null
     ? null
-    : (position.debtCount * marketInfo.collateralizationRequirement) / position.collateralCount
+    : (positionDebtCount * marketInfo.collateralizationRequirement) / position.collateralCount
 
   const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
@@ -145,7 +166,7 @@ const ManagePosition = () => {
 
   const updateCollateralCount = (countCollateral: number) => {
     if (countCollateral !== 0) setDeleteSelected(false)
-    dispatch(setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true))))
+    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, COLLATERAL_DECIMALS, true)))
   }
 
   const updateDebtCount = (countDebt: number) => {
@@ -154,12 +175,12 @@ const ManagePosition = () => {
 
   const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
     if (ethPrice === null) return
-    updateDebtCountImpl((countCollateral * ethPrice) / defaultCollateralizationRatio)
+    updateDebtCountImpl((countCollateral * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO)
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
     if (countDebt !== 0) setDeleteSelected(false)
-    dispatch(setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true))))
+    setDebtCount(countDebt)
   }
 
   const cancelCreate = () => {
@@ -180,11 +201,11 @@ const ManagePosition = () => {
         .filter(tx => tx.type === TransactionType.ApproveHue || tx.type === TransactionType.UpdatePosition))
     ) return
 
-    dispatch(setIsUpdating(false))
+    setIsEditing(false)
 
     if (position !== null) {
-      updateDebtCountImpl(position!.debtCount)
-      updateCollateralCount(position!.collateralCount)
+      updateDebtCountImpl(positionDebtCount)
+      updateCollateralCount(position.collateralCount)
     }
   }
 
@@ -212,9 +233,9 @@ const ManagePosition = () => {
       message: 'You don\'t have enough Hue in your wallet.',
       silent: debtIsFocused,
       failing:
-        (balances === null ||
+        balances === null ||
         contracts === null ||
-        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0)),
+        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0),
     },
     undercollateralized: {
       message: 'Your position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
@@ -235,10 +256,9 @@ const ManagePosition = () => {
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
 
-  const isCreating = positions !== null && position === null
-
   const cancelCreateButton =
     <Button
+      key='cancel_create_button'
       disabled={collateralIncrease === 0 && debtIncrease === 0}
       onClick={cancelCreate}
       kind='secondary'
@@ -248,6 +268,7 @@ const ManagePosition = () => {
 
   const cancelUpdateButton =
     <Button
+      key='cancel_update_button'
       onClick={cancelUpdate}
       kind='secondary'
       size='md'>
@@ -255,10 +276,11 @@ const ManagePosition = () => {
     </Button>
 
   const editButton =
-    isUpdating
+    isEditing
     ? null
     : <Button
-        onClick={() => dispatch(setIsUpdating(true))}
+        key='edit_button'
+        onClick={() => setIsEditing(true)}
         size='sm'
         small
         kind='primary'>
@@ -266,28 +288,44 @@ const ManagePosition = () => {
       </Button>
 
   const createPositionButton =
-    <CreateTransactionButton
-      title='Confirm'
-      disabled={isFailing}
-      size='md'
-      txArgs={{
-        type: TransactionType.CreatePosition,
-        collateralCount,
-        debtCount,
-        Market: contracts === null ? '' : contracts.Market,
-      }}
-    />
+    position === null
+    ? <CreateTransactionButton
+        title='Confirm'
+        key='create_button'
+        disabled={isFailing}
+        size='md'
+        txArgs={{
+          type: TransactionType.CreatePosition,
+          collateralCount,
+          debtCount,
+          Market: contracts === null ? '' : contracts.Market,
+        }}
+      />
+    : <CreateTransactionButton
+        title='Confirm'
+        key='update_button'
+        disabled={isFailing}
+        size='md'
+        txArgs={{
+          type: TransactionType.UpdatePosition,
+          positionID: position === null ? 0 :  position.id,
+          collateralIncrease: collateralCount,
+          debtIncrease: debtCount,
+          Market: contracts === null ? '' : contracts.Market,
+        }}
+      />
 
   const updatePositionButton =
     <CreateTransactionButton
       title='Confirm'
+      key='update_button'
       disabled={isFailing}
       size='md'
       txArgs={{
         type: TransactionType.UpdatePosition,
         positionID: position === null ? 0 :  position.id,
         collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
+        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(positionDebtCount * 2) : debtCount - positionDebtCount) : 0,
         Market: contracts === null ? '' : contracts.Market,
       }}
     />
@@ -295,6 +333,7 @@ const ManagePosition = () => {
   const approveHueButton =
     <CreateTransactionButton
       title='Approve'
+      key='approve_button'
       size='md'
       disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
@@ -311,15 +350,15 @@ const ManagePosition = () => {
     debtIncrease === 0
     ? null
     : (debtIncrease > 0
-      ? {action: 'receive', amount: `${numDisplay(debtIncrease, 2)} Hue`}
-      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), 2)} Hue`})
+      ? {action: 'receive', amount: `${numDisplay(debtIncrease, DEBT_DECIMALS)} Hue`}
+      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), DEBT_DECIMALS)} Hue`})
 
   const collateralChangeSuccessDisplay: null | changeDisplay =
     collateralIncrease === 0
     ? null
     : (collateralIncrease > 0
-      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, 4)} Eth`}
-      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), 4)} Eth`})
+      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, COLLATERAL_DECIMALS)} Eth`}
+      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), COLLATERAL_DECIMALS)} Eth`})
 
   const successDisplay: ReactFragment | null =
     debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
@@ -353,35 +392,19 @@ const ManagePosition = () => {
             </Center>
           </div>
           {
-            position !== null && positions !== null && Object.values(positions).length > 1
-            ? <Dropdown
-                ariaLabel="Dropdown position ID selector"
-                inline
-                id='dropdown'
-                items={Object.values(positions).map((position: Position) => position.id)}
-                onChange={(data: OnChangeData<number>) => {
-                  const positionID = data.selectedItem
-                  if (positions === null || positionID === null || positionID === undefined) return
-                  updatePosition(positions[positionID])
-                }}
-                style={{width: 250}}
-                itemToString={(itemID: number) => `Position ${itemID}`}
-                initialSelectedItem={position.id}
-                label='Select Position'
-                titleText={<></>}
-              />
-            : <LargeText size={24}>
-                {isCreating ? 'Create Position' : 'Your Position'}
-              </LargeText>
+            <LargeText size={24}>
+              {isCreating ? 'Create Position' : 'Your Position'}
+            </LargeText>
           }
         </div>
         <FullNumberInput
+          key='collateral_input'
           title='Collateral'
           action={updateCollateralCount}
-          value={collateralCount}
+          value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
           unit='Eth'
           light
-          frozen={!isUpdating || deleteSelected}
+          frozen={!isEditing || deleteSelected}
           defaultButton={{
             title: 'Max',
             action: setCollateralCountToMax
@@ -392,7 +415,7 @@ const ManagePosition = () => {
               You have
               {' '}
               <Bold>
-                {balances === null ? '-' : roundToXDecimals(balances.userEthBalance, 4, true)}
+                {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
               </Bold>
               {' '}
               Eth in your wallet
@@ -400,14 +423,15 @@ const ManagePosition = () => {
           }
         />
         <FullNumberInput
+          key='debt_input'
           title='Debt'
           action={updateDebtCount}
-          value={debtCount}
+          value={parseFloat(roundToXDecimals(debtCount, DEBT_DECIMALS))}
           unit='Hue'
           light
-          frozen={!isUpdating || deleteSelected}
+          frozen={!isEditing || deleteSelected}
           defaultButton={{
-            title: `${defaultCollateralizationRatio * 100}%`,
+            title: `${DEFAULT_COLLATERALIZATION_RATIO * 100}%`,
             action: setDebtToHighCollateralRatio,
           }}
           onFocusUpdate={setDebtIsFocused}
@@ -420,7 +444,7 @@ const ManagePosition = () => {
                   contracts === null
                   || balances === null
                   ? '-'
-                  : roundToXDecimals(balances.tokens[contracts.Hue].userBalance, 2, true)}
+                  : numDisplay(balances.tokens[contracts.Hue].userBalance, DEBT_DECIMALS)}
               </Bold>
               {' '}
               Hue in your wallet
@@ -429,6 +453,7 @@ const ManagePosition = () => {
         />
         <SpacedList spacing={20}>
           <PositionInfoItem
+            key='liquidation_info'
             icon={<ErrorOutline32 />}
             title='Liquidation Price'
             value={liquidationPriceDisplay}
@@ -443,6 +468,7 @@ const ManagePosition = () => {
             }
           />
           <PositionInfoItem
+            key='price_info'
             icon={<Tag32 />}
             title='Current Price'
             value={ethPriceDisplay}
@@ -466,6 +492,7 @@ const ManagePosition = () => {
             }
           />
           <PositionInfoItem
+            key='apr_info'
             icon={<Calculation32 />}
             title='Current Borrow APR'
             value={interestRateDisplay}
@@ -507,7 +534,7 @@ const ManagePosition = () => {
               isCreating
               ? [createPositionButton, cancelCreateButton]
               : (
-                  isUpdating
+                  isEditing
                   ? (
                       isDebtDecrease && !hueApproved
                       ? [approveHueButton, cancelUpdateButton]
@@ -517,20 +544,22 @@ const ManagePosition = () => {
             }
           </SpacedList>
           {
-            isUpdating
+            isEditing
             && position !== null
             ? <div
                 style={{float: 'right'}}>
                 <Button
-                  disabled={deleteSelected || (position.collateralCount === 0 && position.debtCount === 0)}
+                  disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
                   onClick={() => {
-                    dispatch(setDebtCount(0))
-                    dispatch(setCollateralCount(0))
+                    setDebtCount(0)
+                    setCollateralCount(0)
                     setDeleteSelected(true)
                   }}
                   kind='danger--ghost'
                   size='md'>
-                  Close
+                  <span style={{whiteSpace: 'nowrap'}}>
+                    Close Position
+                  </span>
                 </Button>
               </div>
             : null

@@ -15,11 +15,10 @@ import { setStakePage, StakePage, setDecreaseAmount } from '../../slices/staking
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, sdi, contracts, staking } = waitFor([
+  const { balances, marketInfo, ratesInfo, contracts, staking } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
-    'sdi',
     'contracts',
     'staking',
   ], selector, dispatch)
@@ -33,7 +32,6 @@ const DecreaseStake = () => {
     balances === null ||
     marketInfo === null ||
     ratesInfo === null ||
-    sdi === null ||
     contracts === null
 
   const lendHueWalletBalance =
@@ -43,7 +41,7 @@ const DecreaseStake = () => {
         ? 0
         : balances.tokens[contracts.LendHue].userBalance - 1e-4)
 
-  const lentHueCount = (dataNull ? 0 : lendHueWalletBalance * marketInfo.valueOfLendTokensInHue)
+  const lentHueCount = marketInfo === null ? 0 : lendHueWalletBalance * marketInfo.valueOfLendTokensInHue
   const newLentHueCount = lentHueCount - amount
   const lendHueToPayBack = marketInfo === null ? 0 : amount / marketInfo.valueOfLendTokensInHue
 
@@ -77,7 +75,7 @@ const DecreaseStake = () => {
           </Text>
           <SpacedList row spacing={5}>
             <Text size={28}>
-              {numDisplay(lentHueCount, 2)}
+              {numDisplay(lentHueCount, 4)}
             </Text>
             <Text size={12}>
               Hue
@@ -96,7 +94,7 @@ const DecreaseStake = () => {
             action: () => setAmount(lentHueCount),
           }}
         />
-        <SpacedList row spacing={20} style={{marginTop: 50}}>
+        <SpacedList row spacing={10} style={{marginTop: 50}}>
           {
             lendHueApproved
             ? <CreateTransactionButton

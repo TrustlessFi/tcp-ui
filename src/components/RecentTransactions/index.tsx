@@ -8,9 +8,8 @@ import SpacedList from '../library/SpacedList'
 import LargeText from '../library/LargeText'
 import { TokenIcon, getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
-import ConnectWalletButton from '../library/ConnectWalletButton'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
-import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
+import { getEtherscanTxLink } from '../library/ExplorerLink'
 import { getRecencyString, numDisplay } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
@@ -120,7 +119,7 @@ const WalletInfo = () => {
               balance={getBalance(ProtocolContract.Hue)}
             />
             <TokenCard
-              token={WalletToken.Hue}
+              token={WalletToken.LendHue}
               unit='Hue Staked'
               balance={hueStaked}
             />
@@ -135,6 +134,7 @@ const WalletInfo = () => {
   )
 }
 
+/*
 const ViewOnEtherscanButton = ({
   title,
 }: {
@@ -158,6 +158,7 @@ const ViewOnEtherscanButton = ({
       </Button>
   )
 }
+*/
 
 const RecentTransactions = () => {
   const dispatch = useAppDispatch()

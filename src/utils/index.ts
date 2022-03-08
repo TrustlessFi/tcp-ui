@@ -129,9 +129,6 @@ export const numDisplay = (
   return addCommas(roundToXDecimals(val, decimals))
 }
 
-// ======================= Transactions =========================
-export const SLIPPAGE_TOLERANCE = 0.05
-
 // ======================= Constants ============================
 export const uint256Max = '115792089237316195423570985008687907853269984665640564039457584007913129639935'
 export const uint255Max = '57896044618658097711785492504343953926634992332820282019728792003956564819967'
@@ -196,7 +193,7 @@ export const last = <T>(array: Array<T>) => {
 
 export const notEmpty = <T>(array: Array<T>) => array.length > 0
 
-export const empty = <T>(array: Array<T>) => array.length == 0
+export const empty = <T>(array: Array<T>) => array.length === 0
 
 export const unique = <T>(array: Array<T>): Array<T> =>
   array.filter((value: T, index: number) => array.indexOf(value) === index)
@@ -452,6 +449,22 @@ export const addressToProtocolToken = (address: string) =>
 export const addressToV3Pool = (address: string) =>
   new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool
 
+
+export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
+  let y = bnf(input)
+  let z = bnf(0)
+  if (y.gt(3)) {
+    z = y
+    let x = (y.div(2)).add(1)
+    while(x.lt(z)) {
+      z = x
+      x = ((y.div(x)).add(x)).div(2)
+    }
+  } else if (!y.isZero()) {
+    z = bnf(1)
+  }
+  return z
+}
 
 // ======================= ETHEREUM TYPESCRIPT ============================
 interface EthereumRequestArguments {

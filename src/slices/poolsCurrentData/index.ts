@@ -13,34 +13,72 @@ import {
   idToIdAndNoArg,
   idToIdAndArg,
 } from '@trustlessfi/multicall'
-import { Prices, UniswapV3Pool, Accounting, Rewards } from '@trustlessfi/typechain'
+import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
+import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
+
 import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
+
+type poolPosition = PromiseType<ReturnType<Accounting['getPoolPosition']>>
 
 export interface poolsCurrentData {
   [poolID: string]: {
+    sqrtPriceX96: string
     instantTick: number
     poolLiquidity: string
     cumulativeLiquidity: string
     totalRewards: string
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
+    userLiquidityPosition: {
+      cumulativeLiquidity: string
+      kickbackPortion: string
+      kickbackDestination: string
+      lastBlockPositionIncreased: number
+      lastTimeRewarded: number
+      liquidity: string
+      owner: string
+      totalRewards: string
+    }
   }
 }
 
 const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
-  dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo'],
+  dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo', 'userAddress'],
   stateSelector: (state: RootState) => state.poolsCurrentData,
   thunkFunction:
-    async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo'>) => {
+    async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo' | 'userAddress'>) => {
       const provider = getProvider()
       const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
       const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
+      const charmWrapper = new Contract(zeroAddress, charmWrapperArtifact.abi, provider) as CharmWrapper
 
-      const poolAddresses = Object.keys(args.poolsMetadata)
+      const charmPoolAddresses = Object.keys(args.poolsMetadata)
+
+      const { uniswapPoolAddresses, userLiquidityPositions } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          uniswapPoolAddresses: manyContractOneFunctionMC(
+            charmWrapper,
+            idToIdAndNoArg(charmPoolAddresses),
+            'pool',
+            rc.String,
+          ),
+          userLiquidityPositions: oneContractOneFunctionMC(
+            accounting,
+            'getPoolPosition',
+            (result: any) => result as poolPosition,
+            Object.fromEntries(
+              charmPoolAddresses.map(
+                poolAddress => [poolAddress, [args.userAddress, poolAddress]]
+              )
+            ),
+          ),
+        }
+      )
 
       const {
         sqrtPriceX96Instant,
@@ -52,7 +90,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           sqrtPriceX96Instant: manyContractOneFunctionMC(
             poolContract,
-            idToIdAndNoArg(poolAddresses),
+            idToIdAndNoArg(Object.values(uniswapPoolAddresses)),
             'slot0',
             rc.String,
           ),
@@ -67,24 +105,35 @@ const poolsCurrentDataSlice = createChainDataSlice({
             accounting,
             'getRewardStatus',
             (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
-            idToIdAndArg(poolAddresses),
+            idToIdAndArg(charmPoolAddresses),
           ),
           poolsLiquidity: oneContractOneFunctionMC(
             accounting,
             'poolLiquidity',
             rc.BigNumberToString,
-            idToIdAndArg(poolAddresses),
+            idToIdAndArg(charmPoolAddresses),
           ),
         }
       )
 
-      return Object.fromEntries(poolAddresses.map(address => [address, {
-        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[address]),
+      return Object.fromEntries(charmPoolAddresses.map(address => [address, {
+        sqrtPriceX96: sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString(),
+        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]]),
         poolLiquidity: poolsLiquidity[address],
         cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
         totalRewards: rs[address].totalRewards.toString(),
         lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
         currentPeriod: currentRewardsInfo.currentPeriod,
+        userLiquidityPosition: {
+          cumulativeLiquidity: userLiquidityPositions[address].cumulativeLiquidity.toString(),
+          kickbackPortion: userLiquidityPositions[address].kickbackPortion.toString(),
+          kickbackDestination: userLiquidityPositions[address].kickbackDestination,
+          lastBlockPositionIncreased: userLiquidityPositions[address].lastBlockPositionIncreased.toNumber(),
+          lastTimeRewarded: userLiquidityPositions[address].lastTimeRewarded.toNumber(),
+          liquidity: userLiquidityPositions[address].liquidity.toString(),
+          owner: userLiquidityPositions[address].owner,
+          totalRewards: userLiquidityPositions[address].totalRewards.toString(),
+        }
       }]))
     },
 })

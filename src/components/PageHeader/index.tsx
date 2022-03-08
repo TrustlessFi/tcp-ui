@@ -23,7 +23,7 @@ import {
   Button,
 } from 'carbon-components-react'
 import { Menu32 } from '@carbon/icons-react'
-import { Tab, tabDisplay, tabHidden } from '../../App'
+import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
 
 import DebugUtils from '../library/DebugUtils'
 import Wallet from './Wallet'
@@ -69,8 +69,6 @@ const PageHeader = () => {
       : path.substring(0, slashLocation)
   }
 
-  const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
-
   const pathToTab = (path: string): Tab => {
     if (path === '/' || path === '') return first(Object.values(Tab))
 
@@ -78,7 +76,7 @@ const PageHeader = () => {
   }
 
   const updateTab = (tab: Tab, e: MouseEvent<Element>) => {
-    history.replace(tabToPath(tab))
+    history.push(tabToPath(tab))
     dispatch(setTab(tab))
     e.preventDefault()
   }

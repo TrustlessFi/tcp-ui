@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
-import { useEffect, CSSProperties } from "react"
+import { CSSProperties } from "react"
 import { setSwitchNetworkButtonClicked } from '../../slices/wallet'
 import { ChainID, chainIDToName } from '@trustlessfi/addresses'
 import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
@@ -18,10 +18,8 @@ const SwitchNetworkButton = ({
   const dispatch = useAppDispatch()
 
   const {
-    chainID,
     wallet,
   } = waitFor([
-    'chainID',
     'wallet',
   ], selector, dispatch)
 

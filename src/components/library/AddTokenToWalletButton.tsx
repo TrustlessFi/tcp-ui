@@ -62,7 +62,7 @@ export const TokenIcon = ({
   walletToken: WalletToken | 'Eth'
   size?: number
 }) => {
-  return <img src={getTokenIcon(walletToken)} width={size === undefined ? 32 : size} />
+  return <img alt={`token ${walletToken}`} src={getTokenIcon(walletToken)} width={size === undefined ? 32 : size} />
 }
 
 const AddTokenToWalletButton = ({

@@ -28,7 +28,7 @@ declare global {
 export enum Tab {
   Position = 'Position',
   Stake = 'Stake',
-  // Liquidity = 'Liquidity',
+  Liquidity = 'Liquidity',
   Transactions = 'Transactions',
 }
 
@@ -39,10 +39,12 @@ export const tabHidden: { [key in Tab]?: true } = {
   Transactions: true
 }
 
+export const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
+
 const tabToRender: {[key in Tab]: ReactNode} = {
   Position: <Positions />,
   Stake: <Stake />,
-  // Liquidity: <Liquidity />,
+  Liquidity: <Liquidity />,
   Transactions: <RecentTransactions />,
 }
 

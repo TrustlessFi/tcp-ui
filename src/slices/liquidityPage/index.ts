@@ -1,6 +1,5 @@
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
-import { PayloadAction } from '@reduxjs/toolkit'
 
 export enum LiquidityPage {
   View = 'View',
@@ -9,15 +8,11 @@ export enum LiquidityPage {
 }
 
 export interface liquidityPageState {
-  increaseAmount: number
-  decreaseAmount: number
-  liquidityPage: LiquidityPage
+  liquidityPageNonce: number
 }
 
 const initialState = {
-  increaseAmount: 0,
-  decreaseAmount: 0,
-  liquidityPage: LiquidityPage.View
+  liquidityPageNonce: 0,
 } as liquidityPageState
 
 const liquidityPageSlice = createLocalSlice({
@@ -27,23 +22,15 @@ const liquidityPageSlice = createLocalSlice({
   cacheDuration: CacheDuration.NONE,
   isUserData: false,
   reducers: {
-    setIncreaseAmount: (state, action: PayloadAction<number>) => {
-      state.increaseAmount = action.payload
+    incrementNonce: (state) => {
+      state.liquidityPageNonce++
     },
-    setDecreaseAmount: (state, action: PayloadAction<number>) => {
-      state.decreaseAmount = action.payload
-    },
-    setLiquidityPage: (state, action: PayloadAction<LiquidityPage>) => {
-      state.liquidityPage = action.payload
+    resetNonce: (state) => {
+      state.liquidityPageNonce = 0
     },
   },
 })
 
-export const {
-  setIncreaseAmount,
-  setDecreaseAmount,
-  setLiquidityPage,
-  clearData
-} = liquidityPageSlice.slice.actions
+export const { incrementNonce, resetNonce } = liquidityPageSlice.slice.actions
 
 export default liquidityPageSlice

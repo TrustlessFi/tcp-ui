@@ -1,6 +1,6 @@
 import { thunkArgs, RootState } from '../fetchNodes'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { createChainDataSlice, CacheDuration } from '../'
+import { createChainDataSlice } from '../'
 import { Market } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { mnt } from '../../utils'

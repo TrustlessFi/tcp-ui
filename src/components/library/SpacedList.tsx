@@ -36,7 +36,7 @@ const SpacedList = ({
 }
 
 SpacedList.defaultProps = {
-  spacing: 8,
+  spacing: 10,
 }
 
 export default SpacedList

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import waitFor from '../../slices/waitFor'
 import { Switch, Route } from 'react-router-dom'
 import ViewStake from './ViewStake'
@@ -33,13 +33,10 @@ const Stake = () => {
     'staking',
   ], selector, dispatch)
 
-  console.log({staking})
-
   const stakePage = staking.stakePage
 
   useEffect(() => {
     const currentPath = currentLocation.pathname
-    console.log({currentPath, isAdd: currentPath.startsWith('/stake/add')})
     if (currentPath.startsWith('/stake/add')) dispatch(setStakePage(StakePage.Add))
     else if (currentPath.startsWith('/stake/withdraw')) dispatch(setStakePage(StakePage.Withdraw))
     else if (currentPath.startsWith('/stake')) dispatch(setStakePage(StakePage.View))
@@ -47,10 +44,8 @@ const Stake = () => {
 
 
   useEffect(() => {
-    console.log('about to switch on stake page', {stakePage, currentPath: currentLocation.pathname})
-
     const updatePath = (dest: string) => {
-      if (currentLocation.pathname !== dest) history.replace(dest)
+      if (currentLocation.pathname !== dest) history.push(dest)
     }
 
     switch(stakePage) {

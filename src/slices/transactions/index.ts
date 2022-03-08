@@ -9,17 +9,16 @@ import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import { Market, Rewards } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
-import { scale, SLIPPAGE_TOLERANCE, timeMS } from '../../utils'
+import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
-import { days, minutes, mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
-import { zeroAddress, bnf, uint256Max } from '../../utils/'
+import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
+import { bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
-import { clearPositionState } from '../positionState'
 
 export enum WalletToken {
   Hue = 'Hue',
@@ -37,6 +36,8 @@ export enum TransactionType {
   ClaimAllLiquidityPositionRewards,
   ClaimAllPositionRewards,
   ApprovePoolToken,
+  AddLiquidity,
+  RemoveLiquidity,
 }
 
 export enum TransactionStatus {
@@ -88,7 +89,6 @@ export interface txApprovePoolToken {
   type: TransactionType.ApprovePoolToken
   tokenAddress: string
   Rewards: string
-  poolAddress: string,
   symbol: string
 }
 
@@ -96,6 +96,37 @@ export interface txApproveHue {
   type: TransactionType.ApproveHue
   Hue: string
   spenderAddress: string
+}
+
+export interface txApproveLendHue {
+  type: TransactionType.ApproveLendHue
+  LendHue: string
+  spenderAddress: string
+}
+
+interface tokenInfo {
+  count: number
+  decimals: number
+  isWeth: boolean
+}
+
+export interface txAddLiquidity {
+  type: TransactionType.AddLiquidity
+  poolID: number
+  token0: tokenInfo
+  token1: tokenInfo
+  Rewards: string
+}
+
+export interface txRemoveLiquidity {
+  type: TransactionType.RemoveLiquidity
+  poolID: number
+  Rewards: string
+  liquidity: string
+  amount0Min: string
+  amount1Min: string
+  liquidityPercentage: number
+  poolName: string
 }
 
 export interface txApproveLendHue {
@@ -113,7 +144,9 @@ export type TransactionArgs =
   txClaimLiquidityPositionRewards |
   txApprovePoolToken |
   txApproveHue |
-  txApproveLendHue
+  txApproveLendHue |
+  txAddLiquidity |
+  txRemoveLiquidity
 
 export interface TransactionData {
   args: TransactionArgs
@@ -157,6 +190,10 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve ' + args.symbol
+    case TransactionType.AddLiquidity:
+      return 'Add liquidity to pool ' + args.poolID
+    case TransactionType.RemoveLiquidity:
+      return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
     default:
       assertUnreachable(type)
   }
@@ -183,32 +220,14 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Claim All Liquidity Rewards'
     case TransactionType.ApprovePoolToken:
       return 'Approve Token'
+    case TransactionType.AddLiquidity:
+      return 'Add Liquidity'
+    case TransactionType.RemoveLiquidity:
+      return 'Withdraw Liquidity'
     default:
       assertUnreachable(type)
   }
   return ''
-}
-
-// TODO remove
-const getTokenAssociatedWithTx = (type: TransactionType): WalletToken | null => {
-  switch(type) {
-    case TransactionType.CreatePosition:
-    case TransactionType.UpdatePosition:
-    case TransactionType.DecreaseStake:
-    case TransactionType.ApproveHue:
-      return WalletToken.Hue
-    case TransactionType.ApproveLendHue:
-    case TransactionType.IncreaseStake:
-      return WalletToken.LendHue
-    case TransactionType.ClaimAllPositionRewards:
-    case TransactionType.ClaimAllLiquidityPositionRewards:
-      return WalletToken.Tcp
-    case TransactionType.ApprovePoolToken:
-      return null
-    default:
-      assertUnreachable(type)
-  }
-  return null
 }
 
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
@@ -266,6 +285,39 @@ const executeTransaction = async (
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
       return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
 
+    case TransactionType.AddLiquidity:
+      const amount0Desired = scale(args.token0.count, args.token0.decimals)
+      const amount1Desired = scale(args.token1.count, args.token1.decimals)
+      const amount0Min = amount0Desired.mul(95).div(100)
+      const amount1Min = amount1Desired.mul(95).div(100)
+
+      const token0Value = args.token0.isWeth ? amount0Desired : bnf(0)
+      const token1Value = args.token1.isWeth ? amount1Desired : bnf(0)
+      const value = token0Value.add(token1Value)
+
+      return await getRewards(args.Rewards).deposit(
+        {
+          poolID: args.poolID,
+          amount0Desired,
+          amount1Desired,
+          amount0Min,
+          amount1Min,
+        },
+        UIID,
+        { value },
+      )
+
+    case TransactionType.RemoveLiquidity:
+      return await getRewards(args.Rewards).withdraw(
+        {
+          poolID: args.poolID,
+          liquidity: args.liquidity,
+          amount0Min: args.amount0Min,
+          amount1Min: args.amount1Min,
+        },
+        UIID
+      )
+
     default:
       assertUnreachable(type)
   }
@@ -297,30 +349,29 @@ export const waitForTransaction = async (
     const type = tx.type
 
     const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
+    const clearSDI = () => dispatch(allSlices.sdi.slice.actions.clearData())
     const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
     const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
-    // const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
+    const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
+    const goToLiquidityBasePage = () => dispatch(allSlices.liquidityPage.slice.actions.incrementNonce())
 
     switch (type) {
       case TransactionType.CreatePosition:
       case TransactionType.UpdatePosition:
-        dispatch(clearPositionState())
-        clearPositions()
+      case TransactionType.IncreaseStake:
+      case TransactionType.DecreaseStake:
+        clearSDI()
         clearMarketInfo()
         clearBalances()
+        clearPositions()
+        clearStaking()
         break
       case TransactionType.ClaimAllPositionRewards:
         clearPositions()
         clearMarketInfo()
         clearBalances()
-        break
-      case TransactionType.IncreaseStake:
-      case TransactionType.DecreaseStake:
-        clearBalances()
-        clearMarketInfo()
-        clearStaking()
         break
       case TransactionType.ClaimAllLiquidityPositionRewards:
         clearRewardsInfo()
@@ -330,6 +381,12 @@ export const waitForTransaction = async (
       case TransactionType.ApproveHue:
       case TransactionType.ApproveLendHue:
         clearBalances()
+        break
+      case TransactionType.AddLiquidity:
+      case TransactionType.RemoveLiquidity:
+        clearBalances()
+        clearPoolsCurrentData()
+        goToLiquidityBasePage()
         break
     default:
       assertUnreachable(type)

@@ -20,19 +20,13 @@ const ViewStake = () => {
     ratesInfo,
     sdi,
     contracts,
-    poolsCurrentData,
-    poolsMetadata,
   } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
-    'poolsCurrentData',
-    'poolsMetadata',
   ], selector, dispatch)
-
-  console.log({poolsCurrentData, poolsMetadata})
 
   const userAddress = selector(state => state.userAddress)
 
@@ -56,7 +50,7 @@ const ViewStake = () => {
   })
 
   const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
-  const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount - 1e-4
+  const lentHueCount = protoLentHueCount < 1e-3 ? 0 : protoLentHueCount
 
   const UPDATE_FREQUENCY_MS = 100
 
@@ -92,7 +86,7 @@ const ViewStake = () => {
             <Bold>{aprDisplay}%</Bold>
           </Text>
         </SpacedList>
-        <SpacedList row spacing={20}>
+        <SpacedList row spacing={10}>
           <Button
             key='stake'
             onClick={() => dispatch(setStakePage(StakePage.Add))}
