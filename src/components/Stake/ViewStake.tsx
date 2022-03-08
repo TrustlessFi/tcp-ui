@@ -32,8 +32,6 @@ const ViewStake = () => {
     'poolsMetadata',
   ], selector, dispatch)
 
-  console.log({poolsCurrentData, poolsMetadata})
-
   const userAddress = selector(state => state.userAddress)
 
   const [multiplier, setMultiplier] = useState(1.0)

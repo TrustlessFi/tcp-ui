@@ -136,10 +136,7 @@ export const createChainDataSlice = <
         : getLocalStorageSliceState<Value>(name)),
     reducers: {
       clearData: state => {
-        console.log(`inside clearData for slice ${name}`)
-        console.log("theState: ", {...state, value: state.value})
         state.value = null
-        console.log("theState: ", {...state, value: state.value})
       },
       ...reducers,
     },

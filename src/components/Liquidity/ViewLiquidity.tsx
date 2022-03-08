@@ -48,7 +48,6 @@ const ViewLiquidity = () => {
   const totalRewardsPortion = Object.values(poolsMetadata).map(md => md.rewardsPortion).reduce(sum)
 
   const poolsData = Object.entries(poolsMetadata).map(([address, pool]) => {
-    console.log({pool, totalRewardsPortion})
     return {
       portion: pool.rewardsPortion / totalRewardsPortion,
       title: pool.title,

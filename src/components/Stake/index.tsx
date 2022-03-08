@@ -33,13 +33,10 @@ const Stake = () => {
     'staking',
   ], selector, dispatch)
 
-  console.log({staking})
-
   const stakePage = staking.stakePage
 
   useEffect(() => {
     const currentPath = currentLocation.pathname
-    console.log({currentPath, isAdd: currentPath.startsWith('/stake/add')})
     if (currentPath.startsWith('/stake/add')) dispatch(setStakePage(StakePage.Add))
     else if (currentPath.startsWith('/stake/withdraw')) dispatch(setStakePage(StakePage.Withdraw))
     else if (currentPath.startsWith('/stake')) dispatch(setStakePage(StakePage.View))
@@ -47,8 +44,6 @@ const Stake = () => {
 
 
   useEffect(() => {
-    console.log('about to switch on stake page', {stakePage, currentPath: currentLocation.pathname})
-
     const updatePath = (dest: string) => {
       if (currentLocation.pathname !== dest) history.push(dest)
     }

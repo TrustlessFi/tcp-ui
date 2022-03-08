@@ -70,48 +70,32 @@ const ManagePosition = () => {
     positions === null ||
     userAddress === null
 
-  console.log({
-    dataNull,
-    liquidationsInfo,
-    balances,
-    pricesInfo,
-    marketInfo,
-    ratesInfo,
-    contracts,
-    positions,
-    userAddress,
-  })
-
   useEffect(() => {
     if (positions !== null) {
       setDeleteSelected(false)
       const noPositions = Object.values(positions).length === 0
 
-      console.log("positions", {positions})
-
-      const setCreating = () => {
-        setCollateralCount(0)
-        setDebtCount(0)
-        setIsCreating(true)
-        setIsEditing(true)
+      const setCreating = (isCreating: boolean, collateralCount = 0, debtCount = 0) => {
+        setCollateralCount(isCreating ? 0 : collateralCount)
+        setDebtCount(isCreating ? 0 : debtCount)
+        setIsCreating(isCreating)
+        setIsEditing(isCreating)
       }
 
       if (noPositions) {
-        setCreating()
+        setCreating(true)
       } else {
-        const position = Object.values(positions)[0]
-        console.log("position", {position})
+        const position: Position = Object.values(positions)[0]
         if (position.collateralCount === 0 && position.debtCount === 0) {
-          setCreating()
+          setCreating(true)
         } else {
-          setCollateralCount(position.collateralCount)
-          setDebtCount(position.debtCount)
+          setCreating(false, position.collateralCount, position.debtCount)
         }
       }
     }
   }, [positions])
 
-  console.log("state state", {isCreating, isEditing})
+  console.log({positions})
 
   const position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
 

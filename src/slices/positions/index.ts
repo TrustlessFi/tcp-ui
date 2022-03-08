@@ -72,8 +72,6 @@ const positionsSlice = createChainDataSlice({
               .sub(position.startCumulativeDebt)
               .div(marketLastUpdatePeriod - lastPeriodUpdated)
 
-          console.log({avgDebtPerPeriod: unscale(avgDebtPerPeriod), args, position})
-
           if (!avgDebtPerPeriod.eq(0)) {
             approximateRewards =
               position.debt
@@ -82,7 +80,6 @@ const positionsSlice = createChainDataSlice({
           }
         }
         const theRewards = unscale(approximateRewards)
-        console.log({theRewards})
 
         return {
           collateralCount: unscale(position.collateral),
