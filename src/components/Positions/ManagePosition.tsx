@@ -13,7 +13,9 @@ import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
-import { numDisplay, roundToXDecimals, isZeroish, empty } from '../../utils/'
+import {
+  numDisplay, roundToXDecimals, isZeroish, empty, hours, years,
+} from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
@@ -22,6 +24,10 @@ import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import { InlineNotification, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
+
+const COLLATERAL_DECIMALS = 4
+const DEBT_DECIMALS = 4
+const DEFAULT_COLLATERALIZATION_RATIO = 2.5
 
 const ManagePosition = () => {
   const dispatch = useAppDispatch()
@@ -48,7 +54,6 @@ const ManagePosition = () => {
     'transactions',
   ], selector, dispatch)
 
-  const defaultCollateralizationRatio = 2.5
   const [debtIsFocused, setDebtIsFocused] = useState(false)
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
 
@@ -69,37 +74,45 @@ const ManagePosition = () => {
     positions === null ||
     userAddress === null
 
+  const getHourAPR = () =>
+    ratesInfo === null || ratesInfo.interestRate <= 0
+    ? 1
+    : 1 + ((ratesInfo.interestRate * hours(1)) / years(1))
+
   useEffect(() => {
-    if (positions !== null) {
-      setDeleteSelected(false)
-      const noPositions = Object.values(positions).length === 0
+    if (positions === null || ratesInfo === null) return
+    setDeleteSelected(false)
+    const noPositions = Object.values(positions).length === 0
 
-      const setCreating = (isCreating: boolean, collateralCount = 0, debtCount = 0) => {
-        setCollateralCount(isCreating ? 0 : collateralCount)
-        setDebtCount(isCreating ? 0 : debtCount)
-        setIsCreating(isCreating)
-        setIsEditing(isCreating)
-      }
+    const setCreating = (isCreating: boolean, collateralCount = 0, debtCount = 0) => {
+      setCollateralCount(isCreating ? 0 : collateralCount)
+      setDebtCount(isCreating ? 0 : debtCount)
+      setIsCreating(isCreating)
+      setIsEditing(isCreating)
+    }
 
-      if (noPositions) {
+    if (noPositions) {
+      setCreating(true)
+    } else {
+      const position: Position = Object.values(positions)[0]
+      if (position.collateralCount === 0 && position.debtCount === 0) {
         setCreating(true)
       } else {
-        const position: Position = Object.values(positions)[0]
-        if (position.collateralCount === 0 && position.debtCount === 0) {
-          setCreating(true)
-        } else {
-          setCreating(false, position.collateralCount, position.debtCount)
-        }
+        setCreating(false, position.collateralCount, position.debtCount * getHourAPR())
       }
     }
-  }, [positions])
+  }, [positions, ratesInfo])
 
   console.log({positions})
 
   const position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
+  const positionDebtCount =
+    position === null
+    ? 0
+    : position.debtCount * getHourAPR()
 
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
-  const debtIncrease = parseFloat(roundToXDecimals(debtCount - (position === null ? 0 : position.debtCount), 2))
+  const debtIncrease = parseFloat(roundToXDecimals(debtCount - positionDebtCount, DEBT_DECIMALS))
   const isCollateralChanged = Math.abs(collateralIncrease) > 0.001
   const isDebtChanged = Math.abs(debtIncrease) > 0.1
   const isDebtDecrease = isDebtChanged && debtIncrease < 0
@@ -110,7 +123,7 @@ const ManagePosition = () => {
   const previousCollateralization =
     pricesInfo === null || position === null
     ? null
-    : (position.collateralCount * pricesInfo.ethPrice) / position.debtCount
+    : (position.collateralCount * pricesInfo.ethPrice) / positionDebtCount
 
   const liquidationPrice = marketInfo === null ? 0 : (debtCount * marketInfo.collateralizationRequirement) / (collateralCount)
   const liquidationPriceDisplay = dataNull ? '-' : numDisplay(liquidationPrice, 0)
@@ -119,7 +132,7 @@ const ManagePosition = () => {
     marketInfo === null
     || position === null
     ? null
-    : (position.debtCount * marketInfo.collateralizationRequirement) / position.collateralCount
+    : (positionDebtCount * marketInfo.collateralizationRequirement) / position.collateralCount
 
   const collateralizationRequirement = marketInfo === null ? null : marketInfo.collateralizationRequirement
 
@@ -153,7 +166,7 @@ const ManagePosition = () => {
 
   const updateCollateralCount = (countCollateral: number) => {
     if (countCollateral !== 0) setDeleteSelected(false)
-    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
+    setCollateralCount(parseFloat(roundToXDecimals(countCollateral, COLLATERAL_DECIMALS, true)))
   }
 
   const updateDebtCount = (countDebt: number) => {
@@ -162,12 +175,12 @@ const ManagePosition = () => {
 
   const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
     if (ethPrice === null) return
-    updateDebtCountImpl((countCollateral * ethPrice) / defaultCollateralizationRatio)
+    updateDebtCountImpl((countCollateral * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO)
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
     if (countDebt !== 0) setDeleteSelected(false)
-    setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
+    setDebtCount(countDebt)
   }
 
   const cancelCreate = () => {
@@ -191,8 +204,8 @@ const ManagePosition = () => {
     setIsEditing(false)
 
     if (position !== null) {
-      updateDebtCountImpl(position!.debtCount)
-      updateCollateralCount(position!.collateralCount)
+      updateDebtCountImpl(positionDebtCount)
+      updateCollateralCount(position.collateralCount)
     }
   }
 
@@ -220,9 +233,9 @@ const ManagePosition = () => {
       message: 'You don\'t have enough Hue in your wallet.',
       silent: debtIsFocused,
       failing:
-        (balances === null ||
+        balances === null ||
         contracts === null ||
-        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0)),
+        (isDebtChanged && balances.tokens[contracts.Hue].userBalance + debtIncrease < 0),
     },
     undercollateralized: {
       message: 'Your position has a collateral ratio less than ' + numDisplay(marketInfo === null ? 0 : marketInfo.collateralizationRequirement * 100) + '%.',
@@ -312,7 +325,7 @@ const ManagePosition = () => {
         type: TransactionType.UpdatePosition,
         positionID: position === null ? 0 :  position.id,
         collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(position.debtCount * 2) : debtCount - position.debtCount) : 0,
+        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(positionDebtCount * 2) : debtCount - positionDebtCount) : 0,
         Market: contracts === null ? '' : contracts.Market,
       }}
     />
@@ -337,15 +350,15 @@ const ManagePosition = () => {
     debtIncrease === 0
     ? null
     : (debtIncrease > 0
-      ? {action: 'receive', amount: `${numDisplay(debtIncrease, 2)} Hue`}
-      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), 2)} Hue`})
+      ? {action: 'receive', amount: `${numDisplay(debtIncrease, DEBT_DECIMALS)} Hue`}
+      : {action: 'pay', amount: `${numDisplay(Math.abs(debtIncrease), DEBT_DECIMALS)} Hue`})
 
   const collateralChangeSuccessDisplay: null | changeDisplay =
     collateralIncrease === 0
     ? null
     : (collateralIncrease > 0
-      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, 4)} Eth`}
-      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), 4)} Eth`})
+      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, COLLATERAL_DECIMALS)} Eth`}
+      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), COLLATERAL_DECIMALS)} Eth`})
 
   const successDisplay: ReactFragment | null =
     debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
@@ -388,7 +401,7 @@ const ManagePosition = () => {
           key='collateral_input'
           title='Collateral'
           action={updateCollateralCount}
-          value={collateralCount}
+          value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
           unit='Eth'
           light
           frozen={!isEditing || deleteSelected}
@@ -402,7 +415,7 @@ const ManagePosition = () => {
               You have
               {' '}
               <Bold>
-                {balances === null ? '-' : numDisplay(balances.userEthBalance, 4)}
+                {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
               </Bold>
               {' '}
               Eth in your wallet
@@ -413,12 +426,12 @@ const ManagePosition = () => {
           key='debt_input'
           title='Debt'
           action={updateDebtCount}
-          value={debtCount}
+          value={parseFloat(roundToXDecimals(debtCount, DEBT_DECIMALS))}
           unit='Hue'
           light
           frozen={!isEditing || deleteSelected}
           defaultButton={{
-            title: `${defaultCollateralizationRatio * 100}%`,
+            title: `${DEFAULT_COLLATERALIZATION_RATIO * 100}%`,
             action: setDebtToHighCollateralRatio,
           }}
           onFocusUpdate={setDebtIsFocused}
@@ -431,7 +444,7 @@ const ManagePosition = () => {
                   contracts === null
                   || balances === null
                   ? '-'
-                  : numDisplay(balances.tokens[contracts.Hue].userBalance, 2)}
+                  : numDisplay(balances.tokens[contracts.Hue].userBalance, DEBT_DECIMALS)}
               </Bold>
               {' '}
               Hue in your wallet
@@ -536,7 +549,7 @@ const ManagePosition = () => {
             ? <div
                 style={{float: 'right'}}>
                 <Button
-                  disabled={deleteSelected || (position.collateralCount === 0 && position.debtCount === 0)}
+                  disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
                   onClick={() => {
                     setDebtCount(0)
                     setCollateralCount(0)
