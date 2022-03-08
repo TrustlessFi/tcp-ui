@@ -349,6 +349,7 @@ export const waitForTransaction = async (
     const type = tx.type
 
     const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
+    const clearSDI = () => dispatch(allSlices.sdi.slice.actions.clearData())
     const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
     const clearBalances = () => dispatch(allSlices.balances.slice.actions.clearData())
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
@@ -359,20 +360,18 @@ export const waitForTransaction = async (
     switch (type) {
       case TransactionType.CreatePosition:
       case TransactionType.UpdatePosition:
-        clearPositions()
+      case TransactionType.IncreaseStake:
+      case TransactionType.DecreaseStake:
+        clearSDI()
         clearMarketInfo()
         clearBalances()
+        clearPositions()
+        clearStaking()
         break
       case TransactionType.ClaimAllPositionRewards:
         clearPositions()
         clearMarketInfo()
         clearBalances()
-        break
-      case TransactionType.IncreaseStake:
-      case TransactionType.DecreaseStake:
-        clearBalances()
-        clearMarketInfo()
-        clearStaking()
         break
       case TransactionType.ClaimAllLiquidityPositionRewards:
         clearRewardsInfo()

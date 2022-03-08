@@ -26,7 +26,7 @@ const positionsSlice = createChainDataSlice({
   name: 'positions',
   dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts'],
   stateSelector: (state: RootState) => state.positions,
-  cacheDuration: CacheDuration.NONE,
+  cacheDuration: CacheDuration.SHORT,
   isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts'>) => {

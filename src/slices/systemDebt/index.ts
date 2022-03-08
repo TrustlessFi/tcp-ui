@@ -15,7 +15,7 @@ const systemDebtSlice = createChainDataSlice({
   name: 'systemDebt',
   dependencies: ['contracts'],
   stateSelector: (state: RootState) => state.sdi,
-  cacheDuration: CacheDuration.NONE,
+  cacheDuration: CacheDuration.SHORT,
   isUserData: false,
   thunkFunction:
     async (args: thunkArgs<'contracts'>) => {
