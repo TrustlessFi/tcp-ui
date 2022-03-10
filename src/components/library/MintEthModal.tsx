@@ -12,15 +12,6 @@ import Text from '../library/Text'
 import waitFor from '../../slices/waitFor'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 
-enum TimeOption {
-  seconds = 'seconds',
-  minutes = 'minutes',
-  hours = 'hours',
-  days = 'days',
-  weeks = 'weeks',
-  years = 'years',
-}
-
 const MintEthModal = () => {
   const dispatch = useAppDispatch()
 
@@ -37,6 +28,10 @@ const MintEthModal = () => {
     'ethERC20Info',
     'contracts',
   ], selector, dispatch)
+
+  if (ethERC20Info === null || (!ethERC20Info.isAdmin && !ethERC20Info.isAuthorized)) {
+    return <></>
+  }
 
   const tokenList =
     unique(

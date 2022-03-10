@@ -1,3 +1,4 @@
+import MetaMaskOnboarding from "@metamask/onboarding"
 import { MouseEvent, useCallback } from 'react'
 import { ChainID } from "@trustlessfi/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
@@ -47,10 +48,8 @@ const PageHeader = () => {
 
   const {
     tabs,
-    ethERC20Info
   } = waitFor([
     'tabs',
-    'ethERC20Info',
   ], selector, dispatch)
 
   const history = useHistory()
@@ -124,7 +123,6 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
-  console.log({ethERC20Info})
 
   return (
     <>
@@ -153,7 +151,11 @@ const PageHeader = () => {
               {tabsDisplay}
             </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
-              {ethERC20Info !== null && (ethERC20Info.isAdmin || ethERC20Info.isAuthorized) ? <MintEthModal /> : null}
+              {
+                MetaMaskOnboarding.isMetaMaskInstalled() && chainID !== null
+                ? <MintEthModal />
+                : null
+              }
               {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
               {isSmallViewport ? null : <NetworkIndicator />}
               <span style={{marginLeft: 8}}>
@@ -161,7 +163,13 @@ const PageHeader = () => {
               </span>
             </div>
           </Header>
-      ), [areNavLinksHidden, chainID, isSmallViewport, tabs, ethERC20Info])} />
+      ), [
+        areNavLinksHidden,
+        chainID, isSmallViewport,
+        tabs,
+        // ethERC20Info
+      ])
+    } />
     </>
   )
 }

@@ -29,14 +29,14 @@ const WalletChecker: FunctionComponent<{}> = ({ children }) => {
     return <TakeWalletAction walletAction={<ConnectWalletButton />} />
   }
 
-  if (chainID === null && !wallet.initialized) {
-    // we don't have any info about chainID, don't show anything
-    return null
-  }
-  // ChainID has loaded and it is an invalid chainID
-  if (chainID === null && wallet.initialized) {
-    return  (
-      <TakeWalletAction walletAction={<SwitchNetworkButton />} />
+
+  if (chainID === null) {
+    return (
+      wallet.initialized
+      // ChainID has loaded and it is an invalid chainID
+      ? <TakeWalletAction walletAction={<SwitchNetworkButton />} />
+      // we don't have any info about chainID, don't show anything
+      : null
     )
   }
 
