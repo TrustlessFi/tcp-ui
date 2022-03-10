@@ -124,6 +124,8 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
+  console.log({ethERC20Info})
+
   return (
     <>
       <HeaderContainer
@@ -159,7 +161,7 @@ const PageHeader = () => {
               </span>
             </div>
           </Header>
-      ), [areNavLinksHidden, chainID, isSmallViewport, tabs])} />
+      ), [areNavLinksHidden, chainID, isSmallViewport, tabs, ethERC20Info])} />
     </>
   )
 }

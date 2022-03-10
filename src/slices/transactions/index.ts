@@ -10,7 +10,7 @@ import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/t
 import { Market, Rewards, EthERC20 } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
-import { UIID } from '../../constants'
+import { UIID, GAS_LIMIT } from '../../constants'
 import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
 import { bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
@@ -40,6 +40,8 @@ export enum TransactionType {
   RemoveLiquidity,
 
   MintEthERC20,
+  ApproveEthERC20Address,
+  UnapproveEthERC20Address,
 }
 
 export enum TransactionStatus {
@@ -144,6 +146,18 @@ export interface txMintEthERC20 {
   ethERC20: string
 }
 
+export interface txApproveEthERC20 {
+  type: TransactionType.ApproveEthERC20Address
+  address: string
+  ethERC20: string
+}
+
+export interface txUnapproveEthERC20 {
+  type: TransactionType.UnapproveEthERC20Address
+  address: string
+  ethERC20: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -156,7 +170,9 @@ export type TransactionArgs =
   txApproveLendHue |
   txAddLiquidity |
   txRemoveLiquidity |
-  txMintEthERC20
+  txMintEthERC20 |
+  txApproveEthERC20 |
+  txUnapproveEthERC20
 
 export interface TransactionData {
   args: TransactionArgs
@@ -206,6 +222,10 @@ export const getTxLongName = (args: TransactionArgs) => {
       return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
     case TransactionType.MintEthERC20:
       return `Mint ${numDisplay(args.amount)} ERC20 Eth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
+    case TransactionType.ApproveEthERC20Address:
+      return `Approved ${args.address} for spending ERC20 Eth`
+    case TransactionType.UnapproveEthERC20Address:
+      return `Unapproved ${args.address} for spending ERC20 Eth`
     default:
       assertUnreachable(type)
   }
@@ -238,6 +258,10 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Withdraw Liquidity'
     case TransactionType.MintEthERC20:
       return 'Mint Eth ERC20'
+    case TransactionType.ApproveEthERC20Address:
+      return `Approved address for spending ERC20 Eth`
+    case TransactionType.UnapproveEthERC20Address:
+      return `Unapproved address for spending ERC20 Eth`
     default:
       assertUnreachable(type)
   }
@@ -266,17 +290,7 @@ const executeTransaction = async (
 
   switch(type) {
     case TransactionType.CreatePosition:
-      console.log(
-        "about to create position with collateral",
-        {
-          debtCount: args.debtCount,
-          debtScaled: scale(args.debtCount).toString(),
-          collateralUnscaled: args.collateralCount,
-          collateralScaled: scale(args.collateralCount).toString(),
-        },
-        { gasLimit: 21000}
-      )
-      return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID)
+      return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID, { gasLimit: GAS_LIMIT })
 
     case TransactionType.UpdatePosition:
       return await getMarket(args.Market).adjustPosition(
@@ -285,32 +299,32 @@ const executeTransaction = async (
         args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0,
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
         UIID,
-        {gasLimit: 21000}
+        {gasLimit: GAS_LIMIT}
       )
     case TransactionType.IncreaseStake:
-      return await getMarket(args.Market).lend(scale(args.count), {gasLimit: 21000} )
+      return await getMarket(args.Market).lend(scale(args.count), {gasLimit: GAS_LIMIT} )
 
     case TransactionType.DecreaseStake:
-      return await getMarket(args.Market).unlend(scale(args.count), {gasLimit: 21000})
+      return await getMarket(args.Market).unlend(scale(args.count), {gasLimit: GAS_LIMIT})
 
     case TransactionType.ClaimAllPositionRewards:
-      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, {gasLimit: 21000})
+      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, {gasLimit: GAS_LIMIT})
 
     case TransactionType.ClaimAllLiquidityPositionRewards:
-      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, {gasLimit: 21000})
+      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, {gasLimit: GAS_LIMIT})
 
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
-      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, {gasLimit: 21000})
+      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, {gasLimit: GAS_LIMIT})
 
     case TransactionType.ApproveHue:
       const hue = new Contract(args.Hue, erc20Artifact.abi, provider) as ERC20
-      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: 21000})
+      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: GAS_LIMIT})
 
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
-      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: 21000})
+      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: GAS_LIMIT})
 
     case TransactionType.AddLiquidity:
       const amount0Desired = scale(args.token0.count, args.token0.decimals)
@@ -331,7 +345,7 @@ const executeTransaction = async (
           amount1Min,
         },
         UIID,
-        { value, gasLimit: 21000 },
+        { value, gasLimit: GAS_LIMIT },
       )
 
     case TransactionType.RemoveLiquidity:
@@ -343,11 +357,17 @@ const executeTransaction = async (
           amount1Min: args.amount1Min,
         },
         UIID,
-        { gasLimit: 21000 }
+        { gasLimit: GAS_LIMIT }
       )
 
     case TransactionType.MintEthERC20:
-      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, { gasLimit: 21000 } )
+      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, { gasLimit: GAS_LIMIT } )
+
+    case TransactionType.ApproveEthERC20Address:
+      return await getEthERC20(args.ethERC20).approveAddress(args.address, { gasLimit: GAS_LIMIT } )
+
+    case TransactionType.UnapproveEthERC20Address:
+      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, { gasLimit: GAS_LIMIT } )
 
     default:
       assertUnreachable(type)
@@ -424,6 +444,9 @@ export const waitForTransaction = async (
       case TransactionType.MintEthERC20:
         clearEthERC20()
         clearBalances()
+        break
+      case TransactionType.ApproveEthERC20Address:
+      case TransactionType.UnapproveEthERC20Address:
         break
     default:
       assertUnreachable(type)

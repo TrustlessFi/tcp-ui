@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Modal, Button, Dropdown, OnChangeData,
-  NumberInput, TextArea, Tile,
+  NumberInput, TextArea, Tile, TextInput,
 } from 'carbon-components-react'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import { useState, ChangeEventHandler } from 'react'
@@ -31,6 +31,8 @@ const MintEthModal = () => {
   const [ open, setOpen ] = useState(false)
   const [ amount, setAmount ] = useState(5)
   const [ tokens, setTokens ] = useState('')
+  const [ approveAddress, setApproveAddress ] = useState('')
+  const [ unapproveAddress, setUnapproveAddress ] = useState('')
 
   const {
     ethERC20Info,
@@ -48,10 +50,51 @@ const MintEthModal = () => {
         .flat()
         .filter(token => token.length === 42))
 
-  console.log({tokenList})
-
-
-  console.log({tokens})
+  const approveAddressDialog =
+    <SpacedList spacing={20}>
+      <SpacedList>
+        <TextInput
+          id="approve_address"
+          invalidText="A valid value is required"
+          labelText="Approve address for spending Eth Erc20"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={approveAddress}
+          onChange={(e: any) => setApproveAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Confirm'
+          key='approve_address_button'
+          disabled={approveAddress.length !== 42 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.ApproveEthERC20Address,
+            address: approveAddress,
+            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+          }}
+        />
+      </SpacedList>
+      <SpacedList>
+        <TextInput
+          id="unapprove_address"
+          invalidText="A valid value is required"
+          labelText="Unapprove address for spending Eth Erc20"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={unapproveAddress}
+          onChange={(e: any) => setUnapproveAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Confirm'
+          key='unapprove_address_button'
+          disabled={unapproveAddress.length !== 42 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.UnapproveEthERC20Address,
+            address: approveAddress,
+            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+          }}
+        />
+      </SpacedList>
+    </SpacedList>
 
   const modal =
     <Modal
@@ -103,6 +146,11 @@ const MintEthModal = () => {
                 ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
               }}
             />
+            {
+              ethERC20Info !== null && ethERC20Info.isAdmin
+              ? approveAddressDialog
+              : null
+            }
           </SpacedList>
         </Tile>
       </SpacedList>
