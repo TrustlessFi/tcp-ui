@@ -19,6 +19,8 @@ import { equalStringsCaseInsensitive } from '../../utils/index';
 import allSlices from '../../slices/allSlices'
 import { SliceDataType, CacheDuration } from '../../slices/'
 import waitFor from '../../slices/waitFor'
+import { setTab } from '../../slices/tabs'
+import { Tab, tabToPath } from '../../App'
 
 export const clearUserData = (dispatch: AppDispatch) =>
   Object.values(allSlices)
@@ -106,7 +108,10 @@ const Wallet = () => {
   if (countPendingTxs > 0) {
     return <Button
       size="small"
-      onClick={() => history.push('/transactions/')}
+      onClick={() => {
+        history.push(tabToPath(Tab.Transactions))
+        dispatch(setTab(Tab.Transactions))
+      }}
       style={{paddingLeft: 12, paddingRight: 24, paddingBottom: 0, paddingTop: 0}}>
       <div style={{whiteSpace: 'nowrap', paddingRight: 12}}>
         {countPendingTxs} Pending
