@@ -273,7 +273,8 @@ const executeTransaction = async (
           debtScaled: scale(args.debtCount).toString(),
           collateralUnscaled: args.collateralCount,
           collateralScaled: scale(args.collateralCount).toString(),
-        }
+        },
+        { gasLimit: 21000}
       )
       return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID)
 
@@ -283,32 +284,33 @@ const executeTransaction = async (
         mnt(args.debtIncrease),
         args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0,
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
-        UIID
+        UIID,
+        {gasLimit: 21000}
       )
     case TransactionType.IncreaseStake:
-      return await getMarket(args.Market).lend(scale(args.count))
+      return await getMarket(args.Market).lend(scale(args.count), {gasLimit: 21000} )
 
     case TransactionType.DecreaseStake:
-      return await getMarket(args.Market).unlend(scale(args.count))
+      return await getMarket(args.Market).unlend(scale(args.count), {gasLimit: 21000})
 
     case TransactionType.ClaimAllPositionRewards:
-      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID)
+      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, {gasLimit: 21000})
 
     case TransactionType.ClaimAllLiquidityPositionRewards:
-      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID)
+      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, {gasLimit: 21000})
 
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
-      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max)
+      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, {gasLimit: 21000})
 
     case TransactionType.ApproveHue:
       const hue = new Contract(args.Hue, erc20Artifact.abi, provider) as ERC20
-      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: 21000})
 
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
-      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max)
+      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: 21000})
 
     case TransactionType.AddLiquidity:
       const amount0Desired = scale(args.token0.count, args.token0.decimals)
@@ -329,7 +331,7 @@ const executeTransaction = async (
           amount1Min,
         },
         UIID,
-        { value },
+        { value, gasLimit: 21000 },
       )
 
     case TransactionType.RemoveLiquidity:
@@ -340,11 +342,12 @@ const executeTransaction = async (
           amount0Min: args.amount0Min,
           amount1Min: args.amount1Min,
         },
-        UIID
+        UIID,
+        { gasLimit: 21000 }
       )
 
     case TransactionType.MintEthERC20:
-      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses)
+      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, { gasLimit: 21000 } )
 
     default:
       assertUnreachable(type)
