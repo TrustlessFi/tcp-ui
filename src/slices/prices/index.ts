@@ -16,7 +16,6 @@ const pricesSlice = createChainDataSlice({
       const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-      /*
       const { ethPrice } = await executeMulticalls(
         trustlessMulticall,
         {
@@ -27,10 +26,8 @@ const pricesSlice = createChainDataSlice({
           ),
         }
       )
-      */
 
-      // return { ethPrice: ethPrice.calculateInstantCollateralPrice }
-      return { ethPrice: 4140 }
+      return { ethPrice: ethPrice.calculateInstantCollateralPrice }
     },
 })
 
