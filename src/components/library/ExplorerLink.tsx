@@ -10,8 +10,6 @@ import SmallLink from '../library/SmallLink';
 
 export const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
   switch (chainID) {
-    case ChainID.Rinkeby:
-      return `https://rinkeby.etherscan.io/tx/${txHash}`
     case ChainID.Hardhat:
       return `https://etherscan.io/tx/${txHash}`
     case ChainID.ZKSyncGoerli:
@@ -23,8 +21,6 @@ export const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
 
 export const getEtherscanAddressLink = (address: string, chainID: ChainID) => {
   switch (chainID) {
-    case ChainID.Rinkeby:
-      return `https://rinkeby.etherscan.io/address/${address}`
     case ChainID.Hardhat:
       return `https://etherscan.io/address/${address}`
     case ChainID.ZKSyncGoerli:
