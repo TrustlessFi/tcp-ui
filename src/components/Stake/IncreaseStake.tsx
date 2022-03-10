@@ -16,9 +16,6 @@ import { red } from '@carbon/colors';
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage, setIncreaseAmount } from '../../slices/staking'
 import {
-  Tag32,
-  Locked32,
-  ErrorOutline32,
   Calculation32,
 } from '@carbon/icons-react';
 

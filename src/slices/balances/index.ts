@@ -1,10 +1,7 @@
 import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
-import * as zkSync from 'zksync-web3'
-import * as ethers from 'ethers'
-import getProvider, { getZkSyncProvider } from '../../utils/getProvider'
 import {
-  unscale, uint255Max, addressToERC20, zeroAddress, zkSyncEthERC20Address,
+  unscale, uint255Max, addressToERC20, zeroAddress,
 } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
