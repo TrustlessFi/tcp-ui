@@ -1,15 +1,20 @@
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Modal, Button, Dropdown, OnChangeData,
   NumberInput, TextArea, Tile,
 } from 'carbon-components-react'
+import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import { useState, ChangeEventHandler } from 'react'
 import { onNumChange, unique, seconds, minutes, hours, days, weeks, years }  from '../../utils/'
 import { increaseTime, mineBlocks }  from '../../utils/debugUtils'
 import AppTile from '../library/AppTile'
 import SpacedList from '../library/SpacedList'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import LargeText from '../library/LargeText'
 import Text from '../library/Text'
 import Center from '../library/Center'
+import waitFor from '../../slices/waitFor'
+import ProtocolContract from '../../slices/contracts/ProtocolContract'
 
 enum TimeOption {
   seconds = 'seconds',
@@ -21,9 +26,19 @@ enum TimeOption {
 }
 
 const MintEthModal = () => {
+  const dispatch = useAppDispatch()
+
   const [ open, setOpen ] = useState(false)
   const [ amount, setAmount ] = useState(5)
   const [ tokens, setTokens ] = useState('')
+
+  const {
+    ethERC20Info,
+    contracts,
+  } = waitFor([
+    'ethERC20Info',
+    'contracts',
+  ], selector, dispatch)
 
   const tokenList =
     unique(
@@ -44,6 +59,7 @@ const MintEthModal = () => {
       hasScrollingContent
       preventCloseOnClickOutside
       open={open}
+      modalAriaLabel="tokens modal"
       onRequestClose={() => setOpen(false)}
       secondaryButtonText='Cancel'>
       <SpacedList spacing={32}>
@@ -75,6 +91,18 @@ const MintEthModal = () => {
                 </div>
               )}
             </div>
+            <CreateTransactionButton
+              title='Confirm'
+              key='mint_eth_erc20'
+              disabled={tokenList.length === 0 || amount === 0 || contracts === null}
+              size='md'
+              txArgs={{
+                type: TransactionType.MintEthERC20,
+                amount,
+                addresses: tokenList,
+                ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+              }}
+            />
           </SpacedList>
         </Tile>
       </SpacedList>

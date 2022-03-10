@@ -7,7 +7,7 @@ import { addNotification } from '../notifications'
 import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import { Market, Rewards } from '@trustlessfi/typechain'
+import { Market, Rewards, EthERC20 } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
@@ -38,6 +38,8 @@ export enum TransactionType {
   ApprovePoolToken,
   AddLiquidity,
   RemoveLiquidity,
+
+  MintEthERC20,
 }
 
 export enum TransactionStatus {
@@ -135,6 +137,13 @@ export interface txApproveLendHue {
   spenderAddress: string
 }
 
+export interface txMintEthERC20 {
+  type: TransactionType.MintEthERC20
+  amount: number
+  addresses: string[]
+  ethERC20: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -146,7 +155,8 @@ export type TransactionArgs =
   txApproveHue |
   txApproveLendHue |
   txAddLiquidity |
-  txRemoveLiquidity
+  txRemoveLiquidity |
+  txMintEthERC20
 
 export interface TransactionData {
   args: TransactionArgs
@@ -194,6 +204,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Add liquidity to pool ' + args.poolID
     case TransactionType.RemoveLiquidity:
       return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
+    case TransactionType.MintEthERC20:
+      return `Mint ${numDisplay(args.amount)} ERC20 Eth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
     default:
       assertUnreachable(type)
   }
@@ -224,6 +236,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Add Liquidity'
     case TransactionType.RemoveLiquidity:
       return 'Withdraw Liquidity'
+    case TransactionType.MintEthERC20:
+      return 'Mint Eth ERC20'
     default:
       assertUnreachable(type)
   }
@@ -243,6 +257,10 @@ const executeTransaction = async (
   const getRewards = (address: string) =>
     getContract(address, ProtocolContract.Rewards)
       .connect(provider.getSigner()) as Rewards
+
+  const getEthERC20 = (address: string) =>
+    getContract(address, ProtocolContract.EthERC20)
+      .connect(provider.getSigner()) as EthERC20
 
   const type = args.type
 
@@ -325,6 +343,9 @@ const executeTransaction = async (
         UIID
       )
 
+    case TransactionType.MintEthERC20:
+      return await getEthERC20(args.ethERC20).mint(args.amount, args.addresses)
+
     default:
       assertUnreachable(type)
   }
@@ -355,6 +376,8 @@ export const waitForTransaction = async (
   if (succeeded) {
     const type = tx.type
 
+    const goToLiquidityBasePage = () => dispatch(allSlices.liquidityPage.slice.actions.incrementNonce())
+
     const clearPositions = () => dispatch(allSlices.positions.slice.actions.clearData())
     const clearSDI = () => dispatch(allSlices.sdi.slice.actions.clearData())
     const clearMarketInfo = () => dispatch(allSlices.marketInfo.slice.actions.clearData())
@@ -362,7 +385,7 @@ export const waitForTransaction = async (
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
     const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
-    const goToLiquidityBasePage = () => dispatch(allSlices.liquidityPage.slice.actions.incrementNonce())
+    const clearEthERC20 = () => dispatch(allSlices.ethERC20Info.slice.actions.clearData())
 
     switch (type) {
       case TransactionType.CreatePosition:
@@ -394,6 +417,10 @@ export const waitForTransaction = async (
         clearBalances()
         clearPoolsCurrentData()
         goToLiquidityBasePage()
+        break
+      case TransactionType.MintEthERC20:
+        clearEthERC20()
+        clearBalances()
         break
     default:
       assertUnreachable(type)

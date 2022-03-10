@@ -47,8 +47,10 @@ const PageHeader = () => {
 
   const {
     tabs,
+    ethERC20Info
   } = waitFor([
     'tabs',
+    'ethERC20Info',
   ], selector, dispatch)
 
   const history = useHistory()
@@ -122,8 +124,6 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
-  const canMintEth = true
-
   return (
     <>
       <HeaderContainer
@@ -151,7 +151,7 @@ const PageHeader = () => {
               {tabsDisplay}
             </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
-              {canMintEth ? <MintEthModal /> : null}
+              {ethERC20Info !== null && (ethERC20Info.isAdmin || ethERC20Info.isAuthorized) ? <MintEthModal /> : null}
               {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
               {isSmallViewport ? null : <NetworkIndicator />}
               <span style={{marginLeft: 8}}>

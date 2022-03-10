@@ -6,7 +6,7 @@ import getProvider, { getZkSyncProvider } from '../../utils/getProvider'
 import {
   unscale, uint255Max, addressToERC20, zeroAddress, zkSyncEthERC20Address,
 } from '../../utils'
-import { getMulticallContract } from '../../utils/getContract'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
   rc,
@@ -14,6 +14,7 @@ import {
   manyContractOneFunctionMC,
 } from '@trustlessfi/multicall'
 import ProtocolContract from '../contracts/ProtocolContract'
+import { EthERC20 } from '@trustlessfi/typechain'
 
 export interface balances {
   userEthBalance: number
@@ -49,6 +50,7 @@ const balancesSlice = createChainDataSlice({
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const tokenContract = addressToERC20(zeroAddress)
+      const ethERC20 = getContract(args.contracts[ProtocolContract.EthERC20], ProtocolContract.EthERC20) as EthERC20
 
       const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
       // eslint-disable-next-line array-callback-return
@@ -72,7 +74,7 @@ const balancesSlice = createChainDataSlice({
         multicall,
         {
           userEthERC20Balance: oneContractManyFunctionMC(
-            addressToERC20(zkSyncEthERC20Address),
+            ethERC20,
             { balanceOf: rc.BigNumberUnscale },
             { balanceOf: [args.userAddress] },
           ),
