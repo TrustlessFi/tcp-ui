@@ -1,6 +1,11 @@
 import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
-import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
+import * as zkSync from 'zksync-web3'
+import * as ethers from 'ethers'
+import getProvider, { getZkSyncProvider } from '../../utils/getProvider'
+import {
+  unscale, uint255Max, addressToERC20, zeroAddress, zkSyncEthERC20Address,
+} from '../../utils'
 import { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
@@ -58,7 +63,7 @@ const balancesSlice = createChainDataSlice({
       })
 
       const {
-        userEthBalance,
+        userEthERC20Balance,
         userBalance,
         marketApprovals,
         rewardsApprovals,
@@ -66,10 +71,10 @@ const balancesSlice = createChainDataSlice({
       } = await executeMulticalls(
         multicall,
         {
-          userEthBalance: oneContractManyFunctionMC(
-            multicall,
-            { getEthBalance: rc.BigNumber },
-            { getEthBalance: [args.userAddress] },
+          userEthERC20Balance: oneContractManyFunctionMC(
+            addressToERC20(zkSyncEthERC20Address),
+            { balanceOf: rc.BigNumberUnscale },
+            { balanceOf: [args.userAddress] },
           ),
           userBalance: manyContractOneFunctionMC(
             tokenContract,
@@ -149,7 +154,7 @@ const balancesSlice = createChainDataSlice({
       }
 
       return {
-        userEthBalance: unscale(userEthBalance.getEthBalance),
+        userEthBalance: userEthERC20Balance.balanceOf,
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 

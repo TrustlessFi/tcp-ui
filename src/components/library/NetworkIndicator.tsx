@@ -8,6 +8,7 @@ import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
 const chainIDColor: {[key in ChainID]: TagTypeName} = {
   [ChainID.Hardhat]: 'magenta',
   [ChainID.Rinkeby]: 'teal',
+  [ChainID.ZKSyncGoerli]: 'cool-gray',
 }
 
 const NetworkIndicator = ({style}: {style?: CSSProperties}) => {

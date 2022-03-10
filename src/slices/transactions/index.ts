@@ -248,17 +248,24 @@ const executeTransaction = async (
 
   switch(type) {
     case TransactionType.CreatePosition:
-      return await getMarket(args.Market).createPosition(scale(args.debtCount), UIID, {
-        value: scale(args.collateralCount)
-      })
+      console.log(
+        "about to create position with collateral",
+        {
+          debtCount: args.debtCount,
+          debtScaled: scale(args.debtCount).toString(),
+          collateralUnscaled: args.collateralCount,
+          collateralScaled: scale(args.collateralCount).toString(),
+        }
+      )
+      return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID)
 
     case TransactionType.UpdatePosition:
       return await getMarket(args.Market).adjustPosition(
         args.positionID,
         mnt(args.debtIncrease),
+        args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0,
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
-        UIID,
-        { value: (args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0) }
+        UIID
       )
     case TransactionType.IncreaseStake:
       return await getMarket(args.Market).lend(scale(args.count))

@@ -26,6 +26,7 @@ import { Menu32 } from '@carbon/icons-react'
 import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
 
 import DebugUtils from '../library/DebugUtils'
+import MintEthModal from '../library/MintEthModal'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
 import { first } from '../../utils'
@@ -121,6 +122,8 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
+  const canMintEth = true
+
   return (
     <>
       <HeaderContainer
@@ -148,6 +151,7 @@ const PageHeader = () => {
               {tabsDisplay}
             </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
+              {canMintEth ? <MintEthModal /> : null}
               {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
               {isSmallViewport ? null : <NetworkIndicator />}
               <span style={{marginLeft: 8}}>

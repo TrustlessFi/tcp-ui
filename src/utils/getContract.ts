@@ -29,6 +29,7 @@ import {
   TcpTimelock,
   Hue,
   HuePositionNFT,
+  EthERC20,
 } from "@trustlessfi/typechain"
 
 // ================ ARTIFACTS =======================
@@ -51,6 +52,7 @@ import tcpArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/T
 import tcpGovernorAlphaArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
 import trustlessMulticallArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticall.sol/TrustlessMulticall.json"
 import trustlessMulticallViewOnlyArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
+import ethERC20Artifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/EthERC20.sol/EthERC20.json"
 import tcpTimelockArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
 import { assertUnreachable } from '@trustlessfi/utils'
 
@@ -74,6 +76,8 @@ const artifactLookup = (): {[key in ProtocolContract | RootContract]: contractAb
   [ProtocolContract.Tcp]: tcpArtifact,
   [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
+
+  [ProtocolContract.EthERC20]: ethERC20Artifact,
 
   [RootContract.Governor]: governorArtifact,
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
@@ -130,6 +134,9 @@ const getContract = (address: string, theContract: ProtocolContract | RootContra
       return contract as TcpGovernorAlpha
     case ProtocolContract.TcpTimelock:
       return contract as TcpTimelock
+
+    case ProtocolContract.EthERC20:
+      return contract as EthERC20
 
     case RootContract.Governor:
       return contract as Governor

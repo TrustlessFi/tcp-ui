@@ -5,6 +5,7 @@ import getContract from '../../utils/getContract'
 import { createChainDataSlice, CacheDuration } from '../'
 import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { Accounting } from '@trustlessfi/typechain'
 import  ProtocolContract from './ProtocolContract'
 
 export type contractsInfo = { [key in ProtocolContract]: string }
@@ -47,6 +48,20 @@ const contractsSlice = createChainDataSlice({
         }
       )
 
+      const accounting = getContract(contracts.accounting, ProtocolContract.Accounting) as Accounting
+
+      const { ethERC20 } = await executeMulticalls(
+        trustlessMulticall,
+        {
+          ethERC20: oneContractManyFunctionMC(
+            accounting,
+            {
+              ethERC20: rc.String,
+            }
+          )
+        }
+      )
+
       return {
         [ProtocolContract.Accounting]: contracts.accounting,
         [ProtocolContract.Auctions]: contracts.auctions,
@@ -64,6 +79,8 @@ const contractsSlice = createChainDataSlice({
         [ProtocolContract.Tcp]: contracts.tcp,
         [ProtocolContract.TcpGovernorAlpha]: contracts.governorAlpha,
         [ProtocolContract.TcpTimelock]: contracts.timelock,
+
+        [ProtocolContract.EthERC20]: ethERC20.ethERC20,
       }
     },
 })

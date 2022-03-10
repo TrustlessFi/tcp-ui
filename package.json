@@ -13,10 +13,10 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@trustlessfi/addresses": "^0.6.3",
-    "@trustlessfi/artifacts": "^0.2.3",
+    "@trustlessfi/addresses": "^0.7.2",
+    "@trustlessfi/artifacts": "^0.3.3",
     "@trustlessfi/multicall": "^0.4.22",
-    "@trustlessfi/typechain": "^0.7.3",
+    "@trustlessfi/typechain": "^0.8.3",
     "@types/carbon-components": "^10.27.1",
     "@types/carbon-components-react": "^7.46.1",
     "@types/carbon__colors": "^10.31.0",
@@ -59,7 +59,8 @@
     "sass": "^1.43.4",
     "svg-react-loader": "^0.4.6",
     "typescript": "^4.5.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "zksync-web3": "^0.3.5"
   },
   "resolutions": {
     "ethereumjs-abi": "0.6.8",

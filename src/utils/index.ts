@@ -12,6 +12,8 @@ import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
 
+export const zkSyncEthERC20Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+
 export const isDevEnvironment = process.env.NODE_ENV === 'development'
 
 export const sleepS = (seconds: number) => new Promise(resolve => setTimeout(resolve, seconds * 1000))
