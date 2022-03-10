@@ -344,7 +344,7 @@ const executeTransaction = async (
       )
 
     case TransactionType.MintEthERC20:
-      return await getEthERC20(args.ethERC20).mint(args.amount, args.addresses)
+      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses)
 
     default:
       assertUnreachable(type)
