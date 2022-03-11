@@ -14,7 +14,7 @@ const getProvider = () => {
   return provider
 }
 
-export const getZkSyncProvider = new zkSync.Provider('https://zksync2-testnet.zksync.dev')
+export const getZkSyncProvider = () => new zkSync.Provider('https://zksync2-testnet.zksync.dev')
 
 
 export default getProvider
