@@ -155,7 +155,7 @@ const RemoveLiquidity = () => {
                 hideCloseButton
               />
           }
-          <SpacedList row spacing={10}>
+          <SpacedList row spacing={20}>
             <CreateTransactionButton
               disabled={dataNull || contracts === null || userLiquidity.isZero()}
               size='md'

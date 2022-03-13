@@ -267,7 +267,7 @@ const AddLiquidity = () => {
               </Text>
             }
           />
-          <SpacedList row spacing={10}>
+          <SpacedList row spacing={20}>
             {
               token0Approved === false
               ? approveToken0Button

@@ -526,7 +526,7 @@ const ManagePosition = () => {
         <div style={{display: 'flex'}}>
           <SpacedList
             row
-            spacing={10}
+            spacing={20}
             style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
             {
               isCreating
