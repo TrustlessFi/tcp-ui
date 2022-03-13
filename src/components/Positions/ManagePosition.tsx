@@ -103,8 +103,6 @@ const ManagePosition = () => {
     }
   }, [positions, ratesInfo])
 
-  console.log({positions})
-
   const position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
   const positionDebtCount =
     position === null
