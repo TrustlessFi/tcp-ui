@@ -16,10 +16,15 @@ const MintEthModal = () => {
   const dispatch = useAppDispatch()
 
   const [ open, setOpen ] = useState(false)
+
   const [ amount, setAmount ] = useState(5)
   const [ tokens, setTokens ] = useState('')
+
   const [ approveAddress, setApproveAddress ] = useState('')
   const [ unapproveAddress, setUnapproveAddress ] = useState('')
+
+  const [ addAuthAddress, setAddAuthAddress ] = useState('')
+  const [ removeAuthAddress, setRemoveAuthAddress ] = useState('')
 
   const {
     ethERC20Info,
@@ -41,6 +46,52 @@ const MintEthModal = () => {
         .flat()
         .filter(token => token.length === 42))
 
+  const addAuthDialog =
+    <SpacedList spacing={20}>
+      <SpacedList>
+        <TextInput
+          id="add_auth"
+          invalidText="A valid value is required"
+          labelText="Approve address for minting TruEth"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={addAuthAddress}
+          onChange={(e: any) => setAddAuthAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Add Auth'
+          key='add_auth_button'
+          disabled={addAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.AddMintERC20AddressAuth,
+            address: addAuthAddress.trim(),
+            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+          }}
+        />
+      </SpacedList>
+      <SpacedList>
+        <TextInput
+          id="remove_auth"
+          invalidText="A valid value is required"
+          labelText="Unapprove address for minting TruEth"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={removeAuthAddress}
+          onChange={(e: any) => setRemoveAuthAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Remove Auth'
+          key='unapprove_address_button'
+          disabled={removeAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.RemoveMintERC20AddressAuth,
+            address: removeAuthAddress.trim(),
+            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+          }}
+        />
+      </SpacedList>
+    </SpacedList>
+
   const approveAddressDialog =
     <SpacedList spacing={20}>
       <SpacedList>
@@ -53,7 +104,7 @@ const MintEthModal = () => {
           onChange={(e: any) => setApproveAddress(e.target.value)}
         />
         <CreateTransactionButton
-          title='Confirm'
+          title='Approve Address'
           key='approve_address_button'
           disabled={approveAddress.length !== 42 || amount === 0 || contracts === null}
           size='md'
@@ -74,18 +125,19 @@ const MintEthModal = () => {
           onChange={(e: any) => setUnapproveAddress(e.target.value)}
         />
         <CreateTransactionButton
-          title='Confirm'
+          title='Unapprove Address'
           key='unapprove_address_button'
           disabled={unapproveAddress.length !== 42 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
             type: TransactionType.UnapproveEthERC20Address,
-            address: approveAddress,
+            address: unapproveAddress,
             ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
           }}
         />
       </SpacedList>
     </SpacedList>
+
 
   const modal =
     <Modal
@@ -139,7 +191,10 @@ const MintEthModal = () => {
             />
             {
               ethERC20Info !== null && ethERC20Info.isAdmin
-              ? approveAddressDialog
+              ? <SpacedList spacing={40}>
+                  {addAuthDialog}
+                  {approveAddressDialog}
+                </SpacedList>
               : null
             }
           </SpacedList>

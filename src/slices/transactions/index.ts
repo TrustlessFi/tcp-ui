@@ -42,6 +42,8 @@ export enum TransactionType {
   MintEthERC20,
   ApproveEthERC20Address,
   UnapproveEthERC20Address,
+  AddMintERC20AddressAuth,
+  RemoveMintERC20AddressAuth,
 }
 
 export enum TransactionStatus {
@@ -158,6 +160,18 @@ export interface txUnapproveEthERC20 {
   ethERC20: string
 }
 
+export interface txAddMintERC20AddressAuth {
+  type: TransactionType.AddMintERC20AddressAuth
+  address: string
+  ethERC20: string
+}
+
+export interface txRemoveMintERC20AddressAuth {
+  type: TransactionType.RemoveMintERC20AddressAuth
+  address: string
+  ethERC20: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -172,7 +186,9 @@ export type TransactionArgs =
   txRemoveLiquidity |
   txMintEthERC20 |
   txApproveEthERC20 |
-  txUnapproveEthERC20
+  txUnapproveEthERC20 |
+  txAddMintERC20AddressAuth |
+  txRemoveMintERC20AddressAuth
 
 export interface TransactionData {
   args: TransactionArgs
@@ -221,11 +237,15 @@ export const getTxLongName = (args: TransactionArgs) => {
     case TransactionType.RemoveLiquidity:
       return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
     case TransactionType.MintEthERC20:
-      return `Mint ${numDisplay(args.amount)} ERC20 Eth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
+      return `Mint ${numDisplay(args.amount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
     case TransactionType.ApproveEthERC20Address:
-      return `Approved ${args.address} for spending ERC20 Eth`
+      return `Approved ${args.address} for spending TruEth`
     case TransactionType.UnapproveEthERC20Address:
-      return `Unapproved ${args.address} for spending ERC20 Eth`
+      return `Unapproved ${args.address} for spending TruEth`
+    case TransactionType.AddMintERC20AddressAuth:
+      return `Approved ${args.address} for minting TruEth`
+    case TransactionType.RemoveMintERC20AddressAuth:
+      return `Unapproved ${args.address} for spending TruEth`
     default:
       assertUnreachable(type)
   }
@@ -259,9 +279,13 @@ export const getTxShortName = (type: TransactionType) => {
     case TransactionType.MintEthERC20:
       return 'Mint Eth ERC20'
     case TransactionType.ApproveEthERC20Address:
-      return `Approved address for spending ERC20 Eth`
+      return `Approved address for spending TruEth`
     case TransactionType.UnapproveEthERC20Address:
-      return `Unapproved address for spending ERC20 Eth`
+      return `Unapproved address for spending TruEth`
+    case TransactionType.AddMintERC20AddressAuth:
+      return `Approved address for minting TruEth`
+    case TransactionType.RemoveMintERC20AddressAuth:
+      return `Unapproved address for minting TruEth`
     default:
       assertUnreachable(type)
   }
@@ -369,6 +393,12 @@ const executeTransaction = async (
     case TransactionType.UnapproveEthERC20Address:
       return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, { gasLimit: GAS_LIMIT } )
 
+    case TransactionType.AddMintERC20AddressAuth:
+      return await getEthERC20(args.ethERC20).approveAddress(args.address, { gasLimit: GAS_LIMIT } )
+
+    case TransactionType.RemoveMintERC20AddressAuth:
+      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, { gasLimit: GAS_LIMIT } )
+
     default:
       assertUnreachable(type)
   }
@@ -447,6 +477,9 @@ export const waitForTransaction = async (
         break
       case TransactionType.ApproveEthERC20Address:
       case TransactionType.UnapproveEthERC20Address:
+      case TransactionType.AddMintERC20AddressAuth:
+      case TransactionType.RemoveMintERC20AddressAuth:
+        // Do nothing
         break
     default:
       assertUnreachable(type)
