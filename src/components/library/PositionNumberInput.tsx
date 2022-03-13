@@ -74,10 +74,13 @@ const PositionNumberInput = ({
                 color: '#ffffff',
                 opacity: 0.6,
                 top: 18,
-                right: 18,
+                width: 52,
+                right: 0,
                 position: 'absolute',
               }}>
-              {unit}
+              <Center>
+                {unit}
+              </Center>
             </Text>
             <div
               style={{
