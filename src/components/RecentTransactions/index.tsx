@@ -50,12 +50,13 @@ const TokenCard = ({
     <Tile
       light
       style={{
-        minWidth: 300,
+        width: '100%',
         marginRight: 16,
         marginBottom: 16,
         display: 'inline-block',
         cursor: token === 'Eth' ? undefined : 'pointer',
         padding: 20,
+        height: 60,
         ...style
       }}
       onClick={token === 'Eth' ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
@@ -106,7 +107,7 @@ const WalletInfo = () => {
           Balances
         </LargeText>
         <Center>
-          <SpacedList>
+          <SpacedList style={{width: '100%'}}>
             <TokenCard
               token='Eth'
               decimals={4}
