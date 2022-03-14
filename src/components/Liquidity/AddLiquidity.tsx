@@ -220,7 +220,7 @@ const AddLiquidity = () => {
     <Center style={{marginTop: 40}}>
       <Tile style={{width: 500, padding: 40}}>
         <SpacedList spacing={40}>
-          <LargeText>Add {pool.title} Liquidity</LargeText>
+          <LargeText size={28}>Add {pool.title} Liquidity</LargeText>
           <FullNumberInput
             title={pool.token0.displaySymbol}
             action={countToken0Updated}

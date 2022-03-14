@@ -390,7 +390,7 @@ const ManagePosition = () => {
             </Center>
           </div>
           {
-            <LargeText size={24}>
+            <LargeText size={28}>
               {isCreating ? 'Create Position' : 'Your Position'}
             </LargeText>
           }
