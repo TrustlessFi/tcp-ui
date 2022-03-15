@@ -27,6 +27,7 @@ import { Menu32 } from '@carbon/icons-react'
 import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
 
 import DebugUtils from '../library/DebugUtils'
+import GuardianModal from '../library/GuardianModal'
 import MintEthModal from '../library/MintEthModal'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
@@ -123,6 +124,19 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
+
+  const debugSuite =
+    <>
+      {
+        MetaMaskOnboarding.isMetaMaskInstalled() && chainID !== null
+        ? <MintEthModal />
+        : null
+      }
+      {chainID !== ChainID.Hardhat ? null : <DebugUtils />}
+      <GuardianModal />
+      <NetworkIndicator />
+    </>
+
   return (
     <>
       <HeaderContainer
@@ -151,12 +165,10 @@ const PageHeader = () => {
             </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
               {
-                MetaMaskOnboarding.isMetaMaskInstalled() && chainID !== null
-                ? <MintEthModal />
-                : null
+                isSmallViewport
+                ? null
+                : debugSuite
               }
-              {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
-              {isSmallViewport ? null : <NetworkIndicator />}
               <span style={{marginLeft: 8}}>
                 <Wallet />
               </span>

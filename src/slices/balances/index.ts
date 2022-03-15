@@ -61,6 +61,8 @@ const balancesSlice = createChainDataSlice({
         addAddress(pool.token1.address)
       })
 
+      tokenAddresses.push(ethERC20.address)
+
       const {
         userEthERC20Balance,
         userBalance,

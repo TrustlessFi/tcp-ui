@@ -54,7 +54,7 @@ const ClaimRewardsButton = ({
           </span>
           <span style={{float: 'left', paddingTop: 2}}>
             <LargeText size={18} style={{marginLeft: 10}}>
-              {displayCount} Tcp rewards accrued
+              {displayCount} Tcp accrued
             </LargeText>
           </span>
         </div>

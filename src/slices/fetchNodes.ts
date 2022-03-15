@@ -20,6 +20,7 @@ import { sdi } from './systemDebt'
 import { notificationState } from './notifications'
 import { stakingState } from './staking'
 import { tabsState } from './tabs'
+import { tcpTimelockInfo } from './tcpTimelock'
 import { TransactionState } from './transactions'
 import { walletState } from './wallet'
 
@@ -48,6 +49,7 @@ export type RootState = {
   ethERC20Info: sliceState<ethERC20Info>
   rewardsInfo: sliceState<rewardsInfo>
   sdi: sliceState<sdi>
+  tcpTimelock: sliceState<tcpTimelockInfo>
 }
 
 export type FetchNode = keyof RootState

@@ -574,8 +574,8 @@ const ManagePosition = () => {
           positionIDs: position === null ? [] : [position.id],
           Market: contracts === null ? '' : contracts.Market
         }}
-        count={0}
-        disabled={false}
+        count={position === null ? 0 : position.approximateRewards}
+        disabled={position === null || contracts === null}
         walletToken={WalletToken.Tcp}
       />
     </SpacedList>

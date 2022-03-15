@@ -5,12 +5,12 @@ import { waitingForMetamask, metamaskComplete } from '../wallet'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { ethers, ContractTransaction } from 'ethers'
-import ProtocolContract from '../contracts/ProtocolContract'
+import ProtocolContract, { RootContract } from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import { Market, Rewards, EthERC20 } from '@trustlessfi/typechain'
+import { Market, Rewards, EthERC20, Governor } from '@trustlessfi/typechain'
 import getContract from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
-import { UIID, GAS_LIMIT } from '../../constants'
+import { UIID } from '../../constants'
 import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
 import { bnf, uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
@@ -19,6 +19,8 @@ import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
+
+const extrasObject = {}
 
 export enum TransactionType {
   CreatePosition,
@@ -38,6 +40,8 @@ export enum TransactionType {
   UnapproveEthERC20Address,
   AddMintERC20AddressAuth,
   RemoveMintERC20AddressAuth,
+
+  SetPhaseOneStartTime,
 }
 
 export enum TransactionStatus {
@@ -166,6 +170,12 @@ export interface txRemoveMintERC20AddressAuth {
   ethERC20: string
 }
 
+export interface txSetPhaseOneStartTime {
+  type: TransactionType.SetPhaseOneStartTime
+  startTime: number
+  Governor: string
+}
+
 export type TransactionArgs =
   txCreatePositionArgs |
   txUpdatePositionArgs |
@@ -182,7 +192,8 @@ export type TransactionArgs =
   txApproveEthERC20 |
   txUnapproveEthERC20 |
   txAddMintERC20AddressAuth |
-  txRemoveMintERC20AddressAuth
+  txRemoveMintERC20AddressAuth |
+  txSetPhaseOneStartTime
 
 export interface TransactionData {
   args: TransactionArgs
@@ -240,6 +251,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return `Approved ${args.address} for minting TruEth`
     case TransactionType.RemoveMintERC20AddressAuth:
       return `Unapproved ${args.address} for spending TruEth`
+    case TransactionType.SetPhaseOneStartTime:
+      return `Set phase 1 start time: ${args.startTime}`
     default:
       assertUnreachable(type)
   }
@@ -280,6 +293,8 @@ export const getTxShortName = (type: TransactionType) => {
       return `Approved address for minting TruEth`
     case TransactionType.RemoveMintERC20AddressAuth:
       return `Unapproved address for minting TruEth`
+    case TransactionType.SetPhaseOneStartTime:
+      return `Set phase 1 start time`
     default:
       assertUnreachable(type)
   }
@@ -291,7 +306,13 @@ export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + 
 const executeTransaction = async (
   args: TransactionArgs,
   provider: ethers.providers.Web3Provider,
+  chainID: ChainID,
 ): Promise<ContractTransaction> => {
+  const overrides =
+    chainID === ChainID.ZKSyncGoerli
+    ? { gasLimit: 21001 }
+    : {}
+
   const getMarket = (address: string) =>
     getContract(address, ProtocolContract.Market)
       .connect(provider.getSigner()) as Market
@@ -304,11 +325,15 @@ const executeTransaction = async (
     getContract(address, ProtocolContract.EthERC20)
       .connect(provider.getSigner()) as EthERC20
 
+  const getGovernor = (address: string) =>
+    getContract(address, RootContract.Governor)
+      .connect(provider.getSigner()) as Governor
+
   const type = args.type
 
   switch(type) {
     case TransactionType.CreatePosition:
-      return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID, { gasLimit: GAS_LIMIT })
+      return await getMarket(args.Market).createPosition(scale(args.collateralCount), scale(args.debtCount), UIID, overrides)
 
     case TransactionType.UpdatePosition:
       return await getMarket(args.Market).adjustPosition(
@@ -317,42 +342,38 @@ const executeTransaction = async (
         args.collateralIncrease > 0 ? mnt(args.collateralIncrease) : 0,
         args.collateralIncrease < 0 ? mnt(Math.abs(args.collateralIncrease)) : 0,
         UIID,
-        {gasLimit: GAS_LIMIT}
+        overrides
       )
     case TransactionType.IncreaseStake:
-      return await getMarket(args.Market).lend(scale(args.count), {gasLimit: GAS_LIMIT} )
+      return await getMarket(args.Market).lend(scale(args.count), overrides )
 
     case TransactionType.DecreaseStake:
-      return await getMarket(args.Market).unlend(scale(args.count), {gasLimit: GAS_LIMIT})
+      return await getMarket(args.Market).unlend(scale(args.count), overrides)
 
     case TransactionType.ClaimAllPositionRewards:
-      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, {gasLimit: GAS_LIMIT})
+      return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, overrides)
 
     case TransactionType.ClaimAllLiquidityPositionRewards:
-      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, {gasLimit: GAS_LIMIT})
+      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, overrides)
 
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
 
-      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, {gasLimit: GAS_LIMIT})
+      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, overrides)
 
     case TransactionType.ApproveHue:
       const hue = new Contract(args.Hue, erc20Artifact.abi, provider) as ERC20
-      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: GAS_LIMIT})
+      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, overrides)
 
     case TransactionType.ApproveLendHue:
       const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
-      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, {gasLimit: GAS_LIMIT})
+      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, overrides)
 
     case TransactionType.AddLiquidity:
       const amount0Desired = scale(args.token0.count, args.token0.decimals)
       const amount1Desired = scale(args.token1.count, args.token1.decimals)
       const amount0Min = amount0Desired.mul(95).div(100)
       const amount1Min = amount1Desired.mul(95).div(100)
-
-      const token0Value = args.token0.isWeth ? amount0Desired : bnf(0)
-      const token1Value = args.token1.isWeth ? amount1Desired : bnf(0)
-      const value = token0Value.add(token1Value)
 
       return await getRewards(args.Rewards).deposit(
         {
@@ -363,7 +384,7 @@ const executeTransaction = async (
           amount1Min,
         },
         UIID,
-        { value, gasLimit: GAS_LIMIT },
+        overrides,
       )
 
     case TransactionType.RemoveLiquidity:
@@ -375,23 +396,26 @@ const executeTransaction = async (
           amount1Min: args.amount1Min,
         },
         UIID,
-        { gasLimit: GAS_LIMIT }
+        overrides
       )
 
     case TransactionType.MintEthERC20:
-      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, { gasLimit: GAS_LIMIT } )
+      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, overrides )
 
     case TransactionType.ApproveEthERC20Address:
-      return await getEthERC20(args.ethERC20).approveAddress(args.address, { gasLimit: GAS_LIMIT } )
+      return await getEthERC20(args.ethERC20).approveAddress(args.address, overrides )
 
     case TransactionType.UnapproveEthERC20Address:
-      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, { gasLimit: GAS_LIMIT } )
+      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, overrides )
 
     case TransactionType.AddMintERC20AddressAuth:
-      return await getEthERC20(args.ethERC20).approveAddress(args.address, { gasLimit: GAS_LIMIT } )
+      return await getEthERC20(args.ethERC20).approveAddress(args.address, overrides )
 
     case TransactionType.RemoveMintERC20AddressAuth:
-      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, { gasLimit: GAS_LIMIT } )
+      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, overrides )
+
+    case TransactionType.SetPhaseOneStartTime:
+      return await getGovernor(args.Governor).setPhaseOneStartTime(args.startTime, overrides )
 
     default:
       assertUnreachable(type)
@@ -433,6 +457,7 @@ export const waitForTransaction = async (
     const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
     const clearEthERC20 = () => dispatch(allSlices.ethERC20Info.slice.actions.clearData())
+    const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
 
     switch (type) {
       case TransactionType.CreatePosition:
@@ -469,6 +494,9 @@ export const waitForTransaction = async (
         clearEthERC20()
         clearBalances()
         break
+      case TransactionType.SetPhaseOneStartTime:
+        clearTcpTimelock()
+        break
       case TransactionType.ApproveEthERC20Address:
       case TransactionType.UnapproveEthERC20Address:
       case TransactionType.AddMintERC20AddressAuth:
@@ -494,7 +522,7 @@ export const submitTransaction = createAsyncThunk(
     let rawTransaction: ContractTransaction
     try {
       dispatch(waitingForMetamask())
-      rawTransaction = await executeTransaction(args, provider)
+      rawTransaction = await executeTransaction(args, provider, data.chainID)
       dispatch(metamaskComplete())
     } catch (e) {
       const errorMessages = parseMetamaskError(e)
