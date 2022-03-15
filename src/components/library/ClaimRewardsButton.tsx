@@ -3,7 +3,7 @@ import LargeText from './LargeText'
 import TokenIcon from './TokenIcon'
 import CreateTransactionButton from './CreateTransactionButton'
 import { numDisplay } from '../../utils'
-import { WalletToken } from './TrustlessLogos'
+import { WalletToken, TrustlessLogoColor } from './TrustlessLogos'
 import { TransactionArgs } from '../../slices/transactions'
 
 const ClaimRewardsButton = ({
@@ -37,7 +37,7 @@ const ClaimRewardsButton = ({
           <CreateTransactionButton
             title='Claim'
             key='claim_rewards_button'
-            disabled={disabled}
+            disabled={disabled || count === 0}
             size='sm'
             kind='secondary'
             txArgs={txArgs}
@@ -47,6 +47,7 @@ const ClaimRewardsButton = ({
           <span style={{float: 'left', height: 32, width: 32}}>
             <TokenIcon
               walletToken={walletToken === undefined ? WalletToken.Tcp : walletToken}
+              color={TrustlessLogoColor.White}
               width={32}
               height={32}
             />
