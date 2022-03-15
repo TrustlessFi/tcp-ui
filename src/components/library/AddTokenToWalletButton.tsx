@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button, ButtonSize } from 'carbon-components-react'
 import waitFor from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
-import { CSSProperties } from 'react';
+import TokenIcon, {getTokenIcon} from './TokenIcon'
+import { CSSProperties } from 'react'
 import { WalletToken } from '../../slices/transactions'
 import { addTokenToWallet, convertSVGtoURI, assertUnreachable } from '../../utils'
 import TrustlessLogos from '../../utils/trustless_logos'
@@ -17,21 +18,6 @@ export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contrac
       return contractsInfo.LendHue
     case WalletToken.Tcp:
       return contractsInfo.Tcp
-    default:
-      assertUnreachable(walletToken)
-      throw new Error('')
-  }
-}
-
-export const getTokenIcon = (walletToken: WalletToken | 'Eth') => {
-  switch(walletToken) {
-    case WalletToken.Hue:
-    case WalletToken.LendHue:
-      return convertSVGtoURI(TrustlessLogos.black.hue)
-    case WalletToken.Tcp:
-      return convertSVGtoURI(TrustlessLogos.black.tcp)
-    case 'Eth':
-      return convertSVGtoURI(TrustlessLogos.black.eth)
     default:
       assertUnreachable(walletToken)
       throw new Error('')
@@ -53,16 +39,6 @@ export const getAddTokenToWalletOnClick = (
     decimals: 18,
     image: getTokenIcon(walletToken),
   })
-}
-
-export const TokenIcon = ({
-  walletToken,
-  size,
-}: {
-  walletToken: WalletToken | 'Eth'
-  size?: number
-}) => {
-  return <img alt={`token ${walletToken}`} src={getTokenIcon(walletToken)} width={size === undefined ? 32 : size} />
 }
 
 const AddTokenToWalletButton = ({

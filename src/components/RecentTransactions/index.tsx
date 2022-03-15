@@ -6,7 +6,8 @@ import { clearUserTransactions, TransactionStatus, getTxLongName, WalletToken } 
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import LargeText from '../library/LargeText'
-import { TokenIcon, getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
+import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
+import TokenIcon from '../library/TokenIcon'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink } from '../library/ExplorerLink'
@@ -62,7 +63,7 @@ const TokenCard = ({
       onClick={token === 'Eth' ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
       <SpacedList row spacing={16}>
         <span style={{verticalAlign: 'middle'}}>
-          <TokenIcon walletToken={token} size={size} />
+          <TokenIcon walletToken={token} width={size} />
         </span>
         <>
           <LargeText>
