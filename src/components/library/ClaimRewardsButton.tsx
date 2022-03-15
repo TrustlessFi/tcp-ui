@@ -30,31 +30,34 @@ const ClaimRewardsButton = ({
       paddingBottom: 20,
       paddingLeft: 40,
       paddingRight: 40,
+      height: 72,
     }}>
-        <div style={{display: 'float', alignItems: 'center', marginBottom: 20}}>
-          <div style={{float: 'right'}}>
-            <CreateTransactionButton
-              title='Claim'
-              key='claim_rewards_button'
-              disabled={disabled}
-              size='md'
-              kind='secondary'
-              txArgs={txArgs}
-            />
-          </div>
-          <div style={{float: 'left'}}>
+      <div style={{display: 'float'}}>
+        <div style={{float: 'right'}}>
+          <CreateTransactionButton
+            title='Claim'
+            key='claim_rewards_button'
+            disabled={disabled}
+            size='sm'
+            kind='secondary'
+            txArgs={txArgs}
+          />
+        </div>
+        <div style={{display: 'float', alignItems: 'center'}}>
+          <span style={{float: 'left', height: 32, width: 32}}>
             <TokenIcon
               walletToken={walletToken === undefined ? WalletToken.Tcp : walletToken}
               width={32}
               height={32}
             />
-          </div>
-          <div style={{float: 'left'}}>
-          <LargeText style={{marginLeft: 10}}>
-            {displayCount} Tcp rewards accrued
-          </LargeText>
-          </div>
+          </span>
+          <span style={{float: 'left', paddingTop: 2}}>
+            <LargeText size={18} style={{marginLeft: 10}}>
+              {displayCount} Tcp rewards accrued
+            </LargeText>
+          </span>
         </div>
+      </div>
     </Tile>
   )
 }
