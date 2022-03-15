@@ -2,10 +2,11 @@ import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { clearUserTransactions, TransactionStatus, getTxLongName, WalletToken } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import LargeText from '../library/LargeText'
+import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
@@ -30,7 +31,7 @@ const TokenCard = ({
   style,
   unit,
 }: {
-  token: WalletToken | 'Eth',
+  token: WalletToken
   balance?: number,
   decimals?: number,
   size?: number,
@@ -55,12 +56,12 @@ const TokenCard = ({
         marginRight: 16,
         marginBottom: 16,
         display: 'inline-block',
-        cursor: token === 'Eth' ? undefined : 'pointer',
+        cursor: token === WalletToken.Eth ? undefined : 'pointer',
         padding: 20,
         height: 60,
         ...style
       }}
-      onClick={token === 'Eth' ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
+      onClick={token === WalletToken.Eth ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
       <SpacedList row spacing={16}>
         <span style={{verticalAlign: 'middle'}}>
           <TokenIcon walletToken={token} width={size} />
@@ -110,7 +111,7 @@ const WalletInfo = () => {
         <Center>
           <SpacedList style={{width: '100%'}}>
             <TokenCard
-              token='Eth'
+              token={WalletToken.Eth}
               decimals={4}
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}

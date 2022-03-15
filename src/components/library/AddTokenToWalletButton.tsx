@@ -3,12 +3,12 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { Button, ButtonSize } from 'carbon-components-react'
 import waitFor from '../../slices/waitFor'
 import { contractsInfo } from '../../slices/contracts'
-import TokenIcon, {getTokenIcon} from './TokenIcon'
+import TokenIcon from './TokenIcon'
 import { CSSProperties } from 'react'
-import { WalletToken } from '../../slices/transactions'
-import { addTokenToWallet, convertSVGtoURI, assertUnreachable } from '../../utils'
-import TrustlessLogos from '../../utils/trustless_logos'
+import { addTokenToWallet, zkSyncEthERC20Address, assertUnreachable } from '../../utils'
+import TrustlessLogos, { WalletToken } from '../library/TrustlessLogos'
 import { ChainID } from '@trustlessfi/addresses'
+import { convertSVGtoURI } from '../../utils'
 
 export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contractsInfo) => {
   switch(walletToken) {
@@ -18,6 +18,10 @@ export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contrac
       return contractsInfo.LendHue
     case WalletToken.Tcp:
       return contractsInfo.Tcp
+    case WalletToken.Eth:
+      return zkSyncEthERC20Address
+    case WalletToken.TDao:
+      throw new Error('No address for TDao')
     default:
       assertUnreachable(walletToken)
       throw new Error('')
@@ -37,7 +41,7 @@ export const getAddTokenToWalletOnClick = (
     address: getTokenAddress(walletToken, contracts),
     symbol: walletToken,
     decimals: 18,
-    image: getTokenIcon(walletToken),
+    image: convertSVGtoURI(TrustlessLogos.Black[walletToken]),
   })
 }
 
@@ -72,7 +76,9 @@ const AddTokenToWalletButton = ({
       size={size}
       style={style}
       onClick={getAddTokenToWalletOnClick(walletToken, contracts, chainID, userAddress)}
-      disabled={disabled ||
+      disabled=
+      {
+        disabled ||
         chainID === null ||
         userAddress === null
       }>

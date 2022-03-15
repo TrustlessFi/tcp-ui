@@ -2,9 +2,9 @@ import { Tile } from 'carbon-components-react'
 import LargeText from './LargeText'
 import TokenIcon from './TokenIcon'
 import CreateTransactionButton from './CreateTransactionButton'
-import SpacedList from './SpacedList'
 import { numDisplay } from '../../utils'
-import { TransactionArgs, WalletToken } from '../../slices/transactions'
+import { WalletToken } from './TrustlessLogos'
+import { TransactionArgs } from '../../slices/transactions'
 
 const ClaimRewardsButton = ({
   txArgs,
@@ -15,7 +15,7 @@ const ClaimRewardsButton = ({
   txArgs: TransactionArgs
   count?: number | null
   disabled?: boolean
-  walletToken?: WalletToken | 'Eth'
+  walletToken?: WalletToken
 }) => {
   // const dispatch = useAppDispatch()
 

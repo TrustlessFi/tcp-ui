@@ -20,12 +20,6 @@ import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
 
-export enum WalletToken {
-  Hue = 'Hue',
-  LendHue = 'LendHue',
-  Tcp = 'Tcp',
-}
-
 export enum TransactionType {
   CreatePosition,
   UpdatePosition,
