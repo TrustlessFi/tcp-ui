@@ -38,10 +38,13 @@ const ViewLiquidity = () => {
 
   if (dataNull) {
     return (
-      <Center style={{ position: 'relative', marginTop: 40 }}>
-        <RelativeLoading show={true} />
-        <Tile style={{width: 200, height: 200}} />
-      </Center>
+      <OneColumnDisplay
+        innerStyle={{marginTop: 40}}
+        columnOne={
+          <Tile style={{width: '100%', height: 200}} />
+        }
+        loading={true}
+      />
     )
   }
   const totalRewardsPortion = Object.values(poolsMetadata).map(md => md.rewardsPortion).reduce(sum)
