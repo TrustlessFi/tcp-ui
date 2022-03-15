@@ -5,7 +5,10 @@ import {
 import { useState } from 'react'
 import { onNumChange, seconds, minutes, hours, days, weeks, years }  from '../../utils/'
 import { increaseTime, mineBlocks }  from '../../utils/debugUtils'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import waitFor from '../../slices/waitFor'
 import AppTile from '../library/AppTile'
+import Text from '../library/Text'
 import SpacedList from '../library/SpacedList'
 import Center from '../library/Center'
 
@@ -19,6 +22,14 @@ enum TimeOption {
 }
 
 const DebugUtils = () => {
+  const dispatch = useAppDispatch()
+
+  const {
+    currentChainInfo,
+  } = waitFor([
+    'currentChainInfo',
+  ], selector, dispatch)
+
   const [ open, setOpen ] = useState(false)
   const [ timeOption, setTimeOption ] = useState<TimeOption>(TimeOption.days)
   const [ timeCount, setTimeCount ] = useState<number>(1)
@@ -50,6 +61,15 @@ const DebugUtils = () => {
     await mineBlocks(blockCount)
   }
 
+  const timestampDisplay =
+    currentChainInfo === null
+    ? '-'
+    : currentChainInfo.blockTimestamp
+  const timeDisplay =
+    currentChainInfo === null
+    ? '-'
+    : (new Date(currentChainInfo.blockTimestamp * 1000)).toString()
+
   const modal =
     <Modal
       open={open}
@@ -60,6 +80,16 @@ const DebugUtils = () => {
       <SpacedList spacing={32}>
         <AppTile title='Increase Time'>
           <SpacedList>
+            <Text>
+              Current Timestamp:
+              {' '}
+              {timestampDisplay}
+            </Text>
+            <Text>
+              Current Time:
+              {' '}
+              {timeDisplay}
+            </Text>
             <NumberInput
               hideSteppers
               id='number_input'
