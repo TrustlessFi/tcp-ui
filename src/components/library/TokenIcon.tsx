@@ -12,7 +12,7 @@ export const TokenIcon = ({
 }) =>
   <img
     alt={`token ${walletToken}`}
-    src={convertSVGtoURI(TrustlessLogos[TrustlessLogoColor.Black][walletToken])}
+    src={convertSVGtoURI(TrustlessLogos.White[walletToken])}
     width={width === undefined ? 32 : width}
     height={height === undefined ? undefined : height}
   />
