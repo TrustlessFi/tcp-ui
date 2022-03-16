@@ -18,8 +18,10 @@ import {
 } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
+import ClaimRewardsButton from '../library/ClaimRewardsButton'
 import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
+import { WalletToken } from '../library/TrustlessLogos'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import { InlineNotification, Button, Tile } from 'carbon-components-react'
@@ -103,9 +105,7 @@ const ManagePosition = () => {
     }
   }, [positions, ratesInfo])
 
-  console.log({positions})
-
-  const position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
+  const position: null | Position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
   const positionDebtCount =
     position === null
     ? 0
@@ -150,6 +150,12 @@ const ManagePosition = () => {
     balances.tokens[contracts.Hue].approval.Market !== undefined &&
     balances.tokens[contracts.Hue].approval.Market.approved
 
+  const ethApproved =
+    balances !== null &&
+    contracts !== null &&
+    balances.tokens[contracts.EthERC20].approval.Market !== undefined &&
+    balances.tokens[contracts.EthERC20].approval.Market.approved
+
   const setCollateralCountToMax = () => {
     const userEthBalance =
       balances !== null && balances.userEthBalance > txCostBuffer
@@ -161,7 +167,8 @@ const ManagePosition = () => {
   }
 
   const setDebtToHighCollateralRatio = () => {
-    setDebtCountToHighCollateralRatioImpl(collateralCount)
+    if (ethPrice === null) return
+    updateDebtCountImpl(Math.floor((collateralCount * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO))
   }
 
   const updateCollateralCount = (countCollateral: number) => {
@@ -171,11 +178,6 @@ const ManagePosition = () => {
 
   const updateDebtCount = (countDebt: number) => {
     updateDebtCountImpl(countDebt)
-  }
-
-  const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
-    if (ethPrice === null) return
-    updateDebtCountImpl((countCollateral * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO)
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
@@ -332,14 +334,34 @@ const ManagePosition = () => {
 
   const approveHueButton =
     <CreateTransactionButton
-      title='Approve'
-      key='approve_button'
+      title='Approve Hue'
+      key='approve_hue_button'
       size='md'
       disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
         type: TransactionType.ApproveHue,
         Hue: contracts === null ? '' : contracts.Hue,
+        spenderAddress: contracts === null ? '' : contracts.Market,
+      }}
+    />
+
+  const approveEthButton =
+    <CreateTransactionButton
+      title='Approve TruEth'
+      key='approve_eth_button'
+      size='md'
+      disabled={
+        isFailing ||
+        collateralIncrease <= 0 ||
+        balances === null ||
+        contracts === null ||
+        balances.tokens[contracts.EthERC20].approval.Market.approved
+      }
+      showDisabledInsteadOfConnectWallet={true}
+      txArgs={{
+        type: TransactionType.ApproveEth,
+        Eth: contracts === null ? '' : contracts.EthERC20,
         spenderAddress: contracts === null ? '' : contracts.Market,
       }}
     />
@@ -383,190 +405,207 @@ const ManagePosition = () => {
 
 
   const columnOne =
-    <Tile style={{padding: 40, marginTop: 40}}>
-      <SpacedList spacing={40} style={{display: 'relative'}}>
-        <div style={{display: 'float', alignItems: 'center'}}>
-          <div style={{float: 'right'}}>
-            <Center>
-            {isCreating ? null : editButton}
-            </Center>
+    <SpacedList spacing={20}>
+      <Tile style={{padding: 40, marginTop: 40}}>
+        <SpacedList spacing={40} style={{display: 'relative'}}>
+          <div style={{display: 'float', alignItems: 'center'}}>
+            <div style={{float: 'right'}}>
+              <Center>
+              {isCreating ? null : editButton}
+              </Center>
+            </div>
+            {
+              <LargeText size={28}>
+                {isCreating ? 'Create Position' : 'Your Position'}
+              </LargeText>
+            }
           </div>
-          {
-            <LargeText size={24}>
-              {isCreating ? 'Create Position' : 'Your Position'}
-            </LargeText>
-          }
-        </div>
-        <FullNumberInput
-          key='collateral_input'
-          title='Collateral'
-          action={updateCollateralCount}
-          value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
-          unit='Eth'
-          light
-          frozen={!isEditing || deleteSelected}
-          defaultButton={{
-            title: 'Max',
-            action: setCollateralCountToMax
-          }}
-          onFocusUpdate={setCollateralIsFocused}
-          subTitle={
-            <Text>
-              You have
-              {' '}
-              <Bold>
-                {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
-              </Bold>
-              {' '}
-              Eth in your wallet
-            </Text>
-          }
-        />
-        <FullNumberInput
-          key='debt_input'
-          title='Debt'
-          action={updateDebtCount}
-          value={parseFloat(roundToXDecimals(debtCount, DEBT_DECIMALS))}
-          unit='Hue'
-          light
-          frozen={!isEditing || deleteSelected}
-          defaultButton={{
-            title: `${DEFAULT_COLLATERALIZATION_RATIO * 100}%`,
-            action: setDebtToHighCollateralRatio,
-          }}
-          onFocusUpdate={setDebtIsFocused}
-          subTitle={
-            <Text>
-              You have
-              {' '}
-              <Bold>
-                {
-                  contracts === null
-                  || balances === null
-                  ? '-'
-                  : numDisplay(balances.tokens[contracts.Hue].userBalance, DEBT_DECIMALS)}
-              </Bold>
-              {' '}
-              Hue in your wallet
-            </Text>
-          }
-        />
-        <SpacedList spacing={20}>
-          <PositionInfoItem
-            key='liquidation_info'
-            icon={<ErrorOutline32 />}
-            title='Liquidation Price'
-            value={liquidationPriceDisplay}
-            unit='Hue/Eth'
-            changeData={
-              previousLiquidationPrice !== null
-              ? {
-                previous: previousLiquidationPrice,
-                next: liquidationPrice,
-                increaseIsGood: false,
-              } : undefined
+          <FullNumberInput
+            key='collateral_input'
+            title='Collateral'
+            action={updateCollateralCount}
+            value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
+            unit='Eth'
+            light
+            frozen={!isEditing || deleteSelected}
+            defaultButton={{
+              title: 'Max',
+              action: setCollateralCountToMax
+            }}
+            onFocusUpdate={setCollateralIsFocused}
+            subTitle={
+              <Text>
+                You have
+                {' '}
+                <Bold>
+                  {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
+                </Bold>
+                {' '}
+                Eth in your wallet
+              </Text>
             }
           />
-          <PositionInfoItem
-            key='price_info'
-            icon={<Tag32 />}
-            title='Current Price'
-            value={ethPriceDisplay}
-            unit='Hue/Eth'
+          <FullNumberInput
+            key='debt_input'
+            title='Debt'
+            action={updateDebtCount}
+            value={parseFloat(roundToXDecimals(debtCount, DEBT_DECIMALS))}
+            unit='Hue'
+            light
+            frozen={!isEditing || deleteSelected}
+            defaultButton={{
+              title: `${DEFAULT_COLLATERALIZATION_RATIO * 100}%`,
+              action: setDebtToHighCollateralRatio,
+            }}
+            onFocusUpdate={setDebtIsFocused}
+            subTitle={
+              <Text>
+                You have
+                {' '}
+                <Bold>
+                  {
+                    contracts === null
+                    || balances === null
+                    ? '-'
+                    : numDisplay(balances.tokens[contracts.Hue].userBalance, DEBT_DECIMALS)}
+                </Bold>
+                {' '}
+                Hue in your wallet
+              </Text>
+            }
           />
-          <PositionInfoItem
-            icon={<Locked32 />}
-            title='Collateral Ratio'
-            value={collateralizationDisplay}
-            color={collateralColor}
-            changeData={
-              previousCollateralization === null ||
-              collateralization === null
-              ? undefined
-              : {
-                previous: previousCollateralization * 100,
-                next: collateralization * 100,
-                increaseIsGood: true,
-                showChangeWithUnit: '%'
+          <SpacedList spacing={20}>
+            <PositionInfoItem
+              key='liquidation_info'
+              icon={<ErrorOutline32 />}
+              title='Liquidation Price'
+              value={liquidationPriceDisplay}
+              unit='Hue/Eth'
+              changeData={
+                previousLiquidationPrice !== null
+                ? {
+                  previous: previousLiquidationPrice,
+                  next: liquidationPrice,
+                  increaseIsGood: false,
+                } : undefined
               }
+            />
+            <PositionInfoItem
+              key='price_info'
+              icon={<Tag32 />}
+              title='Current Price'
+              value={ethPriceDisplay}
+              unit='Hue/Eth'
+            />
+            <PositionInfoItem
+              icon={<Locked32 />}
+              title='Collateral Ratio'
+              value={collateralizationDisplay}
+              color={collateralColor}
+              changeData={
+                previousCollateralization === null ||
+                collateralization === null
+                ? undefined
+                : {
+                  previous: previousCollateralization * 100,
+                  next: collateralization * 100,
+                  increaseIsGood: true,
+                  showChangeWithUnit: '%'
+                }
+              }
+            />
+            <PositionInfoItem
+              key='apr_info'
+              icon={<Calculation32 />}
+              title='Current Borrow APR'
+              value={interestRateDisplay}
+              unit='%'
+            />
+          </SpacedList>
+          <SpacedList spacing={16}>
+            {
+              nonSilentFailures.length > 0
+                ? <InlineNotification
+                    notificationType='inline'
+                    kind='error'
+                    title={nonSilentFailures[0].message}
+                    lowContrast
+                    hideCloseButton
+                  />
+                : null
             }
-          />
-          <PositionInfoItem
-            key='apr_info'
-            icon={<Calculation32 />}
-            title='Current Borrow APR'
-            value={interestRateDisplay}
-            unit='%'
-          />
-        </SpacedList>
-        <SpacedList spacing={16}>
-          {
-            nonSilentFailures.length > 0
+            {
+              successDisplay !== null
+              && Object.values(failures).filter(failure => failure.failing).length === 0
               ? <InlineNotification
+                  key='success_indicator'
                   notificationType='inline'
-                  kind='error'
-                  title={nonSilentFailures[0].message}
+                  kind='success'
+                  title={successDisplay}
                   lowContrast
                   hideCloseButton
                 />
               : null
-          }
-          {
-            successDisplay !== null
-            && Object.values(failures).filter(failure => failure.failing).length === 0
-            ? <InlineNotification
-                key='success_indicator'
-                notificationType='inline'
-                kind='success'
-                title={successDisplay}
-                lowContrast
-                hideCloseButton
-              />
-            : null
-          }
-        </SpacedList>
-        <div style={{display: 'flex'}}>
-          <SpacedList
-            row
-            spacing={10}
-            style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
-            {
-              isCreating
-              ? [createPositionButton, cancelCreateButton]
-              : (
-                  isEditing
-                  ? (
-                      isDebtDecrease && !hueApproved
-                      ? [approveHueButton, cancelUpdateButton]
-                      : [updatePositionButton, cancelUpdateButton]
-                  ) : null
-              )
             }
           </SpacedList>
-          {
-            isEditing
-            && position !== null
-            ? <div
-                style={{float: 'right'}}>
-                <Button
-                  disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
-                  onClick={() => {
-                    setDebtCount(0)
-                    setCollateralCount(0)
-                    setDeleteSelected(true)
-                  }}
-                  kind='danger--ghost'
-                  size='md'>
-                  <span style={{whiteSpace: 'nowrap'}}>
-                    Close Position
-                  </span>
-                </Button>
-              </div>
-            : null
-          }
-        </div>
-      </SpacedList>
-    </Tile>
+          <div style={{display: 'flex'}}>
+            <SpacedList
+              row
+              spacing={20}
+              style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+              {
+                isCreating
+                ? (
+                  ethApproved
+                  ? [createPositionButton, cancelCreateButton]
+                  : [approveEthButton, cancelCreateButton]
+                )
+
+                : (
+                    isEditing
+                    ? (
+                        isDebtDecrease && !hueApproved
+                        ? [approveHueButton, cancelUpdateButton]
+                        : [updatePositionButton, cancelUpdateButton]
+                    ) : null
+                )
+              }
+            </SpacedList>
+            {
+              isEditing
+              && position !== null
+              ? <div
+                  style={{float: 'right'}}>
+                  <Button
+                    disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
+                    onClick={() => {
+                      setDebtCount(0)
+                      setCollateralCount(0)
+                      setDeleteSelected(true)
+                    }}
+                    kind='danger--ghost'
+                    size='md'>
+                    <span style={{whiteSpace: 'nowrap'}}>
+                      Close Position
+                    </span>
+                  </Button>
+                </div>
+              : null
+            }
+          </div>
+        </SpacedList>
+      </Tile>
+      <ClaimRewardsButton
+        txArgs={{
+          type: TransactionType.ClaimAllPositionRewards,
+          positionIDs: position === null ? [] : [position.id],
+          Market: contracts === null ? '' : contracts.Market
+        }}
+        count={position === null ? 0 : position.approximateRewards}
+        disabled={position === null || contracts === null}
+        walletToken={WalletToken.Tcp}
+      />
+    </SpacedList>
 
   return (
     <OneColumnDisplay

@@ -1,3 +1,4 @@
+import MetaMaskOnboarding from "@metamask/onboarding"
 import { MouseEvent, useCallback } from 'react'
 import { ChainID } from "@trustlessfi/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
@@ -26,6 +27,8 @@ import { Menu32 } from '@carbon/icons-react'
 import { Tab, tabDisplay, tabHidden, tabToPath } from '../../App'
 
 import DebugUtils from '../library/DebugUtils'
+import GuardianModal from '../library/GuardianModal'
+import MintEthModal from '../library/MintEthModal'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
 import { first } from '../../utils'
@@ -121,6 +124,19 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
+
+  const debugSuite =
+    <>
+      {
+        MetaMaskOnboarding.isMetaMaskInstalled() && chainID !== null
+        ? <MintEthModal />
+        : null
+      }
+      {chainID !== ChainID.Hardhat ? null : <DebugUtils />}
+      <GuardianModal />
+      <NetworkIndicator />
+    </>
+
   return (
     <>
       <HeaderContainer
@@ -148,14 +164,23 @@ const PageHeader = () => {
               {tabsDisplay}
             </HeaderNavigation>
             <div style={{marginLeft: 'auto', marginRight: 8 }}>
-              {isSmallViewport || chainID !== ChainID.Hardhat ? null : <DebugUtils />}
-              {isSmallViewport ? null : <NetworkIndicator />}
+              {
+                isSmallViewport
+                ? null
+                : debugSuite
+              }
               <span style={{marginLeft: 8}}>
                 <Wallet />
               </span>
             </div>
           </Header>
-      ), [areNavLinksHidden, chainID, isSmallViewport, tabs])} />
+      ), [
+        areNavLinksHidden,
+        chainID, isSmallViewport,
+        tabs,
+        // ethERC20Info
+      ])
+    } />
     </>
   )
 }

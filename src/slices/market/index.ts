@@ -23,7 +23,7 @@ const marketSlice = createChainDataSlice({
   stateSelector: (state: RootState) => state.marketInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const market = getContract(args.contracts[ProtocolContract.Market], ProtocolContract.Market) as Market
+      const market = getContract<Market>(ProtocolContract.Market, args.contracts.Market)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { marketInfo } = await executeMulticalls(

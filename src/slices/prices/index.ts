@@ -13,7 +13,7 @@ const pricesSlice = createChainDataSlice({
   stateSelector: (state: RootState) => state.pricesInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'liquidationsInfo'>) => {
-      const prices = getContract(args.contracts[ProtocolContract.Prices], ProtocolContract.Prices) as Prices
+      const prices = getContract<Prices>(ProtocolContract.Prices, args.contracts.Prices) as Prices
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { ethPrice } = await executeMulticalls(

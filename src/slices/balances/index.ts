@@ -1,7 +1,9 @@
 import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
-import { unscale, uint255Max, addressToERC20, zeroAddress } from '../../utils'
-import { getMulticallContract } from '../../utils/getContract'
+import {
+  unscale, uint255Max, addressToERC20, zeroAddress,
+} from '../../utils'
+import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
   rc,
@@ -9,6 +11,7 @@ import {
   manyContractOneFunctionMC,
 } from '@trustlessfi/multicall'
 import ProtocolContract from '../contracts/ProtocolContract'
+import { EthERC20 } from '@trustlessfi/typechain'
 
 export interface balances {
   userEthBalance: number
@@ -44,6 +47,7 @@ const balancesSlice = createChainDataSlice({
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const tokenContract = addressToERC20(zeroAddress)
+      const ethERC20 = getContract<EthERC20>(ProtocolContract.EthERC20, args.contracts.EthERC20)
 
       const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
       // eslint-disable-next-line array-callback-return
@@ -57,8 +61,10 @@ const balancesSlice = createChainDataSlice({
         addAddress(pool.token1.address)
       })
 
+      tokenAddresses.push(ethERC20.address)
+
       const {
-        userEthBalance,
+        userEthERC20Balance,
         userBalance,
         marketApprovals,
         rewardsApprovals,
@@ -66,10 +72,10 @@ const balancesSlice = createChainDataSlice({
       } = await executeMulticalls(
         multicall,
         {
-          userEthBalance: oneContractManyFunctionMC(
-            multicall,
-            { getEthBalance: rc.BigNumber },
-            { getEthBalance: [args.userAddress] },
+          userEthERC20Balance: oneContractManyFunctionMC(
+            ethERC20,
+            { balanceOf: rc.BigNumberUnscale },
+            { balanceOf: [args.userAddress] },
           ),
           userBalance: manyContractOneFunctionMC(
             tokenContract,
@@ -149,7 +155,7 @@ const balancesSlice = createChainDataSlice({
       }
 
       return {
-        userEthBalance: unscale(userEthBalance.getEthBalance),
+        userEthBalance: userEthERC20Balance.balanceOf,
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 

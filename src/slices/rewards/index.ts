@@ -15,11 +15,11 @@ export interface rewardsInfo {
 const rewardsInfoSlice = createChainDataSlice({
   name: 'rewards',
   dependencies: ['contracts', 'rootContracts'],
-  cacheDuration: CacheDuration.LONG,
+  cacheDuration: CacheDuration.SHORT,
   stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+      const rewards = getContract<Rewards>(ProtocolContract.Rewards, args.contracts.Rewards)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { rewardsInfo } = await executeMulticalls(

@@ -16,9 +16,6 @@ import { red } from '@carbon/colors';
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage, setIncreaseAmount } from '../../slices/staking'
 import {
-  Tag32,
-  Locked32,
-  ErrorOutline32,
   Calculation32,
 } from '@carbon/icons-react';
 
@@ -144,7 +141,7 @@ const IncreaseStake = () => {
           value={numDisplay(apr * 100, 2)}
           unit='%'
         />
-        <SpacedList row spacing={10} style={{marginTop: 50}}>
+        <SpacedList row spacing={20} style={{marginTop: 50}}>
           {
             hueApproved
             ? <CreateTransactionButton

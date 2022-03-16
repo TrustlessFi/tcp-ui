@@ -12,14 +12,18 @@ import poolsMetadataSlice from './poolsMetadata'
 import positionsSlice from './positions'
 import pricesSlice from './prices'
 import ratesSlice from './rates'
+import ethERC20Slice from './ethERC20'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
 import stakingSlice from './staking'
 import notificationsSlice from './notifications'
 import tabsSlice from './tabs'
+import tcpAllocationSlice from './tcpAllocation'
+import tcpTimelockSlice from './tcpTimelock'
 import transactionsSlice from './transactions'
 import walletSlice from './wallet'
+
 import { RootState }  from './fetchNodes'
 
 const allSlicesRaw = {
@@ -44,8 +48,11 @@ const allSlicesRaw = {
   positions: positionsSlice,
   pricesInfo: pricesSlice,
   ratesInfo: ratesSlice,
+  ethERC20Info: ethERC20Slice,
   rewardsInfo: rewardsSlice,
   sdi: systemDebtSlice,
+  tcpAllocation: tcpAllocationSlice,
+  tcpTimelock: tcpTimelockSlice,
 }
 
 const allSlices: {[key in keyof RootState]: (typeof allSlicesRaw)[key]} = allSlicesRaw

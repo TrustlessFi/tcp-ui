@@ -17,7 +17,7 @@ const ratesInfoSlice = createChainDataSlice({
   cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const rates = getContract(args.contracts[ProtocolContract.Rates], ProtocolContract.Rates) as Rates
+      const rates = getContract<Rates>(ProtocolContract.Rates, args.contracts.Rates)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { ratesInfo } = await executeMulticalls(

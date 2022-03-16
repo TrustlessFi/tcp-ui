@@ -17,7 +17,7 @@ const liquidationsSlice = createChainDataSlice({
   stateSelector: (state: RootState) => state.liquidationsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const liquidations = getContract(args.contracts[ProtocolContract.Liquidations], ProtocolContract.Liquidations) as Liquidations
+      const liquidations = getContract<Liquidations>(ProtocolContract.Liquidations, args.contracts.Liquidations)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { liquidationsInfo } = await executeMulticalls(

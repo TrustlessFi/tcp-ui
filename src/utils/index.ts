@@ -4,6 +4,7 @@ import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
 import getProvider from './getProvider'
+import { contract } from './getContract'
 
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -11,6 +12,8 @@ import protocolTokenArtifact from '@trustlessfi/artifacts/dist/contracts/core/to
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000'
+
+export const zkSyncEthERC20Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
 export const isDevEnvironment = process.env.NODE_ENV === 'development'
 
@@ -440,15 +443,14 @@ export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lo
 export type abi = { [key in string]: any }[]
 export type contractArtifact = { abi: abi }
 
-export const addressToERC20 = (erc20Address: string): ERC20 =>
-  new Contract(erc20Address, (erc20Artifact as unknown as contractArtifact).abi, getProvider()) as ERC20
+export const addressToERC20 = (address = zeroAddress) =>
+  contract<ERC20>({address, abi: erc20Artifact.abi })
 
 export const addressToProtocolToken = (address: string) =>
-  new Contract(address, (protocolTokenArtifact as unknown as contractArtifact).abi, getProvider()) as ProtocolToken
+  contract<ProtocolToken>({address, abi: protocolTokenArtifact.abi })
 
 export const addressToV3Pool = (address: string) =>
-  new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool
-
+  contract<UniswapV3Pool>({address, abi: poolArtifact.abi })
 
 export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
   let y = bnf(input)
@@ -466,70 +468,13 @@ export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
   return z
 }
 
-// ======================= ETHEREUM TYPESCRIPT ============================
-interface EthereumRequestArguments {
-  method: string
-  params?: unknown[] | object
-}
 
-interface ethereum {
-  request: (args: EthereumRequestArguments) => Promise<unknown>
-}
 
-export enum RpcMethod {
-  SwitchChain = 'wallet_switchEthereumChain',
-  AddTokenToWallet = 'wallet_watchAsset',
-}
 
-interface SwitchChainRequest {
-  method: RpcMethod.SwitchChain
-  chainId: string
-}
 
-interface metamaskTokenParams {
-  address: string
-  symbol: string
-  decimals: number
-  image: string
-}
 
-interface AddTokenToWalletRequest {
-  method: RpcMethod.AddTokenToWallet
-  type: string
-  options: metamaskTokenParams
-}
 
-type RpcRequest =
-  | SwitchChainRequest
-  | AddTokenToWalletRequest
 
-const requiresArray: {[key in RpcMethod]?: boolean} = {
-  [RpcMethod.SwitchChain]: true
-}
-
-export const makeRPCRequest = async (request: RpcRequest) => {
-  const ethereum = window.ethereum as ethereum | undefined
-  if (ethereum === undefined) return
-
-  const params = Object.fromEntries(Object.entries(request).filter(([key, _]) => key !== 'method'))
-
-  const requestParams = {
-    method: request.method,
-    params: requiresArray[request.method] ? [params] : params,
-  }
-
-  return await ethereum.request(requestParams)
-}
-
-export const addTokenToWallet = async (
-  options: metamaskTokenParams
-) => {
-  return await makeRPCRequest({
-    method: RpcMethod.AddTokenToWallet,
-    type: 'ERC20',
-    options,
-  })
-}
 
 export const numberToHex = (val: number) => '0x' + val.toString(16)
 
@@ -546,4 +491,86 @@ export const getRecencyString = (timeInMS: number) => {
     return `${Math.floor(secondsAgo / weeks(1))}d`
   }
   return `${getRawString(Math.round((timeMS() - timeInMS) / 1000))} ago`
+}
+
+// ======================= METAMASK API ============================
+interface EthereumRequestArguments {
+  method: string
+  params?: unknown[] | object
+}
+
+interface ethereum {
+  request: (args: EthereumRequestArguments) => Promise<unknown>
+}
+
+export enum RpcMethod {
+  SwitchChain = 'wallet_switchEthereumChain',
+  AddTokenToWallet = 'wallet_watchAsset',
+  AddEthereumChain = 'wallet_addEthereumChain',
+}
+
+interface SwitchChainRequest {
+  method: RpcMethod.SwitchChain
+  chainId: string
+}
+
+interface AddTokenToWalletRequest {
+  method: RpcMethod.AddTokenToWallet
+  type: string
+  options: {
+    address: string
+    symbol: string
+    decimals: number
+    image: string
+  }
+}
+
+interface AddEthereumChainParameter {
+  method: RpcMethod.AddEthereumChain
+  chainId: string // A 0x-prefixed hexadecimal string
+  chainName: string
+  nativeCurrency: {
+    name: string
+    symbol: string // 2-6 characters long
+    decimals: 18
+  };
+  rpcUrls: string[]
+  blockExplorerUrls?: string[]
+  iconUrls?: string[] // Currently ignored.
+}
+
+
+type RpcRequest =
+  | SwitchChainRequest
+  | AddTokenToWalletRequest
+  | AddEthereumChainParameter
+
+const requiresArray: {[key in RpcMethod]?: true} = {
+  [RpcMethod.SwitchChain]: true,
+  [RpcMethod.AddEthereumChain]: true,
+}
+
+export const makeRPCRequest = async (request: RpcRequest) => {
+  const ethereum = window.ethereum as ethereum | undefined
+  if (ethereum === undefined) return
+
+  // strip method from the params
+  const params = Object.fromEntries(Object.entries(request).filter(([key, _]) => key !== 'method'))
+
+  const requestParams = {
+    method: request.method,
+    params: requiresArray[request.method] === true ? [params] : params,
+  }
+
+  return await ethereum.request(requestParams)
+}
+
+export const addTokenToWallet = async (
+  options: AddTokenToWalletRequest['options']
+) => {
+  return await makeRPCRequest({
+    method: RpcMethod.AddTokenToWallet,
+    type: 'ERC20',
+    options,
+  })
 }

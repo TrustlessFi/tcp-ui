@@ -103,7 +103,7 @@ const RemoveLiquidity = () => {
     <Center style={{marginTop: 40}}>
       <Tile style={{width: 500, padding: 40}}>
         <SpacedList spacing={40}>
-          <LargeText>Remove {pool.title} Liquidity</LargeText>
+          <LargeText size={28}>Remove {pool.title} Liquidity</LargeText>
           <Row middle='xs'>
             <Text>Percentage to withdraw</Text>
             <span style={{width: 364, display: 'inline-block'}}>
@@ -136,7 +136,6 @@ const RemoveLiquidity = () => {
               </Text>
             </span>
           </Row>
-
           {
             userLiquidity.isZero()
             ? <InlineNotification
@@ -155,7 +154,7 @@ const RemoveLiquidity = () => {
                 hideCloseButton
               />
           }
-          <SpacedList row spacing={10}>
+          <SpacedList row spacing={20}>
             <CreateTransactionButton
               disabled={dataNull || contracts === null || userLiquidity.isZero()}
               size='md'

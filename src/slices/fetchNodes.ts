@@ -13,12 +13,15 @@ import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
 import { pricesInfo } from './prices'
 import { ratesInfo } from './rates'
+import { ethERC20Info } from './ethERC20'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
 import { notificationState } from './notifications'
 import { stakingState } from './staking'
 import { tabsState } from './tabs'
+import { tcpAllocationInfo } from './tcpAllocation'
+import { tcpTimelockInfo } from './tcpTimelock'
 import { TransactionState } from './transactions'
 import { walletState } from './wallet'
 
@@ -44,8 +47,11 @@ export type RootState = {
   positions: sliceState<positions>
   pricesInfo: sliceState<pricesInfo>
   ratesInfo: sliceState<ratesInfo>
+  ethERC20Info: sliceState<ethERC20Info>
   rewardsInfo: sliceState<rewardsInfo>
   sdi: sliceState<sdi>
+  tcpAllocation: sliceState<tcpAllocationInfo>
+  tcpTimelock: sliceState<tcpTimelockInfo>
 }
 
 export type FetchNode = keyof RootState

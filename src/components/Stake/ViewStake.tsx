@@ -86,7 +86,7 @@ const ViewStake = () => {
             <Bold>{aprDisplay}%</Bold>
           </Text>
         </SpacedList>
-        <SpacedList row spacing={10}>
+        <SpacedList row spacing={20}>
           <Button
             key='stake'
             onClick={() => dispatch(setStakePage(StakePage.Add))}
@@ -98,7 +98,7 @@ const ViewStake = () => {
             key='withdraw'
             onClick={() => dispatch(setStakePage(StakePage.Withdraw))}
             size='md'
-            kind='primary'>
+            kind='secondary'>
             Withdraw
           </Button>
         </SpacedList>

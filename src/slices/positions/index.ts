@@ -30,8 +30,8 @@ const positionsSlice = createChainDataSlice({
   isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts'>) => {
-      const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
-      const positionNFT = getContract(args.contracts[ProtocolContract.HuePositionNFT], ProtocolContract.HuePositionNFT) as HuePositionNFT
+      const accounting = getContract<Accounting>(ProtocolContract.Accounting, args.contracts.Accounting)
+      const positionNFT = getContract<HuePositionNFT>(ProtocolContract.HuePositionNFT, args.contracts.HuePositionNFT)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
@@ -77,7 +77,7 @@ const positionsSlice = createChainDataSlice({
                 .div(avgDebtPerPeriod)
           }
         }
-        
+
         return {
           collateralCount: unscale(position.collateral),
           debtCount: unscale(positionDebt),

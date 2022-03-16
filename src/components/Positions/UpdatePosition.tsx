@@ -68,7 +68,6 @@ const UpdatePosition = () => {
   const [collateralIsFocused, setCollateralIsFocused] = useState(false)
   const [position, setPosition] = useState<Position | null>(null)
   const [areMultiplePositions, setAreMultiplePositions] = useState(false)
-  const [inInitialState, setInInitialState] = useState(true)
   const [isUpdating, setIsUpdating] = useState(false)
 
   const dataNull =
@@ -85,7 +84,6 @@ const UpdatePosition = () => {
     setPosition(newPosition)
     setCollateralCount(newPosition.collateralCount)
     updateDebtCountImpl(newPosition.debtCount)
-    setInInitialState(true)
   }
 
   useEffect(() => {
@@ -156,7 +154,6 @@ const UpdatePosition = () => {
   }
 
   const updateCollateralCount = (countCollateral: number) => {
-    setInInitialState(false)
     setCollateralCount(parseFloat(roundToXDecimals(countCollateral, 4, true)))
   }
 
@@ -170,14 +167,12 @@ const UpdatePosition = () => {
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
-    setInInitialState(false)
     setDebtCount(parseFloat(roundToXDecimals(countDebt, 2, true)))
   }
 
   const cancel = () => {
     updateDebtCountImpl(position!.debtCount)
     updateCollateralCount(position!.collateralCount)
-    setInInitialState(true)
     setIsUpdating(false)
   }
 

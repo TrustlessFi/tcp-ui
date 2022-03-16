@@ -2,11 +2,13 @@ import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { clearUserTransactions, TransactionStatus, getTxLongName, WalletToken } from '../../slices/transactions'
+import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import LargeText from '../library/LargeText'
-import { TokenIcon, getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
+import { WalletToken } from '../library/TrustlessLogos'
+import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
+import TokenIcon from '../library/TokenIcon'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink } from '../library/ExplorerLink'
@@ -29,7 +31,7 @@ const TokenCard = ({
   style,
   unit,
 }: {
-  token: WalletToken | 'Eth',
+  token: WalletToken
   balance?: number,
   decimals?: number,
   size?: number,
@@ -50,18 +52,19 @@ const TokenCard = ({
     <Tile
       light
       style={{
-        minWidth: 300,
+        width: '100%',
         marginRight: 16,
         marginBottom: 16,
         display: 'inline-block',
-        cursor: token === 'Eth' ? undefined : 'pointer',
+        cursor: token === WalletToken.Eth ? undefined : 'pointer',
         padding: 20,
+        height: 60,
         ...style
       }}
-      onClick={token === 'Eth' ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
+      onClick={token === WalletToken.Eth ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
       <SpacedList row spacing={16}>
         <span style={{verticalAlign: 'middle'}}>
-          <TokenIcon walletToken={token} size={size} />
+          <TokenIcon walletToken={token} width={size} />
         </span>
         <>
           <LargeText>
@@ -81,10 +84,12 @@ const WalletInfo = () => {
     balances,
     marketInfo,
     contracts,
+    tcpAllocation,
   } = waitFor([
     'balances',
     'marketInfo',
     'contracts',
+    'tcpAllocation',
   ], selector, useAppDispatch())
 
   const getBalance = (contract: ProtocolContract) =>
@@ -99,6 +104,11 @@ const WalletInfo = () => {
     ? undefined
     : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
 
+  const tcpAllocationCount =
+    tcpAllocation === null
+    ? undefined
+    : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
+
   return (
     <Tile style={{ minWidth: 550, padding: 32 }}>
       <SpacedList spacing={32}>
@@ -106,9 +116,9 @@ const WalletInfo = () => {
           Balances
         </LargeText>
         <Center>
-          <SpacedList>
+          <SpacedList style={{width: '100%'}}>
             <TokenCard
-              token='Eth'
+              token={WalletToken.Eth}
               decimals={4}
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
@@ -126,6 +136,11 @@ const WalletInfo = () => {
             <TokenCard
               token={WalletToken.Tcp}
               balance={getBalance(ProtocolContract.Tcp)}
+            />
+            <TokenCard
+              token={WalletToken.Tcp}
+              unit='Tcp Allocation'
+              balance={tcpAllocationCount}
             />
           </SpacedList>
         </Center>
@@ -233,9 +248,7 @@ const RecentTransactions = () => {
       <WalletInfo />
       <AppTile
         title={tableTitle}
-        rightElement={
-            clearTransactionsButton
-        }
+        rightElement={clearTransactionsButton}
         style={{ minWidth: 550 }}>
         {table}
       </AppTile>
