@@ -11,15 +11,13 @@ import getContract, { contract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
 import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
-import { bnf, uint256Max } from '../../utils/'
+import { uint256Max } from '../../utils/'
 import { ChainID } from '@trustlessfi/addresses'
 import { ERC20 } from '@trustlessfi/typechain'
 import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
-
-const extrasObject = {}
 
 export enum TransactionType {
   CreatePosition,

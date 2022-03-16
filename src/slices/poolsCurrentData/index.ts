@@ -1,8 +1,6 @@
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice } from '../'
-import { Contract } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
-import getProvider from '../../utils/getProvider'
 import getContract, { getMulticallContract, contract } from '../../utils/getContract'
 import {
   executeMulticalls,
@@ -17,8 +15,8 @@ import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/t
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
 import {
-  sqrtPriceX96ToTick, zeroAddress, PromiseType, timeToPeriod, bnf,
-  unscale, first
+  sqrtPriceX96ToTick, PromiseType, timeToPeriod, bnf,
+  unscale
 } from '../../utils'
 
 type poolPosition = PromiseType<ReturnType<Accounting['getPoolPosition']>>

@@ -13,7 +13,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import ClaimRewardsButton from '../library/ClaimRewardsButton'
 import { Tile, Button } from 'carbon-components-react'
 import { resetNonce } from '../../slices/liquidityPage'
-import { TransactionType, TransactionStatus } from '../../slices/transactions'
+import { TransactionType } from '../../slices/transactions'
 import { WalletToken } from '../library/TrustlessLogos'
 
 const ViewLiquidity = () => {

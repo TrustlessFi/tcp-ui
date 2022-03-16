@@ -1,7 +1,6 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
-  Modal, Button,
-  NumberInput, TextArea, Tile, TextInput,
+  Modal, Button, NumberInput, Tile,
 } from 'carbon-components-react'
 import { TransactionType } from '../../slices/transactions'
 import { useState } from 'react'
@@ -10,7 +9,6 @@ import SpacedList from '../library/SpacedList'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import waitFor from '../../slices/waitFor'
-import ProtocolContract from '../../slices/contracts/ProtocolContract'
 
 const GuardianModal = () => {
   const dispatch = useAppDispatch()

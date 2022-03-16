@@ -9,37 +9,7 @@ import { zeroAddress } from '../utils/'
 import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '../slices/contracts/ProtocolContract'
 
 // ==================== Typechain =========================
-import {
-  Accounting,
-  Auctions,
-  EnforcedDecentralization,
-  Governor,
-  TcpGovernorAlpha,
-  LendHue,
-  Liquidations,
-  Market,
-  TrustlessMulticall,
-  TrustlessMulticallViewOnly,
-  Prices,
-  ProtocolDataAggregator,
-  ProtocolLock,
-  Tcp,
-  Rates,
-  Rewards,
-  Settlement,
-  TcpTimelock,
-  Hue,
-  HuePositionNFT,
-  EthERC20,
-
-  TDao,
-  TDaoToken,
-  TDaoPositionNFT,
-  TDaoGovernorAlpha,
-  TDaoTimelock,
-  TDaoVotingRewardsSafe,
-  TcpAllocation,
-} from "@trustlessfi/typechain"
+import { TrustlessMulticallViewOnly } from "@trustlessfi/typechain"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "@trustlessfi/artifacts/dist/contracts/core/storage/Accounting.sol/Accounting.json"
