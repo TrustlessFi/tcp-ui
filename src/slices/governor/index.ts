@@ -14,7 +14,7 @@ const partialGovernorSlice = createChainDataSlice({
   stateSelector: (state: RootState) => state.governorInfo,
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
-      const governor = getContract(args.rootContracts.governor, RootContract.Governor) as Governor
+      const governor = getContract<Governor>(RootContract.Governor, args.rootContracts.governor)
 
       const [
         phase,

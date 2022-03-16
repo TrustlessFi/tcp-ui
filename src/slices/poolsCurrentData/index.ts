@@ -3,7 +3,7 @@ import { createChainDataSlice } from '../'
 import { Contract } from 'ethers'
 import ProtocolContract from '../contracts/ProtocolContract'
 import getProvider from '../../utils/getProvider'
-import getContract, { getMulticallContract } from '../../utils/getContract'
+import getContract, { getMulticallContract, contract } from '../../utils/getContract'
 import {
   executeMulticalls,
   manyContractOneFunctionMC,
@@ -54,12 +54,11 @@ const poolsCurrentDataSlice = createChainDataSlice({
   isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo' | 'userAddress'>) => {
-      const provider = getProvider()
-      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
-      const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
+      const rewards = getContract<Rewards>(ProtocolContract.Rewards, args.contracts.Rewards)
+      const accounting = getContract<Accounting>(ProtocolContract.Accounting, args.contracts.Accounting)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
-      const poolContract = new Contract(zeroAddress, poolArtifact.abi, provider) as UniswapV3Pool
-      const charmWrapper = new Contract(zeroAddress, charmWrapperArtifact.abi, provider) as CharmWrapper
+      const poolContract = contract<UniswapV3Pool>({abi: poolArtifact.abi})
+      const charmWrapper = contract<CharmWrapper>({abi: charmWrapperArtifact.abi})
 
       const charmPoolAddresses = Object.keys(args.poolsMetadata)
 

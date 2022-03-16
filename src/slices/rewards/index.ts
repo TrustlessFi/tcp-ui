@@ -19,7 +19,7 @@ const rewardsInfoSlice = createChainDataSlice({
   stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+      const rewards = getContract<Rewards>(ProtocolContract.Rewards, args.contracts.Rewards)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { rewardsInfo } = await executeMulticalls(

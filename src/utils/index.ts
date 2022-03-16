@@ -4,6 +4,7 @@ import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
 import getProvider from './getProvider'
+import { contract } from './getContract'
 
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -442,15 +443,14 @@ export const getAmount0ForAmount1 = (amount1: BigNumber, currentTick: number, lo
 export type abi = { [key in string]: any }[]
 export type contractArtifact = { abi: abi }
 
-export const addressToERC20 = (erc20Address: string): ERC20 =>
-  new Contract(erc20Address, (erc20Artifact as unknown as contractArtifact).abi, getProvider()) as ERC20
+export const addressToERC20 = (address = zeroAddress) =>
+  contract<ERC20>({address, abi: erc20Artifact.abi })
 
 export const addressToProtocolToken = (address: string) =>
-  new Contract(address, (protocolTokenArtifact as unknown as contractArtifact).abi, getProvider()) as ProtocolToken
+  contract<ProtocolToken>({address, abi: protocolTokenArtifact.abi })
 
 export const addressToV3Pool = (address: string) =>
-  new Contract(address, (poolArtifact as unknown as contractArtifact).abi, getProvider()) as UniswapV3Pool
-
+  contract<UniswapV3Pool>({address, abi: poolArtifact.abi })
 
 export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
   let y = bnf(input)

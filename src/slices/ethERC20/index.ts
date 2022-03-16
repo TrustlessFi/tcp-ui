@@ -18,7 +18,7 @@ const ethERC20Slice = createChainDataSlice({
   stateSelector: (state: RootState) => state.ethERC20Info,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress'>) => {
-      const ethERC20 = getContract(args.contracts[ProtocolContract.EthERC20], ProtocolContract.EthERC20) as EthERC20
+      const ethERC20 = getContract<EthERC20>(ProtocolContract.EthERC20, args.contracts.EthERC20)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { ethERC20Data } = await executeMulticalls(

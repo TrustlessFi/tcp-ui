@@ -19,7 +19,7 @@ const systemDebtSlice = createChainDataSlice({
   isUserData: false,
   thunkFunction:
     async (args: thunkArgs<'contracts'>) => {
-      const accounting = getContract(args.contracts[ProtocolContract.Accounting], ProtocolContract.Accounting) as Accounting
+      const accounting = getContract<Accounting>(ProtocolContract.Accounting, args.contracts.Accounting)
 
       const sdi = await accounting.getSystemDebtInfo()
 

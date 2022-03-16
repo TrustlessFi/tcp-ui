@@ -5,6 +5,7 @@ import { ContractInterface, Contract } from "ethers"
 import { Web3Provider } from '@ethersproject/providers'
 
 import getProvider from './getProvider'
+import { zeroAddress } from '../utils/'
 import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '../slices/contracts/ProtocolContract'
 
 // ==================== Typechain =========================
@@ -73,13 +74,11 @@ import tDaoGovernorAlphaArtifact from '@trustlessfi/artifacts/dist/contracts/cor
 import tDaoTimelockArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
 import tDaoVotingRewardsSafeArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
 
-
-import { assertUnreachable } from '@trustlessfi/utils'
-
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }
+type TrustlessContract = ProtocolContract | RootContract | TDaoContract | TDaoRootContract
 
-const artifactLookup = (): {[key in ProtocolContract | RootContract | TDaoContract | TDaoRootContract]: contractAbi} => ({
+const artifactLookup = (): {[key in TrustlessContract]: contractAbi} => ({
   [ProtocolContract.Accounting]: accountingArtifact,
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
@@ -114,90 +113,44 @@ const artifactLookup = (): {[key in ProtocolContract | RootContract | TDaoContra
   [TDaoContract.TDaoVotingRewardsSafe]: tDaoVotingRewardsSafeArtifact,
 })
 
-export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
-  new Contract(address, abi, provider === undefined ? getProvider() : provider) as T
+export const contract = <T>(args: {
+  address?: string,
+  contract?: TrustlessContract,
+  abi?: ContractInterface,
+  provider?: Web3Provider
+  multicallViewOnly?: boolean
+}): T => {
+  if (args.abi === undefined && args.contract === undefined) {
+    throw new Error('Abi not provided.')
+  }
+
+  const abi =
+    args.abi === undefined
+    ? (
+        args.contract! === RootContract.TrustlessMulticall
+        ? (
+            args.multicallViewOnly === true
+            ? trustlessMulticallViewOnlyArtifact.abi
+            : trustlessMulticallArtifact.abi
+          )
+        : artifactLookup()[args.contract!].abi
+      )
+    : args.abi
+
+  return new Contract(
+    args.address === undefined ? zeroAddress : args.address,
+    abi,
+    args.provider === undefined ? getProvider() : args.provider) as unknown as T
+}
+
+export const getContract = <T>(theContract: TrustlessContract, address = zeroAddress) =>
+  contract<T>({contract: theContract, address})
 
 export const getMulticallContract = (address: string) =>
-  getContract(address, RootContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
-
-const getContract = (
-  address: string,
-  theContract: ProtocolContract | RootContract | TDaoContract | TDaoRootContract,
-  multicallViewOnly = false) => {
-  const getAbi = (): abi => {
-    if (theContract === RootContract.TrustlessMulticall) {
-      return multicallViewOnly ? trustlessMulticallViewOnlyArtifact.abi : trustlessMulticallArtifact.abi
-    } else {
-      return artifactLookup()[theContract].abi
-    }
-  }
-
-  const contract = new Contract(address, getAbi(), getProvider())
-
-  switch (theContract) {
-    case ProtocolContract.Accounting:
-      return contract as Accounting
-    case ProtocolContract.Auctions:
-      return contract as Auctions
-    case ProtocolContract.EnforcedDecentralization:
-      return contract as EnforcedDecentralization
-    case ProtocolContract.Hue:
-      return contract as Hue
-    case ProtocolContract.HuePositionNFT:
-      return contract as HuePositionNFT
-    case ProtocolContract.LendHue:
-      return contract as LendHue
-    case ProtocolContract.Liquidations:
-      return contract as Liquidations
-    case ProtocolContract.Market:
-      return contract as Market
-    case ProtocolContract.Prices:
-      return contract as Prices
-    case ProtocolContract.ProtocolLock:
-      return contract as ProtocolLock
-    case ProtocolContract.Rates:
-      return contract as Rates
-    case ProtocolContract.Rewards:
-      return contract as Rewards
-    case ProtocolContract.Settlement:
-      return contract as Settlement
-    case ProtocolContract.Tcp:
-      return contract as Tcp
-    case ProtocolContract.TcpGovernorAlpha:
-      return contract as TcpGovernorAlpha
-    case ProtocolContract.TcpTimelock:
-      return contract as TcpTimelock
-    case ProtocolContract.TcpAllocation:
-      return contract as TcpAllocation
-
-    case ProtocolContract.EthERC20:
-      return contract as EthERC20
-
-    case RootContract.Governor:
-      return contract as Governor
-    case RootContract.ProtocolDataAggregator:
-      return contract as ProtocolDataAggregator
-    case RootContract.TrustlessMulticall:
-      return contract as TrustlessMulticall
-
-    case TDaoRootContract.TDao:
-      return contract as TDao
-
-    case TDaoContract.TDaoToken:
-      return contract as TDaoToken
-    case TDaoContract.TDaoPositionNFT:
-      return contract as TDaoPositionNFT
-    case TDaoContract.TDaoGovernorAlpha:
-      return contract as TDaoGovernorAlpha
-    case TDaoContract.TDaoTimelock:
-      return contract as TDaoTimelock
-    case TDaoContract.TDaoVotingRewardsSafe:
-      return contract as TDaoVotingRewardsSafe
-
-
-    default:
-      assertUnreachable(theContract)
-  }
-}
+  contract<TrustlessMulticallViewOnly>({
+    address,
+    contract: RootContract.TrustlessMulticall,
+    multicallViewOnly: true
+  })
 
 export default getContract

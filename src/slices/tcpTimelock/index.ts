@@ -16,7 +16,7 @@ const tcpTimelockSlice = createChainDataSlice({
   cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const tcpTimelock = getContract(args.contracts.TcpTimelock, ProtocolContract.TcpTimelock) as TcpTimelock
+      const tcpTimelock = getContract<TcpTimelock>(ProtocolContract.TcpTimelock, args.contracts.TcpTimelock)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { tcpTimelockInfo } = await executeMulticalls(

@@ -43,8 +43,8 @@ const poolsMetadataSlice = createChainDataSlice({
   cacheDuration: CacheDuration.LONG,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
-      const protocolDataAggregator = getContract(args.rootContracts.protocolDataAggregator, RootContract.ProtocolDataAggregator) as ProtocolDataAggregator
-      const rewards = getContract(args.contracts[ProtocolContract.Rewards], ProtocolContract.Rewards) as Rewards
+      const protocolDataAggregator = getContract<ProtocolDataAggregator>(RootContract.ProtocolDataAggregator, args.rootContracts.protocolDataAggregator)
+      const rewards = getContract<Rewards>(ProtocolContract.Rewards, args.contracts.Rewards)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const poolConfigs = await protocolDataAggregator.getIncentivizedPools()

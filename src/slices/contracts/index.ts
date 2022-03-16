@@ -17,8 +17,8 @@ const contractsSlice = createChainDataSlice({
   thunkFunction:
     async (args: thunkArgs<'rootContracts' >) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
-      const governor = getContract(args.rootContracts.governor, RootContract.Governor) as Governor
-      const tdao = getContract(args.rootContracts.tdao, TDaoRootContract.TDao) as TDao
+      const governor = getContract(RootContract.Governor, args.rootContracts.governor) as Governor
+      const tdao = getContract(TDaoRootContract.TDao, args.rootContracts.tdao) as TDao
 
       const { tcpContracts, tdaoContracts } = await executeMulticalls(
         trustlessMulticall,
@@ -58,7 +58,7 @@ const contractsSlice = createChainDataSlice({
         }
       )
 
-      const accounting = getContract(tcpContracts.accounting, ProtocolContract.Accounting) as Accounting
+      const accounting = getContract<Accounting>(ProtocolContract.Accounting, tcpContracts.accounting)
 
       const { ethERC20 } = await executeMulticalls(
         trustlessMulticall,

@@ -30,7 +30,7 @@ const tcpAllocationSlice = createChainDataSlice({
   },
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress'>) => {
-      const tcpAllocation = getContract(args.contracts.TcpAllocation, ProtocolContract.TcpAllocation) as TDao
+      const tcpAllocation = getContract<TDao>(ProtocolContract.TcpAllocation, args.contracts.TcpAllocation)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
       const { tdaoInfo } = await executeMulticalls(trustlessMulticall, {

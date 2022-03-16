@@ -47,7 +47,7 @@ const balancesSlice = createChainDataSlice({
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const tokenContract = addressToERC20(zeroAddress)
-      const ethERC20 = getContract(args.contracts[ProtocolContract.EthERC20], ProtocolContract.EthERC20) as EthERC20
+      const ethERC20 = getContract<EthERC20>(ProtocolContract.EthERC20, args.contracts.EthERC20)
 
       const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
       // eslint-disable-next-line array-callback-return

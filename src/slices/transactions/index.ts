@@ -1,4 +1,3 @@
-import { Contract } from 'ethers'
 import { PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { assertUnreachable } from '../../utils'
 import { waitingForMetamask, metamaskComplete } from '../wallet'
@@ -7,8 +6,8 @@ import { addNotification } from '../notifications'
 import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract, { RootContract } from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import { Market, Rewards, EthERC20, Governor } from '@trustlessfi/typechain'
-import getContract from '../../utils/getContract'
+import { Market, Rewards, EthERC20, Governor, Hue, LendHue } from '@trustlessfi/typechain'
+import getContract, { contract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
 import { mnt, parseMetamaskError, extractRevertReasonString } from '../../utils'
@@ -314,20 +313,32 @@ const executeTransaction = async (
     : {}
 
   const getMarket = (address: string) =>
-    getContract(address, ProtocolContract.Market)
-      .connect(provider.getSigner()) as Market
+    getContract<Market>(ProtocolContract.Market, address)
+      .connect(provider.getSigner())
 
   const getRewards = (address: string) =>
-    getContract(address, ProtocolContract.Rewards)
-      .connect(provider.getSigner()) as Rewards
+    getContract<Rewards>(ProtocolContract.Rewards, address)
+      .connect(provider.getSigner())
 
   const getEthERC20 = (address: string) =>
-    getContract(address, ProtocolContract.EthERC20)
-      .connect(provider.getSigner()) as EthERC20
+    getContract<EthERC20>(ProtocolContract.EthERC20, address)
+      .connect(provider.getSigner())
 
   const getGovernor = (address: string) =>
-    getContract(address, RootContract.Governor)
-      .connect(provider.getSigner()) as Governor
+    getContract<Governor>(RootContract.Governor, address)
+      .connect(provider.getSigner())
+
+  const getHue = (address: string) =>
+    getContract<Hue>(ProtocolContract.Hue, address)
+      .connect(provider.getSigner())
+
+  const getLendHue = (address: string) =>
+    getContract<LendHue>(ProtocolContract.LendHue, address)
+      .connect(provider.getSigner())
+
+  const getERC20 = (address: string) =>
+    contract<ERC20>({address, abi: erc20Artifact.abi})
+      .connect(provider.getSigner())
 
   const type = args.type
 
@@ -357,17 +368,13 @@ const executeTransaction = async (
       return await getRewards(args.Rewards).claimAllRewards(args.poolIDs, UIID, overrides)
 
     case TransactionType.ApprovePoolToken:
-      const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
-
-      return await tokenContract.connect(provider.getSigner()).approve(args.Rewards, uint256Max, overrides)
+      return await getERC20(args.tokenAddress).approve(args.Rewards, uint256Max, overrides)
 
     case TransactionType.ApproveHue:
-      const hue = new Contract(args.Hue, erc20Artifact.abi, provider) as ERC20
-      return await hue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, overrides)
+      return await getHue(args.Hue).approve(args.spenderAddress, uint256Max, overrides)
 
     case TransactionType.ApproveLendHue:
-      const lendHue = new Contract(args.LendHue, erc20Artifact.abi, provider) as ERC20
-      return await lendHue.connect(provider.getSigner()).approve(args.spenderAddress, uint256Max, overrides)
+      return await getLendHue(args.LendHue).approve(args.spenderAddress, uint256Max, overrides)
 
     case TransactionType.AddLiquidity:
       const amount0Desired = scale(args.token0.count, args.token0.decimals)
