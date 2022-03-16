@@ -26,6 +26,7 @@ export enum TransactionType {
   DecreaseStake,
   ApproveHue,
   ApproveLendHue,
+  ApproveEth,
   ClaimAllLiquidityPositionRewards,
   ClaimAllPositionRewards,
   ApprovePoolToken,
@@ -102,6 +103,12 @@ export interface txApproveHue {
 export interface txApproveLendHue {
   type: TransactionType.ApproveLendHue
   LendHue: string
+  spenderAddress: string
+}
+
+export interface txApproveEth {
+  type: TransactionType.ApproveEth
+  Eth: string
   spenderAddress: string
 }
 
@@ -183,6 +190,7 @@ export type TransactionArgs =
   txApprovePoolToken |
   txApproveHue |
   txApproveLendHue |
+  txApproveEth |
   txAddLiquidity |
   txRemoveLiquidity |
   txMintEthERC20 |
@@ -228,6 +236,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Approve Hue'
     case TransactionType.ApproveLendHue:
       return 'Approve Withdraw'
+    case TransactionType.ApproveEth:
+      return 'Approve Eth'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
     case TransactionType.ClaimAllLiquidityPositionRewards:
@@ -270,6 +280,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Approve Hue'
     case TransactionType.ApproveLendHue:
       return 'Approve Withdraw'
+    case TransactionType.ApproveEth:
+      return 'Approve Eth'
     case TransactionType.ClaimAllPositionRewards:
       return 'Claim All Rewards'
     case TransactionType.ClaimAllLiquidityPositionRewards:
@@ -373,6 +385,9 @@ const executeTransaction = async (
 
     case TransactionType.ApproveLendHue:
       return await getLendHue(args.LendHue).approve(args.spenderAddress, uint256Max, overrides)
+
+    case TransactionType.ApproveEth:
+      return await getEthERC20(args.Eth).approve(args.spenderAddress, uint256Max, overrides)
 
     case TransactionType.AddLiquidity:
       const amount0Desired = scale(args.token0.count, args.token0.decimals)
@@ -491,6 +506,7 @@ export const waitForTransaction = async (
       case TransactionType.ApprovePoolToken:
       case TransactionType.ApproveHue:
       case TransactionType.ApproveLendHue:
+      case TransactionType.ApproveEth:
         clearBalances()
         break
       case TransactionType.AddLiquidity:

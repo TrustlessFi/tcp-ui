@@ -150,6 +150,12 @@ const ManagePosition = () => {
     balances.tokens[contracts.Hue].approval.Market !== undefined &&
     balances.tokens[contracts.Hue].approval.Market.approved
 
+  const ethApproved =
+    balances !== null &&
+    contracts !== null &&
+    balances.tokens[contracts.EthERC20].approval.Market !== undefined &&
+    balances.tokens[contracts.EthERC20].approval.Market.approved
+
   const setCollateralCountToMax = () => {
     const userEthBalance =
       balances !== null && balances.userEthBalance > txCostBuffer
@@ -328,14 +334,34 @@ const ManagePosition = () => {
 
   const approveHueButton =
     <CreateTransactionButton
-      title='Approve'
-      key='approve_button'
+      title='Approve Hue'
+      key='approve_hue_button'
       size='md'
       disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
       showDisabledInsteadOfConnectWallet={true}
       txArgs={{
         type: TransactionType.ApproveHue,
         Hue: contracts === null ? '' : contracts.Hue,
+        spenderAddress: contracts === null ? '' : contracts.Market,
+      }}
+    />
+
+  const approveEthButton =
+    <CreateTransactionButton
+      title='Approve TruEth'
+      key='approve_eth_button'
+      size='md'
+      disabled={
+        isFailing ||
+        collateralIncrease <= 0 ||
+        balances === null ||
+        contracts === null ||
+        balances.tokens[contracts.EthERC20].approval.Market.approved
+      }
+      showDisabledInsteadOfConnectWallet={true}
+      txArgs={{
+        type: TransactionType.ApproveEth,
+        Eth: contracts === null ? '' : contracts.EthERC20,
         spenderAddress: contracts === null ? '' : contracts.Market,
       }}
     />
@@ -529,7 +555,12 @@ const ManagePosition = () => {
               style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
               {
                 isCreating
-                ? [createPositionButton, cancelCreateButton]
+                ? (
+                  ethApproved
+                  ? [createPositionButton, cancelCreateButton]
+                  : [approveEthButton, cancelCreateButton]
+                )
+
                 : (
                     isEditing
                     ? (
