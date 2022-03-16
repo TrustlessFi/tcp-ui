@@ -161,7 +161,8 @@ const ManagePosition = () => {
   }
 
   const setDebtToHighCollateralRatio = () => {
-    setDebtCountToHighCollateralRatioImpl(collateralCount)
+    if (ethPrice === null) return
+    updateDebtCountImpl(Math.floor((collateralCount * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO))
   }
 
   const updateCollateralCount = (countCollateral: number) => {
@@ -171,11 +172,6 @@ const ManagePosition = () => {
 
   const updateDebtCount = (countDebt: number) => {
     updateDebtCountImpl(countDebt)
-  }
-
-  const setDebtCountToHighCollateralRatioImpl = (countCollateral: number) => {
-    if (ethPrice === null) return
-    updateDebtCountImpl((countCollateral * ethPrice) / DEFAULT_COLLATERALIZATION_RATIO)
   }
 
   const updateDebtCountImpl = (countDebt: number) => {
