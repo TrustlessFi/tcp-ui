@@ -19,6 +19,7 @@ import systemDebtSlice from './systemDebt'
 import stakingSlice from './staking'
 import notificationsSlice from './notifications'
 import tabsSlice from './tabs'
+import tcpAllocationSlice from './tcpAllocation'
 import tcpTimelockSlice from './tcpTimelock'
 import transactionsSlice from './transactions'
 import walletSlice from './wallet'
@@ -50,6 +51,7 @@ const allSlicesRaw = {
   ethERC20Info: ethERC20Slice,
   rewardsInfo: rewardsSlice,
   sdi: systemDebtSlice,
+  tcpAllocation: tcpAllocationSlice,
   tcpTimelock: tcpTimelockSlice,
 }
 

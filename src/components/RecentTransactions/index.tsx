@@ -84,10 +84,12 @@ const WalletInfo = () => {
     balances,
     marketInfo,
     contracts,
+    tcpAllocation,
   } = waitFor([
     'balances',
     'marketInfo',
     'contracts',
+    'tcpAllocation',
   ], selector, useAppDispatch())
 
   const getBalance = (contract: ProtocolContract) =>
@@ -101,6 +103,11 @@ const WalletInfo = () => {
     marketInfo === null
     ? undefined
     : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue
+
+  const tcpAllocationCount =
+    tcpAllocation === null
+    ? undefined
+    : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
   return (
     <Tile style={{ minWidth: 550, padding: 32 }}>
@@ -129,6 +136,11 @@ const WalletInfo = () => {
             <TokenCard
               token={WalletToken.Tcp}
               balance={getBalance(ProtocolContract.Tcp)}
+            />
+            <TokenCard
+              token={WalletToken.Tcp}
+              unit='Tcp Allocation'
+              balance={tcpAllocationCount}
             />
           </SpacedList>
         </Center>
@@ -236,9 +248,7 @@ const RecentTransactions = () => {
       <WalletInfo />
       <AppTile
         title={tableTitle}
-        rightElement={
-            clearTransactionsButton
-        }
+        rightElement={clearTransactionsButton}
         style={{ minWidth: 550 }}>
         {table}
       </AppTile>

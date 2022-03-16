@@ -10,6 +10,7 @@ export interface rootContracts {
   trustlessMulticall: string
   protocolDataAggregator: string
   router: string
+  tdao: string
 }
 
 const rootContractsSlice = createLocalSlice({
@@ -26,6 +27,7 @@ const rootContractsSlice = createLocalSlice({
           trustlessMulticall: getAddress(chainID, 'TrustlessMulticall', 'multicall', localHardhatAddresses),
           protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
           router: getAddress(chainID, 'Uniswap', 'router', localHardhatAddresses),
+          tdao: getAddress(chainID, 'TDAO', 'TDao', localHardhatAddresses),
         }
       } catch(e) {
         return null

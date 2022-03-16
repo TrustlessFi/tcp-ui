@@ -5,7 +5,7 @@ import { ContractInterface, Contract } from "ethers"
 import { Web3Provider } from '@ethersproject/providers'
 
 import getProvider from './getProvider'
-import ProtocolContract, { RootContract } from '../slices/contracts/ProtocolContract'
+import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '../slices/contracts/ProtocolContract'
 
 // ==================== Typechain =========================
 import {
@@ -30,6 +30,14 @@ import {
   Hue,
   HuePositionNFT,
   EthERC20,
+
+  TDao,
+  TDaoToken,
+  TDaoPositionNFT,
+  TDaoGovernorAlpha,
+  TDaoTimelock,
+  TDaoVotingRewardsSafe,
+  TcpAllocation,
 } from "@trustlessfi/typechain"
 
 // ================ ARTIFACTS =======================
@@ -54,12 +62,24 @@ import trustlessMulticallArtifact from "@trustlessfi/artifacts/dist/contracts/co
 import trustlessMulticallViewOnlyArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
 import ethERC20Artifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/EthERC20.sol/EthERC20.json"
 import tcpTimelockArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
+import tcpAllocationArtifact from '@trustlessfi/artifacts/dist/contracts/core/auxiliary/allocations/TcpAllocation.sol/TcpAllocation.json'
+
+import tDaoArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDao.sol/TDao.json'
+
+import tDaoTokenArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoToken.sol/TDaoToken.json'
+import tDaoPositionNFTArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoPositionNFT.sol/TDaoPositionNFT.json'
+// import tDaoPositionNFTDescriptorArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoPositionNFTDescriptor.sol/TDaoPositionNFTDescriptor.json'
+import tDaoGovernorAlphaArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoGovernorAlpha.sol/TDaoGovernorAlpha.json'
+import tDaoTimelockArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
+import tDaoVotingRewardsSafeArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
+
+
 import { assertUnreachable } from '@trustlessfi/utils'
 
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }
 
-const artifactLookup = (): {[key in ProtocolContract | RootContract]: contractAbi} => ({
+const artifactLookup = (): {[key in ProtocolContract | RootContract | TDaoContract | TDaoRootContract]: contractAbi} => ({
   [ProtocolContract.Accounting]: accountingArtifact,
   [ProtocolContract.Auctions]: auctionsArtifact,
   [ProtocolContract.EnforcedDecentralization]: enforcedDecentralizationArtifact,
@@ -76,12 +96,22 @@ const artifactLookup = (): {[key in ProtocolContract | RootContract]: contractAb
   [ProtocolContract.Tcp]: tcpArtifact,
   [ProtocolContract.TcpGovernorAlpha]: tcpGovernorAlphaArtifact,
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
+  [ProtocolContract.TcpAllocation]: tcpAllocationArtifact,
 
   [ProtocolContract.EthERC20]: ethERC20Artifact,
 
   [RootContract.Governor]: governorArtifact,
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
+
   [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
+
+  [TDaoRootContract.TDao]: tDaoArtifact,
+
+  [TDaoContract.TDaoToken]: tDaoTokenArtifact,
+  [TDaoContract.TDaoPositionNFT]: tDaoPositionNFTArtifact,
+  [TDaoContract.TDaoGovernorAlpha]: tDaoGovernorAlphaArtifact,
+  [TDaoContract.TDaoTimelock]: tDaoTimelockArtifact,
+  [TDaoContract.TDaoVotingRewardsSafe]: tDaoVotingRewardsSafeArtifact,
 })
 
 export const contract = <T extends Contract>(address: string, abi: ContractInterface, provider?: Web3Provider): T =>
@@ -90,7 +120,10 @@ export const contract = <T extends Contract>(address: string, abi: ContractInter
 export const getMulticallContract = (address: string) =>
   getContract(address, RootContract.TrustlessMulticall, true) as unknown as TrustlessMulticallViewOnly
 
-const getContract = (address: string, theContract: ProtocolContract | RootContract, multicallViewOnly = false) => {
+const getContract = (
+  address: string,
+  theContract: ProtocolContract | RootContract | TDaoContract | TDaoRootContract,
+  multicallViewOnly = false) => {
   const getAbi = (): abi => {
     if (theContract === RootContract.TrustlessMulticall) {
       return multicallViewOnly ? trustlessMulticallViewOnlyArtifact.abi : trustlessMulticallArtifact.abi
@@ -134,6 +167,8 @@ const getContract = (address: string, theContract: ProtocolContract | RootContra
       return contract as TcpGovernorAlpha
     case ProtocolContract.TcpTimelock:
       return contract as TcpTimelock
+    case ProtocolContract.TcpAllocation:
+      return contract as TcpAllocation
 
     case ProtocolContract.EthERC20:
       return contract as EthERC20
@@ -144,6 +179,22 @@ const getContract = (address: string, theContract: ProtocolContract | RootContra
       return contract as ProtocolDataAggregator
     case RootContract.TrustlessMulticall:
       return contract as TrustlessMulticall
+
+    case TDaoRootContract.TDao:
+      return contract as TDao
+
+    case TDaoContract.TDaoToken:
+      return contract as TDaoToken
+    case TDaoContract.TDaoPositionNFT:
+      return contract as TDaoPositionNFT
+    case TDaoContract.TDaoGovernorAlpha:
+      return contract as TDaoGovernorAlpha
+    case TDaoContract.TDaoTimelock:
+      return contract as TDaoTimelock
+    case TDaoContract.TDaoVotingRewardsSafe:
+      return contract as TDaoVotingRewardsSafe
+
+
     default:
       assertUnreachable(theContract)
   }

@@ -1,14 +1,13 @@
 import { thunkArgs, RootState } from '../fetchNodes'
 import { Governor } from '@trustlessfi/typechain'
-import { RootContract } from '../contracts/ProtocolContract'
+import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '../contracts/ProtocolContract'
 import getContract from '../../utils/getContract'
 import { createChainDataSlice, CacheDuration } from '../'
 import { getMulticallContract } from '../../utils/getContract'
 import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
-import { Accounting } from '@trustlessfi/typechain'
-import  ProtocolContract from './ProtocolContract'
+import { Accounting, TDao } from '@trustlessfi/typechain'
 
-export type contractsInfo = { [key in ProtocolContract]: string }
+export type contractsInfo = { [key in ProtocolContract | TDaoContract]: string }
 
 const contractsSlice = createChainDataSlice({
   name: 'contracts',
@@ -19,11 +18,12 @@ const contractsSlice = createChainDataSlice({
     async (args: thunkArgs<'rootContracts' >) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const governor = getContract(args.rootContracts.governor, RootContract.Governor) as Governor
+      const tdao = getContract(args.rootContracts.tdao, TDaoRootContract.TDao) as TDao
 
-      const { contracts } = await executeMulticalls(
+      const { tcpContracts, tdaoContracts } = await executeMulticalls(
         trustlessMulticall,
         {
-          contracts: oneContractManyFunctionMC(
+          tcpContracts: oneContractManyFunctionMC(
             governor,
             {
               accounting: rc.String,
@@ -44,11 +44,21 @@ const contractsSlice = createChainDataSlice({
               governorAlpha: rc.String,
               tcpAllocation: rc.String,
             }
+          ),
+          tdaoContracts: oneContractManyFunctionMC(
+            tdao,
+            {
+              timelock: rc.String,
+              tDaoGovernorAlpha: rc.String,
+              tDaoToken: rc.String,
+              tDaoPositionNFT: rc.String,
+              votingRewardsSafe: rc.String,
+            }
           )
         }
       )
 
-      const accounting = getContract(contracts.accounting, ProtocolContract.Accounting) as Accounting
+      const accounting = getContract(tcpContracts.accounting, ProtocolContract.Accounting) as Accounting
 
       const { ethERC20 } = await executeMulticalls(
         trustlessMulticall,
@@ -63,24 +73,31 @@ const contractsSlice = createChainDataSlice({
       )
 
       return {
-        [ProtocolContract.Accounting]: contracts.accounting,
-        [ProtocolContract.Auctions]: contracts.auctions,
-        [ProtocolContract.EnforcedDecentralization]: contracts.enforcedDecentralization,
-        [ProtocolContract.Hue]: contracts.hue,
-        [ProtocolContract.HuePositionNFT]: contracts.huePositionNFT,
-        [ProtocolContract.LendHue]: contracts.lendHue,
-        [ProtocolContract.Liquidations]: contracts.liquidations,
-        [ProtocolContract.Market]: contracts.market,
-        [ProtocolContract.Prices]: contracts.prices,
-        [ProtocolContract.ProtocolLock]: contracts.protocolLock,
-        [ProtocolContract.Rates]: contracts.rates,
-        [ProtocolContract.Rewards]: contracts.rewards,
-        [ProtocolContract.Settlement]: contracts.settlement,
-        [ProtocolContract.Tcp]: contracts.tcp,
-        [ProtocolContract.TcpGovernorAlpha]: contracts.governorAlpha,
-        [ProtocolContract.TcpTimelock]: contracts.timelock,
+        [ProtocolContract.Accounting]: tcpContracts.accounting,
+        [ProtocolContract.Auctions]: tcpContracts.auctions,
+        [ProtocolContract.EnforcedDecentralization]: tcpContracts.enforcedDecentralization,
+        [ProtocolContract.Hue]: tcpContracts.hue,
+        [ProtocolContract.HuePositionNFT]: tcpContracts.huePositionNFT,
+        [ProtocolContract.LendHue]: tcpContracts.lendHue,
+        [ProtocolContract.Liquidations]: tcpContracts.liquidations,
+        [ProtocolContract.Market]: tcpContracts.market,
+        [ProtocolContract.Prices]: tcpContracts.prices,
+        [ProtocolContract.ProtocolLock]: tcpContracts.protocolLock,
+        [ProtocolContract.Rates]: tcpContracts.rates,
+        [ProtocolContract.Rewards]: tcpContracts.rewards,
+        [ProtocolContract.Settlement]: tcpContracts.settlement,
+        [ProtocolContract.Tcp]: tcpContracts.tcp,
+        [ProtocolContract.TcpGovernorAlpha]: tcpContracts.governorAlpha,
+        [ProtocolContract.TcpTimelock]: tcpContracts.timelock,
+        [ProtocolContract.TcpAllocation]: tcpContracts.tcpAllocation,
 
         [ProtocolContract.EthERC20]: ethERC20.ethERC20,
+
+        [TDaoContract.TDaoToken]: tdaoContracts.tDaoToken,
+        [TDaoContract.TDaoPositionNFT]: tdaoContracts.tDaoPositionNFT,
+        [TDaoContract.TDaoGovernorAlpha]: tdaoContracts.tDaoGovernorAlpha,
+        [TDaoContract.TDaoTimelock]: tdaoContracts.timelock,
+        [TDaoContract.TDaoVotingRewardsSafe]: tdaoContracts.votingRewardsSafe,
       }
     },
 })

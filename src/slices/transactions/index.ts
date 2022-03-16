@@ -458,6 +458,7 @@ export const waitForTransaction = async (
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
     const clearEthERC20 = () => dispatch(allSlices.ethERC20Info.slice.actions.clearData())
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
+    const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
 
     switch (type) {
       case TransactionType.CreatePosition:
@@ -474,6 +475,7 @@ export const waitForTransaction = async (
         clearPositions()
         clearMarketInfo()
         clearBalances()
+        clearTcpAllocation()
         break
       case TransactionType.ClaimAllLiquidityPositionRewards:
         clearRewardsInfo()
