@@ -10,11 +10,11 @@ import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import RelativeLoading from '../library/RelativeLoading'
-import Center from '../library/Center'
+import ClaimRewardsButton from '../library/ClaimRewardsButton'
 import { Tile, Button } from 'carbon-components-react'
 import { resetNonce } from '../../slices/liquidityPage'
-
+import { TransactionType, TransactionStatus } from '../../slices/transactions'
+import { WalletToken } from '../library/TrustlessLogos'
 
 const ViewLiquidity = () => {
   const dispatch = useAppDispatch()
@@ -23,9 +23,11 @@ const ViewLiquidity = () => {
   const {
     poolsCurrentData,
     poolsMetadata,
+    contracts,
   } = waitFor([
     'poolsCurrentData',
     'poolsMetadata',
+    'contracts',
   ], selector, dispatch)
 
   useEffect(() => {
@@ -33,8 +35,9 @@ const ViewLiquidity = () => {
   }, [])
 
   const dataNull =
-    poolsCurrentData === null
-    || poolsMetadata === null
+    poolsCurrentData === null ||
+    poolsMetadata === null ||
+    contracts === null
 
   if (dataNull) {
     return (
@@ -58,6 +61,15 @@ const ViewLiquidity = () => {
       token0: pool.token0,
       token1: pool.token1,
     }
+  })
+
+  let totalApproximateRewards = 0
+  let poolIDsWithRewards: number[] = []
+
+  Object.values(poolsCurrentData).map(pool => {
+    const approximateRewards = pool.userLiquidityPosition.approximateRewards
+    if (approximateRewards > 0) poolIDsWithRewards.push(pool.poolID)
+    totalApproximateRewards += approximateRewards
   })
 
   const columnOne =
@@ -118,7 +130,16 @@ const ViewLiquidity = () => {
           </Tile>
         )
       })}
-
+      <ClaimRewardsButton
+        txArgs={{
+          type: TransactionType.ClaimAllLiquidityPositionRewards,
+          poolIDs: poolIDsWithRewards,
+          Rewards: contracts.Rewards,
+        }}
+        count={totalApproximateRewards}
+        disabled={false}
+        walletToken={WalletToken.Tcp}
+      />
     </SpacedList>
 
   return (

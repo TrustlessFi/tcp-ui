@@ -86,7 +86,7 @@ export interface txClaimPositionRewards {
 export interface txClaimLiquidityPositionRewards {
   type: TransactionType.ClaimAllLiquidityPositionRewards
   Rewards: string
-  poolID: number
+  poolIDs: number[]
 }
 
 export interface txApprovePoolToken {
@@ -354,7 +354,7 @@ const executeTransaction = async (
       return await getMarket(args.Market).claimAllRewards(args.positionIDs, UIID, overrides)
 
     case TransactionType.ClaimAllLiquidityPositionRewards:
-      return await getRewards(args.Rewards).claimRewards(args.poolID, UIID, overrides)
+      return await getRewards(args.Rewards).claimAllRewards(args.poolIDs, UIID, overrides)
 
     case TransactionType.ApprovePoolToken:
       const tokenContract = new Contract(args.tokenAddress, erc20Artifact.abi, provider) as ERC20
@@ -480,6 +480,8 @@ export const waitForTransaction = async (
       case TransactionType.ClaimAllLiquidityPositionRewards:
         clearRewardsInfo()
         clearBalances()
+        clearTcpAllocation()
+        clearPoolsCurrentData()
         break
       case TransactionType.ApprovePoolToken:
       case TransactionType.ApproveHue:

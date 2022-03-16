@@ -16,8 +16,10 @@ import {
 import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
-
-import { sqrtPriceX96ToTick, zeroAddress, PromiseType } from '../../utils'
+import {
+  sqrtPriceX96ToTick, zeroAddress, PromiseType, timeToPeriod, bnf,
+  unscale, first
+} from '../../utils'
 
 type poolPosition = PromiseType<ReturnType<Accounting['getPoolPosition']>>
 
@@ -30,6 +32,7 @@ export interface poolsCurrentData {
     totalRewards: string
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
+    poolID: number
     userLiquidityPosition: {
       cumulativeLiquidity: string
       kickbackPortion: string
@@ -39,6 +42,7 @@ export interface poolsCurrentData {
       liquidity: string
       owner: string
       totalRewards: string
+      approximateRewards: number
     }
   }
 }
@@ -116,25 +120,54 @@ const poolsCurrentDataSlice = createChainDataSlice({
         }
       )
 
-      return Object.fromEntries(charmPoolAddresses.map(address => [address, {
-        sqrtPriceX96: sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString(),
-        instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]]),
-        poolLiquidity: poolsLiquidity[address],
-        cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
-        totalRewards: rs[address].totalRewards.toString(),
-        lastPeriodGlobalRewardsAccrued: currentRewardsInfo.lastPeriodGlobalRewardsAccrued,
-        currentPeriod: currentRewardsInfo.currentPeriod,
-        userLiquidityPosition: {
-          cumulativeLiquidity: userLiquidityPositions[address].cumulativeLiquidity.toString(),
-          kickbackPortion: userLiquidityPositions[address].kickbackPortion.toString(),
-          kickbackDestination: userLiquidityPositions[address].kickbackDestination,
-          lastBlockPositionIncreased: userLiquidityPositions[address].lastBlockPositionIncreased.toNumber(),
-          lastTimeRewarded: userLiquidityPositions[address].lastTimeRewarded.toNumber(),
-          liquidity: userLiquidityPositions[address].liquidity.toString(),
-          owner: userLiquidityPositions[address].owner,
-          totalRewards: userLiquidityPositions[address].totalRewards.toString(),
+      return Object.fromEntries(charmPoolAddresses.map(address => {
+
+        let approximateRewards = bnf(0)
+        const lastTimeRewarded = userLiquidityPositions[address].lastTimeRewarded.toNumber()
+        const lastPeriodGlobalRewardsAccrued = currentRewardsInfo.lastPeriodGlobalRewardsAccrued
+        const lastPeriodUpdated = timeToPeriod(lastTimeRewarded, args.rewardsInfo.periodLength, args.rewardsInfo.firstPeriod)
+
+        const position = userLiquidityPositions[address]
+
+        console.log({lastPeriodUpdated, lastPeriodGlobalRewardsAccrued})
+
+        if (lastPeriodUpdated < lastPeriodGlobalRewardsAccrued) {
+          let avgDebtPerPeriod =
+            bnf(rs[address].cumulativeLiquidity)
+              .sub(position.cumulativeLiquidity)
+              .div(lastPeriodGlobalRewardsAccrued - lastPeriodUpdated)
+
+          if (!avgDebtPerPeriod.isZero()) {
+            approximateRewards =
+              position.liquidity
+                .mul(bnf(rs[address].totalRewards).sub(position.totalRewards))
+                .div(avgDebtPerPeriod)
+          }
+
+          console.log({avgDebtPerPeriod, approximateRewards})
         }
-      }]))
+
+        return [address, {
+          sqrtPriceX96: sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString(),
+          instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]]),
+          poolLiquidity: poolsLiquidity[address],
+          cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
+          totalRewards: rs[address].totalRewards.toString(),
+          lastPeriodGlobalRewardsAccrued,
+          currentPeriod: currentRewardsInfo.currentPeriod,
+          poolID: args.poolsMetadata[address].poolID,
+          userLiquidityPosition: {
+            cumulativeLiquidity: position.cumulativeLiquidity.toString(),
+            kickbackPortion: position.kickbackPortion.toString(),
+            kickbackDestination: position.kickbackDestination,
+            lastBlockPositionIncreased: position.lastBlockPositionIncreased.toNumber(),
+            lastTimeRewarded,
+            liquidity: position.liquidity.toString(),
+            owner: position.owner,
+            totalRewards: position.totalRewards.toString(),
+            approximateRewards: unscale(approximateRewards),
+          }
+        }]}))
     },
 })
 

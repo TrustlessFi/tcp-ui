@@ -19,7 +19,7 @@ import {
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import ClaimRewardsButton from '../library/ClaimRewardsButton'
-import { TransactionType, TransactionStatus,} from '../../slices/transactions'
+import { TransactionType, TransactionStatus } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import { WalletToken } from '../library/TrustlessLogos'
 import Text from '../library/Text'

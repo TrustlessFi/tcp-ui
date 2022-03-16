@@ -15,7 +15,7 @@ export interface rewardsInfo {
 const rewardsInfoSlice = createChainDataSlice({
   name: 'rewards',
   dependencies: ['contracts', 'rootContracts'],
-  cacheDuration: CacheDuration.LONG,
+  cacheDuration: CacheDuration.SHORT,
   stateSelector: (state: RootState) => state.rewardsInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts'>) => {
