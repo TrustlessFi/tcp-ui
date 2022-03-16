@@ -51,6 +51,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
   dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo', 'userAddress'],
   stateSelector: (state: RootState) => state.poolsCurrentData,
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo' | 'userAddress'>) => {
       const provider = getProvider()
