@@ -47,7 +47,7 @@ const NotificationText = ({large, children}: {large?: boolean, children: ReactNo
   return <p style={{fontSize: large ? 18 : 14, fontFamily}}>{children}</p>
 }
 
-const NOTIFICATION_DURATION_SECONDS = 12
+const NOTIFICATION_DURATION_SECONDS = 8
 const FADE_OUT_MS = 300
 
 const Notification = ({ notif }: { notif: notificationInfo, }) => {

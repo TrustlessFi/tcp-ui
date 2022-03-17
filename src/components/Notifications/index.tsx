@@ -14,7 +14,7 @@ const Notifications = () => {
   ) return null
 
   return (
-    <div style={{ position: 'absolute', right: 16, top: 63 }}>
+    <div style={{ position: 'fixed', right: 16, top: 63, zIndex: 10000 }}>
       {Object.values(allNotifications)
         .filter(notif => notif.userAddress === userAddress)
         .filter(notif => notif.chainID === chainID)
