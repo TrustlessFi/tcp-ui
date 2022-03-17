@@ -573,7 +573,7 @@ export const submitTransaction = createAsyncThunk(
 
     let rawTransaction: ContractTransaction
     try {
-      dispatch(waitingForMetamask())
+      dispatch(waitingForMetamask(args.type))
       rawTransaction = await executeTransaction(args, provider, data.chainID)
       dispatch(metamaskComplete())
     } catch (e) {

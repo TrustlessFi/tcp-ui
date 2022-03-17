@@ -47,15 +47,15 @@ const CreateTransactionButton = ({
     return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
-  const pendingTxExists =
-    notEmpty(
-      getSortedUserTxs(chainID, userAddress, transactions)
-        .filter(tx => tx.status === TransactionStatus.Pending)
-        .filter(tx => tx.type === txArgs.type)
-    )
+  const pendingTxs =
+    getSortedUserTxs(chainID, userAddress, transactions)
+      .filter(tx => tx.status === TransactionStatus.Pending)
+      .filter(tx => tx.type === txArgs.type)
+
+  const pendingTxExists = notEmpty(pendingTxs)
 
   const buttonTitle =
-    wallet.waitingForMetamask
+    wallet.waitingForMetamask === txArgs.type
     ? `${title}...`
     : title
 
@@ -73,7 +73,7 @@ const CreateTransactionButton = ({
 
   const showDisabled =
     pendingTxExists ||
-    wallet.waitingForMetamask ||
+    wallet.waitingForMetamask !== null ||
     disabled === true ||
     userAddress === null
 
