@@ -94,6 +94,7 @@ const IncreaseStake = () => {
     notEnoughInWallet: {
       message: 'Not enough in wallet.',
       failing: newWalletBalance < 0,
+      silent: true,
     },
   }
 

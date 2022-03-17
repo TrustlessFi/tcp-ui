@@ -43,6 +43,7 @@ const PositionNumberInput = ({
   const rawInput =
     <NumberInput
       light={light}
+      allowEmpty={true}
       hideSteppers={!showSteppers}
       id={id}
       invalidText={invalidText}

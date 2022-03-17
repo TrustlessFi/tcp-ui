@@ -5,7 +5,7 @@ import { red } from '@carbon/colors';
 import { tokenMetadata } from '../../slices/poolsMetadata'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
-import { roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale } from '../../utils/'
+import { roundToXDecimals, getE18PriceForSqrtX96Price, bnf, unscale, isZeroish } from '../../utils/'
 import SpacedList from '../library/SpacedList'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
@@ -192,7 +192,7 @@ const AddLiquidity = () => {
     }
   }
 
-  const noInput = token0Count === 0 && token1Count === 0
+  const noInput = isZeroish(token0Count) || isZeroish(token1Count)
 
   const getApproveButtonArgs = (token: tokenMetadata): txApprovePoolToken => ({
     type: TransactionType.ApprovePoolToken,
