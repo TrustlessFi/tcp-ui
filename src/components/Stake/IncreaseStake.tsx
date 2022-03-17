@@ -1,14 +1,17 @@
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
-import { TransactionType } from '../../slices/transactions'
+import { TransactionType, txStake } from '../../slices/transactions'
+import { setApprovingHue } from '../../slices/onboarding'
 import { getAPR } from './library'
 import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import PositionInfoItem from '../library/PositionInfoItem'
+import ActionSteps from '../library/ActionSteps'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import Bold from '../library/Bold'
@@ -29,6 +32,8 @@ const IncreaseStake = () => {
     contracts,
     staking,
     sdi,
+    userAddress,
+    onboarding,
   } = waitFor([
     'balances',
     'marketInfo',
@@ -36,12 +41,20 @@ const IncreaseStake = () => {
     'contracts',
     'staking',
     'sdi',
+    'userAddress',
+    'onboarding',
   ], selector, dispatch)
+
+  useEffect(() => {
+    if (balances === null) return
+    if (contracts === null) return
+    if (!balances.tokens[contracts.Hue].approval.Market.approved) {
+      dispatch(setApprovingHue(true))
+    }
+  }, [balances, contracts])
 
   const amount = staking.increaseAmount
   const setAmount = (value: number) => dispatch(setIncreaseAmount(value))
-
-  const userAddress = selector(state => state.userAddress)
 
   const dataNull =
     balances === null ||
@@ -87,7 +100,20 @@ const IncreaseStake = () => {
   const failureReasons: reason[] = Object.values(failures)
   const isFailing = dataNull ? false : failureReasons.filter(reason => reason.failing).length > 0
 
+  const stakeArgs: txStake = {
+    type: TransactionType.IncreaseStake,
+    count: amount,
+    Market: contracts === null ? '' : contracts.Market,
+  }
+
   const hueApproved = !dataNull && balances.tokens[contracts.Hue].approval.Market.approved
+
+  const stakeButton =
+    <CreateTransactionButton
+      disabled={isFailing || dataNull}
+      size='md'
+      txArgs={stakeArgs}
+    />
 
   const columnOne =
     <Tile style={{padding: 40, marginTop: 40}}>
@@ -143,27 +169,27 @@ const IncreaseStake = () => {
         />
         <SpacedList row spacing={20} style={{marginTop: 50}}>
           {
-            hueApproved
-            ? <CreateTransactionButton
+            onboarding.approvingHue
+            ? <ActionSteps
                 disabled={isFailing || dataNull}
-                size='md'
-                txArgs={{
-                  type: TransactionType.IncreaseStake,
-                  count: amount,
-                  Market: contracts === null ? '' : contracts.Market,
-                }}
+                steps={[
+                  {
+                    txArgs: {
+                      type: TransactionType.ApproveHue,
+                      Hue: contracts === null ? '' : contracts.Hue,
+                      spenderAddress: contracts === null ? '' : contracts.Market,
+                    },
+                    title: 'Approve Stake',
+                    buttonTitle: 'Approve',
+                    complete: hueApproved,
+                  },{
+                    txArgs: stakeArgs,
+                    title: 'Stake',
+                    buttonTitle: 'Confirm',
+                  }
+                ]}
               />
-            : <CreateTransactionButton
-                title='Approve'
-                disabled={isFailing || dataNull}
-                size='md'
-                showDisabledInsteadOfConnectWallet={true}
-                txArgs={{
-                  type: TransactionType.ApproveHue,
-                  Hue: contracts === null ? '' : contracts.Hue,
-                  spenderAddress: contracts === null ? '' : contracts.Market,
-                }}
-              />
+            : stakeButton
           }
           <Button
             key='cancel_add'

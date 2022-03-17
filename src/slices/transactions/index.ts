@@ -69,7 +69,7 @@ export interface txUpdatePosition {
   Market: string,
 }
 
-export interface txLend {
+export interface txStake {
   type: TransactionType.IncreaseStake
   count: number,
   Market: string,
@@ -189,7 +189,7 @@ export interface txSetPhaseOneStartTime {
 export type TransactionArgs =
   txCreatePosition |
   txUpdatePosition |
-  txLend |
+  txStake |
   txWithdraw |
   txClaimPositionRewards |
   txClaimLiquidityPositionRewards |

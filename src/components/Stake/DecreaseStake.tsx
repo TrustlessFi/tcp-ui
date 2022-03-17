@@ -1,29 +1,48 @@
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { numDisplay } from '../../utils/'
 import { reason } from '../library/ErrorMessage'
 import FullNumberInput from '../library/FullNumberInput'
-import { TransactionType } from '../../slices/transactions/index'
+import { TransactionType, txWithdraw } from '../../slices/transactions'
 import { isZeroish } from '../../utils/'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
+import ActionSteps from '../library/ActionSteps'
 import Text from '../library/Text'
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage, setDecreaseAmount } from '../../slices/staking'
+import { setApprovingLendHue } from '../../slices/onboarding'
 
 const DecreaseStake = () => {
   const dispatch = useAppDispatch()
 
-  const { balances, marketInfo, ratesInfo, contracts, staking } = waitFor([
+  const {
+    balances,
+    marketInfo,
+    ratesInfo,
+    contracts,
+    staking,
+    userAddress,
+    onboarding,
+  } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'contracts',
     'staking',
+    'userAddress',
+    'onboarding',
   ], selector, dispatch)
 
-  const userAddress = selector(state => state.userAddress)
+  useEffect(() => {
+    if (balances === null) return
+    if (contracts === null) return
+    if (!balances.tokens[contracts.LendHue].approval.Market.approved) {
+      dispatch(setApprovingLendHue(true))
+    }
+  }, [balances, contracts])
 
   const amount = staking.decreaseAmount
   const setAmount = (value: number) => dispatch(setDecreaseAmount(value))
@@ -63,6 +82,19 @@ const DecreaseStake = () => {
 
   const lendHueApproved = !dataNull && balances.tokens[contracts.LendHue].approval.Market.approved
 
+  const withdrawArgs: txWithdraw = {
+    type: TransactionType.DecreaseStake,
+    count: lendHueToPayBack,
+    Market: contracts === null ? '' : contracts.Market,
+  }
+
+  const withdrawButton =
+    <CreateTransactionButton
+      disabled={isFailing || dataNull}
+      size='md'
+      txArgs={withdrawArgs}
+    />
+
   const columnOne =
     <Tile style={{padding: 40, marginTop: 40}}>
       <SpacedList spacing={40}>
@@ -94,29 +126,29 @@ const DecreaseStake = () => {
             action: () => setAmount(lentHueCount),
           }}
         />
-        <SpacedList row spacing={20} style={{marginTop: 50}}>
+        <SpacedList row spacing={20} style={{marginTop: 40}}>
           {
-            lendHueApproved
-            ? <CreateTransactionButton
+            onboarding.approvingLendHue
+            ? <ActionSteps
                 disabled={isFailing || dataNull}
-                size='md'
-                txArgs={{
-                  type: TransactionType.DecreaseStake,
-                  count: lendHueToPayBack,
-                  Market: contracts === null ? '' : contracts.Market,
-                }}
+                steps={[
+                  {
+                    txArgs: {
+                      type: TransactionType.ApproveLendHue,
+                      LendHue: contracts === null ? '' : contracts.LendHue,
+                      spenderAddress: contracts === null ? '' : contracts.Market,
+                    },
+                    title: 'Approve Withdraw',
+                    buttonTitle: 'Approve',
+                    complete: lendHueApproved,
+                  },{
+                    txArgs: withdrawArgs,
+                    title: 'Withdraw',
+                    buttonTitle: 'Confirm',
+                  }
+                ]}
               />
-            : <CreateTransactionButton
-                title='Approve'
-                size='md'
-                disabled={isFailing || dataNull}
-                showDisabledInsteadOfConnectWallet={true}
-                txArgs={{
-                  type: TransactionType.ApproveLendHue,
-                  LendHue: contracts === null ? '' : contracts.LendHue,
-                  spenderAddress: contracts === null ? '' : contracts.Market,
-                }}
-              />
+            : withdrawButton
           }
           <Button
             key='cancel_button'
