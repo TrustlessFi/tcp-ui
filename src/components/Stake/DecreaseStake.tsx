@@ -126,7 +126,7 @@ const DecreaseStake = () => {
             action: () => setAmount(lentHueCount),
           }}
         />
-        <SpacedList row spacing={20} style={{marginTop: 40}}>
+        <SpacedList spacing={20} style={{marginTop: 40}}>
           {
             onboarding.approvingLendHue
             ? <ActionSteps

@@ -167,7 +167,7 @@ const IncreaseStake = () => {
           value={numDisplay(apr * 100, 2)}
           unit='%'
         />
-        <SpacedList row spacing={20} style={{marginTop: 50}}>
+        <SpacedList spacing={20} style={{marginTop: 50}}>
           {
             onboarding.approvingHue
             ? <ActionSteps

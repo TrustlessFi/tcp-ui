@@ -259,7 +259,7 @@ const AddLiquidity = () => {
             unit={pool.token1.displaySymbol}
             light
             frozen={false}
-            defaultButton={{ title: 'Max', action: setMaxForToken1 }}
+            defaultButton={{title: 'Max', action: setMaxForToken1}}
             onFocusUpdate={setIsToken1Focused}
             subTitle={
               <Text>
@@ -275,11 +275,19 @@ const AddLiquidity = () => {
               </Text>
             }
           />
-          <SpacedList row spacing={20}>
+          <SpacedList spacing={20}>
             {
               onboarding.approvePool[pool.poolID]
               ? <ActionSteps
-                  disabled={dataNull || noInput || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
+                  disabled={
+                    dataNull ||
+                    noInput ||
+                    exceedsToken0Balance ||
+                    exceedsToken1Balance ||
+                    contracts === null ||
+                    token0Approved === null ||
+                    token1Approved === null
+                  }
                   steps={[
                     {
                       txArgs: getApproveButtonArgs(pool.token0),
