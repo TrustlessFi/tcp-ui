@@ -224,6 +224,14 @@ const AddLiquidity = () => {
       txArgs={addLiquidityArgs}
     />
 
+  const cancelButton =
+    <Button
+      size='md'
+      kind='secondary'
+      onClick={() => history.push('/liquidity')}>
+      Cancel
+    </Button>
+
   return (
     <Center style={{marginTop: 40}}>
       <Tile style={{width: 500, padding: 40}}>
@@ -275,10 +283,11 @@ const AddLiquidity = () => {
               </Text>
             }
           />
-          <SpacedList spacing={20}>
-            {
-              onboarding.approvePool[pool.poolID]
-              ? <ActionSteps
+          {
+            onboarding.approvePool[pool.poolID]
+            ? <SpacedList spacing={20}>
+                <ActionSteps
+                  action={`adding ${pool.title} liquidity`}
                   disabled={
                     dataNull ||
                     noInput ||
@@ -306,15 +315,13 @@ const AddLiquidity = () => {
                     }
                   ]}
                 />
-              : addLiquidityButton
-            }
-            <Button
-              size='md'
-              kind='secondary'
-              onClick={() => history.push('/liquidity')}>
-              Cancel
-            </Button>
-          </SpacedList>
+                {cancelButton}
+              </SpacedList>
+            : <SpacedList row spacing={20}>
+                {addLiquidityButton}
+                {cancelButton}
+              </SpacedList>
+          }
         </SpacedList>
       </Tile>
     </Center>

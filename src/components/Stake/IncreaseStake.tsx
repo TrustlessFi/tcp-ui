@@ -116,6 +116,15 @@ const IncreaseStake = () => {
       txArgs={stakeArgs}
     />
 
+  const cancelButton =
+    <Button
+      key='cancel_add'
+      onClick={() => dispatch(setStakePage(StakePage.View))}
+      size='md'
+      kind='secondary'>
+      Cancel
+    </Button>
+
   const columnOne =
     <Tile style={{padding: 40, marginTop: 40}}>
       <SpacedList spacing={40}>
@@ -168,38 +177,38 @@ const IncreaseStake = () => {
           value={numDisplay(apr * 100, 2)}
           unit='%'
         />
-        <SpacedList spacing={20} style={{marginTop: 50}}>
+        <div style={{marginTop: 40}}>
           {
             onboarding.approvingHue
-            ? <ActionSteps
-                disabled={isFailing || dataNull}
-                steps={[
-                  {
-                    txArgs: {
-                      type: TransactionType.ApproveHue,
-                      Hue: contracts === null ? '' : contracts.Hue,
-                      spenderAddress: contracts === null ? '' : contracts.Market,
-                    },
-                    title: 'Approve Stake',
-                    buttonTitle: 'Approve',
-                    complete: hueApproved,
-                  },{
-                    txArgs: stakeArgs,
-                    title: 'Stake',
-                    buttonTitle: 'Confirm',
-                  }
-                ]}
-              />
-            : stakeButton
+            ? <SpacedList spacing={20}>
+                <ActionSteps
+                  action='staking'
+                  disabled={isFailing || dataNull}
+                  steps={[
+                    {
+                      txArgs: {
+                        type: TransactionType.ApproveHue,
+                        Hue: contracts === null ? '' : contracts.Hue,
+                        spenderAddress: contracts === null ? '' : contracts.Market,
+                      },
+                      title: 'Approve Stake',
+                      buttonTitle: 'Approve',
+                      complete: hueApproved,
+                    },{
+                      txArgs: stakeArgs,
+                      title: 'Stake',
+                      buttonTitle: 'Confirm',
+                    }
+                  ]}
+                />
+                {cancelButton}
+              </SpacedList>
+            : <SpacedList row spacing={20}>
+                {stakeButton}
+                {cancelButton}
+              </SpacedList>
           }
-          <Button
-            key='cancel_add'
-            onClick={() => dispatch(setStakePage(StakePage.View))}
-            size='md'
-            kind='secondary'>
-            Cancel
-          </Button>
-        </SpacedList>
+        </div>
       </SpacedList>
     </Tile>
 

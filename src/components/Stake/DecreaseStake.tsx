@@ -95,6 +95,15 @@ const DecreaseStake = () => {
       txArgs={withdrawArgs}
     />
 
+  const cancelButton =
+    <Button
+      key='cancel_button'
+      onClick={() => dispatch(setStakePage(StakePage.View))}
+      size='md'
+      kind='secondary'>
+      Cancel
+    </Button>
+
   const columnOne =
     <Tile style={{padding: 40, marginTop: 40}}>
       <SpacedList spacing={40}>
@@ -126,37 +135,37 @@ const DecreaseStake = () => {
             action: () => setAmount(lentHueCount),
           }}
         />
-        <SpacedList spacing={20} style={{marginTop: 40}}>
+        <SpacedList style={{marginTop: 40}}>
           {
             onboarding.approvingLendHue
-            ? <ActionSteps
-                disabled={isFailing || dataNull}
-                steps={[
-                  {
-                    txArgs: {
-                      type: TransactionType.ApproveLendHue,
-                      LendHue: contracts === null ? '' : contracts.LendHue,
-                      spenderAddress: contracts === null ? '' : contracts.Market,
-                    },
-                    title: 'Approve Withdraw',
-                    buttonTitle: 'Approve',
-                    complete: lendHueApproved,
-                  },{
-                    txArgs: withdrawArgs,
-                    title: 'Withdraw',
-                    buttonTitle: 'Confirm',
-                  }
-                ]}
-              />
-            : withdrawButton
+            ? <SpacedList spacing={20}>
+                <ActionSteps
+                  action='withdrawing'
+                  disabled={isFailing || dataNull}
+                  steps={[
+                    {
+                      txArgs: {
+                        type: TransactionType.ApproveLendHue,
+                        LendHue: contracts === null ? '' : contracts.LendHue,
+                        spenderAddress: contracts === null ? '' : contracts.Market,
+                      },
+                      title: 'Approve Withdraw',
+                      buttonTitle: 'Approve',
+                      complete: lendHueApproved,
+                    },{
+                      txArgs: withdrawArgs,
+                      title: 'Withdraw',
+                      buttonTitle: 'Confirm',
+                    }
+                  ]}
+                />
+                {cancelButton}
+              </SpacedList>
+            : <SpacedList row spacing={20}>
+                {withdrawButton}
+                {cancelButton}
+              </SpacedList>
           }
-          <Button
-            key='cancel_button'
-            onClick={() => dispatch(setStakePage(StakePage.View))}
-            size='md'
-            kind='secondary'>
-            Cancel
-          </Button>
         </SpacedList>
       </SpacedList>
     </Tile>

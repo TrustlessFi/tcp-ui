@@ -586,8 +586,9 @@ const ManagePosition = () => {
             isCreating
             ? (
               onboarding.approvingEth
-              ? <SpacedList spacing={40}>
+              ? <SpacedList spacing={20}>
                   <ActionSteps
+                    action='creating a position'
                     disabled={isFailing}
                     steps={[
                       {
@@ -613,9 +614,10 @@ const ManagePosition = () => {
               ? (
                 isDebtDecrease && onboarding.approvingHue
                 ?
-                  <SpacedList spacing={40}>
+                  <SpacedList spacing={20}>
                     <ActionSteps
                       disabled={isFailing}
+                      action='paying back hue'
                       steps={[
                         {
                           txArgs: approveHueTxArgs,

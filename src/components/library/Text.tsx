@@ -13,7 +13,7 @@ const Text = ({
   monospace?: boolean,
   bold?: boolean,
   color?: string,
-  lineHeight?: string,
+  lineHeight?: string | number,
   style?: CSSProperties,
   children: ReactNode
 }) => {
