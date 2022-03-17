@@ -48,22 +48,30 @@ const ActionStepCard = ({
   step,
   title,
   buttonTitle,
-  complete,
-  isCompletable,
 }: {
   txArgs: TransactionArgs
   disabled?: boolean
   step: number
   title: string
   buttonTitle: string
-  complete?: boolean
-  isCompletable?: boolean
 }) => {
   const color = disabled ? gray[50] : undefined
 
-  return (
-    <div style={{display: 'block', minHeight: '4em'}}>
+        /*
+          <span style={{float: 'left', height: 32, width: 32, marginRight: 10}}>
+            {
+              isCompletable
+              ? (
+                complete === true
+                ? <CheckboxChecked32 color={color} />
+                : <Checkbox32 color={color} />
+              ) : null
+            }
+          </span>
+        */
 
+  return (
+    <div style={{overflow: 'auto'}}>
       <div style={{display: 'float'}}>
         <div style={{float: 'right'}}>
           <CreateTransactionButton
@@ -75,16 +83,6 @@ const ActionStepCard = ({
           />
         </div>
         <div style={{display: 'float', alignItems: 'center'}}>
-          <span style={{float: 'left', height: 32, width: 32, marginRight: 10}}>
-            {
-              isCompletable
-              ? (
-                complete === true
-                ? <CheckboxChecked32 color={color} />
-                : <Checkbox32 color={color} />
-              ) : null
-            }
-          </span>
           <span style={{float: 'left', height: 32, width: 32}}>
             {numberToIcon(step, color)}
           </span>

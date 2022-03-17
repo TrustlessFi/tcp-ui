@@ -409,7 +409,7 @@ const ManagePosition = () => {
   const columnOne =
     <>
       <Tile style={{padding: 40, marginTop: 40}}>
-        <SpacedList spacing={40} style={{display: 'relative'}}>
+        <SpacedList spacing={40}>
           <div style={{display: 'float', alignItems: 'center'}}>
             <div style={{float: 'right'}}>
               <Center>
@@ -550,79 +550,79 @@ const ManagePosition = () => {
               : null
             }
           </SpacedList>
-        </SpacedList>
-        {
-          isCreating
-          ? (
-            onboarding.approvingEth
-            ? <ActionSteps
-                disabled={isFailing}
-                steps={[
-                  {
-                    txArgs: approveEthTxArgs,
-                    title: approveEthTitle,
-                    buttonTitle: 'Approve',
-                    complete: ethApproved,
-                  },{
-                    txArgs: createPositionArgs,
-                    title: 'Create Position',
-                    buttonTitle: 'Confirm',
-                  }
-                ]}
-              />
-            : createPositionButton
-          ) : (
-            isEditing
+          {
+            isCreating
             ? (
-              isDebtDecrease && onboarding.approvingHue
+              onboarding.approvingEth
               ? <ActionSteps
                   disabled={isFailing}
                   steps={[
                     {
-                      txArgs: approveHueTxArgs,
-                      title: 'Approve Hue',
+                      txArgs: approveEthTxArgs,
+                      title: approveEthTitle,
                       buttonTitle: 'Approve',
-                      complete: hueApproved,
+                      complete: ethApproved,
                     },{
-                      txArgs: updatePositionArgs,
-                      title: 'Update Position Position',
+                      txArgs: createPositionArgs,
+                      title: 'Create Position',
                       buttonTitle: 'Confirm',
                     }
                   ]}
                 />
-              : <div style={{display: 'flex'}}>
-                  <SpacedList
-                    row
-                    spacing={20}
-                    style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
-                    {updatePositionButton}
-                    {cancelUpdateButton}
-                  </SpacedList>
-                  {
-                    isEditing
-                    && position !== null
-                    ? <div
-                        style={{float: 'right'}}>
-                        <Button
-                          disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
-                          onClick={() => {
-                            setDebtCount(0)
-                            setCollateralCount(0)
-                            setDeleteSelected(true)
-                          }}
-                          kind='danger--ghost'
-                          size='md'>
-                          <span style={{whiteSpace: 'nowrap'}}>
-                            Close Position
-                          </span>
-                        </Button>
-                      </div>
-                    : null
-                  }
-                </div>
-            ) : null
-          )
-        }
+              : createPositionButton
+            ) : (
+              isEditing
+              ? (
+                isDebtDecrease && onboarding.approvingHue
+                ? <ActionSteps
+                    disabled={isFailing}
+                    steps={[
+                      {
+                        txArgs: approveHueTxArgs,
+                        title: 'Approve Hue',
+                        buttonTitle: 'Approve',
+                        complete: hueApproved,
+                      },{
+                        txArgs: updatePositionArgs,
+                        title: 'Update Position',
+                        buttonTitle: 'Confirm',
+                      }
+                    ]}
+                  />
+                : <div style={{display: 'flex'}}>
+                    <SpacedList
+                      row
+                      spacing={20}
+                      style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+                      {updatePositionButton}
+                      {cancelUpdateButton}
+                    </SpacedList>
+                    {
+                      isEditing
+                      && position !== null
+                      ? <div
+                          style={{float: 'right'}}>
+                          <Button
+                            disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
+                            onClick={() => {
+                              setDebtCount(0)
+                              setCollateralCount(0)
+                              setDeleteSelected(true)
+                            }}
+                            kind='danger--ghost'
+                            size='md'>
+                            <span style={{whiteSpace: 'nowrap'}}>
+                              Close Position
+                            </span>
+                          </Button>
+                        </div>
+                      : null
+                    }
+                  </div>
+              ) : null
+            )
+          }
+        </SpacedList>
       </Tile>
       {
         isCreating

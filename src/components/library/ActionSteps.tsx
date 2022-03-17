@@ -17,7 +17,7 @@ const ActionSteps = ({
   let currentStep = 0
 
   return (
-    <SpacedList spacing={1} style={{marginTop: 1}}>
+    <SpacedList spacing={20} style={{marginTop: 1}}>
       {
         steps.map((step, index) => {
           const stepNumber = index + 1
@@ -31,8 +31,6 @@ const ActionSteps = ({
               step={stepNumber}
               title={step.title}
               buttonTitle={step.buttonTitle}
-              complete={step.complete}
-              isCompletable={stepNumber !== steps.length}
             />
           )
         })
