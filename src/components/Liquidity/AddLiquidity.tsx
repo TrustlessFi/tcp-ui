@@ -10,12 +10,14 @@ import SpacedList from '../library/SpacedList'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
+import ActionSteps from '../library/ActionSteps'
 import Bold from '../library/Bold'
 import RelativeLoading from '../library/RelativeLoading'
 import FullNumberInput from '../library/FullNumberInput'
 import Center from '../library/Center'
 import { Tile, Button } from 'carbon-components-react'
-import { TransactionType } from '../../slices/transactions'
+import { TransactionType, txAddLiquidity, txApprovePoolToken } from '../../slices/transactions'
+import { setApprovingPool } from '../../slices/onboarding'
 
 interface AddLiquidityParams {
   poolIDString: string
@@ -39,12 +41,14 @@ const AddLiquidity = () => {
     poolsMetadata,
     balances,
     contracts,
+    onboarding,
   } = waitFor([
     'liquidityPage',
     'poolsCurrentData',
     'poolsMetadata',
     'balances',
     'contracts',
+    'onboarding',
   ], selector, dispatch)
 
   const txCostBuffer = 0.05
@@ -73,7 +77,20 @@ const AddLiquidity = () => {
     }
   }, [liquidityPage.liquidityPageNonce])
 
-  if (dataNull || matchingPools.length === 0 ) {
+  const pool = matchingPools.length === 0 ? null : matchingPools[0]
+
+  useEffect(() => {
+    if (balances === null) return
+    if (pool === null) return
+    if (
+      !balances.tokens[pool.token0.address].approval.Rewards.approved ||
+      !balances.tokens[pool.token1.address].approval.Rewards.approved
+    ) {
+      dispatch(setApprovingPool({poolID: pool.poolID, approving: true}))
+    }
+  }, [balances, pool])
+
+  if (dataNull || pool === null ) {
     return (
       <Center style={{ position: 'relative', marginTop: 40 }}>
         <RelativeLoading show={true} />
@@ -82,7 +99,6 @@ const AddLiquidity = () => {
     )
   }
 
-  const pool = matchingPools[0]
   const poolPrice = unscale(getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96)))
 
   const round = (value: number, decimals = 4, roundDown = true) =>
@@ -178,42 +194,34 @@ const AddLiquidity = () => {
 
   const noInput = token0Count === 0 && token1Count === 0
 
-  const getApproveButton = (token: tokenMetadata, approval: boolean | null) =>
-    <CreateTransactionButton
-      title={`Approve ${token.displaySymbol}`}
-      size='md'
-      disabled={approval !== false || contracts === null || noInput}
-      showDisabledInsteadOfConnectWallet
-      txArgs={{
-        type: TransactionType.ApprovePoolToken,
-        tokenAddress: token.address,
-        Rewards: contracts === null ? '' : contracts.Rewards,
-        symbol: token.displaySymbol,
-      }}
-    />
+  const getApproveButtonArgs = (token: tokenMetadata): txApprovePoolToken => ({
+    type: TransactionType.ApprovePoolToken,
+    tokenAddress: token.address,
+    Rewards: contracts === null ? '' : contracts.Rewards,
+    symbol: token.displaySymbol,
+  })
 
-  const approveToken0Button = getApproveButton(pool.token0, token0Approved)
-  const approveToken1Button = getApproveButton(pool.token1, token1Approved)
+  const addLiquidityArgs: txAddLiquidity = {
+    type: TransactionType.AddLiquidity,
+    poolID: pool.poolID,
+    Rewards: contracts === null ? '' : contracts.Rewards,
+    token0: {
+      count: token0Count,
+      decimals: pool.token0.decimals,
+      isWeth: token0IsWeth,
+    },
+    token1: {
+      count: token1Count,
+      decimals: pool.token1.decimals,
+      isWeth: token1IsWeth,
+    }
+  }
 
   const addLiquidityButton =
     <CreateTransactionButton
       disabled={dataNull || noInput || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
       size='md'
-      txArgs={{
-        type: TransactionType.AddLiquidity,
-        poolID: pool.poolID,
-        Rewards: contracts === null ? '' : contracts.Rewards,
-        token0: {
-          count: token0Count,
-          decimals: pool.token0.decimals,
-          isWeth: token0IsWeth,
-        },
-        token1: {
-          count: token1Count,
-          decimals: pool.token1.decimals,
-          isWeth: token1IsWeth,
-        }
-      }}
+      txArgs={addLiquidityArgs}
     />
 
   return (
@@ -269,11 +277,28 @@ const AddLiquidity = () => {
           />
           <SpacedList row spacing={20}>
             {
-              token0Approved === false
-              ? approveToken0Button
-              : (token1Approved === false
-                ? approveToken1Button
-                : addLiquidityButton)
+              onboarding.approvePool[pool.poolID]
+              ? <ActionSteps
+                  disabled={dataNull || noInput || exceedsToken0Balance || exceedsToken1Balance || contracts === null}
+                  steps={[
+                    {
+                      txArgs: getApproveButtonArgs(pool.token0),
+                      title: `Approve ${pool.token0.displaySymbol}`,
+                      buttonTitle: 'Approve',
+                      complete: token0Approved === true,
+                    },{
+                      txArgs: getApproveButtonArgs(pool.token1),
+                      title: `Approve ${pool.token1.displaySymbol}`,
+                      buttonTitle: 'Approve',
+                      complete: token1Approved === true,
+                    },{
+                      txArgs: addLiquidityArgs,
+                      title: 'Add Liquidity',
+                      buttonTitle: 'Confirm',
+                    }
+                  ]}
+                />
+              : addLiquidityButton
             }
             <Button
               size='md'
