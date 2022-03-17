@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactFragment } from "react"
+import { useState, useEffect, ReactFragment, ReactNode } from "react"
 import {
   Tag32,
   Locked32,
@@ -402,6 +402,44 @@ const ManagePosition = () => {
       .filter(failure => !failure.silent)
       .filter(failure => failure.failing)
 
+  const getMultiButtonDisplay = (leftButtons: ReactNode[], showClose = false) =>
+    showClose
+    ? <div style={{display: 'flex', borderColor: 'red'}}>
+        <SpacedList
+          row
+          spacing={20}
+          style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+          {leftButtons}
+        </SpacedList>
+        {
+          isEditing
+          && position !== null
+          ? <div
+              style={{float: 'right'}}>
+              <Button
+                disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
+                onClick={() => {
+                  setDebtCount(0)
+                  setCollateralCount(0)
+                  setDeleteSelected(true)
+                }}
+                kind='danger--ghost'
+                size='md'>
+                <span style={{whiteSpace: 'nowrap'}}>
+                  Close Position
+                </span>
+              </Button>
+            </div>
+          : null
+        }
+      </div>
+    : <SpacedList
+        row
+        spacing={20}
+        style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+        {leftButtons}
+      </SpacedList>
+
   const columnOne =
     <>
       <Tile style={{padding: 40, marginTop: 40}}>
@@ -548,21 +586,24 @@ const ManagePosition = () => {
             isCreating
             ? (
               onboarding.approvingEth
-              ? <ActionSteps
-                  disabled={isFailing}
-                  steps={[
-                    {
-                      txArgs: approveEthTxArgs,
-                      title: approveEthTitle,
-                      buttonTitle: 'Approve',
-                      complete: ethApproved,
-                    },{
-                      txArgs: createPositionArgs,
-                      title: 'Create Position',
-                      buttonTitle: 'Confirm',
-                    }
-                  ]}
-                />
+              ? <SpacedList spacing={40}>
+                  <ActionSteps
+                    disabled={isFailing}
+                    steps={[
+                      {
+                        txArgs: approveEthTxArgs,
+                        title: approveEthTitle,
+                        buttonTitle: 'Approve',
+                        complete: ethApproved,
+                      },{
+                        txArgs: createPositionArgs,
+                        title: 'Create Position',
+                        buttonTitle: 'Confirm',
+                      }
+                    ]}
+                  />
+                  {cancelCreateButton}
+                </SpacedList>
               : <SpacedList row spacing={20}>
                   {createPositionButton}
                   {cancelCreateButton}
@@ -571,51 +612,26 @@ const ManagePosition = () => {
               isEditing
               ? (
                 isDebtDecrease && onboarding.approvingHue
-                ? <ActionSteps
-                    disabled={isFailing}
-                    steps={[
-                      {
-                        txArgs: approveHueTxArgs,
-                        title: 'Approve Hue',
-                        buttonTitle: 'Approve',
-                        complete: hueApproved,
-                      },{
-                        txArgs: updatePositionArgs,
-                        title: 'Update Position',
-                        buttonTitle: 'Confirm',
-                      }
-                    ]}
-                  />
-                : <div style={{display: 'flex', borderColor: 'red'}}>
-                    <SpacedList
-                      row
-                      spacing={20}
-                      style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
-                      {updatePositionButton}
-                      {cancelUpdateButton}
-                    </SpacedList>
-                    {
-                      isEditing
-                      && position !== null
-                      ? <div
-                          style={{float: 'right'}}>
-                          <Button
-                            disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
-                            onClick={() => {
-                              setDebtCount(0)
-                              setCollateralCount(0)
-                              setDeleteSelected(true)
-                            }}
-                            kind='danger--ghost'
-                            size='md'>
-                            <span style={{whiteSpace: 'nowrap'}}>
-                              Close Position
-                            </span>
-                          </Button>
-                        </div>
-                      : null
-                    }
-                  </div>
+                ?
+                  <SpacedList spacing={40}>
+                    <ActionSteps
+                      disabled={isFailing}
+                      steps={[
+                        {
+                          txArgs: approveHueTxArgs,
+                          title: 'Approve Hue',
+                          buttonTitle: 'Approve',
+                          complete: hueApproved,
+                        },{
+                          txArgs: updatePositionArgs,
+                          title: 'Update Position',
+                          buttonTitle: 'Confirm',
+                        }
+                      ]}
+                    />
+                    {getMultiButtonDisplay([cancelUpdateButton], true)}
+                  </SpacedList>
+                : getMultiButtonDisplay([updatePositionButton, cancelUpdateButton], true)
               ) : null
             )
           }
