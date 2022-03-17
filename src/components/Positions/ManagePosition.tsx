@@ -207,7 +207,6 @@ const ManagePosition = () => {
     setDebtCount(countDebt)
   }
 
-  /*
   const cancelCreate = () => {
     if (!empty(
       Object.values(transactions)
@@ -218,7 +217,6 @@ const ManagePosition = () => {
     updateDebtCountImpl(0)
     updateCollateralCount(0)
   }
-  */
 
   const cancelUpdate = () => {
     if (!empty(
@@ -282,7 +280,6 @@ const ManagePosition = () => {
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
 
-    /*
   const cancelCreateButton =
     <Button
       key='cancel_create_button'
@@ -292,7 +289,6 @@ const ManagePosition = () => {
       size='md'>
       Cancel
     </Button>
-    */
 
   const cancelUpdateButton =
     <Button
@@ -476,7 +472,7 @@ const ManagePosition = () => {
               </Text>
             }
           />
-          <SpacedList spacing={20}>
+          <SpacedList spacing={20} >
             <PositionInfoItem
               key='liquidation_info'
               icon={<ErrorOutline32 />}
@@ -524,32 +520,30 @@ const ManagePosition = () => {
               unit='%'
             />
           </SpacedList>
-          <SpacedList spacing={16}>
-            {
-              nonSilentFailures.length > 0
-                ? <InlineNotification
-                    notificationType='inline'
-                    kind='error'
-                    title={nonSilentFailures[0].message}
-                    lowContrast
-                    hideCloseButton
-                  />
-                : null
-            }
-            {
-              successDisplay !== null
-              && Object.values(failures).filter(failure => failure.failing).length === 0
-              ? <InlineNotification
-                  key='success_indicator'
-                  notificationType='inline'
-                  kind='success'
-                  title={successDisplay}
-                  lowContrast
-                  hideCloseButton
-                />
-              : null
-            }
-          </SpacedList>
+          {
+            nonSilentFailures.length > 0
+            ? <InlineNotification
+                notificationType='inline'
+                kind='error'
+                title={nonSilentFailures[0].message}
+                lowContrast
+                hideCloseButton
+              />
+            : null
+          }
+          {
+            successDisplay !== null
+            && Object.values(failures).filter(failure => failure.failing).length === 0
+            ? <InlineNotification
+                key='success_indicator'
+                notificationType='inline'
+                kind='success'
+                title={successDisplay}
+                lowContrast
+                hideCloseButton
+              />
+            : null
+          }
           {
             isCreating
             ? (
@@ -569,7 +563,10 @@ const ManagePosition = () => {
                     }
                   ]}
                 />
-              : createPositionButton
+              : <SpacedList row spacing={20}>
+                  {createPositionButton}
+                  {cancelCreateButton}
+                </SpacedList>
             ) : (
               isEditing
               ? (
@@ -589,7 +586,7 @@ const ManagePosition = () => {
                       }
                     ]}
                   />
-                : <div style={{display: 'flex'}}>
+                : <div style={{display: 'flex', borderColor: 'red'}}>
                     <SpacedList
                       row
                       spacing={20}
@@ -627,7 +624,7 @@ const ManagePosition = () => {
       {
         isCreating
         ? null
-        : <div style={{marginTop: 10}}>
+        : <div style={{marginTop: 20}}>
             <ClaimRewardsButton
               txArgs={{
                 type: TransactionType.ClaimAllPositionRewards,

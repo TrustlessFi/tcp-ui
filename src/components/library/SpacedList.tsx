@@ -17,20 +17,29 @@ const SpacedList = ({
   row?: boolean
   style?: CSSProperties
 }) => {
+  if (!Array.isArray(children)) {
+    return (
+      <div style={style}>
+        {children}
+      </div>
+    )
+  }
+
+  const realChildren = children.filter(child => child != null)
+
   return (
     <div style={style}>
-      {Array.isArray(children)
-        ? (row === true
-          ? children.map((child, index) =>
-            index === children.length - 1
-              ? child
-              : <span key={index} style={{ marginRight: spacing }}>{child}</span>)
-          : children.map((child, index) =>
-            index === children.length - 1
-              ? child
-              : <div key={index} style={{ marginBottom: spacing }}>{child}</div>
-          )
-        ) : children}
+      {
+        row === true
+        ? realChildren.map((child, index) =>
+          index === realChildren.length - 1
+            ? child
+            : <span key={index} style={{ marginRight: spacing }}>{child}</span>)
+        : realChildren.map((child, index) =>
+          index === realChildren.length - 1
+            ? child
+            : <div key={index} style={{ marginBottom: spacing }}>{child}</div>)
+      }
     </div>
   )
 }
