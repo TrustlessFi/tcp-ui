@@ -18,6 +18,12 @@ import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
+import {
+  setApprovingEth,
+  setApprovingHue,
+  setApprovingLendHue,
+  setApprovingPool,
+} from '../onboarding'
 
 export enum TransactionType {
   CreatePosition,
@@ -48,14 +54,14 @@ export enum TransactionStatus {
   Failure,
 }
 
-export interface txCreatePositionArgs {
+export interface txCreatePosition {
   type: TransactionType.CreatePosition
   collateralCount: number,
   debtCount: number,
   Market: string,
 }
 
-export interface txUpdatePositionArgs {
+export interface txUpdatePosition {
   type: TransactionType.UpdatePosition
   positionID: number,
   collateralIncrease: number,
@@ -63,13 +69,13 @@ export interface txUpdatePositionArgs {
   Market: string,
 }
 
-export interface txLendArgs {
+export interface txLend {
   type: TransactionType.IncreaseStake
   count: number,
   Market: string,
 }
 
-export interface txWithdrawArgs {
+export interface txWithdraw {
   type: TransactionType.DecreaseStake
   count: number,
   Market: string,
@@ -181,10 +187,10 @@ export interface txSetPhaseOneStartTime {
 }
 
 export type TransactionArgs =
-  txCreatePositionArgs |
-  txUpdatePositionArgs |
-  txLendArgs |
-  txWithdrawArgs |
+  txCreatePosition |
+  txUpdatePosition |
+  txLend |
+  txWithdraw |
   txClaimPositionRewards |
   txClaimLiquidityPositionRewards |
   txApprovePoolToken |
@@ -465,7 +471,7 @@ export const waitForTransaction = async (
   }
 
   if (succeeded) {
-    const type = tx.type
+    const type = tx.args.type
 
     const goToLiquidityBasePage = () => dispatch(allSlices.liquidityPage.slice.actions.incrementNonce())
 
@@ -480,16 +486,36 @@ export const waitForTransaction = async (
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
     const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
 
+    const clearMarketState = () => {
+      clearSDI()
+      clearMarketInfo()
+      clearBalances()
+      clearPositions()
+      clearStaking()
+    }
+
+    const clearLiquidityState = () => {
+      clearBalances()
+      clearPoolsCurrentData()
+      goToLiquidityBasePage()
+    }
+
     switch (type) {
       case TransactionType.CreatePosition:
+        dispatch(setApprovingEth(false))
+        clearMarketState()
+        break
       case TransactionType.UpdatePosition:
+        dispatch(setApprovingHue(false))
+        clearMarketState()
+        break
       case TransactionType.IncreaseStake:
+        dispatch(setApprovingHue(false))
+        clearMarketState()
+        break
       case TransactionType.DecreaseStake:
-        clearSDI()
-        clearMarketInfo()
-        clearBalances()
-        clearPositions()
-        clearStaking()
+        dispatch(setApprovingLendHue(false))
+        clearMarketState()
         break
       case TransactionType.ClaimAllPositionRewards:
         clearPositions()
@@ -510,10 +536,11 @@ export const waitForTransaction = async (
         clearBalances()
         break
       case TransactionType.AddLiquidity:
+        clearLiquidityState()
+        dispatch(setApprovingPool({poolID: tx.args.poolID, approving: false}))
+        break
       case TransactionType.RemoveLiquidity:
-        clearBalances()
-        clearPoolsCurrentData()
-        goToLiquidityBasePage()
+        clearLiquidityState()
         break
       case TransactionType.MintEthERC20:
         clearEthERC20()

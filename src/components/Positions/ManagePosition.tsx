@@ -19,13 +19,22 @@ import {
 import { reason } from '../library/ErrorMessage'
 import SpacedList from '../library/SpacedList'
 import ClaimRewardsButton from '../library/ClaimRewardsButton'
-import { TransactionType, TransactionStatus } from '../../slices/transactions'
+import ActionSteps from '../library/ActionSteps'
+import {
+  TransactionType,
+  TransactionStatus,
+  txApproveEth,
+  txUpdatePosition,
+  txCreatePosition,
+  txApproveHue,
+} from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import { WalletToken } from '../library/TrustlessLogos'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import { InlineNotification, Button, Tile } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
+import { setApprovingEth, setApprovingHue } from '../../slices/onboarding'
 
 const COLLATERAL_DECIMALS = 4
 const DEBT_DECIMALS = 4
@@ -44,6 +53,7 @@ const ManagePosition = () => {
     positions,
     userAddress,
     transactions,
+    onboarding,
   } = waitFor([
     'liquidationsInfo',
     'balances',
@@ -54,6 +64,7 @@ const ManagePosition = () => {
     'positions',
     'userAddress',
     'transactions',
+    'onboarding',
   ], selector, dispatch)
 
   const [debtIsFocused, setDebtIsFocused] = useState(false)
@@ -104,6 +115,17 @@ const ManagePosition = () => {
       }
     }
   }, [positions, ratesInfo])
+
+  useEffect(() => {
+    if (balances === null) return
+    if (contracts === null) return
+    if (!balances.tokens[contracts.EthERC20].approval.Market.approved) {
+      dispatch(setApprovingEth(true))
+    }
+    if (!balances.tokens[contracts.Hue].approval.Market.approved) {
+      dispatch(setApprovingHue(true))
+    }
+  }, [balances, contracts])
 
   const position: null | Position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
   const positionDebtCount =
@@ -185,6 +207,7 @@ const ManagePosition = () => {
     setDebtCount(countDebt)
   }
 
+  /*
   const cancelCreate = () => {
     if (!empty(
       Object.values(transactions)
@@ -195,6 +218,7 @@ const ManagePosition = () => {
     updateDebtCountImpl(0)
     updateCollateralCount(0)
   }
+  */
 
   const cancelUpdate = () => {
     if (!empty(
@@ -258,6 +282,7 @@ const ManagePosition = () => {
     ? getCollateralRatioColor(collateralization, collateralizationRequirement)
     : undefined
 
+    /*
   const cancelCreateButton =
     <Button
       key='cancel_create_button'
@@ -267,6 +292,7 @@ const ManagePosition = () => {
       size='md'>
       Cancel
     </Button>
+    */
 
   const cancelUpdateButton =
     <Button
@@ -289,33 +315,38 @@ const ManagePosition = () => {
         Edit
       </Button>
 
-  const createPositionButton =
+  const createPositionArgs: txCreatePosition | txUpdatePosition =
     position === null
-    ? <CreateTransactionButton
-        title='Confirm'
-        key='create_button'
-        disabled={isFailing}
-        size='md'
-        txArgs={{
-          type: TransactionType.CreatePosition,
-          collateralCount,
-          debtCount,
-          Market: contracts === null ? '' : contracts.Market,
-        }}
-      />
-    : <CreateTransactionButton
-        title='Confirm'
-        key='update_button'
-        disabled={isFailing}
-        size='md'
-        txArgs={{
-          type: TransactionType.UpdatePosition,
-          positionID: position === null ? 0 :  position.id,
-          collateralIncrease: collateralCount,
-          debtIncrease: debtCount,
-          Market: contracts === null ? '' : contracts.Market,
-        }}
-      />
+    ? {
+        type: TransactionType.CreatePosition,
+        collateralCount,
+        debtCount,
+        Market: contracts === null ? '' : contracts.Market,
+      }
+    : {
+        type: TransactionType.UpdatePosition,
+        positionID: position === null ? 0 :  position.id,
+        collateralIncrease: collateralCount,
+        debtIncrease: debtCount,
+        Market: contracts === null ? '' : contracts.Market,
+      }
+
+  const createPositionButton =
+    <CreateTransactionButton
+      title='Confirm'
+      key='create_button'
+      disabled={isFailing}
+      size='md'
+      txArgs={createPositionArgs}
+    />
+
+  const updatePositionArgs: txUpdatePosition = {
+    type: TransactionType.UpdatePosition,
+    positionID: position === null ? 0 :  position.id,
+    collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
+    debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(positionDebtCount * 2) : debtCount - positionDebtCount) : 0,
+    Market: contracts === null ? '' : contracts.Market,
+  }
 
   const updatePositionButton =
     <CreateTransactionButton
@@ -323,48 +354,21 @@ const ManagePosition = () => {
       key='update_button'
       disabled={isFailing}
       size='md'
-      txArgs={{
-        type: TransactionType.UpdatePosition,
-        positionID: position === null ? 0 :  position.id,
-        collateralIncrease: position !== null && isCollateralChanged ? collateralCount - position.collateralCount : 0,
-        debtIncrease: position !== null && isDebtChanged ? (debtCount === 0 ? -(positionDebtCount * 2) : debtCount - positionDebtCount) : 0,
-        Market: contracts === null ? '' : contracts.Market,
-      }}
+      txArgs={updatePositionArgs}
     />
 
-  const approveHueButton =
-    <CreateTransactionButton
-      title='Approve Hue'
-      key='approve_hue_button'
-      size='md'
-      disabled={isFailing || debtIncrease >= 0 || balances === null || contracts === null || balances.tokens[contracts.Hue].approval.Market.approved}
-      showDisabledInsteadOfConnectWallet={true}
-      txArgs={{
-        type: TransactionType.ApproveHue,
-        Hue: contracts === null ? '' : contracts.Hue,
-        spenderAddress: contracts === null ? '' : contracts.Market,
-      }}
-    />
+  const approveHueTxArgs: txApproveHue = {
+    type: TransactionType.ApproveHue,
+    Hue: contracts === null ? '' : contracts.Hue,
+    spenderAddress: contracts === null ? '' : contracts.Market,
+  }
 
-  const approveEthButton =
-    <CreateTransactionButton
-      title='Approve TruEth'
-      key='approve_eth_button'
-      size='md'
-      disabled={
-        isFailing ||
-        collateralIncrease <= 0 ||
-        balances === null ||
-        contracts === null ||
-        balances.tokens[contracts.EthERC20].approval.Market.approved
-      }
-      showDisabledInsteadOfConnectWallet={true}
-      txArgs={{
-        type: TransactionType.ApproveEth,
-        Eth: contracts === null ? '' : contracts.EthERC20,
-        spenderAddress: contracts === null ? '' : contracts.Market,
-      }}
-    />
+  const approveEthTitle = 'Approve TruEth'
+  const approveEthTxArgs: txApproveEth = {
+    type: TransactionType.ApproveEth,
+    Eth: contracts === null ? '' : contracts.EthERC20,
+    spenderAddress: contracts === null ? '' : contracts.Market,
+  }
 
   interface changeDisplay {amount: string, action: string}
 
@@ -394,7 +398,6 @@ const ManagePosition = () => {
           debtChangeSuccessDisplay !== null
           ? <Text>You will {debtChangeSuccessDisplay.action} <Bold>{debtChangeSuccessDisplay.amount}</Bold>.</Text>
           : <Text>You will {collateralChangeSuccessDisplay!.action} <Bold>{collateralChangeSuccessDisplay!.amount}</Bold>.</Text>
-
         )
       )
 
@@ -403,9 +406,8 @@ const ManagePosition = () => {
       .filter(failure => !failure.silent)
       .filter(failure => failure.failing)
 
-
   const columnOne =
-    <SpacedList spacing={20}>
+    <>
       <Tile style={{padding: 40, marginTop: 40}}>
         <SpacedList spacing={40} style={{display: 'relative'}}>
           <div style={{display: 'float', alignItems: 'center'}}>
@@ -548,64 +550,97 @@ const ManagePosition = () => {
               : null
             }
           </SpacedList>
-          <div style={{display: 'flex'}}>
-            <SpacedList
-              row
-              spacing={20}
-              style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
-              {
-                isCreating
-                ? (
-                  ethApproved
-                  ? [createPositionButton, cancelCreateButton]
-                  : [approveEthButton, cancelCreateButton]
-                )
-
-                : (
-                    isEditing
-                    ? (
-                        isDebtDecrease && !hueApproved
-                        ? [approveHueButton, cancelUpdateButton]
-                        : [updatePositionButton, cancelUpdateButton]
-                    ) : null
-                )
-              }
-            </SpacedList>
-            {
-              isEditing
-              && position !== null
-              ? <div
-                  style={{float: 'right'}}>
-                  <Button
-                    disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
-                    onClick={() => {
-                      setDebtCount(0)
-                      setCollateralCount(0)
-                      setDeleteSelected(true)
-                    }}
-                    kind='danger--ghost'
-                    size='md'>
-                    <span style={{whiteSpace: 'nowrap'}}>
-                      Close Position
-                    </span>
-                  </Button>
-                </div>
-              : null
-            }
-          </div>
         </SpacedList>
+        {
+          isCreating
+          ? (
+            onboarding.approvingEth
+            ? <ActionSteps
+                disabled={isFailing}
+                steps={[
+                  {
+                    txArgs: approveEthTxArgs,
+                    title: approveEthTitle,
+                    buttonTitle: 'Approve',
+                    complete: ethApproved,
+                  },{
+                    txArgs: createPositionArgs,
+                    title: 'Create Position',
+                    buttonTitle: 'Confirm',
+                  }
+                ]}
+              />
+            : createPositionButton
+          ) : (
+            isEditing
+            ? (
+              isDebtDecrease && onboarding.approvingHue
+              ? <ActionSteps
+                  disabled={isFailing}
+                  steps={[
+                    {
+                      txArgs: approveHueTxArgs,
+                      title: 'Approve Hue',
+                      buttonTitle: 'Approve',
+                      complete: hueApproved,
+                    },{
+                      txArgs: updatePositionArgs,
+                      title: 'Update Position Position',
+                      buttonTitle: 'Confirm',
+                    }
+                  ]}
+                />
+              : <div style={{display: 'flex'}}>
+                  <SpacedList
+                    row
+                    spacing={20}
+                    style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+                    {updatePositionButton}
+                    {cancelUpdateButton}
+                  </SpacedList>
+                  {
+                    isEditing
+                    && position !== null
+                    ? <div
+                        style={{float: 'right'}}>
+                        <Button
+                          disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
+                          onClick={() => {
+                            setDebtCount(0)
+                            setCollateralCount(0)
+                            setDeleteSelected(true)
+                          }}
+                          kind='danger--ghost'
+                          size='md'>
+                          <span style={{whiteSpace: 'nowrap'}}>
+                            Close Position
+                          </span>
+                        </Button>
+                      </div>
+                    : null
+                  }
+                </div>
+            ) : null
+          )
+        }
       </Tile>
-      <ClaimRewardsButton
-        txArgs={{
-          type: TransactionType.ClaimAllPositionRewards,
-          positionIDs: position === null ? [] : [position.id],
-          Market: contracts === null ? '' : contracts.Market
-        }}
-        count={position === null ? 0 : position.approximateRewards}
-        disabled={position === null || contracts === null}
-        walletToken={WalletToken.Tcp}
-      />
-    </SpacedList>
+      {
+        isCreating
+        ? null
+        : <div style={{marginTop: 10}}>
+            <ClaimRewardsButton
+              txArgs={{
+                type: TransactionType.ClaimAllPositionRewards,
+                positionIDs: position === null ? [] : [position.id],
+                Market: contracts === null ? '' : contracts.Market
+              }}
+              count={position === null ? 0 : position.approximateRewards}
+              disabled={position === null || contracts === null}
+              walletToken={WalletToken.Tcp}
+            />
+          </div>
+      }
+    </>
 
   return (
     <OneColumnDisplay

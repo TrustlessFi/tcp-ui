@@ -13,6 +13,7 @@ import positionsSlice from './positions'
 import pricesSlice from './prices'
 import ratesSlice from './rates'
 import ethERC20Slice from './ethERC20'
+import onboardingSlice from './onboarding'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
@@ -32,6 +33,7 @@ const allSlicesRaw = {
   userAddress: userAddressSlice,
   liquidityPage: liquidityPageSlice,
   notifications: notificationsSlice,
+  onboarding: onboardingSlice,
   staking: stakingSlice,
   transactions: transactionsSlice,
   tabs: tabsSlice,

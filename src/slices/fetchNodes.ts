@@ -8,6 +8,7 @@ import { governorInfo } from './governor'
 import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
 import { marketInfo } from './market'
+import { onboardingState } from './onboarding'
 import { poolsCurrentData } from './poolsCurrentData'
 import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
@@ -30,6 +31,7 @@ export type RootState = {
   rootContracts: rootContracts | null
   userAddress: string | null
   notifications: notificationState
+  onboarding: onboardingState
   transactions: TransactionState
   liquidityPage: liquidityPageState
   staking: stakingState
