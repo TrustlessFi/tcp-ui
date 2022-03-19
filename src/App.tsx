@@ -16,15 +16,6 @@ import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
 import waitFor from './slices/waitFor'
 
-import './App.css'
-import './styles/night_app.scss'
-
-declare global {
-  interface Window {
-    ethereum: any
-  }
-}
-
 export enum Tab {
   Position = 'Position',
   Stake = 'Stake',

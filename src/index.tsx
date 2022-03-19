@@ -5,12 +5,28 @@ import App from './App'
 import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
+import { BrowserView, MobileView } from 'react-device-detect'
+import MobileApp from './MobileApp'
+
+import './App.css'
+import './styles/night_app.scss'
+
+declare global {
+  interface Window {
+    ethereum: any
+  }
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <BrowserView>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </BrowserView>
+    <MobileView>
+      <MobileApp />
+    </MobileView>
   </React.StrictMode>,
   document.getElementById('root')
 )

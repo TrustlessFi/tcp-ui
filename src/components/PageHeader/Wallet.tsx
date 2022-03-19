@@ -32,7 +32,6 @@ export const clearEphemeralStorage = () =>
     .filter(slice => slice.cacheDuration !== CacheDuration.INFINITE)
       .map(slice => localStorage.removeItem(slice.name))
 
-
 export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: string[]) => {
   const account = accounts.length > 0 ? accounts[0] : null
   const currentAccount = store.getState().userAddress
