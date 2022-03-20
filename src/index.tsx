@@ -6,6 +6,7 @@ import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import { BrowserView, MobileView } from 'react-device-detect'
+import RawErrorBoundary from './components/library/RawErrorBoundary'
 import MobileApp from './MobileApp'
 
 import './App.css'
@@ -19,14 +20,16 @@ declare global {
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserView>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </BrowserView>
-    <MobileView>
-      <MobileApp />
-    </MobileView>
+    <RawErrorBoundary>
+      <BrowserView>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </BrowserView>
+      <MobileView>
+        <MobileApp />
+      </MobileView>
+    </RawErrorBoundary>
   </React.StrictMode>,
   document.getElementById('root')
 )
