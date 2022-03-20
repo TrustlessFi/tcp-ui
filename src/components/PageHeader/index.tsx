@@ -1,6 +1,6 @@
 import MetaMaskOnboarding from "@metamask/onboarding"
 import { MouseEvent, useCallback } from 'react'
-import { ChainID } from "@trustlessfi/addresses"
+import { ChainID } from "../../utils/addresses"
 import { withRouter, useHistory, useLocation } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'

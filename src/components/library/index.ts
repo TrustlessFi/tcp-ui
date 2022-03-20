@@ -1,5 +1,5 @@
 import { TransactionInfo, TransactionState } from '../../slices/transactions'
-import { ChainID } from '@trustlessfi/addresses'
+import { ChainID } from '../../utils/addresses'
 
 export enum UserTxSortOption {
   NONCE_ASCENDING,

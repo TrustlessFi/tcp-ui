@@ -7,7 +7,7 @@ import TokenIcon from './TokenIcon'
 import { CSSProperties } from 'react'
 import { addTokenToWallet, zkSyncEthERC20Address, assertUnreachable } from '../../utils'
 import TrustlessLogos, { WalletToken } from '../library/TrustlessLogos'
-import { ChainID } from '@trustlessfi/addresses'
+import { ChainID } from '../../utils/addresses'
 import { convertSVGtoURI } from '../../utils'
 
 export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contractsInfo) => {

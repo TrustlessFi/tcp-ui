@@ -2,7 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { v4 as getUid } from 'uuid'
 import { timeMS } from '../../utils'
 import { TransactionStatus, TransactionType } from '../transactions'
-import { ChainID } from '@trustlessfi/addresses'
+import { ChainID } from '../../utils/addresses'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 

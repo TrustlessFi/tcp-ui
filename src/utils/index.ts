@@ -1,9 +1,9 @@
-import { BigNumber, BigNumberish, utils, Contract } from "ethers"
+import { BigNumber, BigNumberish, utils } from "ethers"
 import JSBI from "jsbi"
+import buffer from 'buffer'
 import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
-import getProvider from './getProvider'
 import { contract } from './getContract'
 
 
@@ -468,18 +468,10 @@ export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
   return z
 }
 
-
-
-
-
-
-
-
-
 export const numberToHex = (val: number) => '0x' + val.toString(16)
 
 export const convertSVGtoURI = (svg: string) =>
-  `data:image/svg+xml;base64,${Buffer.from(svg, 'binary').toString('base64')}`
+  `data:image/svg+xml;base64,${buffer.from(svg).toString('base64')}`
 
 export const getRecencyString = (timeInMS: number) => {
   const getRawString = (secondsAgo: number) => {

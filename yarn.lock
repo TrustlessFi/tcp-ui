@@ -4484,13 +4484,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@trustlessfi/addresses@npm:0.10.0"
+"@trustlessfi/addresses@npm:^0.10.3":
+  version: 0.10.3
+  resolution: "@trustlessfi/addresses@npm:0.10.3"
   dependencies:
     "@types/node": ^16.11.11
     typescript: ^4.5.3
-  checksum: ee6e421b63172265783ed41318290c8ace69f1b6b02d8ab4f356f8887dddfc60846c817d9e4ff39c25956280f8f96a05d533754c896770f50b0d250c541b63cb
+  checksum: 417b380c5b03099b50d4eabc3b4389eeed4e7c981a541863a4911b282f0c3e196fd7c2e6453550b70eb602a6541e832cb3118c2ee13ee3a3eb5f472e6d481d15
   languageName: node
   linkType: hard
 
@@ -5873,6 +5873,13 @@ __metadata:
   version: 4.2.2
   resolution: "@xtuc/long@npm:4.2.2"
   checksum: 8ed0d477ce3bc9c6fe2bf6a6a2cc316bb9c4127c5a7827bae947fa8ec34c7092395c5a283cc300c05b5fa01cbbfa1f938f410a7bf75db7c7846fea41949989ec
+  languageName: node
+  linkType: hard
+
+"Buffer@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "Buffer@npm:0.0.0"
+  checksum: 3ef32edca7e3902f962ec4370bdb910453c7e7c43cbfca66c4882cc724d70117bd240b513a815bc13f9b5e3b9a0a52c3e179575511f757f54b868e15be569d49
   languageName: node
   linkType: hard
 
@@ -18332,7 +18339,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.15.0
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trustlessfi/addresses": ^0.10.0
+    "@trustlessfi/addresses": ^0.10.3
     "@trustlessfi/artifacts": ^0.3.6
     "@trustlessfi/multicall": ^0.4.22
     "@trustlessfi/typechain": ^0.8.6
@@ -18357,6 +18364,7 @@ resolve@^2.0.0-next.3:
     "@web3-react/portis-connector": ^6.1.9
     "@web3-react/walletconnect-connector": ^6.2.8
     "@web3-react/walletlink-connector": ^6.2.8
+    Buffer: ^0.0.0
     babel-plugin-module-resolver: ^4.1.0
     babel-plugin-polyfill-corejs2: ^0.3.0
     babel-plugin-polyfill-corejs3: ^0.4.0

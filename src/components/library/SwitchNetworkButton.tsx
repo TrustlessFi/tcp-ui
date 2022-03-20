@@ -4,7 +4,7 @@ import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
 import { CSSProperties } from "react"
 import { setSwitchNetworkButtonClicked } from '../../slices/wallet'
 import SpacedList from '../library/SpacedList'
-import { ChainID, chainIDToName } from '@trustlessfi/addresses'
+import { ChainID, chainIDToName } from '../../utils/addresses'
 import { makeRPCRequest, first, RpcMethod, numberToHex } from '../../utils'
 import waitFor from '../../slices/waitFor'
 
