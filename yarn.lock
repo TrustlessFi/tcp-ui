@@ -1700,10 +1700,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/colors@npm:^10.37.0":
-  version: 10.37.0
-  resolution: "@carbon/colors@npm:10.37.0"
-  checksum: 2e8e7b23cd0cc3aede9e1d41128f86b00524f474409d4b57887f23d1172a3c9699030cb017c2250cdd866870e199a342abbf53612cb7fd800a827cad4d9e4c12
+"@carbon/colors@npm:^10.37.1":
+  version: 10.37.1
+  resolution: "@carbon/colors@npm:10.37.1"
+  checksum: 7cdc38370d1a51d968f28de951a180211b33db14f6dee5cd55c1d965ebe74c19c55924898df7c344f72dfa2c46a764ad16696038911e77b43d9b701d34c56514
   languageName: node
   linkType: hard
 
@@ -1714,13 +1714,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/grid@npm:^10.43.0":
-  version: 10.43.0
-  resolution: "@carbon/grid@npm:10.43.0"
+"@carbon/grid@npm:^10.43.1":
+  version: 10.43.1
+  resolution: "@carbon/grid@npm:10.43.1"
   dependencies:
     "@carbon/import-once": ^10.7.0
-    "@carbon/layout": ^10.37.0
-  checksum: 7d7a20cb4fa380e5c6d4979563ac328a2954046a093f8623222ced8292181a812ab39c8899ded6a43e1bcce1e000ec51f06c47242ba03f9b7eb6ebf705258517
+    "@carbon/layout": ^10.37.1
+  checksum: d59818f5602b1cada5188982a687ef861c63a2e165ed3266496b0a0b7e2e12528e55d4ac9d7d4134a4f4c19e7e16fd48425e5982279ac86ff914ba879c120a32
   languageName: node
   linkType: hard
 
@@ -1751,10 +1751,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/layout@npm:^10.37.0":
-  version: 10.37.0
-  resolution: "@carbon/layout@npm:10.37.0"
-  checksum: fa32678f62d029fdc116131bdec0c0a853f04d88779890f2bd52e297e7fcb3d880bb2e1fd6171407c27bce0cf4d394c98912044bf1e8249d8dcf7bd4bc7c15ac
+"@carbon/layout@npm:^10.37.1":
+  version: 10.37.1
+  resolution: "@carbon/layout@npm:10.37.1"
+  checksum: baabf7e70e4779f0e5000e700bcafe96f272debaac490a4345e39fedf8d0970636f7099e2607aeb9ca6170a56bbacdff69d8181c2a46ed8adac38fadc08332b6
   languageName: node
   linkType: hard
 
@@ -1778,25 +1778,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/themes@npm:^10.53.1":
-  version: 10.53.1
-  resolution: "@carbon/themes@npm:10.53.1"
+"@carbon/themes@npm:^10.53.2":
+  version: 10.53.2
+  resolution: "@carbon/themes@npm:10.53.2"
   dependencies:
-    "@carbon/colors": ^10.37.0
-    "@carbon/layout": ^10.37.0
-    "@carbon/type": ^10.43.1
+    "@carbon/colors": ^10.37.1
+    "@carbon/layout": ^10.37.1
+    "@carbon/type": ^10.43.2
     color: ^3.1.2
-  checksum: f1e7638d8d70be82622a3dafaebc60293d6d23bd571e2fbafcca93e58e336a0234fe7b322aa25cc15d18537c03c35cec2e8fbcba8257190d9d6ad99b719bd4d9
+  checksum: eda44ce76fc69d245e669825a3e3a0b5028be2d7395298eab26bdc7f7af73d5d4148b2dafbcd74f84b6c0112615638330d32716eccbdcbf05e981a611aef7ce9
   languageName: node
   linkType: hard
 
-"@carbon/type@npm:^10.43.1":
-  version: 10.43.1
-  resolution: "@carbon/type@npm:10.43.1"
+"@carbon/type@npm:^10.43.2":
+  version: 10.43.2
+  resolution: "@carbon/type@npm:10.43.2"
   dependencies:
-    "@carbon/grid": ^10.43.0
+    "@carbon/grid": ^10.43.1
     "@carbon/import-once": ^10.7.0
-  checksum: 4619aee7a748c9c37932402434146fe15d04bde2678f78c374ca083ffbb417d543163ebed09a710807df21bdb7085571635eecd73800b91a6204093a2d7cfc19
+  checksum: 8b85789bd1de53342e8bcb97e384019dff44332b0cd2027f6c62e1390ba9bb57c41411d1a1140844f51567a97ccd936c35ff1bd79b68c495deb6895acfcd9751
   languageName: node
   linkType: hard
 
@@ -2368,6 +2368,33 @@ __metadata:
     bech32: 1.1.4
     ws: 7.4.6
   checksum: 2f3020edd130da84c4544ba8d14a804ec18fe75b4abb452e307bbb9bb0fa93c16394e3c42b0072ca1e49a8d27ec83538844c734cd3318d4511eedfd938bba328
+  languageName: node
+  linkType: hard
+
+"@ethersproject/providers@npm:5.6.1":
+  version: 5.6.1
+  resolution: "@ethersproject/providers@npm:5.6.1"
+  dependencies:
+    "@ethersproject/abstract-provider": ^5.6.0
+    "@ethersproject/abstract-signer": ^5.6.0
+    "@ethersproject/address": ^5.6.0
+    "@ethersproject/basex": ^5.6.0
+    "@ethersproject/bignumber": ^5.6.0
+    "@ethersproject/bytes": ^5.6.0
+    "@ethersproject/constants": ^5.6.0
+    "@ethersproject/hash": ^5.6.0
+    "@ethersproject/logger": ^5.6.0
+    "@ethersproject/networks": ^5.6.0
+    "@ethersproject/properties": ^5.6.0
+    "@ethersproject/random": ^5.6.0
+    "@ethersproject/rlp": ^5.6.0
+    "@ethersproject/sha2": ^5.6.0
+    "@ethersproject/strings": ^5.6.0
+    "@ethersproject/transactions": ^5.6.0
+    "@ethersproject/web": ^5.6.0
+    bech32: 1.1.4
+    ws: 7.4.6
+  checksum: c6d6ab73064ee4a7793d4cb599e2b0ff7d61b510c2ffece249a95c60043e07ef40c7c55f097569141a7f50fd82f7bb3956d44e1715997ec91da25216a5ce51b6
   languageName: node
   linkType: hard
 
@@ -3455,13 +3482,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@trustlessfi/addresses@npm:0.10.0"
+"@trustlessfi/addresses@npm:^0.10.3":
+  version: 0.10.3
+  resolution: "@trustlessfi/addresses@npm:0.10.3"
   dependencies:
     "@types/node": ^16.11.11
     typescript: ^4.5.3
-  checksum: ee6e421b63172265783ed41318290c8ace69f1b6b02d8ab4f356f8887dddfc60846c817d9e4ff39c25956280f8f96a05d533754c896770f50b0d250c541b63cb
+  checksum: 417b380c5b03099b50d4eabc3b4389eeed4e7c981a541863a4911b282f0c3e196fd7c2e6453550b70eb602a6541e832cb3118c2ee13ee3a3eb5f472e6d481d15
   languageName: node
   linkType: hard
 
@@ -3825,12 +3852,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.13":
-  version: 17.0.13
-  resolution: "@types/react-dom@npm:17.0.13"
+"@types/react-dom@npm:^17.0.14":
+  version: 17.0.14
+  resolution: "@types/react-dom@npm:17.0.14"
   dependencies:
     "@types/react": "*"
-  checksum: 62c42a54ac8961c23a0e74b9cdd8b0a78563757e462b1ab665b2aa365bfd8b86a73d3f6eafc09a4a80fb08659321db168f012aa597c41c0df36f645a94e9266b
+  checksum: b54cd0ef573236b3d87fe7493e6d1c36d8b4ca37a3b46364272a5c91ac178e3296b68ea1aeb299ce68f12ad663c5720ee890d0539b14881c6754bdcbdb0befa0
   languageName: node
   linkType: hard
 
@@ -3890,14 +3917,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^17.0.40":
-  version: 17.0.40
-  resolution: "@types/react@npm:17.0.40"
+"@types/react@npm:^17.0.41":
+  version: 17.0.41
+  resolution: "@types/react@npm:17.0.41"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 24d1b210b5bf3c7d49f9a7fe5490db02e005a1d989045a2d67528347557dd0bcb0d7bcf96088152697e97521ac4c9506d1357ee48a2b7d4e701c70d838dc7284
+  checksum: 1b086ec0ea5d666f05e19e0724e41278d27a2ca29a2cd71b9d9ab3fe27dba233806eb728d744e092c9fe9637ac738d8c5a05983cde84d215342949b47ecba2ef
   languageName: node
   linkType: hard
 
@@ -4239,9 +4266,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/v3-sdk@npm:^3.7.1":
-  version: 3.7.1
-  resolution: "@uniswap/v3-sdk@npm:3.7.1"
+"@uniswap/v3-sdk@npm:^3.8.2":
+  version: 3.8.2
+  resolution: "@uniswap/v3-sdk@npm:3.8.2"
   dependencies:
     "@ethersproject/abi": ^5.0.12
     "@ethersproject/solidity": ^5.0.9
@@ -4250,7 +4277,7 @@ __metadata:
     "@uniswap/v3-staker": 1.0.0
     tiny-invariant: ^1.1.0
     tiny-warning: ^1.0.3
-  checksum: 3fedd0258c434a89d5fbbab3f3af7b89a3ee364297cdb2eddddf00af09de975cf88f74e3ed2df63f2d210231e19349d79f3334f2b744c3684aa8200c38e4b495
+  checksum: 402c9fe682578cf2bf615bc0a87f8e4b92114139333cd53837f83173ee6255fe1687edaabbc0560d8cb1a63ffaccf4f4c7d9079a2a55bf5f8cd7001627fd2e11
   languageName: node
   linkType: hard
 
@@ -7051,14 +7078,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"carbon-components-react@npm:^7.55.1":
-  version: 7.55.1
-  resolution: "carbon-components-react@npm:7.55.1"
+"carbon-components-react@npm:^7.55.2":
+  version: 7.55.2
+  resolution: "carbon-components-react@npm:7.55.2"
   dependencies:
     "@babel/runtime": ^7.16.7
     "@carbon/feature-flags": ^0.7.0
     "@carbon/icons-react": ^10.48.0
-    "@carbon/layout": ^10.37.0
+    "@carbon/layout": ^10.37.1
     "@carbon/telemetry": 0.0.0-alpha.6
     classnames: 2.3.1
     copy-to-clipboard: ^3.3.1
@@ -7080,19 +7107,19 @@ __metadata:
     carbon-icons: ^7.0.7
     react: ^16.8.6 || ^17.0.1
     react-dom: ^16.8.6 || ^17.0.1
-  checksum: 37093399a9064f3fcd8a615dcd388b9c6208a1292384d21509d188412d8d2d936970ab2f8d34e9fba736f50c4ff7a47b84d2304000e87b7e2adc162ff5b62e3c
+  checksum: 8bbc5111e0b2ee85e7ee35769a2d372036c50cb36af029d2d95181ea3a2c6363c9f2b2e0c111e154aa1b7dbae27e5a57806af48c5ef17ade4aba1aa229330738
   languageName: node
   linkType: hard
 
-"carbon-components@npm:^10.55.1":
-  version: 10.55.1
-  resolution: "carbon-components@npm:10.55.1"
+"carbon-components@npm:^10.55.2":
+  version: 10.55.2
+  resolution: "carbon-components@npm:10.55.2"
   dependencies:
     "@carbon/telemetry": 0.0.0-alpha.6
     flatpickr: 4.6.1
     lodash.debounce: ^4.0.8
     warning: ^3.0.0
-  checksum: 30c6821cf28c2567ae9707757afe40b2c31b393fb5898ee93ef540ab7d06d56b9a19c1e3001551dc76196a2c0831c188a284824dee48c84ae7b98e74a1b921ac
+  checksum: 34811ff504ab5ab58c943e9cf91ba6effcdf48eabe6cc70e3db6310a8c154b662be082a25b2a88aef79b7f2dc271d0a2c909ce0e7836f64cd4ad0e006405ebeb
   languageName: node
   linkType: hard
 
@@ -9972,6 +9999,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethers@npm:^5.6.1":
+  version: 5.6.1
+  resolution: "ethers@npm:5.6.1"
+  dependencies:
+    "@ethersproject/abi": 5.6.0
+    "@ethersproject/abstract-provider": 5.6.0
+    "@ethersproject/abstract-signer": 5.6.0
+    "@ethersproject/address": 5.6.0
+    "@ethersproject/base64": 5.6.0
+    "@ethersproject/basex": 5.6.0
+    "@ethersproject/bignumber": 5.6.0
+    "@ethersproject/bytes": 5.6.0
+    "@ethersproject/constants": 5.6.0
+    "@ethersproject/contracts": 5.6.0
+    "@ethersproject/hash": 5.6.0
+    "@ethersproject/hdnode": 5.6.0
+    "@ethersproject/json-wallets": 5.6.0
+    "@ethersproject/keccak256": 5.6.0
+    "@ethersproject/logger": 5.6.0
+    "@ethersproject/networks": 5.6.0
+    "@ethersproject/pbkdf2": 5.6.0
+    "@ethersproject/properties": 5.6.0
+    "@ethersproject/providers": 5.6.1
+    "@ethersproject/random": 5.6.0
+    "@ethersproject/rlp": 5.6.0
+    "@ethersproject/sha2": 5.6.0
+    "@ethersproject/signing-key": 5.6.0
+    "@ethersproject/solidity": 5.6.0
+    "@ethersproject/strings": 5.6.0
+    "@ethersproject/transactions": 5.6.0
+    "@ethersproject/units": 5.6.0
+    "@ethersproject/wallet": 5.6.0
+    "@ethersproject/web": 5.6.0
+    "@ethersproject/wordlists": 5.6.0
+  checksum: f04079034d4c7f51e5c69a3ee55c38ca70bd5bd9b2680a5e6b594c92a09c8a88882e7d57991eb0ff9d0a95f900511cdccbccedbfc829f3995d01ad5d6f85156d
+  languageName: node
+  linkType: hard
+
 "ethjs-util@npm:0.1.6, ethjs-util@npm:^0.1.3":
   version: 0.1.6
   resolution: "ethjs-util@npm:0.1.6"
@@ -11573,6 +11638,13 @@ fsevents@^1.2.7:
   version: 9.0.12
   resolution: "immer@npm:9.0.12"
   checksum: bcbec6d76dac65e49068eb67ece4d407116e62b8cde3126aa89c801e408f5047763ba0aeb62f1938c1aa704bb6612f1d8302bb2a86fa1fc60fcc12d8b25dc895
+  languageName: node
+  linkType: hard
+
+"immutable@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "immutable@npm:4.0.0"
+  checksum: 4b5e9181e4d5fa06728a481835ec09c86367e5d03268666c95b522b7644ab891098022e4479a43c4c81a68f2ed82f10751ce5d33e208d7b873b6e7f9dfaf4d87
   languageName: node
   linkType: hard
 
@@ -17951,14 +18023,16 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.43.4":
-  version: 1.43.4
-  resolution: "sass@npm:1.43.4"
+"sass@npm:^1.49.9":
+  version: 1.49.9
+  resolution: "sass@npm:1.49.9"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
+    immutable: ^4.0.0
+    source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 9af80105dabd32752c60b4557115832982cf1019c02c952db6a26c61a3e18dc95044c896685e6e9a6d6dd6643fc411ecf2ea4a8a431a8a08a7510a45d5a492ae
+  checksum: e5653e3499274c5127dcb5c9e7c5f6930378fc61764d999a5d8965782e027181ed09714f94836dec74ef55e3a858107fe6c571954c0cab0ad0be5ab8e586829c
   languageName: node
   linkType: hard
 
@@ -18468,6 +18542,13 @@ resolve@^2.0.0-next.3:
   version: 2.0.1
   resolution: "source-list-map@npm:2.0.1"
   checksum: 806efc6f75e7cd31e4815e7a3aaf75a45c704871ea4075cb2eb49882c6fca28998f44fc5ac91adb6de03b2882ee6fb02f951fdc85e6a22b338c32bfe19557938
+  languageName: node
+  linkType: hard
+
+"source-map-js@npm:>=0.6.2 <2.0.0":
+  version: 1.0.2
+  resolution: "source-map-js@npm:1.0.2"
+  checksum: c049a7fc4deb9a7e9b481ae3d424cc793cb4845daa690bc5a05d428bf41bf231ced49b4cf0c9e77f9d42fdb3d20d6187619fc586605f5eabe995a316da8d377c
   languageName: node
   linkType: hard
 
@@ -19211,9 +19292,9 @@ resolve@^2.0.0-next.3:
   version: 0.0.0-use.local
   resolution: "tcp-ui@workspace:."
   dependencies:
-    "@carbon/colors": ^10.37.0
+    "@carbon/colors": ^10.37.1
     "@carbon/icons-react": ^10.48.0
-    "@carbon/themes": ^10.53.1
+    "@carbon/themes": ^10.53.2
     "@ethersproject/experimental": ^5.6.0
     "@metamask/jazzicon": ^2.0.0
     "@metamask/onboarding": ^1.0.1
@@ -19221,7 +19302,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.15.0
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trustlessfi/addresses": ^0.10.0
+    "@trustlessfi/addresses": ^0.10.3
     "@trustlessfi/artifacts": ^0.3.6
     "@trustlessfi/multicall": ^0.4.22
     "@trustlessfi/typechain": ^0.8.6
@@ -19231,15 +19312,15 @@ resolve@^2.0.0-next.3:
     "@types/carbon__icons-react": ^10.31.2
     "@types/jest": ^27.4.1
     "@types/node": ^16.11.26
-    "@types/react": ^17.0.40
+    "@types/react": ^17.0.41
     "@types/react-copy-to-clipboard": ^5.0.2
-    "@types/react-dom": ^17.0.13
+    "@types/react-dom": ^17.0.14
     "@types/react-redux": ^7.1.23
     "@types/react-router-dom": ^5.3.3
     "@types/sass": ^1.43.1
     "@types/uuid": ^8.3.4
     "@uniswap/sdk-core": ^3.0.1
-    "@uniswap/v3-sdk": ^3.7.1
+    "@uniswap/v3-sdk": ^3.8.2
     "@web3-react/core": ^6.1.9
     "@web3-react/fortmatic-connector": ^6.1.6
     "@web3-react/injected-connector": ^6.0.7
@@ -19250,10 +19331,10 @@ resolve@^2.0.0-next.3:
     babel-plugin-polyfill-corejs2: ^0.3.0
     babel-plugin-polyfill-corejs3: ^0.4.0
     babel-plugin-polyfill-regenerator: ^0.3.0
-    carbon-components: ^10.55.1
-    carbon-components-react: ^7.55.1
+    carbon-components: ^10.55.2
+    carbon-components-react: ^7.55.2
     carbon-icons: ^7.0.7
-    ethers: ^5.6.0
+    ethers: ^5.6.1
     jsbi: ^4.2.0
     react: ^17.0.2
     react-copy-to-clipboard: ^5.0.4
@@ -19265,11 +19346,11 @@ resolve@^2.0.0-next.3:
     react-router-dom: 5.3.0
     react-scripts: 4.0.3
     react-svg-loader: ^3.0.3
-    sass: ^1.43.4
+    sass: ^1.49.9
     svg-react-loader: ^0.4.6
     typescript: ^4.6.2
     uuid: ^8.3.2
-    zksync-web3: ^0.3.6
+    zksync-web3: ^0.4.0
   languageName: unknown
   linkType: soft
 
@@ -21114,11 +21195,11 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"zksync-web3@npm:^0.3.6":
-  version: 0.3.6
-  resolution: "zksync-web3@npm:0.3.6"
+"zksync-web3@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "zksync-web3@npm:0.4.0"
   peerDependencies:
     ethers: ~5.5.0
-  checksum: 409698db1d3b5d092adce4e95f7a732dbe7ac8e55c802b3e161d907dcb9fd85c6f740f7eb1c6937ffccec14cb5e45a8935c0a52c8d839de0466c7ba52b732373
+  checksum: 76f2956ef09d2b3d6806b2990cf6aad4508f23ef8cdfc0089a64a16d178395dabc5fff30abad7997acb012567dc0565326af2a148ce40d45d747eed22439e812
   languageName: node
   linkType: hard
