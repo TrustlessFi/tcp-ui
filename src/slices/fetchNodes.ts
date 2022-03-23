@@ -23,6 +23,7 @@ import { stakingState } from './staking'
 import { tabsState } from './tabs'
 import { tcpAllocationInfo } from './tcpAllocation'
 import { tcpTimelockInfo } from './tcpTimelock'
+import { testnetBannerState } from './testnetBanner'
 import { TransactionState } from './transactions'
 import { walletState } from './wallet'
 
@@ -33,6 +34,7 @@ export type RootState = {
   notifications: notificationState
   onboarding: onboardingState
   transactions: TransactionState
+  testnetBanner: testnetBannerState
   liquidityPage: liquidityPageState
   staking: stakingState
   tabs: tabsState

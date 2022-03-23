@@ -22,6 +22,7 @@ import notificationsSlice from './notifications'
 import tabsSlice from './tabs'
 import tcpAllocationSlice from './tcpAllocation'
 import tcpTimelockSlice from './tcpTimelock'
+import testnetBannerSlice from './testnetBanner'
 import transactionsSlice from './transactions'
 import walletSlice from './wallet'
 
@@ -35,6 +36,7 @@ const allSlicesRaw = {
   notifications: notificationsSlice,
   onboarding: onboardingSlice,
   staking: stakingSlice,
+  testnetBanner: testnetBannerSlice,
   transactions: transactionsSlice,
   tabs: tabsSlice,
   wallet: walletSlice,
