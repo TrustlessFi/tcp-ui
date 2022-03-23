@@ -110,7 +110,7 @@ const WalletInfo = () => {
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
   return (
-    <Tile style={{ minWidth: 550, padding: 32 }}>
+    <Tile style={{ width: 500, padding: 32 }}>
       <SpacedList spacing={32}>
         <LargeText>
           Balances
@@ -249,7 +249,7 @@ const RecentTransactions = () => {
       <AppTile
         title={tableTitle}
         rightElement={clearTransactionsButton}
-        style={{ minWidth: 550 }}>
+        style={{ minWidth: 500 }}>
         {table}
       </AppTile>
     </SpacedList>
