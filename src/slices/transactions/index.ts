@@ -1,6 +1,6 @@
 import { PayloadAction, createAsyncThunk, ThunkDispatch, AnyAction } from '@reduxjs/toolkit'
 import { assertUnreachable } from '../../utils'
-import { waitingForMetamask, metamaskComplete } from '../wallet'
+import { setWaitingForMetamask, setNotWaitingForMetamask } from '../wallet'
 import getProvider from '../../utils/getProvider'
 import { addNotification } from '../notifications'
 import { ethers, ContractTransaction } from 'ethers'
@@ -316,6 +316,44 @@ export const getTxShortName = (type: TransactionType) => {
   return ''
 }
 
+export const getTxIDFromArgs = (args: TransactionArgs) => {
+  const type = args.type
+
+  const getApproveID = (tokenAddress: string, spenderAddress: string) =>
+    ['approve', tokenAddress, spenderAddress].join(':')
+
+  switch(type) {
+    case TransactionType.ApproveHue:
+      return getApproveID(args.Hue, args.spenderAddress)
+    case TransactionType.ApproveLendHue:
+      return getApproveID(args.LendHue, args.spenderAddress)
+    case TransactionType.ApproveEth:
+      return getApproveID(args.Eth, args.spenderAddress)
+    case TransactionType.ApprovePoolToken:
+      return getApproveID(args.tokenAddress, args.Rewards)
+    case TransactionType.CreatePosition:
+    case TransactionType.UpdatePosition:
+    case TransactionType.IncreaseStake:
+    case TransactionType.DecreaseStake:
+    case TransactionType.ClaimAllPositionRewards:
+    case TransactionType.ClaimAllLiquidityPositionRewards:
+    case TransactionType.AddLiquidity:
+    case TransactionType.RemoveLiquidity:
+    case TransactionType.MintEthERC20:
+    case TransactionType.ApproveEthERC20Address:
+    case TransactionType.UnapproveEthERC20Address:
+    case TransactionType.AddMintERC20AddressAuth:
+    case TransactionType.RemoveMintERC20AddressAuth:
+    case TransactionType.SetPhaseOneStartTime:
+      return (type as number).toString()
+    default:
+      assertUnreachable(type)
+  }
+  return ''
+}
+
+
+
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
 const executeTransaction = async (
@@ -573,9 +611,9 @@ export const submitTransaction = createAsyncThunk(
 
     let rawTransaction: ContractTransaction
     try {
-      dispatch(waitingForMetamask(args.type))
+      dispatch(setWaitingForMetamask(getTxIDFromArgs(args)))
       rawTransaction = await executeTransaction(args, provider, data.chainID)
-      dispatch(metamaskComplete())
+      dispatch(setNotWaitingForMetamask())
     } catch (e) {
       const errorMessages = parseMetamaskError(e)
       console.error("failureMessages: " + errorMessages.messages.join(', '))
@@ -594,7 +632,7 @@ export const submitTransaction = createAsyncThunk(
           message: reasonString ? reasonString : errorMessages.messages.join(', ')
         }))
       }
-      dispatch(metamaskComplete())
+      dispatch(setNotWaitingForMetamask())
       return
     }
 

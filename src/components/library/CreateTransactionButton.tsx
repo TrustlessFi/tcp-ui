@@ -4,8 +4,16 @@ import { useHistory } from 'react-router-dom'
 import { TransactionArgs, TransactionStatus } from '../../slices/transactions'
 import waitFor from '../../slices/waitFor'
 import ConnectWalletButton from './ConnectWalletButton'
-import { Button,  ButtonKind, ButtonSize, InlineLoading } from 'carbon-components-react'
-import { submitTransaction } from '../../slices/transactions'
+import {
+  Button,
+  ButtonKind,
+  ButtonSize,
+  InlineLoading
+} from 'carbon-components-react'
+import {
+  submitTransaction,
+  getTxIDFromArgs,
+} from '../../slices/transactions'
 import { notEmpty } from '../../utils'
 import { getSortedUserTxs } from './'
 
@@ -47,15 +55,17 @@ const CreateTransactionButton = ({
     return <ConnectWalletButton size={size} style={style} kind={kind} />
   }
 
+  const currentTxID = getTxIDFromArgs(txArgs)
+
   const pendingTxs =
     getSortedUserTxs(chainID, userAddress, transactions)
       .filter(tx => tx.status === TransactionStatus.Pending)
-      .filter(tx => tx.type === txArgs.type)
+      .filter(tx => getTxIDFromArgs(tx.args) === currentTxID)
 
   const pendingTxExists = notEmpty(pendingTxs)
 
   const buttonTitle =
-    wallet.waitingForMetamask === txArgs.type
+    wallet.waitingForMetamask === currentTxID
     ? `${title}...`
     : title
 

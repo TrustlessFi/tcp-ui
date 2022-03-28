@@ -5,7 +5,7 @@ import { TransactionType } from '../transactions'
 
 export interface walletState {
   connecting: boolean
-  waitingForMetamask: TransactionType | null
+  waitingForMetamask: string | null
   initialized: boolean
   switchNetworkButtonClicked: boolean
 }
@@ -32,10 +32,10 @@ const walletSlice = createLocalSlice({
     walletConnectionFailed: (state) => {
       state.connecting = false
     },
-    waitingForMetamask: (state, action: PayloadAction<TransactionType>) => {
+    setWaitingForMetamask: (state, action: PayloadAction<string>) => {
       state.waitingForMetamask = action.payload
     },
-    metamaskComplete: (state) => {
+    setNotWaitingForMetamask: (state) => {
       state.waitingForMetamask = null
     },
     appInitialized: (state) => {
@@ -51,8 +51,8 @@ export const {
   walletConnecting,
   walletConnected,
   walletConnectionFailed,
-  waitingForMetamask,
-  metamaskComplete,
+  setWaitingForMetamask,
+  setNotWaitingForMetamask,
   appInitialized,
   setSwitchNetworkButtonClicked,
 } = walletSlice.slice.actions
