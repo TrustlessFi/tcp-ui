@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
@@ -16,6 +17,8 @@ import { getRecencyString, numDisplay } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
+import { Tab, tabToPath } from '../../App'
+import { setTab } from '../../slices/tabs'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -30,6 +33,7 @@ const TokenCard = ({
   size,
   style,
   unit,
+  onClick,
 }: {
   token: WalletToken
   balance?: number,
@@ -37,6 +41,7 @@ const TokenCard = ({
   size?: number,
   style?: CSSProperties,
   unit?: string,
+  onClick?: () => void
 }) => {
   const {
     chainID,
@@ -61,7 +66,11 @@ const TokenCard = ({
         height: 60,
         ...style
       }}
-      onClick={token === WalletToken.Eth ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
+      onClick={
+        onClick === undefined
+        ? getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)
+        : onClick
+      }>
       <SpacedList row spacing={16}>
         <span style={{verticalAlign: 'middle'}}>
           <TokenIcon walletToken={token} width={size} />
@@ -79,6 +88,8 @@ const TokenCard = ({
 }
 
 const WalletInfo = () => {
+  const dispatch = useAppDispatch()
+  const history = useHistory()
 
   const {
     balances,
@@ -123,6 +134,7 @@ const WalletInfo = () => {
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
               balance={balances === null ? undefined : balances.userEthBalance}
+              onClick={undefined}
             />
             <TokenCard
               token={WalletToken.Hue}
@@ -141,6 +153,11 @@ const WalletInfo = () => {
               token={WalletToken.Tcp}
               unit='Tcp Allocation'
               balance={tcpAllocationCount}
+              onClick={() => {
+                // TODO abstract this interface
+                history.push(tabToPath(Tab.AllocateTcp))
+                dispatch(setTab(Tab.AllocateTcp))
+              }}
             />
           </SpacedList>
         </Center>

@@ -21,6 +21,7 @@ export enum Tab {
   Position = 'Position',
   Stake = 'Stake',
   Liquidity = 'Liquidity',
+  AllocateTcp = 'AllocateTcp',
   Transactions = 'Transactions',
 }
 
@@ -28,7 +29,8 @@ export const tabDisplay: { [key in Tab]?: string } = {
 }
 
 export const tabHidden: { [key in Tab]?: true } = {
-  Transactions: true
+  Transactions: true,
+  AllocateTcp: true,
 }
 
 export const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
@@ -38,6 +40,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Stake: <Stake />,
   Liquidity: <Liquidity />,
   Transactions: <RecentTransactions />,
+  AllocateTcp: <div>Hello world allocate TCP</div>
 }
 
 const App: FunctionComponent<{}> = () => {
