@@ -51,11 +51,25 @@ export interface poolsCurrentData {
 
 const poolsCurrentDataSlice = createChainDataSlice({
   name: 'poolsCurrentData',
-  dependencies: ['contracts', 'rootContracts', 'poolsMetadata', 'rewardsInfo', 'userAddress'],
+  dependencies: [
+    'contracts',
+    'rootContracts',
+    'poolsMetadata',
+    'rewardsInfo',
+    'userAddress',
+    'currentChainInfo',
+  ],
   stateSelector: (state: RootState) => state.poolsCurrentData,
   isUserData: true,
   thunkFunction:
-    async (args: thunkArgs<'contracts' | 'rootContracts' | 'poolsMetadata' | 'rewardsInfo' | 'userAddress'>) => {
+    async (args: thunkArgs<
+      'contracts' |
+      'rootContracts' |
+      'poolsMetadata' |
+      'rewardsInfo' |
+      'userAddress' |
+      'currentChainInfo'
+    >) => {
       const rewards = getContract<Rewards>(ProtocolContract.Rewards, args.contracts.Rewards)
       const accounting = getContract<Accounting>(ProtocolContract.Accounting, args.contracts.Accounting)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
@@ -132,23 +146,36 @@ const poolsCurrentDataSlice = createChainDataSlice({
       return Object.fromEntries(charmPoolAddresses.map(address => {
 
         let approximateRewards = bnf(0)
-        const lastTimeRewarded = userLiquidityPositions[address].lastTimeRewarded.toNumber()
+        const lastTimePositionRewarded = userLiquidityPositions[address].lastTimeRewarded.toNumber()
         const lastPeriodGlobalRewardsAccrued = currentRewardsInfo.lastPeriodGlobalRewardsAccrued
-        const lastPeriodUpdated = timeToPeriod(lastTimeRewarded, args.rewardsInfo.periodLength, args.rewardsInfo.firstPeriod)
+
+        const getRewardsPeriodForTime = (time: number) =>
+          timeToPeriod(time, args.rewardsInfo.periodLength, args.rewardsInfo.firstPeriod)
+
+        const lastPeriodPositionUpdated = getRewardsPeriodForTime(lastTimePositionRewarded)
+        const currentRewardsPeriod = getRewardsPeriodForTime(args.currentChainInfo.blockTimestamp)
 
         const position = userLiquidityPositions[address]
 
-        if (lastPeriodUpdated < lastPeriodGlobalRewardsAccrued) {
+        if (lastPeriodPositionUpdated < lastPeriodGlobalRewardsAccrued) {
+          const rewardsPeriods = lastPeriodGlobalRewardsAccrued - lastPeriodPositionUpdated
           let avgDebtPerPeriod =
             bnf(rs[address].cumulativeLiquidity)
               .sub(position.cumulativeLiquidity)
-              .div(lastPeriodGlobalRewardsAccrued - lastPeriodUpdated)
+              .div(lastPeriodGlobalRewardsAccrued - lastPeriodPositionUpdated)
 
           if (!avgDebtPerPeriod.isZero()) {
             approximateRewards =
               position.liquidity
                 .mul(bnf(rs[address].totalRewards).sub(position.totalRewards))
                 .div(avgDebtPerPeriod)
+
+            if (lastPeriodGlobalRewardsAccrued < currentRewardsPeriod) {
+              const approximateRewardsPerPeriod = approximateRewards.div(rewardsPeriods)
+              const extraRewardsPeriods = currentRewardsPeriod - lastPeriodGlobalRewardsAccrued
+              approximateRewards = approximateRewards.add(approximateRewardsPerPeriod.mul(extraRewardsPeriods))
+            }
+
           }
         }
 
@@ -170,7 +197,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
             kickbackPortion: position.kickbackPortion.toString(),
             kickbackDestination: position.kickbackDestination,
             lastBlockPositionIncreased: position.lastBlockPositionIncreased.toNumber(),
-            lastTimeRewarded,
+            lastTimeRewarded: lastTimePositionRewarded,
             liquidity: position.liquidity.toString(),
             owner: position.owner,
             totalRewards: position.totalRewards.toString(),
