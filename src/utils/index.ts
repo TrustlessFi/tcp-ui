@@ -5,7 +5,9 @@ import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
 import getProvider from './getProvider'
 import { contract } from './getContract'
-
+import {
+  ToggleProps
+} from 'carbon-components-react'
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import protocolTokenArtifact from '@trustlessfi/artifacts/dist/contracts/core/tokens/ProtocolToken.sol/ProtocolToken.json'
@@ -49,6 +51,12 @@ export const onNumChange = (numChangeFunc: (val: number) => void) => (
   if (typeof direction === 'string') numChangeFunc(numVal(value))
   else numChangeFunc(numVal(direction.value))
 }
+
+export const getOnToggle = (onToggleFunc: (_checked: boolean) => void) => (
+  checked: boolean,
+  _id: ToggleProps["id"],
+  _event: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>,
+) => onToggleFunc(checked)
 
 export const abbreviateAddress = (address: string) => address.substr(0, 6) + '...' + address.substr(address.length - 4, 4)
 

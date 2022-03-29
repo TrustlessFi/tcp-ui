@@ -46,8 +46,6 @@ const ViewTcp = () => {
     ? '-'
     : numDisplay(tcpAllocationCount, 2)
 
-    console.log("inside view tcp")
-
   const columnOne =
     <Tile
       style={{width: '100%', padding: 40 }}>
@@ -59,7 +57,7 @@ const ViewTcp = () => {
         </SpacedList>
         <SpacedList spacing={5}>
           <LargeText>Tcp To Allocate</LargeText>
-          <Text size={12}>{tcpAllocationDisplay} Tcp balance</Text>
+          <Text size={12}>{tcpAllocationDisplay}</Text>
         </SpacedList>
         <SpacedList row spacing={20}>
           <Button

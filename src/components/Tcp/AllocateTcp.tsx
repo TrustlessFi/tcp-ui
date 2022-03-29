@@ -5,35 +5,25 @@ import { Row } from 'react-flexbox-grid'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
-import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
-import Bold from '../library/Bold'
+import PositionInfoItem from '../library/PositionInfoItem'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import RelativeLoading from '../library/RelativeLoading'
-import Center from '../library/Center'
 import {
-  getE18PriceForSqrtX96Price, bnf, unscale, sqrtBigNumber, mnt, numDisplay,
-  timeToPeriod, hours, isZeroish
+  isZeroish, getOnToggle, numDisplay,
 } from '../../utils/'
-import { SLIPPAGE_TOLERANCE_BIPS } from '../../constants'
 import {
-  Tile, Button, Slider, SliderOnChangeArg,
-  InlineNotification,
+  Tile, Button, Slider, SliderOnChangeArg, Switch, Toggle,
 } from 'carbon-components-react'
-import { TransactionType } from '../../slices/transactions'
-
-interface AddLiquidityParams {
-  poolIDString: string
-}
-
-const slippageMultiplier = (1e4 - SLIPPAGE_TOLERANCE_BIPS) / 1e4
+import {
+  ArrowUpRight32,
+  Crossroads32,
+  Wallet32,
+} from '@carbon/icons-react';
 
 const AllocateTcp = () => {
   const dispatch = useAppDispatch()
   const history = useHistory()
-
-  const poolIDString = useParams<AddLiquidityParams>().poolIDString
 
   const {
     tcpAllocation,
@@ -41,50 +31,75 @@ const AllocateTcp = () => {
     'tcpAllocation',
   ], selector, dispatch)
 
-  const [liquidityPercentage, setLiquidityPercentage] = useState(50)
+  const [maxSelected, setMaxSelected] = useState(true)
 
   const tcpAllocationCount =
     tcpAllocation === null
     ? undefined
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
+  const tcpAllocationDisplay =
+    tcpAllocationCount === undefined
+    ? '-'
+    : numDisplay(tcpAllocationCount, 2)
+
+  const tcpToWalletDisplay =
+    maxSelected ||
+    tcpAllocationCount === undefined ||
+    tcpAllocationCount === 0
+    ? '0'
+    : numDisplay(tcpAllocationCount / 2, 2)
+
+  const tcpGeneratingTDaoDisplay =
+    tcpAllocationCount === undefined
+    ? '-'
+    : maxSelected
+      ? tcpAllocationCount === 0
+        ? '0'
+        : numDisplay(tcpAllocationCount, 2)
+      : tcpAllocationCount === 0
+        ? '0'
+        : numDisplay(tcpAllocationCount / 2, 2)
+
+  const multiplierDisplay = maxSelected ? '4x' : '2x'
+
   const columnOne =
     <Tile
       style={{width: '100%', padding: 40 }}>
       <SpacedList spacing={40}>
         <LargeText size={28}>Allocate Tcp</LargeText>
-        <Row middle='xs'>
-          <Text>Percentage to withdraw</Text>
-          <span style={{width: 364, display: 'inline-block'}}>
-            <Slider
-              ariaLabelInput="Label for slider value"
-              id='slider'
-              min={0}
-              minLabel='%'
-              disabled={isZeroish(tcpAllocationCount)}
-              maxLabel='%'
-              max={100}
-              step={5}
-              invalid={false}
-              onChange={(changeData: SliderOnChangeArg) => setLiquidityPercentage(changeData.value)}
-              value={liquidityPercentage}
-              light
-            />
-          </span>
-          <span onClick={() => setLiquidityPercentage(100)}>
-            <Text
-              size={12}
-              style={{
-                cursor: 'pointer',
-                color: '#ffffff',
-                opacity: 0.6,
-                textDecoration: 'underline',
-                marginLeft: 20,
-              }}>
-              Max
-            </Text>
-          </span>
-        </Row>
+        <SpacedList spacing={5}>
+          <LargeText>Tcp To Allocate</LargeText>
+          <Text size={12}>{tcpAllocationDisplay}</Text>
+        </SpacedList>
+        <Toggle
+          labelText='Future TDao Income'
+          labelA='Minimize'
+          labelB='Maximize'
+          toggled={maxSelected}
+          onToggle={getOnToggle(setMaxSelected)}
+          id='toggle'
+        />
+        <PositionInfoItem
+          key='tcp_generating_tdao'
+          icon={<ArrowUpRight32 />}
+          title='Tcp generating TDao'
+          value={tcpGeneratingTDaoDisplay}
+          unit='Tcp'
+        />
+        <PositionInfoItem
+          key='multiplier'
+          icon={<Crossroads32 />}
+          title='Multiplier'
+          value={multiplierDisplay}
+        />
+        <PositionInfoItem
+          key='wallet_increase'
+          icon={<Wallet32 />}
+          title='Wallet increase'
+          value={tcpToWalletDisplay}
+          unit='Tcp'
+        />
         <SpacedList row spacing={20}>
           <Button
             size='md'
