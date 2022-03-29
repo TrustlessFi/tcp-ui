@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react"
 import { useHistory } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
-import { Row } from 'react-flexbox-grid'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
@@ -19,6 +17,7 @@ import {
   ArrowUpRight32,
   Crossroads32,
   Wallet32,
+  Time32,
 } from '@carbon/icons-react';
 
 const AllocateTcp = () => {
@@ -33,15 +32,20 @@ const AllocateTcp = () => {
 
   const [maxSelected, setMaxSelected] = useState(true)
 
+  const getAmountDisplay = (amount?: number) =>
+    amount === undefined
+    ? '-'
+    : amount === 0
+      ? '0'
+      : numDisplay(amount, 2)
+
+
   const tcpAllocationCount =
     tcpAllocation === null
     ? undefined
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
-  const tcpAllocationDisplay =
-    tcpAllocationCount === undefined
-    ? '-'
-    : numDisplay(tcpAllocationCount, 2)
+  const tcpAllocationDisplay = getAmountDisplay(tcpAllocationCount)
 
   const tcpToWalletDisplay =
     maxSelected ||
@@ -54,23 +58,25 @@ const AllocateTcp = () => {
     tcpAllocationCount === undefined
     ? '-'
     : maxSelected
-      ? tcpAllocationCount === 0
-        ? '0'
-        : numDisplay(tcpAllocationCount, 2)
-      : tcpAllocationCount === 0
-        ? '0'
-        : numDisplay(tcpAllocationCount / 2, 2)
+      ? getAmountDisplay(tcpAllocationCount)
+      : getAmountDisplay(tcpAllocationCount / 2)
 
   const multiplierDisplay = maxSelected ? '4x' : '2x'
+
+  const lockTimeDisplay = maxSelected ? 4 : 2
 
   const columnOne =
     <Tile
       style={{width: '100%', padding: 40 }}>
       <SpacedList spacing={40}>
         <LargeText size={28}>Allocate Tcp</LargeText>
-        <SpacedList spacing={5}>
-          <LargeText>Tcp To Allocate</LargeText>
-          <Text size={12}>{tcpAllocationDisplay}</Text>
+        <SpacedList row spacing={5}>
+          <Text size={28}>
+            {getAmountDisplay(tcpAllocationCount)}
+          </Text>
+          <Text size={12}>
+            Tcp to allocate
+          </Text>
         </SpacedList>
         <Toggle
           labelText='Future TDao Income'
@@ -80,26 +86,42 @@ const AllocateTcp = () => {
           onToggle={getOnToggle(setMaxSelected)}
           id='toggle'
         />
-        <PositionInfoItem
-          key='tcp_generating_tdao'
-          icon={<ArrowUpRight32 />}
-          title='Tcp generating TDao'
-          value={tcpGeneratingTDaoDisplay}
-          unit='Tcp'
-        />
-        <PositionInfoItem
-          key='multiplier'
-          icon={<Crossroads32 />}
-          title='Multiplier'
-          value={multiplierDisplay}
-        />
-        <PositionInfoItem
-          key='wallet_increase'
-          icon={<Wallet32 />}
-          title='Wallet increase'
-          value={tcpToWalletDisplay}
-          unit='Tcp'
-        />
+        <SpacedList spacing={20}>
+          <PositionInfoItem
+            key='tcp_generating_tdao'
+            icon={<ArrowUpRight32 />}
+            title='Tcp locked generating TDao'
+            value={tcpGeneratingTDaoDisplay}
+            unit='Tcp'
+          />
+          <PositionInfoItem
+            key='multiplier'
+            icon={<Crossroads32 />}
+            title='Multiplier'
+            value={multiplierDisplay}
+          />
+          <PositionInfoItem
+            key='virtual_tcp'
+            icon={<Time32 />}
+            title='Lock Equivalent'
+            value={getAmountDisplay(maxSelected ? (tcpAllocationCount === undefined ? undefined : tcpAllocationCount * 4) : tcpAllocationCount)}
+            unit='Tcp'
+          />
+          <PositionInfoItem
+            key='lock_time'
+            icon={<Time32 />}
+            title='Lock Time'
+            value={lockTimeDisplay}
+            unit='years'
+          />
+          <PositionInfoItem
+            key='wallet_increase'
+            icon={<Wallet32 />}
+            title='Wallet increase'
+            value={tcpToWalletDisplay}
+            unit='Tcp'
+          />
+        </SpacedList>
         <SpacedList row spacing={20}>
           <Button
             size='md'

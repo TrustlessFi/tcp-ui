@@ -51,13 +51,21 @@ const ViewTcp = () => {
       style={{width: '100%', padding: 40 }}>
       <SpacedList spacing={40}>
         <LargeText size={28}>Allocate Tcp</LargeText>
-        <SpacedList spacing={5}>
-          <LargeText>Tcp Balance</LargeText>
-          <Text size={12}>{tcpBalanceDisplay}</Text>
+        <SpacedList row spacing={5}>
+          <Text size={28}>
+            {tcpBalanceDisplay}
+          </Text>
+          <Text size={12}>
+            Tcp
+          </Text>
         </SpacedList>
-        <SpacedList spacing={5}>
-          <LargeText>Tcp To Allocate</LargeText>
-          <Text size={12}>{tcpAllocationDisplay}</Text>
+        <SpacedList row spacing={5}>
+          <Text size={28}>
+            {tcpAllocationDisplay}
+          </Text>
+          <Text size={12}>
+            Tcp to allocate
+          </Text>
         </SpacedList>
         <SpacedList row spacing={20}>
           <Button
