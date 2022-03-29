@@ -129,8 +129,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
         }
       )
 
-      console.log({charmPoolAddresses, minLiquidityByPeriod})
-
       return Object.fromEntries(charmPoolAddresses.map(address => {
 
         let approximateRewards = bnf(0)
@@ -139,8 +137,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
         const lastPeriodUpdated = timeToPeriod(lastTimeRewarded, args.rewardsInfo.periodLength, args.rewardsInfo.firstPeriod)
 
         const position = userLiquidityPositions[address]
-
-        console.log({lastPeriodUpdated, lastPeriodGlobalRewardsAccrued})
 
         if (lastPeriodUpdated < lastPeriodGlobalRewardsAccrued) {
           let avgDebtPerPeriod =
@@ -154,8 +150,6 @@ const poolsCurrentDataSlice = createChainDataSlice({
                 .mul(bnf(rs[address].totalRewards).sub(position.totalRewards))
                 .div(avgDebtPerPeriod)
           }
-
-          console.log({avgDebtPerPeriod, approximateRewards})
         }
 
         return [address, {

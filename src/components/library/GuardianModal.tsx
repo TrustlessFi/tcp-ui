@@ -41,8 +41,6 @@ const GuardianModal = () => {
     currentChainInfo === null ||
     governorInfo === null
 
-  console.log({tcpTimelock, userAddress})
-
   if (dataNull || tcpTimelock.guardian !== userAddress) return <></>
 
   const modal =

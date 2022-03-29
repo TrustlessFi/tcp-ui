@@ -117,8 +117,6 @@ const RemoveLiquidity = () => {
 
   const maxPercentageDecreaseExceeded = liquidityPercentage > maxPercentageDecrease
 
-  console.log({maxPercentageDecrease, poolsCurrentData, currentRewardsPeriod, currentRewardsDecreasePeriod})
-
   const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
   const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
 
