@@ -31,6 +31,10 @@ export interface poolsCurrentData {
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
     poolID: number
+    minCollateralLiquidityByPeriod: {
+      period: number
+      minLiquidity: string
+    }
     userLiquidityPosition: {
       cumulativeLiquidity: string
       kickbackPortion: string
@@ -85,6 +89,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
       const {
         sqrtPriceX96Instant,
         currentRewardsInfo,
+        minLiquidityByPeriod,
         rs,
         poolsLiquidity
       } = await executeMulticalls(
@@ -103,6 +108,12 @@ const poolsCurrentDataSlice = createChainDataSlice({
               currentPeriod: rc.BigNumberToNumber,
             }
           ),
+          minLiquidityByPeriod: oneContractOneFunctionMC(
+            rewards,
+            'getMinLiquidityByPeriod',
+            (result: any) => result as PromiseType<ReturnType<Rewards['getMinLiquidityByPeriod']>>,
+            idToIdAndArg(charmPoolAddresses),
+          ),
           rs: oneContractOneFunctionMC(
             accounting,
             'getRewardStatus',
@@ -117,6 +128,8 @@ const poolsCurrentDataSlice = createChainDataSlice({
           ),
         }
       )
+
+      console.log({charmPoolAddresses, minLiquidityByPeriod})
 
       return Object.fromEntries(charmPoolAddresses.map(address => {
 
@@ -154,6 +167,10 @@ const poolsCurrentDataSlice = createChainDataSlice({
           lastPeriodGlobalRewardsAccrued,
           currentPeriod: currentRewardsInfo.currentPeriod,
           poolID: args.poolsMetadata[address].poolID,
+          minCollateralLiquidityByPeriod: {
+            period: minLiquidityByPeriod[address].period.toNumber(),
+            minLiquidity: minLiquidityByPeriod[address].minLiquidity.toString(),
+          },
           userLiquidityPosition: {
             cumulativeLiquidity: position.cumulativeLiquidity.toString(),
             kickbackPortion: position.kickbackPortion.toString(),

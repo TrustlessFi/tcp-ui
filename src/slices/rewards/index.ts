@@ -10,6 +10,7 @@ export interface rewardsInfo {
   countPools: number
   firstPeriod: number
   periodLength: number
+  maxCollateralLiquidityDecreasePerPeriod: number
 }
 
 const rewardsInfoSlice = createChainDataSlice({
@@ -32,6 +33,7 @@ const rewardsInfoSlice = createChainDataSlice({
               countPools: rc.Number,
               firstPeriod: rc.BigNumberToNumber,
               periodLength: rc.BigNumberToNumber,
+              maxCollateralLiquidityDecreasePerPeriod: rc.BigNumberUnscale,
             }
           ),
         }
