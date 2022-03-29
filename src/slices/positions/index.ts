@@ -1,6 +1,8 @@
 import { RootState  } from '../fetchNodes'
 import { BigNumber } from "ethers"
-import { timeToPeriod, unscale, bnf } from '../../utils'
+import {
+  timeToPeriod, unscale, bnf,
+ } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { oneContractOneFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
@@ -24,17 +26,16 @@ export interface positions { [key: number]: Position }
 
 const positionsSlice = createChainDataSlice({
   name: 'positions',
-  dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts'],
+  dependencies: ['userAddress', 'sdi', 'marketInfo', 'contracts', 'rootContracts', 'currentChainInfo'],
   stateSelector: (state: RootState) => state.positions,
   cacheDuration: CacheDuration.SHORT,
   isUserData: true,
   thunkFunction:
-    async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts'>) => {
+    async (args: thunkArgs<'userAddress' | 'sdi' | 'marketInfo' | 'contracts' | 'rootContracts' | 'currentChainInfo'>) => {
       const accounting = getContract<Accounting>(ProtocolContract.Accounting, args.contracts.Accounting)
       const positionNFT = getContract<HuePositionNFT>(ProtocolContract.HuePositionNFT, args.contracts.HuePositionNFT)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-      const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
 
       // fetch the positions
       const positionIDs = await positionNFT.positionIDs(args.userAddress)
@@ -60,21 +61,32 @@ const positionsSlice = createChainDataSlice({
 
         // calcuate estimated borrow rewards
         let approximateRewards = BigNumber.from(0)
-        const lastTimeUpdated = position.lastTimeUpdated.toNumber()
-        const lastPeriodUpdated = timeToPeriod(lastTimeUpdated, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
+        const getMarketPeriodForTime = (time: number) =>
+          timeToPeriod(time, args.marketInfo.periodLength, args.marketInfo.firstPeriod)
 
-        if (lastPeriodUpdated < marketLastUpdatePeriod)   {
+        const marketLastUpdatePeriod = args.marketInfo.lastPeriodGlobalInterestAccrued
+        const lastPeriodPositionUpdated = getMarketPeriodForTime(position.lastTimeUpdated.toNumber())
+        const currentMarketPeriod = getMarketPeriodForTime(args.currentChainInfo.blockTimestamp)
+
+        if (lastPeriodPositionUpdated < marketLastUpdatePeriod) {
+          const rewardsPeriods = marketLastUpdatePeriod - lastPeriodPositionUpdated
           let avgDebtPerPeriod =
             bnf(args.sdi.cumulativeDebt)
               .sub(position.startCumulativeDebt)
-              .div(marketLastUpdatePeriod - lastPeriodUpdated)
+              .div(rewardsPeriods)
 
           if (!avgDebtPerPeriod.eq(0)) {
             approximateRewards =
               position.debt
                 .mul(bnf(args.sdi.totalTCPRewards).sub(position.startTCPRewards))
                 .div(avgDebtPerPeriod)
+
+            if (marketLastUpdatePeriod < currentMarketPeriod) {
+              const approximateRewardsPerPeriod = approximateRewards.div(rewardsPeriods)
+              const extraRewardsPeriods = currentMarketPeriod - marketLastUpdatePeriod
+              approximateRewards = approximateRewards.add(approximateRewardsPerPeriod.mul(extraRewardsPeriods))
+            }
           }
         }
 
