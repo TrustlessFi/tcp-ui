@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector as selector } from './app/hooks'
 import { getNullableProvider, provider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
+import Tcp from './components/Tcp'
 import Stake from './components/Stake/'
 import RecentTransactions from './components/RecentTransactions'
 import WalletChecker from './components/WalletChecker'
@@ -21,7 +22,7 @@ export enum Tab {
   Position = 'Position',
   Stake = 'Stake',
   Liquidity = 'Liquidity',
-  AllocateTcp = 'AllocateTcp',
+  Tcp = 'Tcp',
   Transactions = 'Transactions',
 }
 
@@ -30,7 +31,7 @@ export const tabDisplay: { [key in Tab]?: string } = {
 
 export const tabHidden: { [key in Tab]?: true } = {
   Transactions: true,
-  AllocateTcp: true,
+  Tcp: true,
 }
 
 export const tabToPath = (tab: Tab) => `/${tab.toLowerCase()}`
@@ -39,8 +40,8 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Position: <Positions />,
   Stake: <Stake />,
   Liquidity: <Liquidity />,
+  Tcp: <Tcp />,
   Transactions: <RecentTransactions />,
-  AllocateTcp: <div>Hello world allocate TCP</div>
 }
 
 const App: FunctionComponent<{}> = () => {

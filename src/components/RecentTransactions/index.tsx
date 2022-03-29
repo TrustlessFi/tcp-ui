@@ -155,8 +155,8 @@ const WalletInfo = () => {
               balance={tcpAllocationCount}
               onClick={() => {
                 // TODO abstract this interface
-                history.push(tabToPath(Tab.AllocateTcp))
-                dispatch(setTab(Tab.AllocateTcp))
+                history.push(tabToPath(Tab.Tcp))
+                dispatch(setTab(Tab.Tcp))
               }}
             />
           </SpacedList>
