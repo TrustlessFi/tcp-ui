@@ -33,7 +33,7 @@ const DebugUtils = () => {
   const [ open, setOpen ] = useState(false)
   const [ timeOption, setTimeOption ] = useState<TimeOption>(TimeOption.days)
   const [ timeCount, setTimeCount ] = useState<number>(1)
-  const [ blockCount, setBlockCount ] = useState<number>(1)
+  const [ blockCount, setBlockCount ] = useState<number>(100)
 
   const getTimeIncreaseForUnit = (unit: TimeOption) => {
     switch(unit) {
@@ -73,10 +73,9 @@ const DebugUtils = () => {
   const modal =
     <Modal
       open={open}
+      passiveModal
       modalHeading="Debug Utils - Only available on hardhat"
-      primaryButtonText="Add"
-      onRequestClose={() => setOpen(false)}
-      secondaryButtonText="Cancel">
+      onRequestClose={() => setOpen(false)}>
       <SpacedList spacing={32}>
         <AppTile title='Increase Time'>
           <SpacedList>
