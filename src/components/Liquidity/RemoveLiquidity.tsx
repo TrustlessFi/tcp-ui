@@ -13,6 +13,7 @@ import RelativeLoading from '../library/RelativeLoading'
 import Center from '../library/Center'
 import {
   getE18PriceForSqrtX96Price, bnf, unscale, sqrtBigNumber, mnt, numDisplay,
+  timeToPeriod, hours,
 } from '../../utils/'
 import { SLIPPAGE_TOLERANCE_BIPS } from '../../constants'
 import {
@@ -38,18 +39,24 @@ const RemoveLiquidity = () => {
     poolsCurrentData,
     poolsMetadata,
     contracts,
+    currentChainInfo,
+    rewardsInfo,
   } = waitFor([
     'liquidityPage',
     'poolsCurrentData',
     'poolsMetadata',
     'contracts',
+    'currentChainInfo',
+    'rewardsInfo',
   ], selector, dispatch)
 
   const [liquidityPercentage, setLiquidityPercentage] = useState(50)
 
   const dataNull =
     poolsCurrentData === null ||
-    poolsMetadata === null
+    poolsMetadata === null ||
+    currentChainInfo === null ||
+    rewardsInfo === null
 
   const matchingPools =
     poolsMetadata === null
@@ -84,6 +91,34 @@ const RemoveLiquidity = () => {
   const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))
   const userLiquidity = bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity)
 
+  const currentRewardsPeriod = timeToPeriod(
+    currentChainInfo.blockTimestamp,
+    rewardsInfo.periodLength,
+    rewardsInfo.firstPeriod,
+  )
+
+  const currentRewardsDecreasePeriod = Math.floor(currentRewardsPeriod / (hours(1) / rewardsInfo.periodLength))
+
+  const minLiquidity =
+    poolsCurrentData[pool.address].minLiquidityByPeriod.period < currentRewardsDecreasePeriod
+    ? bnf(poolsCurrentData[pool.address].poolLiquidity).mul(bnf(mnt(1)).sub(mnt(rewardsInfo.maxCollateralLiquidityDecreasePerPeriod))).div(mnt(1))
+    : poolsCurrentData[pool.address].minLiquidityByPeriod.minLiquidity
+
+  const liquidityDelta =
+    bnf(poolsCurrentData[pool.address].poolLiquidity)
+      .sub(minLiquidity)
+
+  const maxLiquidityDecrease = liquidityDelta.gt(0) ? liquidityDelta : bnf(0)
+
+  const maxPercentageDecrease =
+    maxLiquidityDecrease.isZero()
+    ? 0
+    : unscale(maxLiquidityDecrease.mul(100).mul(mnt(1)).div(userLiquidity))
+
+  const maxPercentageDecreaseExceeded = liquidityPercentage > maxPercentageDecrease
+
+  console.log({maxPercentageDecrease, poolsCurrentData, currentRewardsPeriod, currentRewardsDecreasePeriod})
+
   const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
   const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
 
@@ -116,7 +151,7 @@ const RemoveLiquidity = () => {
                 maxLabel='%'
                 max={100}
                 step={5}
-                invalid={userLiquidity.isZero()}
+                invalid={userLiquidity.isZero() || maxPercentageDecreaseExceeded}
                 onChange={(changeData: SliderOnChangeArg) => setLiquidityPercentage(changeData.value)}
                 value={liquidityPercentage}
                 light
@@ -145,18 +180,40 @@ const RemoveLiquidity = () => {
                 lowContrast
                 hideCloseButton
               />
-            : <InlineNotification
-                key='success_indicator'
-                notificationType='inline'
-                kind='success'
-                title={successDisplay}
-                lowContrast
-                hideCloseButton
-              />
+            : maxPercentageDecreaseExceeded
+              ? <InlineNotification
+                  notificationType='inline'
+                  kind='error'
+                  title='Removing this much liquidity would destabilize the protocol.'
+                  lowContrast
+                  hideCloseButton
+                />
+              : liquidityPercentage === 0
+                ? <InlineNotification
+                    notificationType='inline'
+                    kind='error'
+                    title='Please remove some liquidity.'
+                    lowContrast
+                    hideCloseButton
+                  />
+                : <InlineNotification
+                    key='success_indicator'
+                    notificationType='inline'
+                    kind='success'
+                    title={successDisplay}
+                    lowContrast
+                    hideCloseButton
+                  />
           }
           <SpacedList row spacing={20}>
             <CreateTransactionButton
-              disabled={dataNull || contracts === null || userLiquidity.isZero()}
+              disabled={
+                dataNull ||
+                contracts === null ||
+                userLiquidity.isZero() ||
+                liquidityPercentage === 0 ||
+                maxPercentageDecreaseExceeded
+              }
               size='md'
               txArgs={{
                 type: TransactionType.RemoveLiquidity,

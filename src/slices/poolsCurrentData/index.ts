@@ -31,7 +31,7 @@ export interface poolsCurrentData {
     lastPeriodGlobalRewardsAccrued: number
     currentPeriod: number
     poolID: number
-    minCollateralLiquidityByPeriod: {
+    minLiquidityByPeriod: {
       period: number
       minLiquidity: string
     }
@@ -167,7 +167,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
           lastPeriodGlobalRewardsAccrued,
           currentPeriod: currentRewardsInfo.currentPeriod,
           poolID: args.poolsMetadata[address].poolID,
-          minCollateralLiquidityByPeriod: {
+          minLiquidityByPeriod: {
             period: minLiquidityByPeriod[address].period.toNumber(),
             minLiquidity: minLiquidityByPeriod[address].minLiquidity.toString(),
           },

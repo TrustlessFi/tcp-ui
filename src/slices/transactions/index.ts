@@ -536,6 +536,7 @@ export const waitForTransaction = async (
       clearBalances()
       clearPoolsCurrentData()
       goToLiquidityBasePage()
+      clearRewardsInfo()
     }
 
     switch (type) {
