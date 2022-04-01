@@ -18,11 +18,15 @@ const tabsSlice = createLocalSlice({
     setTab: (state, action: PayloadAction<Tab>) => {
       state.currentTab = action.payload
     },
+    clearTab: (state) => {
+      state.currentTab = null
+    },
   },
 })
 
 export const {
   setTab,
+  clearTab,
 } = tabsSlice.slice.actions
 
 export default tabsSlice

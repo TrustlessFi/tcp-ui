@@ -16,7 +16,7 @@ import { Position } from '../../slices/positions'
 import {
   numDisplay, roundToXDecimals, isZeroish, empty, hours, years,
 } from '../../utils/'
-import { reason } from '../library/ErrorMessage'
+import reason from '../library/ErrorReasonType'
 import SpacedList from '../library/SpacedList'
 import ClaimRewardsButton from '../library/ClaimRewardsButton'
 import ActionSteps from '../library/ActionSteps'

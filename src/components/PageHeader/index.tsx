@@ -73,9 +73,14 @@ const PageHeader = () => {
   }
 
   const pathToTab = (path: string): Tab => {
-    if (path === '/' || path === '') return first(Object.values(Tab))
+    const defaultTab = first(Object.values(Tab))
+    if (path === '/' || path === '') return defaultTab
 
-    return first(Object.values(Tab).filter(tab => tab.toLowerCase() === extractPathBase(path).toLowerCase()))
+    const matchingTabs = Object.values(Tab).filter(tab => tab.toLowerCase() === extractPathBase(path).toLowerCase())
+
+    if (matchingTabs.length === 0)  return defaultTab
+
+    return first(matchingTabs)
   }
 
   const updateTab = (tab: Tab, e: MouseEvent<Element>) => {

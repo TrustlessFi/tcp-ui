@@ -12,7 +12,12 @@ import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage } from '../../slices/staking'
 
 const ViewStake = () => {
+
+  throw new Error('Stake test error')
+  /*
+
   const dispatch = useAppDispatch()
+
 
   const {
     balances,
@@ -111,6 +116,7 @@ const ViewStake = () => {
       loading={userAddress !== null && dataNull}
     />
   )
+  */
 }
 
 export default ViewStake

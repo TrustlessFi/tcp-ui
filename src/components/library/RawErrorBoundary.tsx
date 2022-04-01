@@ -40,9 +40,6 @@ class RawErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState>
             Something went wrong.
           </LargeText>
           <Text>
-            Cause: {this.state.error.cause}
-          </Text>
-          <Text>
             Message: {this.state.error.message}
           </Text>
           <Text>
