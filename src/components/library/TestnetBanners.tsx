@@ -65,7 +65,7 @@ const TestnetBanners = ({}:{}) => {
   return (
     <OneColumnDisplay
       columnOne={
-        <SpacedList spacing={20}>
+        <SpacedList spacing={20} style={{marginTop: 30}}>
           {
             testnetBanner.discordBannerClosed && isCloseable
             ? null
