@@ -11,6 +11,8 @@ export interface rootContracts {
   protocolDataAggregator: string
   router: string
   tdao: string
+  chainEth: string
+  testnetMultiMint: string
 }
 
 const rootContractsSlice = createLocalSlice({
@@ -28,6 +30,8 @@ const rootContractsSlice = createLocalSlice({
           protocolDataAggregator: getAddress(chainID, 'TCP', 'ProtocolDataAggregator', localHardhatAddresses),
           router: getAddress(chainID, 'Uniswap', 'router', localHardhatAddresses),
           tdao: getAddress(chainID, 'TDAO', 'TDao', localHardhatAddresses),
+          chainEth: getAddress(chainID, 'Aux', 'chainEth', localHardhatAddresses),
+          testnetMultiMint: getAddress(chainID, 'Aux', 'testnetMultiMint', localHardhatAddresses),
         }
       } catch(e) {
         return null

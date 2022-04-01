@@ -24,6 +24,8 @@ export enum RootContract {
   Governor = 'Governor',
   ProtocolDataAggregator = 'ProtocolDataAggregator',
   TrustlessMulticall = 'TrustlessMulticall',
+  TestnetMultiMint = 'TestnetMultiMint',
+  ChainEth = 'ChainEth',
 }
 
 export enum TDaoContract {

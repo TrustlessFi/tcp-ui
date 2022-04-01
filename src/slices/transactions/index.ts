@@ -40,6 +40,7 @@ export enum TransactionType {
   RemoveLiquidity,
 
   MintTruEth,
+  ApproveChainEth,
   ApproveTruEthAddress,
   UnapproveTruEthAddress,
   AddMintTruEthAddressAuth,
@@ -156,6 +157,12 @@ export interface txMintTruEth {
   truEth: string
 }
 
+export interface txApproveChainEth {
+  type: TransactionType.ApproveChainEth
+  address: string
+  chainEth: string
+}
+
 export interface txApproveEthERC20 {
   type: TransactionType.ApproveTruEthAddress
   address: string
@@ -199,6 +206,7 @@ export type TransactionArgs =
   txApproveEth |
   txAddLiquidity |
   txRemoveLiquidity |
+  txApproveChainEth |
   txMintTruEth |
   txApproveEthERC20 |
   txUnapproveEthERC20 |
@@ -254,6 +262,8 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Add liquidity to pool ' + args.poolID
     case TransactionType.RemoveLiquidity:
       return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
+    case TransactionType.ApproveChainEth:
+      return `Approved Chain Eth`
     case TransactionType.MintTruEth:
       return `Mint ${numDisplay(args.amount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
     case TransactionType.ApproveTruEthAddress:
@@ -298,6 +308,8 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Add Liquidity'
     case TransactionType.RemoveLiquidity:
       return 'Withdraw Liquidity'
+    case TransactionType.ApproveChainEth:
+      return `Approved Chain Eth`
     case TransactionType.MintTruEth:
       return 'Mint Eth ERC20'
     case TransactionType.ApproveTruEthAddress:
@@ -339,6 +351,7 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.ClaimAllLiquidityPositionRewards:
     case TransactionType.AddLiquidity:
     case TransactionType.RemoveLiquidity:
+    case TransactionType.ApproveChainEth:
     case TransactionType.MintTruEth:
     case TransactionType.ApproveTruEthAddress:
     case TransactionType.UnapproveTruEthAddress:
@@ -462,6 +475,9 @@ const executeTransaction = async (
         UIID,
         overrides
       )
+
+    case TransactionType.ApproveChainEth:
+      return await getEthERC20(args.chainEth).approve(args.address, uint256Max, overrides )
 
     case TransactionType.MintTruEth:
       return await getEthERC20(args.truEth).mint(scale(args.amount), args.addresses, overrides )
@@ -592,6 +608,7 @@ export const waitForTransaction = async (
       case TransactionType.UnapproveTruEthAddress:
       case TransactionType.AddMintTruEthAddressAuth:
       case TransactionType.RemoveMintTruEthAddressAuth:
+      case TransactionType.ApproveChainEth:
         // Do nothing
         break
     default:

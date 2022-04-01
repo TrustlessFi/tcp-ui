@@ -29,9 +29,11 @@ const MintEthModal = () => {
   const {
     truEthInfo,
     contracts,
+    rootContracts,
   } = waitFor([
     'truEthInfo',
     'contracts',
+    'rootContracts',
   ], selector, dispatch)
 
   if (truEthInfo === null || (!truEthInfo.isAdmin && !truEthInfo.isAuthorized)) {
@@ -98,7 +100,7 @@ const MintEthModal = () => {
         <TextInput
           id="approve_address"
           invalidText="A valid value is required"
-          labelText="Approve address for spending Eth Erc20"
+          labelText="Approve address for spending TruEth"
           placeholder="0x1234567890123456789012345678901234567890"
           value={approveAddress}
           onChange={(e: any) => setApproveAddress(e.target.value)}
@@ -119,7 +121,7 @@ const MintEthModal = () => {
         <TextInput
           id="unapprove_address"
           invalidText="A valid value is required"
-          labelText="Unapprove address for spending Eth Erc20"
+          labelText="Unapprove address for spending TruEth"
           placeholder="0x1234567890123456789012345678901234567890"
           value={unapproveAddress}
           onChange={(e: any) => setUnapproveAddress(e.target.value)}
@@ -139,6 +141,73 @@ const MintEthModal = () => {
     </SpacedList>
 
 
+    const mintTokens =
+      <SpacedList spacing={10}>
+        <NumberInput
+          hideSteppers
+          id='token_count'
+          label="Token count"
+          min={0}
+          step={1}
+          onChange={onNumChange((value: number) => setAmount(value))}
+          value={amount}
+        />
+        <TextArea
+          id="address_list"
+          invalidText="A valid value is required"
+          labelText="Comma or space separated list of addresses"
+          placeholder="0x1234567890123456789012345678901234567890 0x1234567890123456789012345678901234567890"
+          value={tokens}
+          onChange={(e: any) => setTokens(e.target.value)}
+        />
+        <div>
+          {tokenList.map(token =>
+            <div>
+              <Text monospace>
+                {token}
+              </Text>
+            </div>
+          )}
+        </div>
+        <CreateTransactionButton
+          title='Confirm'
+          key='mint_eth_erc20'
+          disabled={tokenList.length === 0 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.MintTruEth,
+            amount,
+            addresses: tokenList,
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
+          }}
+        />
+      </SpacedList>
+
+    const approveChainEth =
+      <SpacedList spacing={10}>
+        Approve before minting above, you only need to do this once
+        <div>
+          {tokenList.map(token =>
+            <div>
+              <Text monospace>
+                {token}
+              </Text>
+            </div>
+          )}
+        </div>
+        <CreateTransactionButton
+          title='Approve Chain Eth'
+          key='approve_chain_eth'
+          disabled={contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.ApproveChainEth,
+            chainEth: rootContracts === null ? '' : rootContracts.chainEth,
+            address: rootContracts === null ? '' : rootContracts.testnetMultiMint,
+          }}
+        />
+      </SpacedList>
+
   const modal =
     <Modal
       passiveModal
@@ -151,44 +220,8 @@ const MintEthModal = () => {
       <SpacedList spacing={32}>
         <Tile>
           <SpacedList spacing={40}>
-            <NumberInput
-              hideSteppers
-              id='token_count'
-              label="Token count"
-              min={0}
-              step={1}
-              onChange={onNumChange((value: number) => setAmount(value))}
-              value={amount}
-            />
-            <TextArea
-              id="address_list"
-              invalidText="A valid value is required"
-              labelText="Comma or space separated list of addresses"
-              placeholder="0x1234567890123456789012345678901234567890 0x1234567890123456789012345678901234567890"
-              value={tokens}
-              onChange={(e: any) => setTokens(e.target.value)}
-            />
-            <div>
-              {tokenList.map(token =>
-                <div>
-                  <Text monospace>
-                    {token}
-                  </Text>
-                </div>
-              )}
-            </div>
-            <CreateTransactionButton
-              title='Confirm'
-              key='mint_eth_erc20'
-              disabled={tokenList.length === 0 || amount === 0 || contracts === null}
-              size='md'
-              txArgs={{
-                type: TransactionType.MintTruEth,
-                amount,
-                addresses: tokenList,
-                truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
-              }}
-            />
+            {mintTokens}
+            {approveChainEth}
             {
               truEthInfo !== null && truEthInfo.isAdmin
               ? <SpacedList spacing={40}>
