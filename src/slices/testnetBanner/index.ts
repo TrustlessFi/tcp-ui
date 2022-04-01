@@ -3,11 +3,13 @@ import { RootState } from '../fetchNodes'
 import { PayloadAction } from '@reduxjs/toolkit'
 
 export interface testnetBannerState {
-  bannerClosed: boolean
+  discordBannerClosed: boolean
+  tutorialBannerClosed: boolean
 }
 
 const initialState = {
-  bannerClosed: false,
+  discordBannerClosed: false,
+  tutorialBannerClosed: false,
 } as testnetBannerState
 
 const testnetBannerSlice = createLocalSlice({
@@ -17,12 +19,18 @@ const testnetBannerSlice = createLocalSlice({
   cacheDuration: CacheDuration.INFINITE,
   isUserData: false,
   reducers: {
-    setBannerClosed: (state, action: PayloadAction<boolean>) => {
-      state.bannerClosed = action.payload
+    setDiscordBannerClosed: (state, action: PayloadAction<boolean>) => {
+      state.discordBannerClosed = action.payload
+    },
+    setTutorialBannerClosed: (state, action: PayloadAction<boolean>) => {
+      state.tutorialBannerClosed = action.payload
     },
   },
 })
 
-export const { setBannerClosed } = testnetBannerSlice.slice.actions
+export const {
+  setDiscordBannerClosed,
+  setTutorialBannerClosed,
+} = testnetBannerSlice.slice.actions
 
 export default testnetBannerSlice

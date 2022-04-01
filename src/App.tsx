@@ -14,7 +14,7 @@ import Notifications from './components/Notifications'
 import { TransactionStatus, waitForTransaction } from './slices/transactions'
 import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
-import TestnetBanner from './components/library/TestnetBanner'
+import TestnetBanners from './components/library/TestnetBanners'
 import waitFor from './slices/waitFor'
 
 export enum Tab {
@@ -77,7 +77,7 @@ const App: FunctionComponent<{}> = () => {
         <HashRouter>
           <div style={{padding: 48 }}>
             <PageHeader />
-            <TestnetBanner />
+            <TestnetBanners />
             <WalletChecker>
               <Switch>
                 {Object.values(Tab).map((tab, index) => {
