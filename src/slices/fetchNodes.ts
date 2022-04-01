@@ -14,7 +14,7 @@ import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
 import { pricesInfo } from './prices'
 import { ratesInfo } from './rates'
-import { ethERC20Info } from './ethERC20'
+import { truEthInfo } from './truEth'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
 import { sdi } from './systemDebt'
@@ -51,7 +51,7 @@ export type RootState = {
   positions: sliceState<positions>
   pricesInfo: sliceState<pricesInfo>
   ratesInfo: sliceState<ratesInfo>
-  ethERC20Info: sliceState<ethERC20Info>
+  truEthInfo: sliceState<truEthInfo>
   rewardsInfo: sliceState<rewardsInfo>
   sdi: sliceState<sdi>
   tcpAllocation: sliceState<tcpAllocationInfo>

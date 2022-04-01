@@ -31,7 +31,7 @@ import tcpArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/T
 import tcpGovernorAlphaArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
 import trustlessMulticallArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticall.sol/TrustlessMulticall.json"
 import trustlessMulticallViewOnlyArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
-import ethERC20Artifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/EthERC20.sol/EthERC20.json"
+import truEthArtifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/TruEth.sol/TruEth.json"
 import tcpTimelockArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
 import tcpAllocationArtifact from '@trustlessfi/artifacts/dist/contracts/core/auxiliary/allocations/TcpAllocation.sol/TcpAllocation.json'
 
@@ -67,7 +67,7 @@ const artifactLookup = (): {[key in TrustlessContract]: contractAbi} => ({
   [ProtocolContract.TcpTimelock]: tcpTimelockArtifact,
   [ProtocolContract.TcpAllocation]: tcpAllocationArtifact,
 
-  [ProtocolContract.EthERC20]: ethERC20Artifact,
+  [ProtocolContract.TruEth]: truEthArtifact,
 
   [RootContract.Governor]: governorArtifact,
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,

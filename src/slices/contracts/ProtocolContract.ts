@@ -17,7 +17,7 @@ enum ProtocolContract {
   TcpTimelock = 'TcpTimelock',
   TcpAllocation = 'TcpAllocation',
 
-  EthERC20 = 'EthERC20',
+  TruEth = 'TruEth',
 }
 
 export enum RootContract {

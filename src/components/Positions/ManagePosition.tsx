@@ -119,7 +119,7 @@ const ManagePosition = () => {
   useEffect(() => {
     if (balances === null) return
     if (contracts === null) return
-    if (!balances.tokens[contracts.EthERC20].approval.Market.approved) {
+    if (!balances.tokens[contracts.TruEth].approval.Market.approved) {
       dispatch(setApprovingEth(true))
     }
     if (!balances.tokens[contracts.Hue].approval.Market.approved) {
@@ -175,8 +175,8 @@ const ManagePosition = () => {
   const ethApproved =
     balances !== null &&
     contracts !== null &&
-    balances.tokens[contracts.EthERC20].approval.Market !== undefined &&
-    balances.tokens[contracts.EthERC20].approval.Market.approved
+    balances.tokens[contracts.TruEth].approval.Market !== undefined &&
+    balances.tokens[contracts.TruEth].approval.Market.approved
 
   const setCollateralCountToMax = () => {
     const userEthBalance =
@@ -362,7 +362,7 @@ const ManagePosition = () => {
   const approveEthTitle = 'Approve TruEth'
   const approveEthTxArgs: txApproveEth = {
     type: TransactionType.ApproveEth,
-    Eth: contracts === null ? '' : contracts.EthERC20,
+    Eth: contracts === null ? '' : contracts.TruEth,
     spenderAddress: contracts === null ? '' : contracts.Market,
   }
 

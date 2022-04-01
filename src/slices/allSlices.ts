@@ -12,7 +12,7 @@ import poolsMetadataSlice from './poolsMetadata'
 import positionsSlice from './positions'
 import pricesSlice from './prices'
 import ratesSlice from './rates'
-import ethERC20Slice from './ethERC20'
+import truEthSlice from './truEth'
 import onboardingSlice from './onboarding'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
@@ -52,7 +52,7 @@ const allSlicesRaw = {
   positions: positionsSlice,
   pricesInfo: pricesSlice,
   ratesInfo: ratesSlice,
-  ethERC20Info: ethERC20Slice,
+  truEthInfo: truEthSlice,
   rewardsInfo: rewardsSlice,
   sdi: systemDebtSlice,
   tcpAllocation: tcpAllocationSlice,

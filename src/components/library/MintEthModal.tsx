@@ -27,14 +27,14 @@ const MintEthModal = () => {
   const [ removeAuthAddress, setRemoveAuthAddress ] = useState('')
 
   const {
-    ethERC20Info,
+    truEthInfo,
     contracts,
   } = waitFor([
-    'ethERC20Info',
+    'truEthInfo',
     'contracts',
   ], selector, dispatch)
 
-  if (ethERC20Info === null || (!ethERC20Info.isAdmin && !ethERC20Info.isAuthorized)) {
+  if (truEthInfo === null || (!truEthInfo.isAdmin && !truEthInfo.isAuthorized)) {
     return <></>
   }
 
@@ -63,9 +63,9 @@ const MintEthModal = () => {
           disabled={addAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
-            type: TransactionType.AddMintERC20AddressAuth,
+            type: TransactionType.AddMintTruEthAddressAuth,
             address: addAuthAddress.trim(),
-            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
       </SpacedList>
@@ -84,9 +84,9 @@ const MintEthModal = () => {
           disabled={removeAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
-            type: TransactionType.RemoveMintERC20AddressAuth,
+            type: TransactionType.RemoveMintTruEthAddressAuth,
             address: removeAuthAddress.trim(),
-            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
       </SpacedList>
@@ -109,9 +109,9 @@ const MintEthModal = () => {
           disabled={approveAddress.length !== 42 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
-            type: TransactionType.ApproveEthERC20Address,
+            type: TransactionType.ApproveTruEthAddress,
             address: approveAddress,
-            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
       </SpacedList>
@@ -130,9 +130,9 @@ const MintEthModal = () => {
           disabled={unapproveAddress.length !== 42 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
-            type: TransactionType.UnapproveEthERC20Address,
+            type: TransactionType.UnapproveTruEthAddress,
             address: unapproveAddress,
-            ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
       </SpacedList>
@@ -183,14 +183,14 @@ const MintEthModal = () => {
               disabled={tokenList.length === 0 || amount === 0 || contracts === null}
               size='md'
               txArgs={{
-                type: TransactionType.MintEthERC20,
+                type: TransactionType.MintTruEth,
                 amount,
                 addresses: tokenList,
-                ethERC20: contracts === null ? '' : contracts[ProtocolContract.EthERC20]
+                truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
               }}
             />
             {
-              ethERC20Info !== null && ethERC20Info.isAdmin
+              truEthInfo !== null && truEthInfo.isAdmin
               ? <SpacedList spacing={40}>
                   {addAuthDialog}
                   {approveAddressDialog}

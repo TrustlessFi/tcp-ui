@@ -183,7 +183,7 @@ const PageHeader = () => {
         areNavLinksHidden,
         chainID, isSmallViewport,
         tabs,
-        // ethERC20Info
+        // truEthInfo
       ])
     } />
     </>

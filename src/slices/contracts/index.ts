@@ -60,13 +60,13 @@ const contractsSlice = createChainDataSlice({
 
       const accounting = getContract<Accounting>(ProtocolContract.Accounting, tcpContracts.accounting)
 
-      const { ethERC20 } = await executeMulticalls(
+      const { truEth } = await executeMulticalls(
         trustlessMulticall,
         {
-          ethERC20: oneContractManyFunctionMC(
+          truEth: oneContractManyFunctionMC(
             accounting,
             {
-              ethERC20: rc.String,
+              truEth: rc.String,
             }
           )
         }
@@ -91,7 +91,7 @@ const contractsSlice = createChainDataSlice({
         [ProtocolContract.TcpTimelock]: tcpContracts.timelock,
         [ProtocolContract.TcpAllocation]: tcpContracts.tcpAllocation,
 
-        [ProtocolContract.EthERC20]: ethERC20.ethERC20,
+        [ProtocolContract.TruEth]: truEth.truEth,
 
         [TDaoContract.TDaoToken]: tdaoContracts.tDaoToken,
         [TDaoContract.TDaoPositionNFT]: tdaoContracts.tDaoPositionNFT,

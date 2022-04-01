@@ -1,11 +1,11 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { EthERC20 } from '@trustlessfi/typechain'
+import { TruEth } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
-export interface ethERC20Info {
+export interface truEthInfo {
   isAuthorized: boolean
   isAdmin: boolean
 }
@@ -15,31 +15,31 @@ const ethERC20Slice = createChainDataSlice({
   dependencies: ['contracts', 'rootContracts', 'userAddress'],
   cacheDuration: CacheDuration.SHORT,
   isUserData: true,
-  stateSelector: (state: RootState) => state.ethERC20Info,
+  stateSelector: (state: RootState) => state.truEthInfo,
   thunkFunction:
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress'>) => {
-      const ethERC20 = getContract<EthERC20>(ProtocolContract.EthERC20, args.contracts.EthERC20)
+      const truEth = getContract<TruEth>(ProtocolContract.TruEth, args.contracts.TruEth)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-      const { ethERC20Data } = await executeMulticalls(
+      const { truEthData } = await executeMulticalls(
         trustlessMulticall,
         {
-          ethERC20Data: oneContractManyFunctionMC(
-            ethERC20,
+          truEthData: oneContractManyFunctionMC(
+            truEth,
             {
               admin: rc.String,
-              authorized: rc.Boolean,
+              isAuthorized: rc.Boolean,
             },
             {
-              authorized: [args.userAddress]
+              isAuthorized: [args.userAddress]
             }
           ),
         }
       )
 
       const result = {
-        isAuthorized: ethERC20Data.authorized,
-        isAdmin: args.userAddress === ethERC20Data.admin,
+        isAuthorized: truEthData.isAuthorized,
+        isAdmin: args.userAddress === truEthData.admin,
       }
       return result
     },

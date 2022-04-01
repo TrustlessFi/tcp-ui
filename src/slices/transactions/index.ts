@@ -6,7 +6,7 @@ import { addNotification } from '../notifications'
 import { ethers, ContractTransaction } from 'ethers'
 import ProtocolContract, { RootContract } from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
-import { Market, Rewards, EthERC20, Governor, Hue, LendHue } from '@trustlessfi/typechain'
+import { Market, Rewards, Governor, Hue, LendHue, TruEth } from '@trustlessfi/typechain'
 import getContract, { contract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
@@ -39,11 +39,11 @@ export enum TransactionType {
   AddLiquidity,
   RemoveLiquidity,
 
-  MintEthERC20,
-  ApproveEthERC20Address,
-  UnapproveEthERC20Address,
-  AddMintERC20AddressAuth,
-  RemoveMintERC20AddressAuth,
+  MintTruEth,
+  ApproveTruEthAddress,
+  UnapproveTruEthAddress,
+  AddMintTruEthAddressAuth,
+  RemoveMintTruEthAddressAuth,
 
   SetPhaseOneStartTime,
 }
@@ -149,35 +149,35 @@ export interface txApproveLendHue {
   spenderAddress: string
 }
 
-export interface txMintEthERC20 {
-  type: TransactionType.MintEthERC20
+export interface txMintTruEth {
+  type: TransactionType.MintTruEth
   amount: number
   addresses: string[]
-  ethERC20: string
+  truEth: string
 }
 
 export interface txApproveEthERC20 {
-  type: TransactionType.ApproveEthERC20Address
+  type: TransactionType.ApproveTruEthAddress
   address: string
-  ethERC20: string
+  truEth: string
 }
 
 export interface txUnapproveEthERC20 {
-  type: TransactionType.UnapproveEthERC20Address
+  type: TransactionType.UnapproveTruEthAddress
   address: string
-  ethERC20: string
+  truEth: string
 }
 
 export interface txAddMintERC20AddressAuth {
-  type: TransactionType.AddMintERC20AddressAuth
+  type: TransactionType.AddMintTruEthAddressAuth
   address: string
-  ethERC20: string
+  truEth: string
 }
 
 export interface txRemoveMintERC20AddressAuth {
-  type: TransactionType.RemoveMintERC20AddressAuth
+  type: TransactionType.RemoveMintTruEthAddressAuth
   address: string
-  ethERC20: string
+  truEth: string
 }
 
 export interface txSetPhaseOneStartTime {
@@ -199,7 +199,7 @@ export type TransactionArgs =
   txApproveEth |
   txAddLiquidity |
   txRemoveLiquidity |
-  txMintEthERC20 |
+  txMintTruEth |
   txApproveEthERC20 |
   txUnapproveEthERC20 |
   txAddMintERC20AddressAuth |
@@ -254,15 +254,15 @@ export const getTxLongName = (args: TransactionArgs) => {
       return 'Add liquidity to pool ' + args.poolID
     case TransactionType.RemoveLiquidity:
       return `Withdraw ${numDisplay(args.liquidityPercentage)}% of liquidity from pool ${args.poolName}`
-    case TransactionType.MintEthERC20:
+    case TransactionType.MintTruEth:
       return `Mint ${numDisplay(args.amount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
-    case TransactionType.ApproveEthERC20Address:
+    case TransactionType.ApproveTruEthAddress:
       return `Approved ${args.address} for spending TruEth`
-    case TransactionType.UnapproveEthERC20Address:
+    case TransactionType.UnapproveTruEthAddress:
       return `Unapproved ${args.address} for spending TruEth`
-    case TransactionType.AddMintERC20AddressAuth:
+    case TransactionType.AddMintTruEthAddressAuth:
       return `Approved ${args.address} for minting TruEth`
-    case TransactionType.RemoveMintERC20AddressAuth:
+    case TransactionType.RemoveMintTruEthAddressAuth:
       return `Unapproved ${args.address} for spending TruEth`
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time: ${args.startTime}`
@@ -298,15 +298,15 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Add Liquidity'
     case TransactionType.RemoveLiquidity:
       return 'Withdraw Liquidity'
-    case TransactionType.MintEthERC20:
+    case TransactionType.MintTruEth:
       return 'Mint Eth ERC20'
-    case TransactionType.ApproveEthERC20Address:
+    case TransactionType.ApproveTruEthAddress:
       return `Approved address for spending TruEth`
-    case TransactionType.UnapproveEthERC20Address:
+    case TransactionType.UnapproveTruEthAddress:
       return `Unapproved address for spending TruEth`
-    case TransactionType.AddMintERC20AddressAuth:
+    case TransactionType.AddMintTruEthAddressAuth:
       return `Approved address for minting TruEth`
-    case TransactionType.RemoveMintERC20AddressAuth:
+    case TransactionType.RemoveMintTruEthAddressAuth:
       return `Unapproved address for minting TruEth`
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time`
@@ -339,11 +339,11 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.ClaimAllLiquidityPositionRewards:
     case TransactionType.AddLiquidity:
     case TransactionType.RemoveLiquidity:
-    case TransactionType.MintEthERC20:
-    case TransactionType.ApproveEthERC20Address:
-    case TransactionType.UnapproveEthERC20Address:
-    case TransactionType.AddMintERC20AddressAuth:
-    case TransactionType.RemoveMintERC20AddressAuth:
+    case TransactionType.MintTruEth:
+    case TransactionType.ApproveTruEthAddress:
+    case TransactionType.UnapproveTruEthAddress:
+    case TransactionType.AddMintTruEthAddressAuth:
+    case TransactionType.RemoveMintTruEthAddressAuth:
     case TransactionType.SetPhaseOneStartTime:
       return (type as number).toString()
     default:
@@ -375,7 +375,7 @@ const executeTransaction = async (
       .connect(provider.getSigner())
 
   const getEthERC20 = (address: string) =>
-    getContract<EthERC20>(ProtocolContract.EthERC20, address)
+    getContract<TruEth>(ProtocolContract.TruEth, address)
       .connect(provider.getSigner())
 
   const getGovernor = (address: string) =>
@@ -463,20 +463,20 @@ const executeTransaction = async (
         overrides
       )
 
-    case TransactionType.MintEthERC20:
-      return await getEthERC20(args.ethERC20).mint(scale(args.amount), args.addresses, overrides )
+    case TransactionType.MintTruEth:
+      return await getEthERC20(args.truEth).mint(scale(args.amount), args.addresses, overrides )
 
-    case TransactionType.ApproveEthERC20Address:
-      return await getEthERC20(args.ethERC20).approveAddress(args.address, overrides )
+    case TransactionType.ApproveTruEthAddress:
+      return await getEthERC20(args.truEth).approveAddress(args.address, overrides )
 
-    case TransactionType.UnapproveEthERC20Address:
-      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, overrides )
+    case TransactionType.UnapproveTruEthAddress:
+      return await getEthERC20(args.truEth).removeAddressApproval(args.address, overrides )
 
-    case TransactionType.AddMintERC20AddressAuth:
-      return await getEthERC20(args.ethERC20).approveAddress(args.address, overrides )
+    case TransactionType.AddMintTruEthAddressAuth:
+      return await getEthERC20(args.truEth).approveAddress(args.address, overrides )
 
-    case TransactionType.RemoveMintERC20AddressAuth:
-      return await getEthERC20(args.ethERC20).removeAddressApproval(args.address, overrides )
+    case TransactionType.RemoveMintTruEthAddressAuth:
+      return await getEthERC20(args.truEth).removeAddressApproval(args.address, overrides )
 
     case TransactionType.SetPhaseOneStartTime:
       return await getGovernor(args.Governor).setPhaseOneStartTime(args.startTime, overrides )
@@ -520,7 +520,7 @@ export const waitForTransaction = async (
     const clearRewardsInfo = () => dispatch(allSlices.rewardsInfo.slice.actions.clearData())
     const clearPoolsCurrentData = () => dispatch(allSlices.poolsCurrentData.slice.actions.clearData())
     const clearStaking = () => dispatch(allSlices.staking.slice.actions.clearData())
-    const clearEthERC20 = () => dispatch(allSlices.ethERC20Info.slice.actions.clearData())
+    const clearTruEth = () => dispatch(allSlices.truEthInfo.slice.actions.clearData())
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
     const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
 
@@ -581,17 +581,17 @@ export const waitForTransaction = async (
       case TransactionType.RemoveLiquidity:
         clearLiquidityState()
         break
-      case TransactionType.MintEthERC20:
-        clearEthERC20()
+      case TransactionType.MintTruEth:
+        clearTruEth()
         clearBalances()
         break
       case TransactionType.SetPhaseOneStartTime:
         clearTcpTimelock()
         break
-      case TransactionType.ApproveEthERC20Address:
-      case TransactionType.UnapproveEthERC20Address:
-      case TransactionType.AddMintERC20AddressAuth:
-      case TransactionType.RemoveMintERC20AddressAuth:
+      case TransactionType.ApproveTruEthAddress:
+      case TransactionType.UnapproveTruEthAddress:
+      case TransactionType.AddMintTruEthAddressAuth:
+      case TransactionType.RemoveMintTruEthAddressAuth:
         // Do nothing
         break
     default:

@@ -11,7 +11,7 @@ import {
   manyContractOneFunctionMC,
 } from '@trustlessfi/multicall'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { EthERC20 } from '@trustlessfi/typechain'
+import { TruEth } from '@trustlessfi/typechain'
 
 export interface balances {
   userEthBalance: number
@@ -47,7 +47,7 @@ const balancesSlice = createChainDataSlice({
     async (args: thunkArgs<'contracts' | 'rootContracts' | 'userAddress' | 'poolsMetadata' | 'rewardsInfo'>) => {
       const multicall = getMulticallContract(args.rootContracts.trustlessMulticall)
       const tokenContract = addressToERC20(zeroAddress)
-      const ethERC20 = getContract<EthERC20>(ProtocolContract.EthERC20, args.contracts.EthERC20)
+      const truEth = getContract<TruEth>(ProtocolContract.TruEth, args.contracts.TruEth)
 
       const tokenAddresses = [args.contracts.Hue, args.contracts.LendHue, args.contracts.Tcp]
       // eslint-disable-next-line array-callback-return
@@ -61,10 +61,10 @@ const balancesSlice = createChainDataSlice({
         addAddress(pool.token1.address)
       })
 
-      tokenAddresses.push(ethERC20.address)
+      tokenAddresses.push(truEth.address)
 
       const {
-        userEthERC20Balance,
+        userTruEthBalance,
         userBalance,
         marketApprovals,
         rewardsApprovals,
@@ -72,8 +72,8 @@ const balancesSlice = createChainDataSlice({
       } = await executeMulticalls(
         multicall,
         {
-          userEthERC20Balance: oneContractManyFunctionMC(
-            ethERC20,
+          userTruEthBalance: oneContractManyFunctionMC(
+            truEth,
             { balanceOf: rc.BigNumberUnscale },
             { balanceOf: [args.userAddress] },
           ),
@@ -155,7 +155,7 @@ const balancesSlice = createChainDataSlice({
       }
 
       return {
-        userEthBalance: userEthERC20Balance.balanceOf,
+        userEthBalance: userTruEthBalance.balanceOf,
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 
