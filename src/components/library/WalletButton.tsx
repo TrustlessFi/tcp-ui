@@ -1,41 +1,61 @@
 import { useHistory, useLocation } from 'react-router-dom'
-import { useAppDispatch } from '../../app/hooks'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { abbreviateAddress } from '../../utils'
-import { Tag } from 'carbon-components-react'
+import waitFor from '../../slices/waitFor'
+import { Wallet16 } from '@carbon/icons-react';
+import {
+  Tooltip,
+  Button,
+ } from 'carbon-components-react'
 import { setTab } from '../../slices/tabs'
-import { Tab, tabToPath } from '../../App'
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import { CSSProperties } from 'react'
+import { Tab, tabToPath } from '../../App'
 
 const WalletButton = ({
   address,
   style
 }: {
   address: string,
-  style: CSSProperties,
+  style?: CSSProperties,
 }) => {
   const dispatch = useAppDispatch()
   const history = useHistory()
-  const location = useLocation()
 
-  const inTransactions = location.pathname.includes('transactions')
+  const {
+    tabs,
+  } = waitFor([
+    'tabs',
+  ], selector, dispatch)
+
+  const inTransactions = tabs.currentTab === Tab.Transactions
+
+  const disableInteraction: CSSProperties =
+    inTransactions
+    ? {pointerEvents: 'none'}
+    : {}
 
   return (
-    <Tag
+    <Button
+      kind='secondary'
+      size='small'
       onClick={
-        inTransactions ?
-        () => {}
+        inTransactions
+        ? undefined
         : () => {
           history.push(tabToPath(Tab.Transactions))
           dispatch(setTab(Tab.Transactions))
         }
       }
-      style={{cursor: inTransactions ? 'default' : 'pointer', ...style}}>
-      <Jazzicon diameter={24} seed={jsNumberForAddress(address)} paperStyles={{marginRight: '4px', verticalAlign: 'middle'}} />
-      <div style={{display: 'inline', verticalAlign: 'middle', fontSize: 16, fontWeight: 400}}>
-        {abbreviateAddress(address)}
-      </div>
-    </Tag>
+      style={{
+        cursor: inTransactions ? 'default' : 'pointer',
+        ...disableInteraction,
+        paddingRight: 12,
+        ...style,
+      }}
+      >
+      <Wallet16 style={{marginRight: 8}} />
+      {abbreviateAddress(address)}
+    </Button>
   )
 }
 

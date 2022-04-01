@@ -123,10 +123,7 @@ const Wallet = () => {
   if (userAddress === null || chainID === null) return <ConnectWalletButton size='sm' />
 
   return (
-    <WalletButton
-      address={userAddress}
-      style={{height: 32, backgroundColor: '#FFFFFF', color: '#000000'}}
-    />
+    <WalletButton address={userAddress} />
   )
 }
 
