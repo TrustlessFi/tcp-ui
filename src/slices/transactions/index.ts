@@ -604,11 +604,13 @@ export const waitForTransaction = async (
       case TransactionType.SetPhaseOneStartTime:
         clearTcpTimelock()
         break
+      case TransactionType.ApproveChainEth:
+        clearTruEth()
+        break
       case TransactionType.ApproveTruEthAddress:
       case TransactionType.UnapproveTruEthAddress:
       case TransactionType.AddMintTruEthAddressAuth:
       case TransactionType.RemoveMintTruEthAddressAuth:
-      case TransactionType.ApproveChainEth:
         // Do nothing
         break
     default:

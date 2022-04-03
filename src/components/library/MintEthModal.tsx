@@ -220,13 +220,17 @@ const MintEthModal = () => {
       <SpacedList spacing={32}>
         <Tile>
           <SpacedList spacing={40}>
+            {
+              truEthInfo.chainEthIsApproved
+              ? null
+              : approveChainEth
+            }
             {mintTokens}
-            {approveChainEth}
+            <hr />
             {
               truEthInfo !== null && truEthInfo.isAdmin
               ? <SpacedList spacing={40}>
                   {addAuthDialog}
-                  {approveAddressDialog}
                 </SpacedList>
               : null
             }
