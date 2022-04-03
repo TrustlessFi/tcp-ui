@@ -16,6 +16,8 @@
   },
   "Aux": {
     "ethPriceProvider": "",
-    "weth": ""
+    "weth": "",
+    "chainEth": "", 
+    "testnetMultiMint": ""
   }
 }
