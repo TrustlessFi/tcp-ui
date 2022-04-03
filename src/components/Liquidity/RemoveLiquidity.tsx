@@ -117,7 +117,7 @@ const RemoveLiquidity = () => {
   const maxLiquidityDecrease = liquidityDelta.gt(0) ? liquidityDelta : bnf(0)
 
   const maxPercentageDecrease =
-    maxLiquidityDecrease.isZero()
+    maxLiquidityDecrease.isZero() || userLiquidity.isZero()
     ? 0
     : unscale(maxLiquidityDecrease.mul(100).mul(mnt(1)).div(userLiquidity))
 
