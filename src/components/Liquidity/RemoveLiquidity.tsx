@@ -52,6 +52,12 @@ const RemoveLiquidity = () => {
 
   const [liquidityPercentage, setLiquidityPercentage] = useState(50)
 
+  const updateLiquidityPercentage = (value: number) => {
+    if (value < 0) value = 0
+    if (value > 100) value = 100
+    setLiquidityPercentage(value)
+  }
+
   const dataNull =
     poolsCurrentData === null ||
     poolsMetadata === null ||
@@ -141,18 +147,18 @@ const RemoveLiquidity = () => {
             <Text>Percentage to withdraw</Text>
             <span style={{width: 364, display: 'inline-block'}}>
               <Slider
+                light
                 ariaLabelInput="Label for slider value"
                 id='slider'
-                min={0}
                 minLabel='%'
-                disabled={userLiquidity.isZero()}
                 maxLabel='%'
+                min={0}
                 max={100}
                 step={5}
-                invalid={userLiquidity.isZero() || maxPercentageDecreaseExceeded}
-                onChange={(changeData: SliderOnChangeArg) => setLiquidityPercentage(changeData.value)}
                 value={liquidityPercentage}
-                light
+                onChange={(changeData: SliderOnChangeArg) => updateLiquidityPercentage(changeData.value)}
+                invalid={userLiquidity.isZero() || maxPercentageDecreaseExceeded}
+                disabled={userLiquidity.isZero()}
               />
             </span>
             <span onClick={() => setLiquidityPercentage(100)}>
