@@ -223,20 +223,22 @@ const RemoveLiquidity = () => {
                 type: TransactionType.RemoveLiquidity,
                 poolID: pool.poolID,
                 Rewards: contracts === null ? '' : contracts.Rewards,
-                liquidity: userLiquidity.mul(liquidityPercentage).div(100).toString(),
+                liquidity: userLiquidity.mul(liquidityPercentage * 1e6).div(100).div(1e6).toString(),
                 amount0Min:
                   positionToken0Value
-                    .mul(liquidityPercentage)
+                    .mul(liquidityPercentage * 1e6)
                     .mul(1e4 - SLIPPAGE_TOLERANCE_BIPS)
                     .div(100)
                     .div(1e4)
+                    .div(1e6)
                     .toString(),
                 amount1Min:
                   positionToken1Value
-                    .mul(liquidityPercentage)
+                    .mul(liquidityPercentage * 1e6)
                     .mul(1e4 - SLIPPAGE_TOLERANCE_BIPS)
                     .div(100)
                     .div(1e4)
+                    .div(1e6)
                     .toString(),
                 liquidityPercentage,
                 poolName: pool.title,
