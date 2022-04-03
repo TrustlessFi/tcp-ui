@@ -13,9 +13,6 @@ import { setStakePage, StakePage } from '../../slices/staking'
 
 const ViewStake = () => {
 
-  throw new Error('Stake test error')
-  /*
-
   const dispatch = useAppDispatch()
 
 
@@ -116,7 +113,6 @@ const ViewStake = () => {
       loading={userAddress !== null && dataNull}
     />
   )
-  */
 }
 
 export default ViewStake
