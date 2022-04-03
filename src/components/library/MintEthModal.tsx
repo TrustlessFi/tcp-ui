@@ -7,6 +7,7 @@ import { TransactionType } from '../../slices/transactions'
 import { useState } from 'react'
 import { onNumChange, unique }  from '../../utils/'
 import SpacedList from '../library/SpacedList'
+import LargeText from '../library/LargeText'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import Text from '../library/Text'
 import waitFor from '../../slices/waitFor'
@@ -45,6 +46,8 @@ const MintEthModal = () => {
       tokens.split(' ')
         .map(token => token.trim())
         .map(token => token.split(',').map(token => token.trim()))
+        .flat()
+        .map(token => token.split('\n').map(token => token.trim()))
         .flat()
         .filter(token => token.length === 42))
 
@@ -168,6 +171,9 @@ const MintEthModal = () => {
             </div>
           )}
         </div>
+        <LargeText>
+          {tokenList.length} Addresses
+        </LargeText>
         <CreateTransactionButton
           title={truEthInfo.chainEthIsApproved ? 'Confirm' : 'Approve above first'}
           key='mint_eth_erc20'
