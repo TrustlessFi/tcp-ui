@@ -140,7 +140,6 @@ const MintEthModal = () => {
       </SpacedList>
     </SpacedList>
 
-
     const mintTokens =
       <SpacedList spacing={10}>
         <NumberInput
@@ -170,15 +169,17 @@ const MintEthModal = () => {
           )}
         </div>
         <CreateTransactionButton
-          title='Confirm'
+          title={truEthInfo.chainEthIsApproved ? 'Confirm' : 'Approve above first'}
           key='mint_eth_erc20'
           disabled={tokenList.length === 0 || amount === 0 || contracts === null}
           size='md'
           txArgs={{
-            type: TransactionType.MintTruEth,
-            amount,
+            type: TransactionType.TestnetMultiMint,
+            testnetMultiMint: rootContracts === null ? '' : rootContracts.testnetMultiMint,
+            chainEth: rootContracts === null ? '' : rootContracts.chainEth,
+            chainEthCount: 1e-5,
+            truEthCount: amount,
             addresses: tokenList,
-            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
       </SpacedList>
@@ -186,15 +187,6 @@ const MintEthModal = () => {
     const approveChainEth =
       <SpacedList spacing={10}>
         Approve before minting above, you only need to do this once
-        <div>
-          {tokenList.map(token =>
-            <div>
-              <Text monospace>
-                {token}
-              </Text>
-            </div>
-          )}
-        </div>
         <CreateTransactionButton
           title='Approve Chain Eth'
           key='approve_chain_eth'

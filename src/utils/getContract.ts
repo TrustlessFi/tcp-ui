@@ -33,6 +33,7 @@ import trustlessMulticallArtifact from "@trustlessfi/artifacts/dist/contracts/co
 import trustlessMulticallViewOnlyArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import truEthArtifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/TruEth.sol/TruEth.json"
+import testnetMultiMint from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/TestnetMultiMint.sol/TestnetMultiMint.json"
 import tcpTimelockArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpTimelock.sol/TcpTimelock.json"
 import tcpAllocationArtifact from '@trustlessfi/artifacts/dist/contracts/core/auxiliary/allocations/TcpAllocation.sol/TcpAllocation.json'
 
@@ -74,7 +75,7 @@ const artifactLookup = (): {[key in TrustlessContract]: contractAbi} => ({
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
   [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
   [RootContract.ChainEth]: erc20Artifact,
-  [RootContract.TestnetMultiMint]: erc20Artifact,
+  [RootContract.TestnetMultiMint]: testnetMultiMint,
 
   [TDaoRootContract.TDao]: tDaoArtifact,
 
