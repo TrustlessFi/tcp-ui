@@ -38,6 +38,7 @@ const WalletButton = ({
     <Button
       kind='secondary'
       size='small'
+      disabled={inTransactions}
       onClick={
         inTransactions
         ? undefined
@@ -54,7 +55,7 @@ const WalletButton = ({
       }}
       >
       <Wallet16 style={{marginRight: 8}} />
-      {abbreviateAddress(address)}
+      My Wallet
     </Button>
   )
 }

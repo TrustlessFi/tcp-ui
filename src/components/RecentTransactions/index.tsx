@@ -1,21 +1,25 @@
 import { CSSProperties, useState, useEffect } from 'react'
-import { Button, InlineLoading, InlineLoadingStatus, Tile } from 'carbon-components-react'
+import { Button, InlineLoading, InlineLoadingStatus, Tile, Link } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
+import Text from '../library/Text'
 import LargeText from '../library/LargeText'
 import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
-import { getEtherscanTxLink } from '../library/ExplorerLink'
-import { getRecencyString, numDisplay } from '../../utils'
+import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
+import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
+import {
+  Launch16,
+} from '@carbon/icons-react'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -89,11 +93,15 @@ const WalletInfo = () => {
     marketInfo,
     contracts,
     tcpAllocation,
+    userAddress,
+    chainID,
   } = waitFor([
     'balances',
     'marketInfo',
     'contracts',
     'tcpAllocation',
+    'userAddress',
+    'chainID',
   ], selector, useAppDispatch())
 
   const getBalance = (contract: ProtocolContract) =>
@@ -116,9 +124,23 @@ const WalletInfo = () => {
   return (
     <Tile style={{ width: 500, padding: 32 }}>
       <SpacedList spacing={32}>
-        <LargeText>
-          Balances
-        </LargeText>
+        <SpacedList spacing={16}>
+          <LargeText size={28}>
+            Balances
+          </LargeText>
+          {
+            userAddress === null || chainID === null
+            ? <div />
+            : <>
+                Wallet{' '}
+                <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                  <Text monospace>
+                    {abbreviateAddress(userAddress)}
+                  </Text>
+                </Link>
+              </>
+          }
+        </SpacedList>
         <Center>
           <SpacedList style={{width: '100%'}}>
             <TokenCard
