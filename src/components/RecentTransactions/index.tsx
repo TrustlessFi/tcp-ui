@@ -61,7 +61,11 @@ const TokenCard = ({
         height: 60,
         ...style
       }}
-      onClick={token === WalletToken.Eth ? undefined : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)}>
+      onClick={
+        token === WalletToken.Eth
+        ? undefined
+        : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)
+      }>
       <SpacedList row spacing={16}>
         <span style={{verticalAlign: 'middle'}}>
           <TokenIcon walletToken={token} width={size} />
@@ -118,7 +122,7 @@ const WalletInfo = () => {
         <Center>
           <SpacedList style={{width: '100%'}}>
             <TokenCard
-              token={WalletToken.Eth}
+              token={WalletToken.TruEth}
               decimals={4}
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}

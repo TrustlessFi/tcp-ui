@@ -20,6 +20,8 @@ export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contrac
       return contractsInfo.Tcp
     case WalletToken.Eth:
       return zkSyncEthERC20Address
+    case WalletToken.TruEth:
+      return contractsInfo.TruEth
     case WalletToken.TDao:
       throw new Error('No address for TDao')
     default:
