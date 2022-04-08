@@ -33,4 +33,8 @@ const Text = ({
   return <span style={itemStyle}>{children}</span>
 }
 
+Text.defaultProps = {
+  size: 14
+}
+
 export default Text

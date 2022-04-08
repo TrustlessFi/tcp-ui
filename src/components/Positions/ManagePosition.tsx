@@ -8,7 +8,7 @@ import {
 import FullNumberInput from '../library/FullNumberInput'
 import PositionInfoItem from '../library/PositionInfoItem'
 import Bold from '../library/Bold'
-import LargeText from '../library/LargeText'
+import TitleText from '../library/TitleText'
 import Center from '../library/Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
@@ -451,9 +451,9 @@ const ManagePosition = () => {
               </Center>
             </div>
             {
-              <LargeText size={28}>
+              <TitleText>
                 {isCreating ? 'Create Position' : 'Your Position'}
-              </LargeText>
+              </TitleText>
             }
           </div>
           <FullNumberInput

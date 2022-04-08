@@ -7,14 +7,13 @@ import { years } from '../../utils/'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
+import TitleText from '../library/TitleText'
 import Bold from '../library/Bold'
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage } from '../../slices/staking'
 
 const ViewStake = () => {
-
   const dispatch = useAppDispatch()
-
 
   const {
     balances,
@@ -70,19 +69,19 @@ const ViewStake = () => {
   const columnOne =
     <Tile style={{marginTop: 40, padding: 40}}>
       <SpacedList spacing={40}>
-        <SpacedList spacing={5}>
-          <Text size={28}>
+        <SpacedList spacing={20}>
+          <TitleText>
             Staked Balance
-          </Text>
+          </TitleText>
           <SpacedList spacing={5} row>
-            <Text size={28}>
+            <TitleText>
               {numDisplay(lentHueCount * multiplier, 8)}
-            </Text>
-            <Text size={12}>
+            </TitleText>
+            <Text>
               Hue
             </Text>
           </SpacedList>
-          <Text size={12} style={{opacity: 0.7}}>
+          <Text style={{opacity: 0.7}}>
             Current APR:
             {' '}
             <Bold>{aprDisplay}%</Bold>

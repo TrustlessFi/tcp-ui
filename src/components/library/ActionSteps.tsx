@@ -24,7 +24,7 @@ const ActionSteps = ({
     <SpacedList spacing={20}>
       <SpacedList spacing={10}>
         <LargeText>One time setup</LargeText>
-        <Text size={14} lineHeight="16px">
+        <Text lineHeight="16px">
           You are {action} for the first time so you must first
           approve the following transaction{steps.length > 2 ? 's' : ''}.
         </Text>

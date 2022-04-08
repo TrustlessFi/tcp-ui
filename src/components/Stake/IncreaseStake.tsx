@@ -14,6 +14,8 @@ import PositionInfoItem from '../library/PositionInfoItem'
 import ActionSteps from '../library/ActionSteps'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
+import LargeText from '../library/LargeText'
+import TitleText from '../library/TitleText'
 import Bold from '../library/Bold'
 import { red } from '@carbon/colors';
 import { Tile, Button } from 'carbon-components-react'
@@ -129,20 +131,15 @@ const IncreaseStake = () => {
     <Tile style={{padding: 40, marginTop: 40}}>
       <SpacedList spacing={40}>
         <Text size={28}>
-          Stake
+          Stake Hue
         </Text>
-        <SpacedList spacing={5}>
-          <Text size={18}>
-            Current Balance
+        <SpacedList row spacing={5}>
+          <TitleText>
+            {numDisplay(lentHueCount, 2)}
+          </TitleText>
+          <Text>
+            Hue Staked
           </Text>
-          <SpacedList row spacing={5}>
-            <Text size={28}>
-              {numDisplay(lentHueCount, 2)}
-            </Text>
-            <Text size={12}>
-              Hue Staked
-            </Text>
-          </SpacedList>
         </SpacedList>
         <FullNumberInput
           title='Amount to Stake'

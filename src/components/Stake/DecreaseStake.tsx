@@ -11,6 +11,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import SpacedList from '../library/SpacedList'
 import ActionSteps from '../library/ActionSteps'
 import Text from '../library/Text'
+import TitleText from '../library/TitleText'
 import { Tile, Button } from 'carbon-components-react'
 import { setStakePage, StakePage, setDecreaseAmount } from '../../slices/staking'
 import { setApprovingLendHue } from '../../slices/onboarding'
@@ -108,18 +109,15 @@ const DecreaseStake = () => {
     <Tile style={{padding: 40, marginTop: 40}}>
       <SpacedList spacing={40}>
         <Text size={28}>
-          Withdraw
+          Withdraw Hue
         </Text>
         <SpacedList spacing={5}>
-          <Text size={18}>
-            Current Balance
-          </Text>
           <SpacedList row spacing={5}>
-            <Text size={28}>
+            <TitleText>
               {numDisplay(lentHueCount, 4)}
-            </Text>
-            <Text size={12}>
-              Hue
+            </TitleText>
+            <Text>
+              Hue Staked
             </Text>
           </SpacedList>
         </SpacedList>

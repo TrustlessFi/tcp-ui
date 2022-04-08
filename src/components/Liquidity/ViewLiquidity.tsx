@@ -9,6 +9,7 @@ import {
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
+import TitleText from '../library/TitleText'
 import OneColumnDisplay from '../library/OneColumnDisplay'
 import ClaimRewardsButton from '../library/ClaimRewardsButton'
 import { Tile, Button } from 'carbon-components-react'
@@ -87,27 +88,27 @@ const ViewLiquidity = () => {
             key={index}
             style={{width: '100%', padding: 40 }}>
             <SpacedList spacing={40}>
-              <SpacedList spacing={5}>
+              <SpacedList spacing={10}>
                 <LargeText size={28}>{pool.title} Liquidity</LargeText>
-                <Text size={12}>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
+                <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
               </SpacedList>
               <SpacedList spacing={10}>
-                <Text size={18}>
+                <LargeText>
                   Your Position:
-                </Text>
+                </LargeText>
                 <SpacedList row spacing={5}>
-                  <Text size={28}>
+                  <TitleText>
                   {numDisplay(unscale(positionToken0Value, pool.token0.decimals))}
-                  </Text>
-                  <Text size={12}>
+                  </TitleText>
+                  <Text>
                     {pool.token0.displaySymbol}
                   </Text>
                 </SpacedList>
                 <SpacedList row spacing={5}>
-                  <Text size={28}>
+                  <TitleText>
                     {numDisplay(unscale(positionToken1Value, pool.token1.decimals))}
-                  </Text>
-                  <Text size={12}>
+                  </TitleText>
+                  <Text>
                     {pool.token1.displaySymbol}
                   </Text>
                 </SpacedList>

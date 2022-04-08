@@ -122,7 +122,7 @@ const WalletInfo = () => {
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
   return (
-    <Tile style={{ width: 500, padding: 32 }}>
+    <Tile style={{ width: 500, padding: 40 }}>
       <SpacedList spacing={32}>
         <SpacedList spacing={16}>
           <LargeText size={28}>
