@@ -11,6 +11,7 @@ import Liquidity from './components/Liquidity'
 import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
+import SocialLinks from './components/library/SocialLinks'
 import { TransactionStatus, waitForTransaction } from './slices/transactions'
 import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
@@ -93,6 +94,7 @@ const App: FunctionComponent<{}> = () => {
             <TestnetBanners />
           </div>
         </HashRouter>
+        <SocialLinks />
         <Notifications />
         <LocalStorageManager />
       </ErrorBoundary>
