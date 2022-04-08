@@ -70,10 +70,14 @@ const FullNumberInput = ({
                 color: '#ffffff',
                 opacity: 0.6,
                 top: 18,
-                right: 18,
+                right: 0,
+                width: 52,
                 position: 'absolute',
+
               }}>
-              {unit}
+              <Center>
+                {unit}
+              </Center>
             </Text>
             <div
               style={{

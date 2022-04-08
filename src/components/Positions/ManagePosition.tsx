@@ -250,7 +250,7 @@ const ManagePosition = () => {
       failing: (marketInfo === null ? false : 0 < debtCount && debtCount < marketInfo.minPositionSize),
     },
     insufficientEthInWallet: {
-      message: 'You don\'t have enough Eth in your wallet.',
+      message: 'You don\'t have enough TruEth in your wallet.',
       failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
@@ -461,7 +461,7 @@ const ManagePosition = () => {
             title='Collateral'
             action={updateCollateralCount}
             value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
-            unit='Eth'
+            unit='TruEth'
             light
             frozen={!isEditing || deleteSelected}
             defaultButton={{
@@ -477,7 +477,7 @@ const ManagePosition = () => {
                   {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
                 </Bold>
                 {' '}
-                Eth in your wallet
+                TruEth in your wallet
               </Text>
             }
           />
@@ -516,7 +516,7 @@ const ManagePosition = () => {
               icon={<ErrorOutline32 />}
               title='Liquidation Price'
               value={liquidationPriceDisplay}
-              unit='Hue/Eth'
+              unit='Hue/TruEth'
               changeData={
                 previousLiquidationPrice !== null
                 ? {
@@ -531,7 +531,7 @@ const ManagePosition = () => {
               icon={<Tag32 />}
               title='Current Price'
               value={ethPriceDisplay}
-              unit='Hue/Eth'
+              unit='Hue/TruEth'
             />
             <PositionInfoItem
               icon={<Locked32 />}
