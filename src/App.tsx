@@ -77,7 +77,6 @@ const App: FunctionComponent<{}> = () => {
         <HashRouter>
           <div style={{padding: 48 }}>
             <PageHeader />
-            <TestnetBanners />
             <WalletChecker>
               <Switch>
                 {Object.values(Tab).map((tab, index) => {
@@ -91,6 +90,7 @@ const App: FunctionComponent<{}> = () => {
                 })}
               </Switch>
             </WalletChecker>
+            <TestnetBanners />
           </div>
         </HashRouter>
         <Notifications />
