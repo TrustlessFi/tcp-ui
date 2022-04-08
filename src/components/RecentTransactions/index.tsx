@@ -126,19 +126,16 @@ const WalletInfo = () => {
       <SpacedList spacing={32}>
         <SpacedList spacing={16}>
           <LargeText size={28}>
-            Balances
+            My Wallet
           </LargeText>
           {
             userAddress === null || chainID === null
             ? <div />
-            : <>
-                Wallet{' '}
-                <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
-                  <Text monospace>
-                    {abbreviateAddress(userAddress)}
-                  </Text>
-                </Link>
-              </>
+            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                <Text monospace>
+                  {abbreviateAddress(userAddress)}
+                </Text>
+              </Link>
           }
         </SpacedList>
         <Center>
