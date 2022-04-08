@@ -19,7 +19,9 @@ export const SocialLink = ({
   href: string
 }) => {
   return (
-    <span onClick={() => window.open(href)} style={{cursor: 'pointer'}}>
+    <span
+      onClick={() => window.open(href)}
+      style={{cursor: 'pointer'}}>
       {icon}
     </span>
   )
@@ -33,18 +35,6 @@ const SocialLinks = () => {
       spacing={10}
       style={{ position: 'fixed', right: 10, bottom: 10, zIndex: 1000 }}>
       <SocialLink
-        icon={<LogoGithub32 />}
-        href='https://github.com/trustlessfi'
-      />
-      <SocialLink
-        icon={<LogoTwitter32 />}
-        href='https://twitter.com/trustlessfi'
-      />
-      <SocialLink
-        icon={<LogoDiscord32 />}
-        href='http://discord.gg/pNxCph5CKk'
-      />
-      <SocialLink
         icon={
           <img
             alt="Trustless Finance"
@@ -54,6 +44,18 @@ const SocialLinks = () => {
           />
         }
         href='https://www.trustless.fi/'
+      />
+      <SocialLink
+        icon={<LogoDiscord32 />}
+        href='http://discord.gg/pNxCph5CKk'
+      />
+      <SocialLink
+        icon={<LogoTwitter32 />}
+        href='https://twitter.com/trustlessfi'
+      />
+      <SocialLink
+        icon={<LogoGithub32 />}
+        href='https://github.com/trustlessfi'
       />
     </SpacedList>
   )
