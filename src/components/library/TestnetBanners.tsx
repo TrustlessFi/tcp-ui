@@ -83,7 +83,7 @@ const TestnetBanners = ({}:{}) => {
                 isCloseable={isCloseable}
                 onClose={() => dispatch(setTutorialBannerClosed(true))}
                 text='Learn more about Trustless Currency Protocol'
-                link='https://www.trustless.fi/post/using-the-trustless-currency-protocol'
+                link='https://www.trustless.fi/blog/using-the-trustless-currency-protocol'
               />
           }
         </SpacedList>
