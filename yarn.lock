@@ -3500,20 +3500,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.11.0":
-  version: 0.11.0
-  resolution: "@trustlessfi/addresses@npm:0.11.0"
+"@trustlessfi/addresses@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "@trustlessfi/addresses@npm:0.12.0"
   dependencies:
     "@types/node": ^17.0.23
     typescript: ^4.6.3
-  checksum: 63f3ad8d574c4294d6fcecea2b6d36dda87b19dd213481c612929b33b46ea900a4a017663ad8667d793c93ce59f7fb331e75fa5b9f3fc813e6bb9273168ffe01
+  checksum: b27f00a910d4f62db605840105b74c41f53766e7efff7debff4ddc3e174ff37200de81bffe9b0d2a41ac0c48949be6cfdd6d764b0ef410827c9e4796da18dabf
   languageName: node
   linkType: hard
 
-"@trustlessfi/artifacts@npm:^0.3.17":
-  version: 0.3.17
-  resolution: "@trustlessfi/artifacts@npm:0.3.17"
-  checksum: 9fdcf5a957ade89dbf7d5280c04dbb62c0eb86491503c9c81d5981f98c435dcfd2d48e9d3afb071decdb851e46e47194816e8aec5847c5a1cc17eb6f48cde587
+"@trustlessfi/artifacts@npm:^0.3.18":
+  version: 0.3.18
+  resolution: "@trustlessfi/artifacts@npm:0.3.18"
+  checksum: 4173110096b150613cbdfa40358ea7c80c5c66c87fc62ffc4fd10ac79cd0efdcd1b41a2da9d504f4106c1dd1332dafe68c3780559420ef96154fe9e877c715d5
   languageName: node
   linkType: hard
 
@@ -3527,14 +3527,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/typechain@npm:^0.8.18":
-  version: 0.8.18
-  resolution: "@trustlessfi/typechain@npm:0.8.18"
+"@trustlessfi/typechain@npm:^0.8.19":
+  version: 0.8.19
+  resolution: "@trustlessfi/typechain@npm:0.8.19"
   dependencies:
     "@ethersproject/abi": ^5.6.0
     "@ethersproject/providers": ^5.6.2
     ethers: ^5.6.2
-  checksum: d06bc2da08ccd3dc5c29a92fbd429ce87a92af9b098d8a496ebe9c48105d99a715b31b1bcff4baef65999cd73336846d8b02dc33c08b4ac187e611e97614aba8
+  checksum: f252ac526e6ba686eef79bfbeb15429f5ecaef60a72e4250543c036c8b053879bb94d1ce5e0a29e5f1e88df6ebb0d397f564c45dd52aca12ae5aca6ae72acf25
   languageName: node
   linkType: hard
 
@@ -19355,10 +19355,10 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.15.0
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trustlessfi/addresses": ^0.11.0
-    "@trustlessfi/artifacts": ^0.3.17
+    "@trustlessfi/addresses": ^0.12.0
+    "@trustlessfi/artifacts": ^0.3.18
     "@trustlessfi/multicall": ^0.4.23
-    "@trustlessfi/typechain": ^0.8.18
+    "@trustlessfi/typechain": ^0.8.19
     "@types/carbon-components": ^10.27.1
     "@types/carbon-components-react": ^7.49.0
     "@types/carbon__colors": ^10.31.0
