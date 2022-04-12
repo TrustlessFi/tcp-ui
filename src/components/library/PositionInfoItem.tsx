@@ -70,18 +70,18 @@ const PositionInfoItem = ({
         <Row>{title}</Row>
         <Row middle='xs'>
           <Col>
-            <LargeText color={color}>
-              <Bold>
+            <Bold>
+              <LargeText color={color}>
                 {value}
-              </Bold>
-            </LargeText>
+              </LargeText>
+            </Bold>
           </Col>
           {
             unit !== undefined
             ? <Col style={{marginLeft: '0.25em'}}>
-                <LargeText>
+                <Text>
                   {unit}
-                </LargeText>
+                </Text>
               </Col>
             : null
           }

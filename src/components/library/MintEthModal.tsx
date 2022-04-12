@@ -97,6 +97,7 @@ const MintEthModal = () => {
       </SpacedList>
     </SpacedList>
 
+    /*
   const approveAddressDialog =
     <SpacedList spacing={20}>
       <SpacedList>
@@ -142,6 +143,7 @@ const MintEthModal = () => {
         />
       </SpacedList>
     </SpacedList>
+    */
 
     const mintTokens =
       <SpacedList spacing={10}>
@@ -165,7 +167,7 @@ const MintEthModal = () => {
         <div>
           {tokenList.map(token =>
             <div>
-              <Text monospace>
+              <Text monospace key={token}>
                 {token}
               </Text>
             </div>
