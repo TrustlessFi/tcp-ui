@@ -34,6 +34,7 @@ const TokenCard = ({
   size,
   style,
   unit,
+  info,
 }: {
   token: WalletToken
   balance?: number,
@@ -41,6 +42,7 @@ const TokenCard = ({
   size?: number,
   style?: CSSProperties,
   unit?: string,
+  info?: string,
 }) => {
   const {
     chainID,
@@ -62,7 +64,7 @@ const TokenCard = ({
         display: 'inline-block',
         cursor: token === WalletToken.Eth ? undefined : 'pointer',
         padding: 20,
-        height: 60,
+        height: 104,
         ...style
       }}
       onClick={
@@ -81,6 +83,9 @@ const TokenCard = ({
           {' '}
           {unit === undefined ? token : unit}
         </>
+        <div style={{lineHeight:1.3, marginTop:8}}>
+          {info}
+        </div>
       </SpacedList>
     </Tile>
   )
@@ -146,24 +151,29 @@ const WalletInfo = () => {
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
               balance={balances === null ? undefined : balances.userEthBalance}
+              info={"TruEth is the amount of Eth you own which may be used within Trustless."}
             />
             <TokenCard
               token={WalletToken.Hue}
               balance={getBalance(ProtocolContract.Hue)}
+              info={"Hue is a stablecoin. This may be staked into the protocol (as LendHue) to earn interest."}
             />
             <TokenCard
               token={WalletToken.LendHue}
               unit='Hue Staked'
               balance={hueStaked}
+              info={"LendHue is how much you have staked into the protocol to earn interest."}
             />
             <TokenCard
               token={WalletToken.Tcp}
               balance={getBalance(ProtocolContract.Tcp)}
+              info={"Tcp is the governance token for managing Hue. It enables you to participate in decisions on the protocol."}
             />
             <TokenCard
               token={WalletToken.Tcp}
               unit='Tcp Allocation'
               balance={tcpAllocationCount}
+              info={"Tcp earned through holding a liquidity mining position. It may be claimed as Tcp within the Liquidity tab."}
             />
           </SpacedList>
         </Center>
