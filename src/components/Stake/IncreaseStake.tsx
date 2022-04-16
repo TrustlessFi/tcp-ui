@@ -215,7 +215,6 @@ const IncreaseStake = () => {
       columnOne={columnOne}
       light
       loading={userAddress !== null && dataNull}
-      breadCrumbItems={[{ text: 'Positions', href: '/' }, 'Lend']}
     />
   )
 }
