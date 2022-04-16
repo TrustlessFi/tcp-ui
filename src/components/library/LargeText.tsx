@@ -4,6 +4,7 @@ import Text from './Text'
 const LargeText = ({
   monospace,
   bold,
+  light,
   color,
   style,
   size,
@@ -11,6 +12,7 @@ const LargeText = ({
 }: {
   monospace?: boolean,
   bold?: boolean,
+  light?: boolean,
   color?: string,
   style?: CSSProperties,
   size?: number
@@ -23,6 +25,7 @@ const LargeText = ({
       lineHeight="26px"
       monospace={monospace}
       bold={bold}
+      light={light}
       color={color}>
       {children}
     </Text>

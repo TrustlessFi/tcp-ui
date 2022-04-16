@@ -554,8 +554,7 @@ const ManagePosition = () => {
               key='apr_info'
               icon={<Calculation32 />}
               title='Current Borrow APR'
-              value={interestRateDisplay}
-              unit='%'
+              value={interestRateDisplay + '%'}
             />
           </SpacedList>
           {

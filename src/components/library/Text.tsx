@@ -4,6 +4,7 @@ const Text = ({
   size,
   monospace,
   bold,
+  light,
   color,
   lineHeight,
   style,
@@ -12,6 +13,7 @@ const Text = ({
   size?: number,
   monospace?: boolean,
   bold?: boolean,
+  light?: boolean,
   color?: string,
   lineHeight?: string | number,
   style?: CSSProperties,
@@ -20,7 +22,7 @@ const Text = ({
   const customStyle: CSSProperties = {
     fontSize: size,
     fontFamily: monospace ? 'monospace' : undefined,
-    fontWeight: bold ? 'bold' : undefined,
+    fontWeight: bold ? 'bold' : (light ? 'lighter' : undefined),
     color,
     lineHeight,
   }
