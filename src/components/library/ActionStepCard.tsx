@@ -60,7 +60,7 @@ const ActionStepCard = ({
   const color = disabled ? gray[50] : undefined
 
   return (
-    <div style={{overflow: 'auto'}}>
+    <div style={{overflow: 'hidden'}}>
       <div style={{display: 'float'}}>
         <div style={{float: 'right'}}>
           <CreateTransactionButton
