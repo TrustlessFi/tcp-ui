@@ -78,7 +78,7 @@ const PositionInfoItem = ({
           </Col>
           {
             unit !== undefined
-            ? <Col style={{marginLeft: '0.25em'}}>
+            ? <Col style={{marginLeft: '0.5em'}}>
                 <LargeText light>
                   {unit}
                 </LargeText>
