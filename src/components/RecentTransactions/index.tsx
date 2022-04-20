@@ -10,6 +10,7 @@ import LargeText from '../library/LargeText'
 import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
+import TrustlessTooltip from '../library/TrustlessTooltip'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
@@ -34,7 +35,7 @@ const TokenCard = ({
   size,
   style,
   unit,
-  info,
+  tooltip,
 }: {
   token: WalletToken
   balance?: number,
@@ -42,7 +43,7 @@ const TokenCard = ({
   size?: number,
   style?: CSSProperties,
   unit?: string,
-  info?: string,
+  tooltip?: string,
 }) => {
   const {
     chainID,
@@ -71,21 +72,25 @@ const TokenCard = ({
         : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)
       }>
       <SpacedList row spacing={16}>
-        <div style={{display:'flex'}}>
-          <div style={{height:'100%', marginRight:8, width:size}}>
-            <TokenIcon walletToken={token} height={size} width={size}/>
-          </div>
-          <div style={{width:'auto', paddingTop:4}}>
-            <LargeText style={{height:size}}>
-              {balance === undefined ? '...' : numDisplay(balance, decimals === undefined ? 2 : decimals)}
-            </LargeText>
-            {' '}
+        <span style={{verticalAlign: 'middle'}}>
+          <TokenIcon walletToken={token} width={size} />
+        </span>
+        <>
+          <LargeText>
+            {balance === undefined ? '...' : numDisplay(balance, decimals === undefined ? 2 : decimals)}
+          </LargeText>
+          {' '}
+          <>
             {unit === undefined ? token : unit}
-            <div style={{lineHeight:1.3, marginTop:8}}>
-              {info}
-            </div>
-          </div>
-        </div>
+            {
+              tooltip === undefined
+              ? null
+              : <span style={{marginLeft: 4}}>
+                  <TrustlessTooltip text={tooltip} />
+                </span>
+            }
+          </>
+        </>
       </SpacedList>
     </Tile>
   )
@@ -140,23 +145,23 @@ const WalletInfo = () => {
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
               balance={balances === null ? undefined : balances.userEthBalance}
-              info='TruEth can be used as collateral within Trustless.'
+              tooltip='TruEth is used as collateral to borrow Hue on the Position tab.'
             />
             <TokenCard
               token={WalletToken.Hue}
               balance={getBalance(ProtocolContract.Hue)}
-              info='Hue is a stablecoin. Hue may be staked into the protocol to earn interest.'
+              tooltip='Hue is a stablecoin that is generated after locking TruEth collateral under the Position tab. Hue may be staked into the protocol to earn interest under the Stake tab.'
             />
             <TokenCard
               token={WalletToken.LendHue}
               unit='Hue Staked'
               balance={hueStaked}
-              info='The value of Hue you have staked into the protocol.'
+              tooltip='The value of Hue you have staked into the protocol under the Stake tab.'
             />
             <TokenCard
               token={WalletToken.Tcp}
               balance={tcpAllocationCount}
-              info='Tcp allows holders to govern the Tcp protocol.'
+              tooltip='Tcp allows holders to govern the Tcp protocol throught a governance process. Ask the community to learn more.'
             />
           </SpacedList>
         </Center>
