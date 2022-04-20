@@ -11,7 +11,6 @@ import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
 import TrustlessTooltip from '../library/TrustlessTooltip'
-import ComposeTweetButton, { TweetType } from '../library/ComposeTweetButton'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
@@ -19,9 +18,7 @@ import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
-import {
-  Launch16,
-} from '@carbon/icons-react'
+import ComposeTweetButton, { TweetType, tweets } from '../library/ComposeTweetButton'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -104,15 +101,11 @@ const WalletInfo = () => {
     marketInfo,
     contracts,
     tcpAllocation,
-    userAddress,
-    chainID,
   } = waitFor([
     'balances',
     'marketInfo',
     'contracts',
     'tcpAllocation',
-    'userAddress',
-    'chainID',
   ], selector, useAppDispatch())
 
   const getBalance = (contract: ProtocolContract) =>
@@ -171,13 +164,28 @@ const WalletInfo = () => {
   )
 }
 
-const TweetWindow = () => {
-
+const TweetTile = () => {
   return (
-    <Tile style={{ width: 500, padding: 40 }}>
+    <AppTile title='Tweet' style={{ minWidth: 500, paddingBottom: 40, paddingLeft: 40, paddingRight: 40 }}>
       <SpacedList spacing={40}>
+      {
+        Object.keys(TweetType).filter(t => !isNaN(Number(t))).map(t => Number(t) as TweetType).map(t =>
+          <div style={{display: 'float', alignItems: 'center'}}>
+            <div style={{float: 'right'}}>
+              <Center>
+                <ComposeTweetButton tweetType={t} />
+              </Center>
+            </div>
+            <div style={{width: 300}}>
+              <Text>
+                {tweets[t]}
+              </Text>
+            </div>
+          </div>
+        )
+      }
       </SpacedList>
-    </Tile>
+    </AppTile>
   )
 }
 
@@ -279,6 +287,7 @@ const RecentTransactions = () => {
     <Center>
     <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
       <WalletInfo />
+      <TweetTile />
       <AppTile
         title={tableTitle}
         rightElement={clearTransactionsButton}
