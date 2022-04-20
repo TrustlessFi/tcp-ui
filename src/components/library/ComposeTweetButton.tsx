@@ -29,6 +29,41 @@ export const tweets: {[tweetType in TweetType]: string} =
     'Defi is centralized: DAI is wrapped USDC, COMP is controlled by 4 VCs, and TERRA\'s collateral is off-chain. @trustlessfi is building the future of defi on zkSync. Join the community: trustless.fi/discord',
 }
 
+const tokens: {[token in string]: ReactNode} = {
+  '@trustlessfi': <a href='https://trustless.fi/twitter' target='blank'>@trustlessfi</a>,
+  'trustless.fi/discord': <a href='https://trustless.fi/discord' target='blank'>trustless.fi/discord</a>,
+}
+
+export const getTweetElement = (tweetType: TweetType): ReactNode => {
+
+  type mixedReactText = (ReactNode | string)[]
+
+  const replaceTSX = (outerParts: mixedReactText, token: string, replace: ReactNode) => {
+    const result = []
+
+    for(let i = 0; i < outerParts.length; i++) {
+      const outerPart = outerParts[i]
+        console.log({outerParts, token, outerPart, i})
+      if (typeof outerPart === 'string') {
+        const innerParts = outerPart.split(token)
+        innerParts.map((innerPart, index) => {
+          result.push(innerPart)
+          if (index !== innerParts.length - 1) {
+            result.push(replace)
+          }
+        })
+      } else {
+        result.push(outerPart)
+      }
+    }
+    return result.flat()
+  }
+
+  let tokenizedString: mixedReactText = [tweets[tweetType]]
+  Object.keys(tokens).map(token => tokenizedString = replaceTSX(tokenizedString, token, tokens[token]))
+  return <span>{tokenizedString}</span>
+}
+
 export const ComposeTweetButton = ({
   tweetType,
   buttonTitle,

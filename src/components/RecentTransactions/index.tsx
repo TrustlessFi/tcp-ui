@@ -18,7 +18,7 @@ import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
-import ComposeTweetButton, { TweetType, tweets } from '../library/ComposeTweetButton'
+import ComposeTweetButton, { TweetType, tweets, getTweetElement } from '../library/ComposeTweetButton'
 import {
   LogoTwitter32,
 } from '@carbon/icons-react'
@@ -169,8 +169,8 @@ const WalletInfo = () => {
 
 const TweetTile = () => {
   return (
-    <Tile style={{ width: 500, padding: 40}}>
-      <SpacedList spacing={40}>
+    <Tile style={{ width: 500, paddingLeft: 40, paddingRight: 40, paddingTop: 20, paddingBottom: 40 }}>
+      <SpacedList spacing={20}>
         <>
           <Center>
             <a href='https://twitter.com/trustlessfi' target='_blank' >
@@ -179,7 +179,7 @@ const TweetTile = () => {
           </Center>
           <Center>
             <LargeText>
-              Share on Twitter
+              Tweet Trustless
             </LargeText>
           </Center>
         </>
@@ -189,7 +189,7 @@ const TweetTile = () => {
               <Tile light style={{display: 'flex'}}>
                   <div style={{width: 280}}>
                     <Text lineHeight={1.5}>
-                      {tweets[t]}
+                      {getTweetElement(t)}
                     </Text>
                   </div>
                   <div style={{alignSelf: 'center', marginLeft: 20}}>
