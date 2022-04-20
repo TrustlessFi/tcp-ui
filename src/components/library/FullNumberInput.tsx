@@ -4,6 +4,7 @@ import Text from './Text'
 import Center from './Center'
 import PositionNumberInput from './PositionNumberInput'
 import SpacedList from './SpacedList'
+import TrustlessTooltip from '../library/TrustlessTooltip'
 
 const FullNumberInput = ({
   title,
@@ -18,6 +19,7 @@ const FullNumberInput = ({
   max,
   center,
   frozen,
+  tooltip,
 }: {
   title?: string
   action: (value: number) => void
@@ -35,6 +37,7 @@ const FullNumberInput = ({
   max?: number
   center?: boolean
   frozen?: boolean
+  tooltip?: string
 }) => {
 
   const input =
@@ -52,9 +55,17 @@ const FullNumberInput = ({
 
   return (
     <SpacedList style={{marginRight: 8}}>
-      { title === undefined
+      {
+        title === undefined
         ? null
-        : <Text size={fontSize}>{title}</Text>
+        : (
+            tooltip === undefined
+            ? <Text size={fontSize}>{title}</Text>
+            : <SpacedList spacing={5} row>
+                <Text size={fontSize}>{title}</Text>
+                <TrustlessTooltip text={tooltip} />
+              </SpacedList>
+            )
       }
       {
         frozen

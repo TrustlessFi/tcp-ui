@@ -1,6 +1,7 @@
 import { CSSProperties, ReactNode } from 'react';
 import { Row, Col } from 'react-flexbox-grid'
 import LargeText from '../library/LargeText'
+import TrustlessTooltip from '../library/TrustlessTooltip'
 import Bold from '../library/Bold'
 import Text from '../library/Text'
 import {
@@ -18,6 +19,7 @@ const PositionInfoItem = ({
   style,
   color,
   changeData,
+  tooltip,
 }: {
   icon: ReactNode,
   title: string
@@ -31,7 +33,8 @@ const PositionInfoItem = ({
     increaseIsGood: boolean
     showChangeWithUnit?: string
     changeThreshold?: number
-  }
+  },
+  tooltip?: string
 }) => {
 
   const getChangeDisplay = () => {
@@ -67,7 +70,18 @@ const PositionInfoItem = ({
         {icon}
       </Col>
       <Col>
-        <Row>{title}</Row>
+        <Row>
+          {
+            tooltip === undefined
+            ? title
+            : <>
+                <Col>{title}</Col>
+                <Col style={{marginLeft: 5}}>
+                  <TrustlessTooltip text={tooltip} />
+                </Col>
+              </>
+          }
+        </Row>
         <Row middle='xs'>
           <Col>
             <Bold>

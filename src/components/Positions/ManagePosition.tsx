@@ -32,7 +32,11 @@ import CreateTransactionButton from '../library/CreateTransactionButton'
 import { WalletToken } from '../library/TrustlessLogos'
 import Text from '../library/Text'
 import OneColumnDisplay from '../library/OneColumnDisplay'
-import { InlineNotification, Button, Tile } from 'carbon-components-react'
+import {
+  InlineNotification,
+  Button,
+  Tile,
+} from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 import { setApprovingEth, setApprovingHue } from '../../slices/onboarding'
 
@@ -462,6 +466,7 @@ const ManagePosition = () => {
             action={updateCollateralCount}
             value={parseFloat(roundToXDecimals(collateralCount, COLLATERAL_DECIMALS))}
             unit='TruEth'
+            tooltip='The amount of TruEth you have locked into the Trustless Currency Protocol. TruEth is used as collateral for creating Hue debt. If you do not keep enough TruEth to back your Hue debt, your TruEth collateral will be used to pay back your loan through liquidation. You can claim all of your TruEth after paying back your entire Hue loan.'
             light
             frozen={!isEditing || deleteSelected}
             defaultButton={{
@@ -487,6 +492,7 @@ const ManagePosition = () => {
             action={updateDebtCount}
             value={parseFloat(roundToXDecimals(debtCount, DEBT_DECIMALS))}
             unit='Hue'
+            tooltip='The amount of Hue that you have minted through the Trustless Currency Protocol to your wallet. This is the amount that you will be charged interest on, and the amount you must pay back to retrieve all of your TruEth collateral above.'
             light
             frozen={!isEditing || deleteSelected}
             defaultButton={{
@@ -516,6 +522,7 @@ const ManagePosition = () => {
               icon={<ErrorOutline32 />}
               title='Liquidation Price'
               value={liquidationPriceDisplay}
+              tooltip='If the price of Hue/TruEth falls below this value, then your position will be subject to liquidation.'
               unit='Hue/TruEth'
               changeData={
                 previousLiquidationPrice !== null
@@ -530,12 +537,14 @@ const ManagePosition = () => {
               key='price_info'
               icon={<Tag32 />}
               title='Current Price'
+              tooltip='The current price of Hue relative to TruEth, used to understand the likelihood of liquidation when coupled with the liquidation price above.'
               value={ethPriceDisplay}
               unit='Hue/TruEth'
             />
             <PositionInfoItem
               icon={<Locked32 />}
               title='Collateral Ratio'
+              tooltip='The value of your TruEth collateral relative to your Hue debt, calculated using the current price of Hue/TruEth and your debt count and collateral count above. If this value falls below 150%, you will be liquidated.'
               value={collateralizationDisplay}
               color={collateralColor}
               changeData={
@@ -554,6 +563,7 @@ const ManagePosition = () => {
               key='apr_info'
               icon={<Calculation32 />}
               title='Current Borrow APR'
+              tooltip='Your debt will increase at this rate each year, and this rate will fluctuate in order to stabilize the price of Hue. If this number is positive, you are being charged interest. You will have to pay back slightly more than you borrowed, even after just a few minutes.'
               value={interestRateDisplay + '%'}
             />
           </SpacedList>
