@@ -11,6 +11,7 @@ import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
 import TrustlessTooltip from '../library/TrustlessTooltip'
+import ComposeTweetButton from '../library/ComposeTweetButton'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
@@ -251,6 +252,15 @@ const RecentTransactions = () => {
         }))
       } />
 
+  const createTweetButton =
+    <ComposeTweetButton
+      tweetText='@trustlessfi is building the future of Defi on zkSync. Try out the fully functional zkSync demo!'
+      url='trustless.fi/demo'
+      kind='danger'
+    />
+
+
+    /*
   const clearTransactionsButton =
     userAddress === null || txs.length === 0
       ? null
@@ -260,6 +270,7 @@ const RecentTransactions = () => {
         onClick={() => dispatch(clearUserTransactions(userAddress))}>
         Clear
       </Button>
+    */
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
@@ -269,7 +280,7 @@ const RecentTransactions = () => {
       <WalletInfo />
       <AppTile
         title={tableTitle}
-        rightElement={clearTransactionsButton}
+        rightElement={createTweetButton}
         style={{ minWidth: 500 }}>
         <SpacedList spacing={20}>
           <div style={{marginLeft: 40}}>

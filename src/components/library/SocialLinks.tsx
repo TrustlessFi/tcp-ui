@@ -6,6 +6,7 @@ import {
   Launch32,
 } from '@carbon/icons-react'
 import SpacedList from './SpacedList'
+import ComposeTweetButton from './ComposeTweetButton'
 import {
   Link,
 } from 'carbon-components-react'
@@ -30,25 +31,16 @@ export const SocialLink = ({
 }
 
 const SocialLinks = () => {
-  const queryParams = (new URLSearchParams({
-    text: '@trustlessfi is building the future of Defi on zkSync. Try it out! ',
-    url: 'trustless.fi/demo',
-  })).toString()
-
-  const composeTweetURL = `https://twitter.com/intent/tweet?${queryParams}`
-
   return (
     <SpacedList
       row
       spacing={10}
       style={{ position: 'fixed', right: 10, bottom: 10, zIndex: 1000 }}>
       <span style={{marginRight: 10}}>
-        <Button
-          size="small"
-          renderIcon={Launch32}
-          onClick={() => window.open(composeTweetURL)}>
-          Publish Tweet
-        </Button>
+        <ComposeTweetButton
+          tweetText='@trustlessfi is building the future of Defi on zkSync. Try out the fully functional zkSync demo!'
+          url='trustless.fi/demo'
+        />
       </span>
       <SocialLink
         icon={
