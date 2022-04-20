@@ -129,20 +129,9 @@ const WalletInfo = () => {
   return (
     <Tile style={{ width: 500, padding: 40 }}>
       <SpacedList spacing={32}>
-        <SpacedList spacing={16}>
-          <LargeText size={28}>
-            My Wallet
-          </LargeText>
-          {
-            userAddress === null || chainID === null
-            ? <div />
-            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
-                <Text monospace>
-                  {abbreviateAddress(userAddress)}
-                </Text>
-              </Link>
-          }
-        </SpacedList>
+        <LargeText size={28}>
+          My Wallet
+        </LargeText>
         <Center>
           <SpacedList style={{width: '100%'}}>
             <TokenCard
