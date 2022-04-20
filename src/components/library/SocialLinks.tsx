@@ -31,7 +31,7 @@ export const SocialLink = ({
 
 const SocialLinks = () => {
   const queryParams = (new URLSearchParams({
-    text: '@trustlessfi is building the future of Defi on zkSync. Check out the fully-functional zkSync demo:',
+    text: '@trustlessfi is building the future of Defi on zkSync. Try it out! ',
     url: 'trustless.fi/demo',
   })).toString()
 
