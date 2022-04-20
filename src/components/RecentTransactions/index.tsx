@@ -186,18 +186,18 @@ const TweetTile = () => {
         <SpacedList spacing={20}>
           {
             Object.keys(TweetType).reverse().filter(t => !isNaN(Number(t))).map(t => Number(t) as TweetType).map(t =>
-              <div style={{display: 'float', alignItems: 'center'}}>
-                <div style={{float: 'right'}}>
-                  <Center>
-                    <ComposeTweetButton tweetType={t} />
-                  </Center>
-                </div>
-                <div style={{width: 280}}>
-                  <Text lineHeight={1.5}>
-                    {tweets[t]}
-                  </Text>
-                </div>
-              </div>
+              <Tile light style={{display: 'flex'}}>
+                  <div style={{width: 280}}>
+                    <Text lineHeight={1.5}>
+                      {tweets[t]}
+                    </Text>
+                  </div>
+                  <div style={{alignSelf: 'center', marginLeft: 20}}>
+                    <Center>
+                      <ComposeTweetButton tweetType={t} />
+                    </Center>
+                  </div>
+              </Tile>
             )
           }
         </SpacedList>
