@@ -1,4 +1,6 @@
 import { ReactNode} from 'react'
+import { useHistory } from 'react-router-dom'
+import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   LogoGithub32,
   LogoTwitter32,
@@ -13,6 +15,9 @@ import {
 import { convertSVGtoURI } from '../../utils/'
 import TrustlessLogos, { TrustlessLogoColor } from './TrustlessLogos'
 import { Button, ButtonSize } from 'carbon-components-react'
+import { setTab } from '../../slices/tabs'
+import { Tab, tabToPath } from '../../App'
+import waitFor from '../../slices/waitFor'
 
 export const SocialLink = ({
   icon,
@@ -31,16 +36,29 @@ export const SocialLink = ({
 }
 
 const SocialLinks = () => {
+  const dispatch = useAppDispatch()
+  const history = useHistory()
+
+  const {
+    tabs,
+  } = waitFor([
+    'tabs',
+  ], selector, dispatch)
+
+  const navigateToWallet = () => {
+    history.push(tabToPath(Tab.Transactions))
+    dispatch(setTab(Tab.Transactions))
+  }
+
   return (
     <SpacedList
       row
       spacing={10}
       style={{ position: 'fixed', right: 10, bottom: 10, zIndex: 1000 }}>
       <span style={{marginRight: 10}}>
-        <ComposeTweetButton
-          tweetText='@trustlessfi is building the future of Defi on zkSync. Try out the fully functional zkSync demo!'
-          url='trustless.fi/demo'
-        />
+        <Button onClick={navigateToWallet} size='small' disabled={tabs.currentTab === Tab.Transactions}>
+          Share on Twitter
+        </Button>
       </span>
       <SocialLink
         icon={

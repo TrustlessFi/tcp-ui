@@ -11,7 +11,7 @@ import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
 import TrustlessTooltip from '../library/TrustlessTooltip'
-import ComposeTweetButton from '../library/ComposeTweetButton'
+import ComposeTweetButton, { TweetType } from '../library/ComposeTweetButton'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
 import { getEtherscanTxLink, getEtherscanAddressLink } from '../library/ExplorerLink'
@@ -134,12 +134,12 @@ const WalletInfo = () => {
 
   return (
     <Tile style={{ width: 500, padding: 40 }}>
-      <SpacedList spacing={32}>
-        <LargeText size={28}>
+      <SpacedList spacing={20}>
+        <LargeText >
           My Wallet
         </LargeText>
         <Center>
-          <SpacedList style={{width: '100%'}}>
+          <SpacedList spacing={10} style={{width: '100%'}}>
             <TokenCard
               token={WalletToken.TruEth}
               decimals={4}
@@ -170,6 +170,17 @@ const WalletInfo = () => {
     </Tile>
   )
 }
+
+const TweetWindow = () => {
+
+  return (
+    <Tile style={{ width: 500, padding: 40 }}>
+      <SpacedList spacing={40}>
+      </SpacedList>
+    </Tile>
+  )
+}
+
 
 /*
 const ViewOnEtherscanButton = ({
@@ -252,15 +263,6 @@ const RecentTransactions = () => {
         }))
       } />
 
-  const createTweetButton =
-    <ComposeTweetButton
-      tweetText='@trustlessfi is building the future of Defi on zkSync. Try out the fully functional zkSync demo!'
-      url='trustless.fi/demo'
-      kind='danger'
-    />
-
-
-    /*
   const clearTransactionsButton =
     userAddress === null || txs.length === 0
       ? null
@@ -270,17 +272,16 @@ const RecentTransactions = () => {
         onClick={() => dispatch(clearUserTransactions(userAddress))}>
         Clear
       </Button>
-    */
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
   return (
     <Center>
-    <SpacedList spacing={32} style={{marginTop: 32, width: 500}}>
+    <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
       <WalletInfo />
       <AppTile
         title={tableTitle}
-        rightElement={createTweetButton}
+        rightElement={clearTransactionsButton}
         style={{ minWidth: 500 }}>
         <SpacedList spacing={20}>
           <div style={{marginLeft: 40}}>

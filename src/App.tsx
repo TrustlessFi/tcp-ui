@@ -93,8 +93,8 @@ const App: FunctionComponent<{}> = () => {
             </WalletChecker>
             <TestnetBanners />
           </div>
+          <SocialLinks />
         </HashRouter>
-        <SocialLinks />
         <Notifications />
         <LocalStorageManager />
       </ErrorBoundary>
