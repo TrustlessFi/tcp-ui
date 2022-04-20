@@ -19,6 +19,9 @@ import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
 import ComposeTweetButton, { TweetType, tweets } from '../library/ComposeTweetButton'
+import {
+  LogoTwitter32,
+} from '@carbon/icons-react'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -166,26 +169,40 @@ const WalletInfo = () => {
 
 const TweetTile = () => {
   return (
-    <AppTile title='Tweet' style={{ minWidth: 500, paddingBottom: 40, paddingLeft: 40, paddingRight: 40 }}>
+    <Tile style={{ width: 500, padding: 40}}>
       <SpacedList spacing={40}>
-      {
-        Object.keys(TweetType).filter(t => !isNaN(Number(t))).map(t => Number(t) as TweetType).map(t =>
-          <div style={{display: 'float', alignItems: 'center'}}>
-            <div style={{float: 'right'}}>
-              <Center>
-                <ComposeTweetButton tweetType={t} />
-              </Center>
-            </div>
-            <div style={{width: 300}}>
-              <Text>
-                {tweets[t]}
-              </Text>
-            </div>
-          </div>
-        )
-      }
+        <>
+          <Center>
+            <a href='https://twitter.com/trustlessfi' target='_blank' >
+              <LogoTwitter32 width={64} height={64} />
+            </a>
+          </Center>
+          <Center>
+            <LargeText>
+              Share on Twitter
+            </LargeText>
+          </Center>
+        </>
+        <SpacedList spacing={20}>
+          {
+            Object.keys(TweetType).reverse().filter(t => !isNaN(Number(t))).map(t => Number(t) as TweetType).map(t =>
+              <div style={{display: 'float', alignItems: 'center'}}>
+                <div style={{float: 'right'}}>
+                  <Center>
+                    <ComposeTweetButton tweetType={t} />
+                  </Center>
+                </div>
+                <div style={{width: 280}}>
+                  <Text lineHeight={1.5}>
+                    {tweets[t]}
+                  </Text>
+                </div>
+              </div>
+            )
+          }
+        </SpacedList>
       </SpacedList>
-    </AppTile>
+    </Tile>
   )
 }
 
@@ -285,29 +302,28 @@ const RecentTransactions = () => {
 
   return (
     <Center>
-    <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
-      <WalletInfo />
-      <TweetTile />
-      <AppTile
-        title={tableTitle}
-        rightElement={clearTransactionsButton}
-        style={{ minWidth: 500 }}>
-        <SpacedList spacing={20}>
-          <div style={{marginLeft: 40}}>
-          {
-            userAddress === null || chainID === null
-            ? <div />
-            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
-                <Text monospace>
-                  {abbreviateAddress(userAddress)}
-                </Text>
-              </Link>
-          }
-          </div>
-          {table}
-        </SpacedList>
-      </AppTile>
-    </SpacedList>
+      <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
+        <WalletInfo />
+        <TweetTile />
+        <AppTile
+          title={tableTitle}
+          rightElement={clearTransactionsButton}>
+          <SpacedList spacing={20}>
+            <div style={{marginLeft: 40}}>
+            {
+              userAddress === null || chainID === null
+              ? <div />
+              : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                  <Text monospace>
+                    {abbreviateAddress(userAddress)}
+                  </Text>
+                </Link>
+            }
+            </div>
+            {table}
+          </SpacedList>
+        </AppTile>
+      </SpacedList>
     </Center>
   )
 }
