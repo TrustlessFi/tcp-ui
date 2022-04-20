@@ -308,7 +308,7 @@ const ManagePosition = () => {
         size='sm'
         small
         kind='primary'>
-        Edit
+        Edit Position
       </Button>
 
   const createPositionArgs: txCreatePosition | txUpdatePosition =
