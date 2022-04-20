@@ -151,29 +151,30 @@ const WalletInfo = () => {
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
               balance={balances === null ? undefined : balances.userEthBalance}
-              info={"TruEth is the amount of Eth you own which may be used within Trustless."}
+              info={"TruEth is Eth locked into a position as collateral to mint Hue."}
             />
             <TokenCard
               token={WalletToken.Hue}
               balance={getBalance(ProtocolContract.Hue)}
-              info={"Hue is a stablecoin. This may be staked into the protocol to earn interest."}
+              info={"Hue is a trustless stablecoin. This is the amount of Hue in your wallet."}
             />
             <TokenCard
               token={WalletToken.LendHue}
               unit='Hue Staked'
               balance={hueStaked}
-              info={"The amount of Hue you have staked into the protocol (as LendHue) to earn interest."}
+              info={"The amount of Hue you have staked into the protocol to earn interest."}
             />
+            {/* NOTE: This is commented out for zksync demo. */}
+            {/* <TokenCard */}
+              {/* token={WalletToken.Tcp} */}
+              {/* balance={getBalance(ProtocolContract.Tcp)} */}
+              {/* info={"Tcp is the governance token which can be earned by holding a position or liquidity mining."} */}
+            {/* /> */}
             <TokenCard
               token={WalletToken.Tcp}
-              balance={getBalance(ProtocolContract.Tcp)}
-              info={"Tcp is the governance token for managing Hue. It enables you to participate in decisions on the protocol."}
-            />
-            <TokenCard
-              token={WalletToken.Tcp}
-              unit='Tcp Allocation'
+              unit='Tcp'
               balance={tcpAllocationCount}
-              info={"Tcp earned through holding a liquidity mining position. It may be claimed once the position is held more than a year."}
+              info={"Tcp is the governance token which can be earned by holding a position or liquidity mining."}
             />
           </SpacedList>
         </Center>
