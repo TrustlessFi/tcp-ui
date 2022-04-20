@@ -176,6 +176,29 @@ const WalletInfo = () => {
   )
 }
 
+
+const ZkSyncSection = () => {
+  const takeScreenshot = () => {
+    console.log("Taking Screenshot")
+  }
+
+  const takeScreenshotButton = (
+    <Button
+        small
+        kind="tertiary"
+        onClick={() => takeScreenshot()}>
+        Take Screenshot
+      </Button>
+  )
+  return (
+  <AppTile
+    title='zkSync Demo Receipt'
+    rightElement={takeScreenshotButton}
+    style={{ minWidth: 500 }}>
+  </AppTile>
+  )
+}
+
 /*
 const ViewOnEtherscanButton = ({
   title,
@@ -273,6 +296,7 @@ const RecentTransactions = () => {
     <Center>
     <SpacedList spacing={32} style={{marginTop: 32, width: 500}}>
       <WalletInfo />
+      <ZkSyncSection />
       <AppTile
         title={tableTitle}
         rightElement={clearTransactionsButton}
