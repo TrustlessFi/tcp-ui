@@ -277,7 +277,20 @@ const RecentTransactions = () => {
         title={tableTitle}
         rightElement={clearTransactionsButton}
         style={{ minWidth: 500 }}>
-        {table}
+        <SpacedList spacing={20}>
+          <div style={{marginLeft: 40}}>
+          {
+            userAddress === null || chainID === null
+            ? <div />
+            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                <Text monospace>
+                  {abbreviateAddress(userAddress)}
+                </Text>
+              </Link>
+          }
+          </div>
+          {table}
+        </SpacedList>
       </AppTile>
     </SpacedList>
     </Center>
