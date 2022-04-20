@@ -34,6 +34,7 @@ const TokenCard = ({
   size,
   style,
   unit,
+  info,
 }: {
   token: WalletToken
   balance?: number,
@@ -41,6 +42,7 @@ const TokenCard = ({
   size?: number,
   style?: CSSProperties,
   unit?: string,
+  info?: string,
 }) => {
   const {
     chainID,
@@ -57,12 +59,10 @@ const TokenCard = ({
       light
       style={{
         width: '100%',
-        marginRight: 16,
-        marginBottom: 16,
         display: 'inline-block',
         cursor: token === WalletToken.Eth ? undefined : 'pointer',
-        padding: 20,
-        height: 60,
+        marginTop: 8,
+        marginBottom: 8,
         ...style
       }}
       onClick={
@@ -71,16 +71,21 @@ const TokenCard = ({
         : getAddTokenToWalletOnClick(token, contracts, chainID, userAddress)
       }>
       <SpacedList row spacing={16}>
-        <span style={{verticalAlign: 'middle'}}>
-          <TokenIcon walletToken={token} width={size} />
-        </span>
-        <>
-          <LargeText>
-            {balance === undefined ? '...' : numDisplay(balance, decimals === undefined ? 2 : decimals)}
-          </LargeText>
-          {' '}
-          {unit === undefined ? token : unit}
-        </>
+        <div style={{display:'flex'}}>
+          <div style={{height:'100%', marginRight:8, width:size}}>
+            <TokenIcon walletToken={token} height={size} width={size}/>
+          </div>
+          <div style={{width:'auto', paddingTop:4}}>
+            <LargeText style={{height:size}}>
+              {balance === undefined ? '...' : numDisplay(balance, decimals === undefined ? 2 : decimals)}
+            </LargeText>
+            {' '}
+            {unit === undefined ? token : unit}
+            <div style={{lineHeight:1.3, marginTop:8}}>
+              {info}
+            </div>
+          </div>
+        </div>
       </SpacedList>
     </Tile>
   )
@@ -146,24 +151,29 @@ const WalletInfo = () => {
               size={28}
               style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
               balance={balances === null ? undefined : balances.userEthBalance}
+              info={"TruEth is the amount of Eth you own which may be used within Trustless."}
             />
             <TokenCard
               token={WalletToken.Hue}
               balance={getBalance(ProtocolContract.Hue)}
+              info={"Hue is a stablecoin. This may be staked into the protocol to earn interest."}
             />
             <TokenCard
               token={WalletToken.LendHue}
               unit='Hue Staked'
               balance={hueStaked}
+              info={"The amount of Hue you have staked into the protocol (as LendHue) to earn interest."}
             />
             <TokenCard
               token={WalletToken.Tcp}
               balance={getBalance(ProtocolContract.Tcp)}
+              info={"Tcp is the governance token for managing Hue. It enables you to participate in decisions on the protocol."}
             />
             <TokenCard
               token={WalletToken.Tcp}
               unit='Tcp Allocation'
               balance={tcpAllocationCount}
+              info={"Tcp earned through holding a liquidity mining position. It may be claimed once the position is held more than a year."}
             />
           </SpacedList>
         </Center>
