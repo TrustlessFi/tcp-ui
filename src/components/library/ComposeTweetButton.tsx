@@ -1,22 +1,13 @@
 import { ReactNode} from 'react'
 import {
-  LogoGithub32,
-  LogoTwitter32,
-  LogoDiscord32,
   Launch32,
 } from '@carbon/icons-react'
-import SpacedList from './SpacedList'
-import {
-  Link,
-} from 'carbon-components-react'
-import { convertSVGtoURI } from '../../utils/'
-import TrustlessLogos, { TrustlessLogoColor } from './TrustlessLogos'
 import { Button, ButtonKind} from 'carbon-components-react'
 
 export enum TweetType {
   Mild,
   Medium,
-  Spicy,
+  // Spicy,
 }
 
 export const tweets: {[tweetType in TweetType]: string} =
@@ -25,8 +16,8 @@ export const tweets: {[tweetType in TweetType]: string} =
     '@trustlessfi is building the future of Defi on @zkSync. Try out the fully functional demo: trustless.fi/discord',
   [TweetType.Medium]:
     '@trustlessfi is reinventing airdrops. Tcp genesis distributes tokens equally regardless of wealth. Join the community: trustless.fi/discord',
-  [TweetType.Spicy]:
-    'Defi is centralized: DAI is wrapped USDC, COMP is controlled by 4 VCs, and TERRA\'s collateral is off-chain. @trustlessfi is building the future of defi on @zkSync. Join the community: trustless.fi/discord',
+  // [TweetType.Spicy]:
+    // 'Defi is centralized: DAI is wrapped USDC, COMP is controlled by 4 VCs, and TERRA\'s collateral is off-chain. @trustlessfi is building the future of defi on @zkSync. Join the community: trustless.fi/discord',
 }
 
 const tokens: {[token in string]: ReactNode} = {
