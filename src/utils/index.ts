@@ -112,7 +112,15 @@ export const roundToXDecimals = (val: number, decimals: number = 0, floor = fals
 
 export const addCommas = (val: number | string): string => {
   if (typeof val === 'number') val = val.toString()
-  return val.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")
+  let parts = val.split(".")
+  let whole = parts[0].split("")
+  const start = whole.length - 3;
+  const end = (whole[0] === '-') ? 2 : 1;
+  for(let i = start; i >= end; i -= 3) {
+    whole.splice(i, 0, ',')
+  }
+  parts[0] = whole.join("")
+  return parts.join(".")
 }
 
 export const zeroIfNaN = (val: number) => isNaN(val) ? 0 : val
