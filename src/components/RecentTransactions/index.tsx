@@ -300,11 +300,12 @@ const RecentTransactions = () => {
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
+
+  // <TweetTile />
   return (
     <Center>
       <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
         <WalletInfo />
-        <TweetTile />
         <AppTile
           title={tableTitle}
           rightElement={clearTransactionsButton}>

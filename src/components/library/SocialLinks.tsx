@@ -15,7 +15,6 @@ import {
 import { convertSVGtoURI } from '../../utils/'
 import TrustlessLogos, { TrustlessLogoColor } from './TrustlessLogos'
 import { Button, ButtonSize } from 'carbon-components-react'
-import { setTab } from '../../slices/tabs'
 import { Tab, tabToPath } from '../../App'
 import waitFor from '../../slices/waitFor'
 
@@ -36,19 +35,15 @@ export const SocialLink = ({
 }
 
 const SocialLinks = () => {
+  /*
   const dispatch = useAppDispatch()
   const history = useHistory()
-
-  const {
-    tabs,
-  } = waitFor([
-    'tabs',
-  ], selector, dispatch)
 
   const navigateToWallet = () => {
     history.push(tabToPath(Tab.Transactions))
     dispatch(setTab(Tab.Transactions))
   }
+  */
 
   return (
     <SpacedList
@@ -56,8 +51,11 @@ const SocialLinks = () => {
       spacing={10}
       style={{ position: 'fixed', right: 10, bottom: 10, zIndex: 1000 }}>
       <span style={{marginRight: 10}}>
-        <Button onClick={navigateToWallet} size='small' disabled={tabs.currentTab === Tab.Transactions}>
-          Share on Twitter
+        <Button
+          onClick={() => window.open('https://twitter.com/trustlessfi/status/1516941542329622532')}
+          renderIcon={Launch32}
+          size='small'>
+          Retweet Trustless
         </Button>
       </span>
       <SocialLink
