@@ -9,7 +9,9 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 const TakeWalletAction: FunctionComponent<{walletAction: ReactNode}> = ({ walletAction }) => {
   return (
     <Center style={{marginTop: '10%'}}>
-      {walletAction}
+      <div style={{marginTop: 20}}>
+        {walletAction}
+      </div>
     </Center>
   )
 }
