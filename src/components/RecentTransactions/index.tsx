@@ -11,6 +11,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
+import TitleText from '../library/TitleText'
 import TrustlessTooltip from '../library/TrustlessTooltip'
 import SimpleTable, { TableHeaderOnly } from '../library/SimpleTable'
 import { getSortedUserTxs, UserTxSortOption } from '../library'
@@ -19,6 +20,7 @@ import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
+import { isMobile } from 'react-device-detect'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -62,8 +64,7 @@ const TokenCard = ({
         width: '100%',
         display: 'inline-block',
         cursor: token === WalletToken.Eth ? undefined : 'pointer',
-        marginTop: 8,
-        marginBottom: 8,
+        padding: 16,
         backgroundColor: isHover ? '#494949' : undefined,
         ...style
       }}
@@ -129,42 +130,35 @@ const WalletInfo = () => {
     ? undefined
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
+  const horizontalPadding = isMobile ? {} : {paddingLeft: 40, paddingRight: 40}
+
   return (
-    <Tile style={{ padding: 40 }}>
-      <SpacedList spacing={20}>
-        <LargeText >
-          My Wallet
-        </LargeText>
-        <Center>
-          <SpacedList spacing={10} style={{width: '100%'}}>
-            <TokenCard
-              token={WalletToken.TruEth}
-              decimals={4}
-              size={28}
-              style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
-              balance={balances === null ? undefined : balances.userEthBalance}
-              tooltip='TruEth is used as collateral to borrow Hue on the Position tab.'
-            />
-            <TokenCard
-              token={WalletToken.Hue}
-              balance={getBalance(ProtocolContract.Hue)}
-              tooltip='Hue is a stablecoin that is generated after locking TruEth collateral under the Position tab. Hue may be staked into the protocol to earn interest under the Stake tab.'
-            />
-            <TokenCard
-              token={WalletToken.LendHue}
-              unit='Hue Staked'
-              balance={hueStaked}
-              tooltip='The value of Hue you have staked into the protocol under the Stake tab.'
-            />
-            <TokenCard
-              token={WalletToken.Tcp}
-              balance={tcpAllocationCount}
-              tooltip='Tcp allows holders to govern the Tcp protocol throught a governance process. Ask the community to learn more.'
-            />
-          </SpacedList>
-        </Center>
-      </SpacedList>
-    </Tile>
+    <SpacedList style={{width: '100%', ...horizontalPadding}} spacing={10}>
+      <TokenCard
+        token={WalletToken.TruEth}
+        decimals={4}
+        size={28}
+        style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
+        balance={balances === null ? undefined : balances.userEthBalance}
+        tooltip='TruEth is used as collateral to borrow Hue on the Position tab.'
+      />
+      <TokenCard
+        token={WalletToken.Hue}
+        balance={getBalance(ProtocolContract.Hue)}
+        tooltip='Hue is a stablecoin that is generated after locking TruEth collateral under the Position tab. Hue may be staked into the protocol to earn interest under the Stake tab.'
+      />
+      <TokenCard
+        token={WalletToken.LendHue}
+        unit='Hue Staked'
+        balance={hueStaked}
+        tooltip='The value of Hue you have staked into the protocol under the Stake tab.'
+      />
+      <TokenCard
+        token={WalletToken.Tcp}
+        balance={tcpAllocationCount}
+        tooltip='Tcp allows holders to govern the Tcp protocol throught a governance process. Ask the community to learn more.'
+      />
+    </SpacedList>
   )
 }
 
@@ -272,59 +266,73 @@ const RecentTransactions = () => {
           <TableHeaderOnly headers={['Description', 'Start Time']} />
         </div>
       )
-      : <SimpleTable rows={
-        txs.map(tx => ({
-          key: tx.hash,
-          data: {
-            'Description':
-              <Row middle='xs'>
-                <Col style={{paddingLeft: 8, paddingRight: 8}}>
-                  <InlineLoading status={txStatusToLoadingStatus[tx.status]} style={{display: 'inline'}}/>
-                </Col>
-                <Col>
-                  {getTxLongName(tx.args)}
-                </Col>
-              </Row>,
-            'Start Time': timeDisplays[tx.hash] === undefined ? '-' : timeDisplays[tx.hash],
-          },
-          onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
-        }))
-      } />
+      : <SimpleTable
+          rows={
+            txs.map(tx => ({
+              key: tx.hash,
+              data: {
+                'Description':
+                  <Row middle='xs'>
+                    <Col style={{paddingLeft: 10, paddingRight: 10}}>
+                      <InlineLoading status={txStatusToLoadingStatus[tx.status]} style={{display: 'inline'}}/>
+                    </Col>
+                    <Col>
+                      {getTxLongName(tx.args)}
+                    </Col>
+                  </Row>,
+                'Start Time': timeDisplays[tx.hash] === undefined ? '-' : timeDisplays[tx.hash],
+              },
+              onClick: () => window.open(getEtherscanTxLink(tx.hash, chainID!), '_blank'),
+            }))
+          }
+        />
 
-  const clearTransactionsButton =
-    userAddress === null || txs.length === 0
-      ? null
-      : <Button
-        small
-        kind="tertiary"
-        onClick={() => dispatch(clearUserTransactions(userAddress))}>
-        Clear
-      </Button>
-
-  const tableTitle = 'My Transactions (' + txs.length + ')'
-
-  // <TweetTile />
   return (
     <OneColumnDisplay>
-      <WalletInfo />
-      <AppTile
-        title={tableTitle}
-        rightElement={clearTransactionsButton}>
-        <SpacedList spacing={20}>
-          <div style={{marginLeft: 40}}>
-          {
-            userAddress === null || chainID === null
-            ? <div />
-            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
-                <Text monospace>
-                  {abbreviateAddress(userAddress)}
-                </Text>
-              </Link>
-          }
+      <Tile style={{paddingTop: 40, paddingLeft: 0, paddingRight: 0, paddingBottom: 0}}>
+        <SpacedList spacing={40}>
+          <TitleText style={{margin: 40}}>My Wallet</TitleText>
+          <WalletInfo />
+          <div style={{margin: 40}}>
+            <SpacedList spacing={5}>
+              <div style={{display: 'float', alignItems: 'center'}}>
+                <div style={{float: 'right'}}>
+                  <Center>
+                    {
+                      userAddress === null
+                      ? null
+                      : <Button
+                          small
+                          kind='tertiary'
+                          disabled={txs.length === 0}
+                          onClick={() => dispatch(clearUserTransactions(userAddress))}>
+                          Clear
+                        </Button>
+                    }
+                  </Center>
+                </div>
+                <div>
+                  <LargeText>
+                    Transactions ({txs.length})
+                  </LargeText>
+                  <div>
+                    {
+                      userAddress === null || chainID === null
+                      ? <div />
+                      : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                          <Text monospace>
+                            {abbreviateAddress(userAddress)}
+                          </Text>
+                        </Link>
+                    }
+                  </div>
+                </div>
+              </div>
+            </SpacedList>
           </div>
           {table}
         </SpacedList>
-      </AppTile>
+      </Tile>
     </OneColumnDisplay>
   )
 }

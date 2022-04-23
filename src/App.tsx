@@ -87,7 +87,9 @@ const App: FunctionComponent<{}> = () => {
                   const paths = index === 0 ? ['/', path] : [path]
                   return paths.map(path => (
                     <Route exact={path === '/'} path={path} key={path}>
-                      {tabToRender[tab]}
+                      <ErrorBoundary>
+                        {tabToRender[tab]}
+                      </ErrorBoundary>
                     </Route>
                   ))
                 })}

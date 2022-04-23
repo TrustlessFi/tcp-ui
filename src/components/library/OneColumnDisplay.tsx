@@ -1,6 +1,7 @@
 import { ReactNode, CSSProperties } from "react"
 import RelativeLoading from '../library/RelativeLoading'
 import SpacedList from '../library/SpacedList'
+import ErrorBoundary from '../library/ErrorBoundary'
 import { isMobile } from 'react-device-detect'
 
 const OneColumnDisplay = ({
@@ -19,22 +20,23 @@ const OneColumnDisplay = ({
   children: ReactNode | ReactNode[]
 }) => {
   return (
-    <div style={{ position: 'relative', ...style }}>
-      <RelativeLoading light={light} show={loading === true} />
-      <div style={{
-        width: isMobile ? '100%' : '500px',
-        margin: '0 auto',
-        float: 'none',
-        ...innerStyle }}>
-        {
-          Array.isArray(children)
-          ? <SpacedList spacing={childSpacing === undefined ? 20 : childSpacing}>
-              {children}
-            </SpacedList>
-          : children
-        }
+    <ErrorBoundary>
+      <div style={{ position: 'relative', ...style }}>
+        <RelativeLoading light={light} show={loading === true} />
+        <div style={{
+          width: isMobile ? '100%' : '500px',
+          margin: '0 auto',
+          ...innerStyle }}>
+          {
+            Array.isArray(children)
+            ? <SpacedList spacing={childSpacing === undefined ? 20 : childSpacing}>
+                {children}
+              </SpacedList>
+            : children
+          }
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   )
 }
 
