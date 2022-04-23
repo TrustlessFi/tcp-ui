@@ -7,6 +7,7 @@ import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
 import LargeText from '../library/LargeText'
+import OneColumnDisplay from '../library/OneColumnDisplay'
 import { WalletToken } from '../library/TrustlessLogos'
 import { getAddTokenToWalletOnClick } from '../library/AddTokenToWalletButton'
 import TokenIcon from '../library/TokenIcon'
@@ -18,10 +19,6 @@ import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
-import ComposeTweetButton, { TweetType, getTweetElement } from '../library/ComposeTweetButton'
-import {
-  LogoTwitter32,
-} from '@carbon/icons-react'
 
 const txStatusToLoadingStatus: { [key in TransactionStatus]: InlineLoadingStatus } = {
   [TransactionStatus.Pending]: 'active',
@@ -304,33 +301,31 @@ const RecentTransactions = () => {
         Clear
       </Button>
 
-  const tableTitle = 'Recent Transactions (' + txs.length + ')'
+  const tableTitle = 'My Transactions (' + txs.length + ')'
 
   // <TweetTile />
   return (
-    <Center>
-      <SpacedList spacing={20}>
-        <WalletInfo />
-        <AppTile
-          title={tableTitle}
-          rightElement={clearTransactionsButton}>
-          <SpacedList spacing={20}>
-            <div style={{marginLeft: 40}}>
-            {
-              userAddress === null || chainID === null
-              ? <div />
-              : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
-                  <Text monospace>
-                    {abbreviateAddress(userAddress)}
-                  </Text>
-                </Link>
-            }
-            </div>
-            {table}
-          </SpacedList>
-        </AppTile>
-      </SpacedList>
-    </Center>
+    <OneColumnDisplay>
+      <WalletInfo />
+      <AppTile
+        title={tableTitle}
+        rightElement={clearTransactionsButton}>
+        <SpacedList spacing={20}>
+          <div style={{marginLeft: 40}}>
+          {
+            userAddress === null || chainID === null
+            ? <div />
+            : <Link href={getEtherscanAddressLink(userAddress, chainID)} target='_blank'>
+                <Text monospace>
+                  {abbreviateAddress(userAddress)}
+                </Text>
+              </Link>
+          }
+          </div>
+          {table}
+        </SpacedList>
+      </AppTile>
+    </OneColumnDisplay>
   )
 }
 
