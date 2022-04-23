@@ -91,7 +91,7 @@ const PageHeader = () => {
 
   const tabsDisplay =
     Object.values(Tab)
-      .filter(tab => tabHidden[tab] !== true)
+      .filter(tab => !tabHidden[tab])
       .map((tab, index) => {
         const display = tabDisplay[tab]
         return (
@@ -105,26 +105,29 @@ const PageHeader = () => {
         )
       })
 
-  const tabsAsButtons = Object.values(Tab).map((tab, index) => {
-    const link = index === 0 ? '/' : '/' + tab.toLowerCase()
-    const isCurrentPage = location.pathname === link
-    const style: CSSProperties = {
-      width: '100%',
-      backgroundColor: 'transparent',
-    }
-    if (isCurrentPage) style.borderLeft = '3px solid #0f62fe'
-    return (
-      <Button
-        className={isCurrentPage ? 'selectedOption' : ''}
-        key={index}
-        href={link}
-        onClick={updateTab.bind(null, tab)}
-        style={style}
-        kind="secondary">
-        {tab}
-      </Button>
-    )
-  })
+  const tabsAsButtons =
+    Object.values(Tab)
+      .filter(tab => !tabHidden[tab])
+      .map((tab, index) => {
+        const link = index === 0 ? '/' : '/' + tab.toLowerCase()
+        const isCurrentPage = location.pathname === link
+        const style: CSSProperties = {
+          width: '100%',
+          backgroundColor: 'transparent',
+        }
+        if (isCurrentPage) style.borderLeft = '3px solid #0f62fe'
+        return (
+          <Button
+            className={isCurrentPage ? 'selectedOption' : ''}
+            key={index}
+            href={link}
+            onClick={updateTab.bind(null, tab)}
+            style={style}
+            kind="secondary">
+            {tab}
+          </Button>
+        )
+      })
 
   const iconSize = 28
   const iconMarginHorizontal = 12
