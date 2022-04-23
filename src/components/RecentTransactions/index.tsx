@@ -86,7 +86,7 @@ const TokenCard = ({
             {
               tooltip === undefined
               ? null
-              : <span style={{marginLeft: 4}}>
+              : <span style={{marginLeft: 4, position: 'relative', top: '3px'}}>
                   <TrustlessTooltip text={tooltip} />
                 </span>
             }
