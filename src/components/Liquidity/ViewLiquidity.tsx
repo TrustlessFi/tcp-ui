@@ -74,7 +74,7 @@ const ViewLiquidity = () => {
   })
 
   const columnOne =
-    <SpacedList row style={{paddingTop: 40}}>
+    <SpacedList row>
       {poolsData.map((pool, index) => {
 
         const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))

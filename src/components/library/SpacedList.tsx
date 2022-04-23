@@ -1,11 +1,6 @@
 import { ReactNode } from 'react';
 import { CSSProperties } from 'react'
 
-export enum ListDirection {
-  Row = 'Row',
-  Col = 'Col',
-}
-
 const SpacedList = ({
   spacing,
   children,

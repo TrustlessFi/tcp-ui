@@ -16,7 +16,9 @@ import { TransactionStatus, waitForTransaction } from './slices/transactions'
 import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
 import TestnetBanners from './components/library/TestnetBanners'
+import SpacedList from './components/library/SpacedList'
 import waitFor from './slices/waitFor'
+import { isMobile } from 'react-device-detect'
 
 export enum Tab {
   Position = 'Position',
@@ -73,10 +75,10 @@ const App: FunctionComponent<{}> = () => {
   }, [chainID])
 
   return (
-    <div style={{minWidth: 550}}>
+    <div>
       <ErrorBoundary>
         <HashRouter>
-          <div style={{padding: 48 }}>
+          <div style={{marginTop: isMobile ? 48 : 68 }}>
             <PageHeader />
             <WalletChecker>
               <Switch>
@@ -91,9 +93,11 @@ const App: FunctionComponent<{}> = () => {
                 })}
               </Switch>
             </WalletChecker>
-            <TestnetBanners />
           </div>
-          <SocialLinks />
+          <div style={{marginTop: 20}}>
+            <TestnetBanners />
+            <SocialLinks />
+          </div>
         </HashRouter>
         <Notifications />
         <LocalStorageManager />

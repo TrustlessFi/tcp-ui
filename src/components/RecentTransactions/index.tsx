@@ -18,7 +18,7 @@ import { getRecencyString, numDisplay, abbreviateAddress } from '../../utils'
 import ProtocolContract from '../../slices/contracts/ProtocolContract'
 import waitFor from '../../slices/waitFor'
 import { Row, Col } from 'react-flexbox-grid'
-import ComposeTweetButton, { TweetType, tweets, getTweetElement } from '../library/ComposeTweetButton'
+import ComposeTweetButton, { TweetType, getTweetElement } from '../library/ComposeTweetButton'
 import {
   LogoTwitter32,
 } from '@carbon/icons-react'
@@ -98,7 +98,6 @@ const TokenCard = ({
 }
 
 const WalletInfo = () => {
-
   const {
     balances,
     marketInfo,
@@ -129,7 +128,7 @@ const WalletInfo = () => {
     : tcpAllocation.totalAllocation - tcpAllocation.tokensAllocated
 
   return (
-    <Tile style={{ width: 500, padding: 40 }}>
+    <Tile style={{ padding: 40 }}>
       <SpacedList spacing={20}>
         <LargeText >
           My Wallet
@@ -167,6 +166,7 @@ const WalletInfo = () => {
   )
 }
 
+/*
 const TweetTile = () => {
   return (
     <Tile style={{ width: 500, paddingLeft: 40, paddingRight: 40, paddingTop: 20, paddingBottom: 40 }}>
@@ -205,6 +205,7 @@ const TweetTile = () => {
     </Tile>
   )
 }
+*/
 
 
 /*
@@ -300,11 +301,10 @@ const RecentTransactions = () => {
 
   const tableTitle = 'Recent Transactions (' + txs.length + ')'
 
-
   // <TweetTile />
   return (
     <Center>
-      <SpacedList spacing={20} style={{marginTop: 20, width: 500}}>
+      <SpacedList spacing={20}>
         <WalletInfo />
         <AppTile
           title={tableTitle}

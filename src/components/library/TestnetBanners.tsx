@@ -6,6 +6,7 @@ import {
 import OneColumnDisplay from './OneColumnDisplay'
 import Text from './Text'
 import SpacedList from './SpacedList'
+import Center from './Center'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { setDiscordBannerClosed, setTutorialBannerClosed } from '../../slices/testnetBanner'
@@ -23,29 +24,31 @@ const TestnetBanner = ({
   link?: string
 }) => {
   return (
-    <InlineNotification
-      notificationType='inline'
-      kind='info'
-      hideCloseButton={isCloseable === false}
-      onCloseButtonClick={onClose}
-      title={
-        <Text>
-          {text}
-          {
-            link === undefined
-            ? null
-            : <>
-                {' '}
-                <Link href={link} target='_blank'>
-                  here
-                </Link>
-                .
-              </>
-          }
-        </Text>
-      }
-      lowContrast
-    />
+    <Center>
+      <InlineNotification
+        notificationType='inline'
+        kind='info'
+        hideCloseButton={isCloseable === false}
+        onCloseButtonClick={onClose}
+        title={
+          <Text>
+            {text}
+            {
+              link === undefined
+              ? null
+              : <>
+                  {' '}
+                  <Link href={link} target='_blank'>
+                    here
+                  </Link>
+                  .
+                </>
+            }
+          </Text>
+        }
+        lowContrast
+      />
+    </Center>
   )
 }
 
@@ -65,7 +68,7 @@ const TestnetBanners = ({}:{}) => {
   return (
     <OneColumnDisplay
       columnOne={
-        <SpacedList spacing={20} style={{marginTop: 30}}>
+        <SpacedList spacing={-20}>
           {
             testnetBanner.discordBannerClosed && isCloseable
             ? null

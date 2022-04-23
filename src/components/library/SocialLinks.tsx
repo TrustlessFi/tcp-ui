@@ -89,7 +89,7 @@ const SocialLinks = () => {
 
   return (
     isMobile
-    ? <SpacedList spacing={20} style={{marginBottom: 20}}>
+    ? <SpacedList spacing={20} style={{marginBottom: 20, marginTop: 20}}>
         <Center>
           {shareButton}
         </Center>
