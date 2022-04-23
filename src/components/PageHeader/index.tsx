@@ -171,13 +171,13 @@ const PageHeader = () => {
             <HeaderNavigation aria-label="Main Site Navigation Links" id="headerNavigationLinks">
               {tabsDisplay}
             </HeaderNavigation>
-            <div style={{marginLeft: 'auto', marginRight: 16 }}>
+            <div style={{marginLeft: 'auto', marginRight: 10 }}>
               {
                 isSmallViewport
                 ? null
                 : debugSuite
               }
-              <span style={{marginLeft: 16, marginRight: 8}}>
+              <span style={{marginLeft: 10}}>
                 <Wallet />
               </span>
             </div>
