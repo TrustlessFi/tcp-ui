@@ -56,6 +56,8 @@ const TokenCard = ({
     'contracts',
   ], selector, useAppDispatch())
 
+  const [ isHover, setIsHover ] = useState(false)
+
   return (
     <Tile
       light
@@ -65,8 +67,11 @@ const TokenCard = ({
         cursor: token === WalletToken.Eth ? undefined : 'pointer',
         marginTop: 8,
         marginBottom: 8,
+        backgroundColor: isHover ? '#494949' : undefined,
         ...style
       }}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
       onClick={
         token === WalletToken.Eth
         ? undefined
