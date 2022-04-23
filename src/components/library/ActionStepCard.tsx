@@ -16,6 +16,7 @@ import {
   CheckboxChecked32,
 } from '@carbon/icons-react'
 import { red, orange, green, yellow, gray } from '@carbon/colors';
+import { isMobile } from 'react-device-detect'
 
 const numberToIcon = (value: number, color?: string) => {
   switch(value) {
@@ -72,9 +73,13 @@ const ActionStepCard = ({
           />
         </div>
         <div style={{display: 'float', alignItems: 'center'}}>
-          <span style={{float: 'left', height: 32, width: 32}}>
-            {numberToIcon(step, color)}
-          </span>
+          {
+            isMobile
+            ? null
+            : <span style={{float: 'left', height: 32, width: 32}}>
+                {numberToIcon(step, color)}
+              </span>
+          }
           <span style={{float: 'left', paddingTop: 2}}>
             <LargeText size={18} style={{marginLeft: 10}} color={color}>
               {title}
