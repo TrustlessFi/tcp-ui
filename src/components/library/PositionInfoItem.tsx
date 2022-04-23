@@ -77,7 +77,9 @@ const PositionInfoItem = ({
             : <>
                 <Col>{title}</Col>
                 <Col style={{marginLeft: 5}}>
-                  <TrustlessTooltip text={tooltip} />
+                  <span style={{position: 'relative', top: '-1px'}}>
+                    <TrustlessTooltip text={tooltip} />
+                  </span>
                 </Col>
               </>
           }

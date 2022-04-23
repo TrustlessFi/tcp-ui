@@ -63,7 +63,9 @@ const FullNumberInput = ({
             ? <Text size={fontSize}>{title}</Text>
             : <SpacedList spacing={5} row>
                 <Text size={fontSize}>{title}</Text>
-                <TrustlessTooltip text={tooltip} />
+                <span style={{position: 'relative', top: '2px'}}>
+                  <TrustlessTooltip text={tooltip} />
+                </span>
               </SpacedList>
             )
       }
