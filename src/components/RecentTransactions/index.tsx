@@ -330,7 +330,11 @@ const RecentTransactions = () => {
               </div>
             </SpacedList>
           </div>
-          {table}
+          {
+            txs.length === 0
+            ? <div style={{height: 1}}/>
+            : table
+          }
         </SpacedList>
       </Tile>
     </OneColumnDisplay>
