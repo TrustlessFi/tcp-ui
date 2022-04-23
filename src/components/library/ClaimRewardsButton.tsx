@@ -5,6 +5,7 @@ import CreateTransactionButton from './CreateTransactionButton'
 import { numDisplay } from '../../utils'
 import { WalletToken, TrustlessLogoColor } from './TrustlessLogos'
 import { TransactionArgs } from '../../slices/transactions'
+import { isMobile } from 'react-device-detect'
 
 const ClaimRewardsButton = ({
   txArgs,
@@ -44,14 +45,18 @@ const ClaimRewardsButton = ({
           />
         </div>
         <div style={{display: 'float', alignItems: 'center'}}>
-          <span style={{float: 'left', height: 32, width: 32}}>
-            <TokenIcon
-              walletToken={walletToken === undefined ? WalletToken.Tcp : walletToken}
-              color={TrustlessLogoColor.White}
-              width={32}
-              height={32}
-            />
-          </span>
+          {
+            isMobile
+            ? null
+            : <span style={{float: 'left', height: 32, width: 32}}>
+                <TokenIcon
+                  walletToken={walletToken === undefined ? WalletToken.Tcp : walletToken}
+                  color={TrustlessLogoColor.White}
+                  width={32}
+                  height={32}
+                />
+              </span>
+          }
           <span style={{float: 'left', paddingTop: 2}}>
             <LargeText size={18} style={{marginLeft: 10}}>
               {displayCount} Tcp accrued
