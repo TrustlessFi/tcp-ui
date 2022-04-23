@@ -98,7 +98,9 @@ const App: FunctionComponent<{}> = () => {
           </div>
           <div style={{marginTop: 20}}>
             <TestnetBanners />
-            <SocialLinks />
+            <div style={{marginTop: 60}}>
+              <SocialLinks />
+            </div>
           </div>
         </HashRouter>
         <Notifications />

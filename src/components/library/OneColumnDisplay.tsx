@@ -21,7 +21,7 @@ const OneColumnDisplay = ({
 }) => {
   return (
     <ErrorBoundary>
-      <div style={{ position: 'relative', ...style }}>
+      <div style={{ position: 'relative', marginBottom: 40, ...style }}>
         <RelativeLoading light={light} show={loading === true} />
         <div style={{
           width: isMobile ? '100%' : '500px',
