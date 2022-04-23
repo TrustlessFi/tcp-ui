@@ -66,51 +66,47 @@ const ViewStake = () => {
 
   const aprDisplay = numDisplay(apr * 100, 2)
 
-  const columnOne =
-    <Tile style={{marginTop: 40, padding: 40}}>
-      <SpacedList spacing={40}>
-        <SpacedList spacing={20}>
-          <TitleText>
-            Staked Balance
-          </TitleText>
-          <SpacedList spacing={5} row>
+  return (
+    <OneColumnDisplay loading={userAddress !== null && dataNull} >
+      <Tile style={{marginTop: 40, padding: 40}}>
+        <SpacedList spacing={40}>
+          <SpacedList spacing={20}>
             <TitleText>
-              {numDisplay(lentHueCount * multiplier, 8)}
+              Staked Balance
             </TitleText>
-            <Text>
-              Hue
+            <SpacedList spacing={5} row>
+              <TitleText>
+                {numDisplay(lentHueCount * multiplier, 8)}
+              </TitleText>
+              <Text>
+                Hue
+              </Text>
+            </SpacedList>
+            <Text style={{opacity: 0.7}}>
+              Current APR:
+              {' '}
+              <Bold>{aprDisplay}%</Bold>
             </Text>
           </SpacedList>
-          <Text style={{opacity: 0.7}}>
-            Current APR:
-            {' '}
-            <Bold>{aprDisplay}%</Bold>
-          </Text>
+          <SpacedList row spacing={20}>
+            <Button
+              key='stake'
+              onClick={() => dispatch(setStakePage(StakePage.Add))}
+              size='md'
+              kind='primary'>
+              Deposit
+            </Button>
+            <Button
+              key='withdraw'
+              onClick={() => dispatch(setStakePage(StakePage.Withdraw))}
+              size='md'
+              kind='secondary'>
+              Withdraw
+            </Button>
+          </SpacedList>
         </SpacedList>
-        <SpacedList row spacing={20}>
-          <Button
-            key='stake'
-            onClick={() => dispatch(setStakePage(StakePage.Add))}
-            size='md'
-            kind='primary'>
-            Deposit
-          </Button>
-          <Button
-            key='withdraw'
-            onClick={() => dispatch(setStakePage(StakePage.Withdraw))}
-            size='md'
-            kind='secondary'>
-            Withdraw
-          </Button>
-        </SpacedList>
-      </SpacedList>
-    </Tile>
-
-  return (
-    <OneColumnDisplay
-      columnOne={columnOne}
-      loading={userAddress !== null && dataNull}
-    />
+      </Tile>
+    </OneColumnDisplay>
   )
 }
 

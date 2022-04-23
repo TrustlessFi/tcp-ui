@@ -42,13 +42,9 @@ const ViewLiquidity = () => {
 
   if (dataNull) {
     return (
-      <OneColumnDisplay
-        innerStyle={{marginTop: 40}}
-        columnOne={
-          <Tile style={{width: '100%', height: 200}} />
-        }
-        loading={true}
-      />
+      <OneColumnDisplay innerStyle={{marginTop: 40}} loading={true}>
+        <Tile style={{width: '100%', height: 200}} />
+      </OneColumnDisplay>
     )
   }
   const totalRewardsPortion = Object.values(poolsMetadata).map(md => md.rewardsPortion).reduce(sum)
@@ -73,81 +69,77 @@ const ViewLiquidity = () => {
     totalApproximateRewards += approximateRewards
   })
 
-  const columnOne =
-    <SpacedList row>
-      {poolsData.map((pool, index) => {
-
-        const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))
-        const userLiquidity = bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity)
-
-        const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
-        const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
-
-        return (
-          <Tile
-            key={index}
-            style={{width: '100%', padding: 40 }}>
-            <SpacedList spacing={40}>
-              <SpacedList spacing={10}>
-                <LargeText size={28}>{pool.title} Liquidity</LargeText>
-                <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
-              </SpacedList>
-              <SpacedList spacing={10}>
-                <LargeText>
-                  Your Position:
-                </LargeText>
-                <SpacedList row spacing={5}>
-                  <TitleText>
-                  {numDisplay(unscale(positionToken0Value, pool.token0.decimals))}
-                  </TitleText>
-                  <Text>
-                    {pool.token0.displaySymbol}
-                  </Text>
-                </SpacedList>
-                <SpacedList row spacing={5}>
-                  <TitleText>
-                    {numDisplay(unscale(positionToken1Value, pool.token1.decimals))}
-                  </TitleText>
-                  <Text>
-                    {pool.token1.displaySymbol}
-                  </Text>
-                </SpacedList>
-              </SpacedList>
-              <SpacedList row spacing={20}>
-                <Button
-                  size='md'
-                  onClick={() => history.push(`/liquidity/add/${pool.poolIDString}`)}>
-                  Add
-                </Button>
-                <Button
-                  size='md'
-                  kind='secondary'
-                  disabled={bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity).isZero()}
-                  onClick={() => history.push(`/liquidity/remove/${pool.poolIDString}`)}>
-                  Remove
-                </Button>
-              </SpacedList>
-            </SpacedList>
-          </Tile>
-        )
-      })}
-      <ClaimRewardsButton
-        txArgs={{
-          type: TransactionType.ClaimAllLiquidityPositionRewards,
-          poolIDs: poolIDsWithRewards,
-          Rewards: contracts.Rewards,
-        }}
-        count={totalApproximateRewards}
-        disabled={false}
-        walletToken={WalletToken.Tcp}
-      />
-    </SpacedList>
-
   return (
-    <OneColumnDisplay
-      columnOne={columnOne}
-      loading={poolsCurrentData === null || poolsMetadata === null}
-    />
+    <OneColumnDisplay loading={poolsCurrentData === null || poolsMetadata === null}>
+      <SpacedList row>
+        {poolsData.map((pool, index) => {
+
+          const poolPriceE18 = getE18PriceForSqrtX96Price(bnf(poolsCurrentData[pool.address].sqrtPriceX96))
+          const userLiquidity = bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity)
+
+          const positionToken0Value = userLiquidity.mul(mnt(1)).div(sqrtBigNumber(poolPriceE18.mul(mnt(1))))
+          const positionToken1Value = userLiquidity.mul(sqrtBigNumber(poolPriceE18.mul(mnt(1)))).div(mnt(1))
+
+          return (
+            <Tile
+              key={index}
+              style={{width: '100%', padding: 40 }}>
+              <SpacedList spacing={40}>
+                <SpacedList spacing={10}>
+                  <LargeText size={28}>{pool.title} Liquidity</LargeText>
+                  <Text>{roundToXDecimals(pool.portion * 100, 2)}% of Tcp rewards</Text>
+                </SpacedList>
+                <SpacedList spacing={10}>
+                  <LargeText>
+                    Your Position:
+                  </LargeText>
+                  <SpacedList row spacing={5}>
+                    <TitleText>
+                    {numDisplay(unscale(positionToken0Value, pool.token0.decimals))}
+                    </TitleText>
+                    <Text>
+                      {pool.token0.displaySymbol}
+                    </Text>
+                  </SpacedList>
+                  <SpacedList row spacing={5}>
+                    <TitleText>
+                      {numDisplay(unscale(positionToken1Value, pool.token1.decimals))}
+                    </TitleText>
+                    <Text>
+                      {pool.token1.displaySymbol}
+                    </Text>
+                  </SpacedList>
+                </SpacedList>
+                <SpacedList row spacing={20}>
+                  <Button
+                    size='md'
+                    onClick={() => history.push(`/liquidity/add/${pool.poolIDString}`)}>
+                    Add
+                  </Button>
+                  <Button
+                    size='md'
+                    kind='secondary'
+                    disabled={bnf(poolsCurrentData[pool.address].userLiquidityPosition.liquidity).isZero()}
+                    onClick={() => history.push(`/liquidity/remove/${pool.poolIDString}`)}>
+                    Remove
+                  </Button>
+                </SpacedList>
+              </SpacedList>
+            </Tile>
+          )
+        })}
+        <ClaimRewardsButton
+          txArgs={{
+            type: TransactionType.ClaimAllLiquidityPositionRewards,
+            poolIDs: poolIDsWithRewards,
+            Rewards: contracts.Rewards,
+          }}
+          count={totalApproximateRewards}
+          disabled={false}
+          walletToken={WalletToken.Tcp}
+        />
+      </SpacedList>
+    </OneColumnDisplay>
   )
 }
 

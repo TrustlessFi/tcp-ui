@@ -444,8 +444,8 @@ const ManagePosition = () => {
         {leftButtons}
       </SpacedList>
 
-  const columnOne =
-    <>
+  return (
+    <OneColumnDisplay loading={userAddress !== null && dataNull}>
       <Tile style={{padding: 40, marginTop: 40}}>
         <SpacedList spacing={40}>
           <div style={{display: 'float', alignItems: 'center'}}>
@@ -664,13 +664,7 @@ const ManagePosition = () => {
             />
           </div>
       }
-    </>
-
-  return (
-    <OneColumnDisplay
-      columnOne={columnOne}
-      loading={userAddress !== null && dataNull}
-    />
+    </OneColumnDisplay>
   )
 }
 

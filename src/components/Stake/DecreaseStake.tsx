@@ -105,75 +105,70 @@ const DecreaseStake = () => {
       Cancel
     </Button>
 
-  const columnOne =
-    <Tile style={{padding: 40, marginTop: 40}}>
-      <SpacedList spacing={40}>
-        <Text size={28}>
-          Withdraw Hue
-        </Text>
-        <SpacedList spacing={5}>
-          <SpacedList row spacing={5}>
-            <TitleText>
-              {numDisplay(lentHueCount, 4)}
-            </TitleText>
-            <Text>
-              Hue Staked
-            </Text>
+  return (
+    <OneColumnDisplay light loading={userAddress !== null && dataNull}>
+      <Tile style={{padding: 40, marginTop: 40}}>
+        <SpacedList spacing={40}>
+          <Text size={28}>
+            Withdraw Hue
+          </Text>
+          <SpacedList spacing={5}>
+            <SpacedList row spacing={5}>
+              <TitleText>
+                {numDisplay(lentHueCount, 4)}
+              </TitleText>
+              <Text>
+                Hue Staked
+              </Text>
+            </SpacedList>
+          </SpacedList>
+          <FullNumberInput
+            title='Amount to Withdraw'
+            action={(value: number) => setAmount(value)}
+            light
+            value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
+            unit='Hue'
+            // onFocusUpdate={setCollateralIsFocused}
+            defaultButton={{
+              title: 'Max',
+              action: () => setAmount(lentHueCount),
+            }}
+          />
+          <SpacedList style={{marginTop: 40}}>
+            {
+              onboarding.approvingLendHue
+              ? <SpacedList spacing={20}>
+                  <ActionSteps
+                    action='withdrawing'
+                    disabled={isFailing || dataNull}
+                    steps={[
+                      {
+                        txArgs: {
+                          type: TransactionType.ApproveLendHue,
+                          LendHue: contracts === null ? '' : contracts.LendHue,
+                          spenderAddress: contracts === null ? '' : contracts.Market,
+                        },
+                        title: 'Approve Withdraw',
+                        buttonTitle: 'Approve',
+                        complete: lendHueApproved,
+                      },{
+                        txArgs: withdrawArgs,
+                        title: 'Withdraw',
+                        buttonTitle: 'Confirm',
+                      }
+                    ]}
+                  />
+                  {cancelButton}
+                </SpacedList>
+              : <SpacedList row spacing={20}>
+                  {withdrawButton}
+                  {cancelButton}
+                </SpacedList>
+            }
           </SpacedList>
         </SpacedList>
-        <FullNumberInput
-          title='Amount to Withdraw'
-          action={(value: number) => setAmount(value)}
-          light
-          value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
-          unit='Hue'
-          // onFocusUpdate={setCollateralIsFocused}
-          defaultButton={{
-            title: 'Max',
-            action: () => setAmount(lentHueCount),
-          }}
-        />
-        <SpacedList style={{marginTop: 40}}>
-          {
-            onboarding.approvingLendHue
-            ? <SpacedList spacing={20}>
-                <ActionSteps
-                  action='withdrawing'
-                  disabled={isFailing || dataNull}
-                  steps={[
-                    {
-                      txArgs: {
-                        type: TransactionType.ApproveLendHue,
-                        LendHue: contracts === null ? '' : contracts.LendHue,
-                        spenderAddress: contracts === null ? '' : contracts.Market,
-                      },
-                      title: 'Approve Withdraw',
-                      buttonTitle: 'Approve',
-                      complete: lendHueApproved,
-                    },{
-                      txArgs: withdrawArgs,
-                      title: 'Withdraw',
-                      buttonTitle: 'Confirm',
-                    }
-                  ]}
-                />
-                {cancelButton}
-              </SpacedList>
-            : <SpacedList row spacing={20}>
-                {withdrawButton}
-                {cancelButton}
-              </SpacedList>
-          }
-        </SpacedList>
-      </SpacedList>
-    </Tile>
-
-  return (
-    <OneColumnDisplay
-      columnOne={columnOne}
-      light
-      loading={userAddress !== null && dataNull}
-    />
+      </Tile>
+    </OneColumnDisplay>
   )
 }
 

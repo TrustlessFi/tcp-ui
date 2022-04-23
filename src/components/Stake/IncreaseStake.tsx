@@ -127,95 +127,89 @@ const IncreaseStake = () => {
       Cancel
     </Button>
 
-  const columnOne =
-    <Tile style={{padding: 40, marginTop: 40}}>
-      <SpacedList spacing={40}>
-        <Text size={28}>
-          Stake Hue
-        </Text>
-        <SpacedList row spacing={5}>
-          <TitleText>
-            {numDisplay(lentHueCount, 2)}
-          </TitleText>
-          <Text>
-            Hue Staked
-          </Text>
-        </SpacedList>
-        <FullNumberInput
-          title='Amount to Stake'
-          action={(value: number) => setAmount(value)}
-          light
-          value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
-          unit='Hue'
-          // onFocusUpdate={setCollateralIsFocused}
-          defaultButton={{
-            title: 'Max',
-            action: () => setAmount(currentWalletBalance),
-          }}
-          subTitle={
-            <Text>
-              You have
-              {' '}
-              <Text color={currentWalletBalance < amount ? red[50]: undefined}>
-                <Bold>
-                  {numDisplay(currentWalletBalance, 2)}{' '}
-                  Hue
-                </Bold>
-              </Text>
-              {' '}
-              in your wallet available to stake
-            </Text>
-          }
-        />
-        <PositionInfoItem
-          key='apr_info'
-          icon={<Calculation32 />}
-          title='New APR'
-          value={numDisplay(apr * 100, 2)}
-          unit='%'
-        />
-        <div style={{marginTop: 40}}>
-          {
-            onboarding.approvingHue
-            ? <SpacedList spacing={20}>
-                <ActionSteps
-                  action='staking'
-                  disabled={isFailing || dataNull}
-                  steps={[
-                    {
-                      txArgs: {
-                        type: TransactionType.ApproveHue,
-                        Hue: contracts === null ? '' : contracts.Hue,
-                        spenderAddress: contracts === null ? '' : contracts.Market,
-                      },
-                      title: 'Approve Stake',
-                      buttonTitle: 'Approve',
-                      complete: hueApproved,
-                    },{
-                      txArgs: stakeArgs,
-                      title: 'Stake',
-                      buttonTitle: 'Confirm',
-                    }
-                  ]}
-                />
-                {cancelButton}
-              </SpacedList>
-            : <SpacedList row spacing={20}>
-                {stakeButton}
-                {cancelButton}
-              </SpacedList>
-          }
-        </div>
-      </SpacedList>
-    </Tile>
-
-
   return (
-    <OneColumnDisplay
-      columnOne={columnOne}
-      light
-      loading={userAddress !== null && dataNull}
-    />
+    <OneColumnDisplay light loading={userAddress !== null && dataNull}>
+      <Tile style={{padding: 40, marginTop: 40}}>
+        <SpacedList spacing={40}>
+          <Text size={28}>
+            Stake Hue
+          </Text>
+          <SpacedList row spacing={5}>
+            <TitleText>
+              {numDisplay(lentHueCount, 2)}
+            </TitleText>
+            <Text>
+              Hue Staked
+            </Text>
+          </SpacedList>
+          <FullNumberInput
+            title='Amount to Stake'
+            action={(value: number) => setAmount(value)}
+            light
+            value={parseFloat(numDisplay(amount, 2).replace(',', ''))}
+            unit='Hue'
+            // onFocusUpdate={setCollateralIsFocused}
+            defaultButton={{
+              title: 'Max',
+              action: () => setAmount(currentWalletBalance),
+            }}
+            subTitle={
+              <Text>
+                You have
+                {' '}
+                <Text color={currentWalletBalance < amount ? red[50]: undefined}>
+                  <Bold>
+                    {numDisplay(currentWalletBalance, 2)}{' '}
+                    Hue
+                  </Bold>
+                </Text>
+                {' '}
+                in your wallet available to stake
+              </Text>
+            }
+          />
+          <PositionInfoItem
+            key='apr_info'
+            icon={<Calculation32 />}
+            title='New APR'
+            value={numDisplay(apr * 100, 2)}
+            unit='%'
+          />
+          <div style={{marginTop: 40}}>
+            {
+              onboarding.approvingHue
+              ? <SpacedList spacing={20}>
+                  <ActionSteps
+                    action='staking'
+                    disabled={isFailing || dataNull}
+                    steps={[
+                      {
+                        txArgs: {
+                          type: TransactionType.ApproveHue,
+                          Hue: contracts === null ? '' : contracts.Hue,
+                          spenderAddress: contracts === null ? '' : contracts.Market,
+                        },
+                        title: 'Approve Stake',
+                        buttonTitle: 'Approve',
+                        complete: hueApproved,
+                      },{
+                        txArgs: stakeArgs,
+                        title: 'Stake',
+                        buttonTitle: 'Confirm',
+                      }
+                    ]}
+                  />
+                  {cancelButton}
+                </SpacedList>
+              : <SpacedList row spacing={20}>
+                  {stakeButton}
+                  {cancelButton}
+                </SpacedList>
+            }
+          </div>
+        </SpacedList>
+      </Tile>
+    </OneColumnDisplay>
   )
 }
 

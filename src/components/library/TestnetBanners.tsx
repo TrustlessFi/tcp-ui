@@ -66,33 +66,30 @@ const TestnetBanners = ({}:{}) => {
   const isCloseable = tabs.currentTab !== Tab.Transactions
 
   return (
-    <OneColumnDisplay
-      columnOne={
-        <SpacedList spacing={-20}>
-          {
-            testnetBanner.discordBannerClosed && isCloseable
-            ? null
-            : <TestnetBanner
-                isCloseable={isCloseable}
-                onClose={() => dispatch(setDiscordBannerClosed(true))}
-                text='Discuss the testnet and request assets'
-                link='http://discord.gg/pNxCph5CKk'
-              />
-          }
-          {
-            testnetBanner.tutorialBannerClosed && isCloseable
-            ? null
-            : <TestnetBanner
-                isCloseable={isCloseable}
-                onClose={() => dispatch(setTutorialBannerClosed(true))}
-                text='Learn more about Trustless Currency Protocol'
-                link='https://www.trustless.fi/blog/using-the-trustless-currency-protocol'
-              />
-          }
-        </SpacedList>
-      }
-      loading={false}
-    />
+    <OneColumnDisplay loading={false} >
+      <SpacedList spacing={-20}>
+        {
+          testnetBanner.discordBannerClosed && isCloseable
+          ? null
+          : <TestnetBanner
+              isCloseable={isCloseable}
+              onClose={() => dispatch(setDiscordBannerClosed(true))}
+              text='Discuss the testnet and request assets'
+              link='http://discord.gg/pNxCph5CKk'
+            />
+        }
+        {
+          testnetBanner.tutorialBannerClosed && isCloseable
+          ? null
+          : <TestnetBanner
+              isCloseable={isCloseable}
+              onClose={() => dispatch(setTutorialBannerClosed(true))}
+              text='Learn more about Trustless Currency Protocol'
+              link='https://www.trustless.fi/blog/using-the-trustless-currency-protocol'
+            />
+        }
+      </SpacedList>
+    </OneColumnDisplay>
   )
 }
 
