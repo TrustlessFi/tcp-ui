@@ -39,6 +39,7 @@ import {
 } from 'carbon-components-react'
 import { getCollateralRatioColor } from './'
 import { setApprovingEth, setApprovingHue } from '../../slices/onboarding'
+import { isMobile } from 'react-device-detect'
 
 const COLLATERAL_DECIMALS = 4
 const DEBT_DECIMALS = 4
@@ -406,43 +407,56 @@ const ManagePosition = () => {
       .filter(failure => !failure.silent)
       .filter(failure => failure.failing)
 
-  const getMultiButtonDisplay = (leftButtons: ReactNode[], showClose = false) =>
-    showClose
-    ? <div style={{display: 'flex', borderColor: 'red'}}>
-        <SpacedList
-          row
-          spacing={20}
-          style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
-          {leftButtons}
-        </SpacedList>
-        {
-          isEditing
-          && position !== null
-          ? <div
-              style={{float: 'right'}}>
-              <Button
-                disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
-                onClick={() => {
-                  setDebtCount(0)
-                  setCollateralCount(0)
-                  setDeleteSelected(true)
-                }}
-                kind='danger--ghost'
-                size='md'>
-                <span style={{whiteSpace: 'nowrap'}}>
-                  Close Position
-                </span>
-              </Button>
-            </div>
-          : null
-        }
-      </div>
-    : <SpacedList
+  const getMultiButtonDisplay = (leftButtons: ReactNode[], showClose = false) => {
+    const leftButtonsDisplay =
+      <SpacedList
         row
         spacing={20}
-        style={{float: 'left', width: '100%', marginRight: '1em', whiteSpace: 'nowrap'}}>
+        style={{width: '100%'}}>
         {leftButtons}
       </SpacedList>
+
+    const closeButton =
+      position === null
+      ? null
+      : <Button
+          disabled={deleteSelected || (position.collateralCount === 0 && positionDebtCount === 0)}
+          onClick={() => {
+            setDebtCount(0)
+            setCollateralCount(0)
+            setDeleteSelected(true)
+          }}
+          kind='danger--ghost'
+          size='md'>
+          <span style={{whiteSpace: 'nowrap'}}>
+            Close Position
+          </span>
+        </Button>
+
+    return (
+      isMobile
+      ? (
+          <SpacedList spacing={20}>
+            {leftButtonsDisplay}
+              {closeButton}
+          </SpacedList>
+      ) : (
+        showClose
+        ? <div style={{display: 'flex'}}>
+            {leftButtonsDisplay}
+            {
+              isEditing
+              && position !== null
+              ? <div style={{float: 'right'}}>
+                  {closeButton}
+                </div>
+              : null
+            }
+          </div>
+        : leftButtonsDisplay
+      )
+    )
+  }
 
   return (
     <OneColumnDisplay loading={userAddress !== null && dataNull}>
