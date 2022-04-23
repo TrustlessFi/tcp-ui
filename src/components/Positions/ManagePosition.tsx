@@ -384,8 +384,8 @@ const ManagePosition = () => {
     collateralIncrease === 0
     ? null
     : (collateralIncrease > 0
-      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, COLLATERAL_DECIMALS)} Eth`}
-      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), COLLATERAL_DECIMALS)} Eth`})
+      ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, COLLATERAL_DECIMALS)} TruEth`}
+      : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), COLLATERAL_DECIMALS)} TruEth`})
 
   const successDisplay: ReactFragment | null =
     debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
