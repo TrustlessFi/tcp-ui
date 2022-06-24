@@ -8,7 +8,7 @@ import ProtocolContract, { RootContract } from '../contracts/ProtocolContract'
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import {
   Market, Rewards, Governor, Hue, LendHue, TruEth,
-  TestnetMultiMint,
+  TestnetMultiMint, ProtocolDataAggregator,
  } from '@trustlessfi/typechain'
 import getContract, { contract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
@@ -48,6 +48,8 @@ export enum TransactionType {
   RemoveMintTruEthAddressAuth,
 
   SetPhaseOneStartTime,
+
+  IncrementCounter,
 }
 
 export enum TransactionStatus {
@@ -185,25 +187,32 @@ export interface txSetPhaseOneStartTime {
   Governor: string
 }
 
-export type TransactionArgs =
-  txCreatePosition |
-  txUpdatePosition |
-  txStake |
-  txWithdraw |
-  txClaimPositionRewards |
-  txClaimLiquidityPositionRewards |
-  txApprovePoolToken |
-  txApproveHue |
-  txApproveLendHue |
-  txApproveEth |
-  txAddLiquidity |
-  txRemoveLiquidity |
+export interface txIncrementCounter {
+  type: TransactionType.IncrementCounter
+  counterValue: number
+  dataAggregator: string
+}
 
-  txMintTruEth |
-  txTestnetMultiMint |
-  txAddMintERC20AddressAuth |
-  txRemoveMintERC20AddressAuth |
-  txSetPhaseOneStartTime
+export type TransactionArgs =
+  | txCreatePosition
+  | txUpdatePosition
+  | txStake
+  | txWithdraw
+  | txClaimPositionRewards
+  | txClaimLiquidityPositionRewards
+  | txApprovePoolToken
+  | txApproveHue
+  | txApproveLendHue
+  | txApproveEth
+  | txAddLiquidity
+  | txRemoveLiquidity
+
+  | txMintTruEth
+  | txTestnetMultiMint
+  | txAddMintERC20AddressAuth
+  | txRemoveMintERC20AddressAuth
+  | txSetPhaseOneStartTime
+  | txIncrementCounter
 
 export interface TransactionData {
   args: TransactionArgs
@@ -264,6 +273,9 @@ export const getTxLongName = (args: TransactionArgs) => {
       return `Unapproved ${args.address} for spending TruEth`
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time: ${args.startTime}`
+
+    case TransactionType.IncrementCounter:
+      return `Increment counter from: ${args.counterValue}`
     default:
       assertUnreachable(type)
   }
@@ -307,6 +319,9 @@ export const getTxShortName = (type: TransactionType) => {
       return `Unapproved address for minting TruEth`
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time`
+
+    case TransactionType.IncrementCounter:
+      return `Increment counter`
     default:
       assertUnreachable(type)
   }
@@ -341,6 +356,7 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.AddMintTruEthAddressAuth:
     case TransactionType.RemoveMintTruEthAddressAuth:
     case TransactionType.SetPhaseOneStartTime:
+    case TransactionType.IncrementCounter:
       return (type as number).toString()
     default:
       assertUnreachable(type)
@@ -392,6 +408,10 @@ const executeTransaction = async (
 
   const getTestnetMultiMint = (address: string) =>
     getContract<TestnetMultiMint>(RootContract.TestnetMultiMint, address)
+      .connect(provider.getSigner())
+
+  const getProtocolDataAggregator = (address: string) =>
+    getContract<ProtocolDataAggregator>(RootContract.ProtocolDataAggregator, address)
       .connect(provider.getSigner())
 
   const type = args.type
@@ -482,6 +502,12 @@ const executeTransaction = async (
     case TransactionType.RemoveMintTruEthAddressAuth:
       return await getEthERC20(args.truEth).removeMinter(args.address, overrides)
 
+    case TransactionType.RemoveMintTruEthAddressAuth:
+      return await getEthERC20(args.truEth).removeMinter(args.address, overrides)
+
+    case TransactionType.IncrementCounter:
+      return await getProtocolDataAggregator(args.dataAggregator).incrementCounter()
+
     default:
       assertUnreachable(type)
   }
@@ -524,6 +550,7 @@ export const waitForTransaction = async (
     const clearTruEth = () => dispatch(allSlices.truEthInfo.slice.actions.clearData())
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
     const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
+    const clearCounterInfo = () => dispatch(allSlices.counterInfo.slice.actions.clearData())
 
     const clearMarketState = () => {
       clearSDI()
@@ -589,6 +616,9 @@ export const waitForTransaction = async (
       case TransactionType.MintTruEth:
         clearTruEth()
         clearBalances()
+        break
+      case TransactionType.IncrementCounter:
+        clearCounterInfo()
         break
       case TransactionType.TestnetMultiMint:
       case TransactionType.AddMintTruEthAddressAuth:

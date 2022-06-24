@@ -4,6 +4,7 @@ import { balances } from './balances'
 import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
+import { counterInfo } from './counter'
 import { governorInfo } from './governor'
 import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
@@ -42,6 +43,7 @@ export type RootState = {
 
   balances: sliceState<balances>
   contracts: sliceState<contractsInfo>
+  counterInfo: sliceState<counterInfo>
   currentChainInfo: sliceState<currentChainInfo>
   governorInfo: sliceState<governorInfo>
   liquidationsInfo: sliceState<liquidationsInfo>

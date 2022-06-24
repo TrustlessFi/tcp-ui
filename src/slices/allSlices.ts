@@ -2,6 +2,7 @@ import chainIDSlice from './chainID'
 import userAddressSlice from './userAddress'
 import balancesSlice from './balances'
 import contractsSlice from './contracts'
+import counterSlice from './counter'
 import currentChainInfoSlice from './currentChainInfo'
 import governorSlice from './governor'
 import liquidationsSlice from './liquidations'
@@ -47,6 +48,7 @@ const allSlicesRaw = {
   governorInfo: governorSlice,
   liquidationsInfo: liquidationsSlice,
   marketInfo: marketSlice,
+  counterInfo: counterSlice,
   poolsCurrentData: poolsCurrentDataSlice,
   poolsMetadata: poolsMetadataSlice,
   positions: positionsSlice,

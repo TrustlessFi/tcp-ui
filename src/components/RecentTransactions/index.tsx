@@ -1,6 +1,8 @@
 import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile, Link } from 'carbon-components-react'
 import AppTile from '../library/AppTile'
+import { TransactionType, txWithdraw } from '../../slices/transactions'
+import CreateTransactionButton from '../library/CreateTransactionButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import Center from '../library/Center'
@@ -230,6 +232,39 @@ const ViewOnEtherscanButton = ({
 }
 */
 
+const Counter = () => {
+  const dispatch = useAppDispatch()
+
+  const {
+    counterInfo,
+    rootContracts,
+  } = waitFor([
+    'counterInfo',
+    'rootContracts',
+  ], selector, dispatch)
+
+  console.log({counterInfo})
+
+  return (
+    <Tile>
+      <SpacedList spacing={20} row>
+        <Text>Counter: [{counterInfo === null ? 'Loading...' : counterInfo.counterValue}]</Text>
+        <CreateTransactionButton
+          disabled={counterInfo === null}
+          size='sm'
+          kind='ghost'
+          title='Increment counter'
+          txArgs={{
+            type: TransactionType.IncrementCounter,
+            counterValue: counterInfo === null ? 0 : counterInfo.counterValue,
+            dataAggregator: rootContracts === null ? '' : rootContracts.protocolDataAggregator,
+          }}
+        />
+      </SpacedList>
+    </Tile>
+  )
+}
+
 const RecentTransactions = () => {
   const dispatch = useAppDispatch()
 
@@ -337,6 +372,7 @@ const RecentTransactions = () => {
           }
         </SpacedList>
       </Tile>
+      <Counter />
     </OneColumnDisplay>
   )
 }
