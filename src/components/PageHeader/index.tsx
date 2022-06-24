@@ -132,16 +132,14 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
-  /*
+
+  const debugSuite =
+    <>
       {
         MetaMaskOnboarding.isMetaMaskInstalled() && chainID !== null
         ? <MintEthModal />
         : null
       }
-  */
-
-  const debugSuite =
-    <>
       {chainID !== ChainID.Hardhat ? null : <DebugUtils />}
       <GuardianModal />
       <NetworkIndicator />

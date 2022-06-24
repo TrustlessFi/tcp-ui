@@ -26,11 +26,9 @@ const testnetMultiMint = async (addresses: string[]) => {
     ) as unknown as TestnetMultiMint
 
   const tx = await multiMintContract.connect(signer).multiMint(
-    chainEthAddress,
-    chainEthCount,
     truEthCount,
     addresses,
-    { gasLimit: 21001 }
+    { gasLimit: 21001, value: chainEthCount }
   )
 
   const receipt = await provider.waitForTransaction(tx.hash)

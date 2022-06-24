@@ -21,9 +21,6 @@ const MintEthModal = () => {
   const [ amount, setAmount ] = useState(5)
   const [ tokens, setTokens ] = useState('')
 
-  const [ approveAddress, setApproveAddress ] = useState('')
-  const [ unapproveAddress, setUnapproveAddress ] = useState('')
-
   const [ addAuthAddress, setAddAuthAddress ] = useState('')
   const [ removeAuthAddress, setRemoveAuthAddress ] = useState('')
 
@@ -37,7 +34,9 @@ const MintEthModal = () => {
     'rootContracts',
   ], selector, dispatch)
 
-  if (truEthInfo === null || (!truEthInfo.isAdmin && !truEthInfo.isAuthorized)) {
+  console.log({truEthInfo})
+
+  if (truEthInfo === null || (!truEthInfo.isAdmin && !truEthInfo.isMinter)) {
     return <></>
   }
 
@@ -129,7 +128,7 @@ const MintEthModal = () => {
           {tokenList.length} Addresses
         </LargeText>
         <CreateTransactionButton
-          title={truEthInfo.chainEthIsApproved ? 'Confirm' : 'Approve above first'}
+          title='Confirm'
           key='mint_eth_erc20'
           disabled={tokenList.length === 0 || amount === 0 || contracts === null}
           size='md'
@@ -140,22 +139,6 @@ const MintEthModal = () => {
             chainEthCount: 1e-5,
             truEthCount: amount,
             addresses: tokenList,
-          }}
-        />
-      </SpacedList>
-
-    const approveChainEth =
-      <SpacedList spacing={10}>
-        Approve before minting above, you only need to do this once
-        <CreateTransactionButton
-          title='Approve Chain Eth'
-          key='approve_chain_eth'
-          disabled={contracts === null}
-          size='md'
-          txArgs={{
-            type: TransactionType.ApproveChainEth,
-            chainEth: rootContracts === null ? '' : rootContracts.chainEth,
-            address: rootContracts === null ? '' : rootContracts.testnetMultiMint,
           }}
         />
       </SpacedList>
@@ -172,11 +155,6 @@ const MintEthModal = () => {
       <SpacedList spacing={32}>
         <Tile>
           <SpacedList spacing={40}>
-            {
-              truEthInfo.chainEthIsApproved
-              ? null
-              : approveChainEth
-            }
             {mintTokens}
             <hr />
             {

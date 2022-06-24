@@ -4,12 +4,10 @@ import ProtocolContract from '../contracts/ProtocolContract'
 import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
-import { addressToERC20, uint255Max } from '../../utils'
 
 export interface truEthInfo {
-  isAuthorized: boolean
   isAdmin: boolean
-  chainEthIsApproved: boolean
+  isMinter: boolean
 }
 
 const truEthSlice = createChainDataSlice({
@@ -23,9 +21,7 @@ const truEthSlice = createChainDataSlice({
       const truEth = getContract<TruEth>(ProtocolContract.TruEth, args.contracts.TruEth)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-      const chainEth = addressToERC20(args.rootContracts.chainEth)
-
-      const { truEthData, chainEthAllowance } = await executeMulticalls(
+      const { truEthData } = await executeMulticalls(
         trustlessMulticall,
         {
           truEthData: oneContractManyFunctionMC(
@@ -40,22 +36,14 @@ const truEthSlice = createChainDataSlice({
               isMinter: [args.userAddress],
             }
           ),
-          chainEthAllowance: oneContractManyFunctionMC(
-            chainEth,
-            {
-              allowance: rc.BigNumber,
-            },
-            {
-              allowance: [args.userAddress, args.rootContracts.testnetMultiMint],
-            }
-          ),
         }
       )
 
+      console.log("HERE 2")
+
       const result = {
-        isAuthorized: truEthData.isMinter,
-        isAdmin: truEthData.isAdmin || args.userAddress === truEthData.firstAdmin,
-        chainEthIsApproved: chainEthAllowance.allowance.gt(uint255Max),
+        isAdmin: args.userAddress === truEthData.firstAdmin || truEthData.isAdmin,
+        isMinter: truEthData.isMinter,
       }
       return result
     },
