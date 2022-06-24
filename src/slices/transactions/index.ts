@@ -45,8 +45,6 @@ export enum TransactionType {
   MintTruEth,
   TestnetMultiMint,
   ApproveChainEth,
-  ApproveTruEthAddress,
-  UnapproveTruEthAddress,
   AddMintTruEthAddressAuth,
   RemoveMintTruEthAddressAuth,
 
@@ -176,18 +174,6 @@ export interface txApproveChainEth {
   chainEth: string
 }
 
-export interface txApproveEthERC20 {
-  type: TransactionType.ApproveTruEthAddress
-  address: string
-  truEth: string
-}
-
-export interface txUnapproveEthERC20 {
-  type: TransactionType.UnapproveTruEthAddress
-  address: string
-  truEth: string
-}
-
 export interface txAddMintERC20AddressAuth {
   type: TransactionType.AddMintTruEthAddressAuth
   address: string
@@ -223,8 +209,6 @@ export type TransactionArgs =
 
   txMintTruEth |
   txTestnetMultiMint |
-  txApproveEthERC20 |
-  txUnapproveEthERC20 |
   txAddMintERC20AddressAuth |
   txRemoveMintERC20AddressAuth |
   txSetPhaseOneStartTime
@@ -284,10 +268,6 @@ export const getTxLongName = (args: TransactionArgs) => {
       return `Mint ${numDisplay(args.amount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
     case TransactionType.TestnetMultiMint:
       return `Mint testnet Eth and ${numDisplay(args.truEthCount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
-    case TransactionType.ApproveTruEthAddress:
-      return `Approved ${args.address} for spending TruEth`
-    case TransactionType.UnapproveTruEthAddress:
-      return `Unapproved ${args.address} for spending TruEth`
     case TransactionType.AddMintTruEthAddressAuth:
       return `Approved ${args.address} for minting TruEth`
     case TransactionType.RemoveMintTruEthAddressAuth:
@@ -333,10 +313,6 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Mint Eth ERC20'
     case TransactionType.TestnetMultiMint:
       return 'Mint Testnet Assets'
-    case TransactionType.ApproveTruEthAddress:
-      return `Approved address for spending TruEth`
-    case TransactionType.UnapproveTruEthAddress:
-      return `Unapproved address for spending TruEth`
     case TransactionType.AddMintTruEthAddressAuth:
       return `Approved address for minting TruEth`
     case TransactionType.RemoveMintTruEthAddressAuth:
@@ -375,8 +351,6 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.ApproveChainEth:
     case TransactionType.MintTruEth:
     case TransactionType.TestnetMultiMint:
-    case TransactionType.ApproveTruEthAddress:
-    case TransactionType.UnapproveTruEthAddress:
     case TransactionType.AddMintTruEthAddressAuth:
     case TransactionType.RemoveMintTruEthAddressAuth:
     case TransactionType.SetPhaseOneStartTime:
@@ -522,17 +496,11 @@ const executeTransaction = async (
         overrides
       )
 
-    case TransactionType.ApproveTruEthAddress:
-      return await getEthERC20(args.truEth).approveAddress(args.address, overrides )
-
-    case TransactionType.UnapproveTruEthAddress:
-      return await getEthERC20(args.truEth).removeAddressApproval(args.address, overrides )
-
     case TransactionType.AddMintTruEthAddressAuth:
-      return await getEthERC20(args.truEth).addAuth(args.address, overrides )
+      return await getEthERC20(args.truEth).addMinter(args.address, overrides )
 
     case TransactionType.RemoveMintTruEthAddressAuth:
-      return await getEthERC20(args.truEth).removeAuth(args.address, overrides )
+      return await getEthERC20(args.truEth).removeMinter(args.address, overrides )
 
     default:
       assertUnreachable(type)
@@ -646,8 +614,6 @@ export const waitForTransaction = async (
         clearTruEth()
         break
       case TransactionType.TestnetMultiMint:
-      case TransactionType.ApproveTruEthAddress:
-      case TransactionType.UnapproveTruEthAddress:
       case TransactionType.AddMintTruEthAddressAuth:
       case TransactionType.RemoveMintTruEthAddressAuth:
         // Do nothing

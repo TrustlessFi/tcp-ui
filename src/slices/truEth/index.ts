@@ -31,11 +31,13 @@ const truEthSlice = createChainDataSlice({
           truEthData: oneContractManyFunctionMC(
             truEth,
             {
-              admin: rc.String,
-              isAuthorized: rc.Boolean,
+              firstAdmin: rc.String,
+              isAdmin: rc.Boolean,
+              isMinter: rc.Boolean,
             },
             {
-              isAuthorized: [args.userAddress],
+              isAdmin: [args.userAddress],
+              isMinter: [args.userAddress],
             }
           ),
           chainEthAllowance: oneContractManyFunctionMC(
@@ -51,8 +53,8 @@ const truEthSlice = createChainDataSlice({
       )
 
       const result = {
-        isAuthorized: truEthData.isAuthorized,
-        isAdmin: args.userAddress === truEthData.admin,
+        isAuthorized: truEthData.isMinter,
+        isAdmin: truEthData.isAdmin || args.userAddress === truEthData.firstAdmin,
         chainEthIsApproved: chainEthAllowance.allowance.gt(uint255Max),
       }
       return result

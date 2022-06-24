@@ -97,54 +97,6 @@ const MintEthModal = () => {
       </SpacedList>
     </SpacedList>
 
-    /*
-  const approveAddressDialog =
-    <SpacedList spacing={20}>
-      <SpacedList>
-        <TextInput
-          id="approve_address"
-          invalidText="A valid value is required"
-          labelText="Approve address for spending TruEth"
-          placeholder="0x1234567890123456789012345678901234567890"
-          value={approveAddress}
-          onChange={(e: any) => setApproveAddress(e.target.value)}
-        />
-        <CreateTransactionButton
-          title='Approve Address'
-          key='approve_address_button'
-          disabled={approveAddress.length !== 42 || amount === 0 || contracts === null}
-          size='md'
-          txArgs={{
-            type: TransactionType.ApproveTruEthAddress,
-            address: approveAddress,
-            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
-          }}
-        />
-      </SpacedList>
-      <SpacedList>
-        <TextInput
-          id="unapprove_address"
-          invalidText="A valid value is required"
-          labelText="Unapprove address for spending TruEth"
-          placeholder="0x1234567890123456789012345678901234567890"
-          value={unapproveAddress}
-          onChange={(e: any) => setUnapproveAddress(e.target.value)}
-        />
-        <CreateTransactionButton
-          title='Unapprove Address'
-          key='unapprove_address_button'
-          disabled={unapproveAddress.length !== 42 || amount === 0 || contracts === null}
-          size='md'
-          txArgs={{
-            type: TransactionType.UnapproveTruEthAddress,
-            address: unapproveAddress,
-            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
-          }}
-        />
-      </SpacedList>
-    </SpacedList>
-    */
-
     const mintTokens =
       <SpacedList spacing={10}>
         <NumberInput
