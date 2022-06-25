@@ -3490,13 +3490,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "@trustlessfi/addresses@npm:0.13.0"
+"@trustlessfi/addresses@npm:^0.13.1":
+  version: 0.13.1
+  resolution: "@trustlessfi/addresses@npm:0.13.1"
   dependencies:
     "@types/node": ^17.0.23
     typescript: ^4.6.3
-  checksum: 882e562132bb313c013f9398a936a3e0500d9fb08dee2c8d5c8d864eaf0ea8919766a833693b35d7ad12b08cc74d5bb8d805d397a19216cd55d508ac19919594
+  checksum: f98c0963095e5dc2860df088388d39d32591bb45f5f6949019e21bf4b2387100deb7775d9b70003210d3ac644a1b6b1b0f56e7a648a7d8bb5a9265973b961cb9
   languageName: node
   linkType: hard
 
@@ -19293,7 +19293,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/jest-dom": ^5.15.0
     "@testing-library/react": ^12.1.2
     "@testing-library/user-event": ^13.5.0
-    "@trustlessfi/addresses": ^0.13.0
+    "@trustlessfi/addresses": ^0.13.1
     "@trustlessfi/artifacts": ^0.3.22
     "@trustlessfi/multicall": ^0.4.23
     "@trustlessfi/typechain": ^0.8.22

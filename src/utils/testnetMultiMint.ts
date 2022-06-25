@@ -34,9 +34,9 @@ const testnetMultiMint = async (addresses: string[]) => {
   const receipt = await provider.waitForTransaction(tx.hash)
   const succeeded = receipt.status === 1
   if (succeeded) {
-    console.log(`tx ${tx.hash} succeeded`)
+    console.info(`tx ${tx.hash} succeeded`)
   } else {
-    console.log(`tx ${tx.hash} failed`)
+    console.info(`tx ${tx.hash} failed`)
   }
 }
 

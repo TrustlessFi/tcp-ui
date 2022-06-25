@@ -44,8 +44,10 @@ export enum TransactionType {
 
   MintTruEth,
   TestnetMultiMint,
-  AddMintTruEthAddressAuth,
-  RemoveMintTruEthAddressAuth,
+  AddMintTruEthAuth,
+  RemoveMintTruEthAuth,
+  AddMintTruEthAdmin,
+  RemoveMintTruEthAdmin,
 
   SetPhaseOneStartTime,
 
@@ -169,14 +171,26 @@ export interface txTestnetMultiMint {
   addresses: string[]
 }
 
-export interface txAddMintERC20AddressAuth {
-  type: TransactionType.AddMintTruEthAddressAuth
+export interface txAddMintTruEthAuth {
+  type: TransactionType.AddMintTruEthAuth
   address: string
   truEth: string
 }
 
-export interface txRemoveMintERC20AddressAuth {
-  type: TransactionType.RemoveMintTruEthAddressAuth
+export interface txRemoveMintTruEthAuth {
+  type: TransactionType.RemoveMintTruEthAuth
+  address: string
+  truEth: string
+}
+
+export interface txAddMintTruEthAdmin {
+  type: TransactionType.AddMintTruEthAdmin
+  address: string
+  truEth: string
+}
+
+export interface txRemoveMintTruEthAdmin {
+  type: TransactionType.RemoveMintTruEthAdmin
   address: string
   truEth: string
 }
@@ -209,8 +223,11 @@ export type TransactionArgs =
 
   | txMintTruEth
   | txTestnetMultiMint
-  | txAddMintERC20AddressAuth
-  | txRemoveMintERC20AddressAuth
+  | txAddMintTruEthAuth
+  | txRemoveMintTruEthAuth
+  | txAddMintTruEthAdmin
+  | txRemoveMintTruEthAdmin
+
   | txSetPhaseOneStartTime
   | txIncrementCounter
 
@@ -267,10 +284,15 @@ export const getTxLongName = (args: TransactionArgs) => {
       return `Mint ${numDisplay(args.amount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
     case TransactionType.TestnetMultiMint:
       return `Mint testnet Eth and ${numDisplay(args.truEthCount)} TruEth to ${args.addresses.length} ${args.addresses.length === 1 ? 'address' : 'addresses'}`
-    case TransactionType.AddMintTruEthAddressAuth:
+    case TransactionType.AddMintTruEthAuth:
       return `Approved ${args.address} for minting TruEth`
-    case TransactionType.RemoveMintTruEthAddressAuth:
+    case TransactionType.RemoveMintTruEthAuth:
       return `Unapproved ${args.address} for spending TruEth`
+    case TransactionType.AddMintTruEthAdmin:
+      return `Added TruEth minting admin ${args.address}`
+    case TransactionType.RemoveMintTruEthAdmin:
+      return `Removed TruEth minting admin ${args.address}`
+
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time: ${args.startTime}`
 
@@ -313,10 +335,15 @@ export const getTxShortName = (type: TransactionType) => {
       return 'Mint Eth ERC20'
     case TransactionType.TestnetMultiMint:
       return 'Mint Testnet Assets'
-    case TransactionType.AddMintTruEthAddressAuth:
+    case TransactionType.AddMintTruEthAuth:
       return `Approved address for minting TruEth`
-    case TransactionType.RemoveMintTruEthAddressAuth:
+    case TransactionType.RemoveMintTruEthAuth:
       return `Unapproved address for minting TruEth`
+    case TransactionType.AddMintTruEthAdmin:
+      return `Added address for TruEth minting admin`
+    case TransactionType.RemoveMintTruEthAdmin:
+      return `Removed address for TruEth minting admin`
+
     case TransactionType.SetPhaseOneStartTime:
       return `Set phase 1 start time`
 
@@ -353,9 +380,11 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.RemoveLiquidity:
     case TransactionType.MintTruEth:
     case TransactionType.TestnetMultiMint:
-    case TransactionType.AddMintTruEthAddressAuth:
-    case TransactionType.RemoveMintTruEthAddressAuth:
+    case TransactionType.AddMintTruEthAuth:
+    case TransactionType.RemoveMintTruEthAuth:
     case TransactionType.SetPhaseOneStartTime:
+    case TransactionType.AddMintTruEthAdmin:
+    case TransactionType.RemoveMintTruEthAdmin:
     case TransactionType.IncrementCounter:
       return (type as number).toString()
     default:
@@ -373,10 +402,12 @@ const executeTransaction = async (
   provider: ethers.providers.Web3Provider,
   chainID: ChainID,
 ): Promise<ContractTransaction> => {
-  const overrides =
+  const overrides = {}
+  /*
     chainID === ChainID.ZKSyncGoerli
     ? { gasLimit: 21001 }
     : {}
+  */
 
   const getMarket = (address: string) =>
     getContract<Market>(ProtocolContract.Market, address)
@@ -496,14 +527,17 @@ const executeTransaction = async (
         {...overrides, value: scale(args.chainEthCount) }
       )
 
-    case TransactionType.AddMintTruEthAddressAuth:
+    case TransactionType.AddMintTruEthAuth:
       return await getEthERC20(args.truEth).addMinter(args.address, overrides)
 
-    case TransactionType.RemoveMintTruEthAddressAuth:
+    case TransactionType.RemoveMintTruEthAuth:
       return await getEthERC20(args.truEth).removeMinter(args.address, overrides)
 
-    case TransactionType.RemoveMintTruEthAddressAuth:
-      return await getEthERC20(args.truEth).removeMinter(args.address, overrides)
+    case TransactionType.AddMintTruEthAdmin:
+      return await getEthERC20(args.truEth).addAdmin(args.address, overrides)
+
+    case TransactionType.RemoveMintTruEthAdmin:
+      return await getEthERC20(args.truEth).removeAdmin(args.address, overrides)
 
     case TransactionType.IncrementCounter:
       return await getProtocolDataAggregator(args.dataAggregator).incrementCounter()
@@ -620,9 +654,14 @@ export const waitForTransaction = async (
       case TransactionType.IncrementCounter:
         clearCounterInfo()
         break
+      case TransactionType.AddMintTruEthAuth:
+      case TransactionType.RemoveMintTruEthAuth:
+      case TransactionType.AddMintTruEthAdmin:
+      case TransactionType.RemoveMintTruEthAdmin:
+        clearTruEth()
+        break
+
       case TransactionType.TestnetMultiMint:
-      case TransactionType.AddMintTruEthAddressAuth:
-      case TransactionType.RemoveMintTruEthAddressAuth:
         // Do nothing
         break
     default:

@@ -21,8 +21,11 @@ const MintEthModal = () => {
   const [ amount, setAmount ] = useState(5)
   const [ tokens, setTokens ] = useState('')
 
-  const [ addAuthAddress, setAddAuthAddress ] = useState('')
-  const [ removeAuthAddress, setRemoveAuthAddress ] = useState('')
+  const [ addMintAuthAddress, setAddMintAuthAddress ] = useState('')
+  const [ removeMintAuthAddress, setRemoveMintAuthAddress ] = useState('')
+
+  const [ addAdminAddress, setAddAdminAddress ] = useState('')
+  const [ removeAdminAddress, setRemoveAdminAddress ] = useState('')
 
   const {
     truEthInfo,
@@ -50,7 +53,11 @@ const MintEthModal = () => {
         .flat()
         .filter(token => token.length === 42))
 
-  const addAuthDialog =
+
+  const addressFieldDisabled = (fieldValue: string) =>
+    fieldValue.trim().length !== 42 || amount === 0 || contracts === null
+
+  const addMintAuthDialog =
     <SpacedList spacing={20}>
       <SpacedList>
         <TextInput
@@ -58,17 +65,17 @@ const MintEthModal = () => {
           invalidText="A valid value is required"
           labelText="Approve address for minting TruEth"
           placeholder="0x1234567890123456789012345678901234567890"
-          value={addAuthAddress}
-          onChange={(e: any) => setAddAuthAddress(e.target.value)}
+          value={addMintAuthAddress}
+          onChange={(e: any) => setAddMintAuthAddress(e.target.value)}
         />
         <CreateTransactionButton
-          title='Add Auth'
+          title='Add Mint Auth'
           key='add_auth_button'
-          disabled={addAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
+          disabled={addressFieldDisabled(addMintAuthAddress)}
           size='md'
           txArgs={{
-            type: TransactionType.AddMintTruEthAddressAuth,
-            address: addAuthAddress.trim(),
+            type: TransactionType.AddMintTruEthAuth,
+            address: addMintAuthAddress.trim(),
             truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
@@ -79,17 +86,63 @@ const MintEthModal = () => {
           invalidText="A valid value is required"
           labelText="Unapprove address for minting TruEth"
           placeholder="0x1234567890123456789012345678901234567890"
-          value={removeAuthAddress}
-          onChange={(e: any) => setRemoveAuthAddress(e.target.value)}
+          value={removeMintAuthAddress}
+          onChange={(e: any) => setRemoveMintAuthAddress(e.target.value)}
         />
         <CreateTransactionButton
-          title='Remove Auth'
+          title='Remove Mint Auth'
           key='unapprove_address_button'
-          disabled={removeAuthAddress.trim().length !== 42 || amount === 0 || contracts === null}
+          disabled={addressFieldDisabled(removeMintAuthAddress)}
           size='md'
           txArgs={{
-            type: TransactionType.RemoveMintTruEthAddressAuth,
-            address: removeAuthAddress.trim(),
+            type: TransactionType.RemoveMintTruEthAuth,
+            address: removeMintAuthAddress.trim(),
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
+          }}
+        />
+      </SpacedList>
+    </SpacedList>
+
+  const addAdminDialog =
+    <SpacedList spacing={20}>
+      <SpacedList>
+        <TextInput
+          id="add_admin"
+          invalidText="A valid value is required"
+          labelText="Add admin for minting TruEth"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={addAdminAddress}
+          onChange={(e: any) => setAddAdminAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Add Admin'
+          key='add_admin_button'
+          disabled={addressFieldDisabled(addAdminAddress)}
+          size='md'
+          txArgs={{
+            type: TransactionType.AddMintTruEthAdmin,
+            address: addAdminAddress.trim(),
+            truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
+          }}
+        />
+      </SpacedList>
+      <SpacedList>
+        <TextInput
+          id="remove_admin"
+          invalidText="A valid value is required"
+          labelText="Remove admin for minting TruEth"
+          placeholder="0x1234567890123456789012345678901234567890"
+          value={removeAdminAddress}
+          onChange={(e: any) => setRemoveAdminAddress(e.target.value)}
+        />
+        <CreateTransactionButton
+          title='Remove Admin'
+          key='remove_admin_button'
+          disabled={removeAdminAddress.trim().length !== 42 || amount === 0 || contracts === null}
+          size='md'
+          txArgs={{
+            type: TransactionType.RemoveMintTruEthAdmin,
+            address: removeAdminAddress.trim(),
             truEth: contracts === null ? '' : contracts[ProtocolContract.TruEth]
           }}
         />
@@ -160,7 +213,8 @@ const MintEthModal = () => {
             {
               truEthInfo !== null && truEthInfo.isAdmin
               ? <SpacedList spacing={40}>
-                  {addAuthDialog}
+                  {addMintAuthDialog}
+                  {addAdminDialog}
                 </SpacedList>
               : null
             }

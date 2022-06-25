@@ -12,7 +12,7 @@
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
-    "@trustlessfi/addresses": "^0.13.0",
+    "@trustlessfi/addresses": "^0.13.1",
     "@trustlessfi/artifacts": "^0.3.22",
     "@trustlessfi/multicall": "^0.4.23",
     "@trustlessfi/typechain": "^0.8.22",
