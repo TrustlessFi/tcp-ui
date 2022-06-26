@@ -372,7 +372,6 @@ const RecentTransactions = () => {
           }
         </SpacedList>
       </Tile>
-      <Counter />
     </OneColumnDisplay>
   )
 }
