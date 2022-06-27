@@ -9,9 +9,7 @@ export interface tabsState {
 
 const tabsSlice = createLocalSlice({
   name: 'tabs',
-  initialState: {
-    currentTab: null,
-  } as tabsState,
+  initialState: { currentTab: null } as tabsState,
   stateSelector: (state: RootState) => state.tabs,
   cacheDuration: CacheDuration.NONE,
   reducers: {

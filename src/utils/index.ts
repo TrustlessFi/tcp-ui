@@ -582,3 +582,6 @@ export const addTokenToWallet = async (
     options,
   })
 }
+
+
+export const reloadPage = () => window.location.reload()

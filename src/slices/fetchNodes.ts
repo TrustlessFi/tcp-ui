@@ -1,6 +1,7 @@
 import { NonNullValues, sliceState } from './'
 
 import { balances } from './balances'
+import { cacheBreakerState } from './cacheBreaker'
 import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
@@ -29,6 +30,7 @@ import { TransactionState } from './transactions'
 import { walletState } from './wallet'
 
 export type RootState = {
+  cacheBreaker: cacheBreakerState
   chainID: chainIDState
   rootContracts: rootContracts | null
   userAddress: string | null

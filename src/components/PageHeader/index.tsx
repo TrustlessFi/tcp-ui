@@ -132,7 +132,6 @@ const PageHeader = () => {
   const iconSize = 28
   const iconMarginHorizontal = 12
 
-
   const debugSuite =
     <>
       {

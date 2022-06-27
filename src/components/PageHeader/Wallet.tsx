@@ -15,12 +15,13 @@ import SwitchNetworkButton from '../library/SwitchNetworkButton'
 import { AppDispatch } from '../../app/store'
 import { walletConnected } from '../../slices/wallet'
 import { userAddressFound } from '../../slices/userAddress'
-import { equalStringsCaseInsensitive } from '../../utils/index';
+import { equalStringsCaseInsensitive, reloadPage } from '../../utils'
 import allSlices from '../../slices/allSlices'
 import { SliceDataType, CacheDuration } from '../../slices/'
 import waitFor from '../../slices/waitFor'
 import { setTab } from '../../slices/tabs'
 import { Tab, tabToPath } from '../../App'
+import { cacheIndex } from '../../slices/cacheBreaker'
 
 export const clearUserData = (dispatch: AppDispatch) =>
   Object.values(allSlices)
@@ -31,6 +32,10 @@ export const clearEphemeralStorage = () =>
   Object.values(allSlices)
     .filter(slice => slice.cacheDuration !== CacheDuration.INFINITE)
       .map(slice => localStorage.removeItem(slice.name))
+
+export const clearAllStorage = (dispatch: AppDispatch) =>
+  Object.values(allSlices)
+    .map(slice => dispatch(slice.slice.actions.clearData()))
 
 export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: string[]) => {
   const account = accounts.length > 0 ? accounts[0] : null
@@ -55,12 +60,19 @@ const Wallet = () => {
     wallet,
     userAddress,
     transactions,
+    cacheBreaker,
   } = waitFor([
     'chainID',
     'wallet',
     'userAddress',
     'transactions',
+    'cacheBreaker',
   ], selector, dispatch)
+
+  if (cacheBreaker.cacheIndex !== cacheIndex) {
+    localStorage.clear()
+    clearAllStorage(dispatch)
+  }
 
   const walletConnected = getWalletConnectedFunction(dispatch)
 
@@ -74,7 +86,7 @@ const Wallet = () => {
     if (newChainID === null) {
       clearUserData(dispatch)
       clearEphemeralStorage()
-      window.location.reload()
+      reloadPage()
     } else {
       dispatch(chainIDFound(newChainID))
       dispatch(chainIDFoundForRootContracts(newChainID))
