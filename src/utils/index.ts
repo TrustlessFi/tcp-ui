@@ -582,3 +582,6 @@ export const addTokenToWallet = async (
 
 
 export const reloadPage = () => window.location.reload()
+
+export const isLocalhost = () => 
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'

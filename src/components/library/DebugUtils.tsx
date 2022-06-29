@@ -4,7 +4,9 @@ import {
   NumberInput,
 } from 'carbon-components-react'
 import { useState } from 'react'
-import { onNumChange, seconds, minutes, hours, days, weeks, years }  from '../../utils/'
+import {
+  onNumChange, seconds, minutes, hours, days, weeks, years, isLocalhost,
+}  from '../../utils/'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import AppTile from '../library/AppTile'
@@ -21,14 +23,22 @@ enum TimeOption {
   years = 'years',
 }
 
-const debugProvider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/')
+const getDebugProvider = () => {
+  if (!isLocalhost()) {
+    throw new Error('Attempted to get debug provider when not on localhost.')
+  }
+  return new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/')
+}
 
 const increaseTime = async (timeIncreaseS: number): Promise<void> => {
+  const debugProvider = getDebugProvider()
+
   await debugProvider.send("evm_increaseTime", [Math.floor(timeIncreaseS)])
   await debugProvider.send("evm_mine", [])
 }
 
 const mineBlocks = async (count = 1): Promise<void> => {
+  const debugProvider = getDebugProvider()
   for(let i = 0; i < count; i++) await debugProvider.send("evm_mine", [])
 }
 

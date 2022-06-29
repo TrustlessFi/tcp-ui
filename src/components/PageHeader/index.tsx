@@ -31,7 +31,7 @@ import GuardianModal from '../library/GuardianModal'
 import MintEthModal from '../library/MintEthModal'
 import Wallet from './Wallet'
 import NetworkIndicator from '../library/NetworkIndicator'
-import { first } from '../../utils'
+import { first, isLocalhost } from '../../utils'
 
 const logo = require('../../img/tcp_logo_white.svg')
 const logo_name = require('../../img/tcp_logo_name_white.svg')
@@ -139,7 +139,7 @@ const PageHeader = () => {
         ? <MintEthModal />
         : null
       }
-      {chainID !== ChainID.Hardhat ? null : <DebugUtils />}
+      {chainID === ChainID.Hardhat && isLocalhost() ? <DebugUtils /> : null}
       <GuardianModal />
       <NetworkIndicator />
     </>
