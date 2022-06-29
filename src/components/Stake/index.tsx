@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { useHistory, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, ReactElement } from 'react'
 import waitFor from '../../slices/waitFor'
 import { Switch, Route } from 'react-router-dom'
 import ViewStake from './ViewStake'
@@ -9,7 +9,7 @@ import DecreaseStake from './DecreaseStake'
 import { StakePage, setStakePage } from '../../slices/staking'
 import { assertUnreachable } from '../../utils'
 
-const stakePageToView = (stakePage: StakePage) => {
+const stakePageToView = (stakePage: StakePage): ReactElement => {
   switch(stakePage) {
     case StakePage.View:
       return <ViewStake />
@@ -17,8 +17,6 @@ const stakePageToView = (stakePage: StakePage) => {
       return <IncreaseStake />
     case StakePage.Withdraw:
       return <DecreaseStake />
-    default:
-      assertUnreachable(stakePage)
   }
 }
 

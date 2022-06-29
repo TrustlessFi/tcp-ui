@@ -5,7 +5,7 @@ import { TransactionStatus } from '../../slices/transactions'
 import { ErrorFilled24, CheckmarkFilled24, Close24 } from '@carbon/icons-react';
 import { getOpacityTransition } from '../library'
 import ExplorerLink from '../library/ExplorerLink'
-import { assertUnreachable, timeMS } from '../../utils'
+import { timeMS } from '../../utils'
 import { notificationInfo } from '../../slices/notifications'
 import { getTxErrorName, getTxShortName } from '../../slices/transactions'
 import { useEffect, useState, useRef } from "react";

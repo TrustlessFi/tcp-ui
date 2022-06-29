@@ -1,7 +1,6 @@
 import { useAppSelector as selector } from '../../app/hooks'
 import { CSSProperties } from 'react';
 import { ChainID } from '@trustlessfi/addresses'
-import { assertUnreachable } from '@trustlessfi/utils'
 import { CarbonIconType } from '@carbon/icons-react'
 
 import { xor } from '../../utils'

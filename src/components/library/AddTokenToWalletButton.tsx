@@ -10,8 +10,8 @@ import TrustlessLogos, { WalletToken } from '../library/TrustlessLogos'
 import { ChainID } from '@trustlessfi/addresses'
 import { convertSVGtoURI } from '../../utils'
 
-export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contractsInfo) => {
-  switch(walletToken) {
+export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contractsInfo): string => {
+  switch (walletToken) {
     case WalletToken.Hue:
       return contractsInfo.Hue
     case WalletToken.LendHue:
@@ -24,9 +24,6 @@ export const getTokenAddress = (walletToken: WalletToken, contractsInfo: contrac
       return contractsInfo.TruEth
     case WalletToken.TDao:
       throw new Error('No address for TDao')
-    default:
-      assertUnreachable(walletToken)
-      throw new Error('')
   }
 }
 
