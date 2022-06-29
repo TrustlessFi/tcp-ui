@@ -1,10 +1,10 @@
+import { ethers } from 'ethers'
 import {
   Modal, Button, Dropdown, OnChangeData,
   NumberInput,
 } from 'carbon-components-react'
 import { useState } from 'react'
 import { onNumChange, seconds, minutes, hours, days, weeks, years }  from '../../utils/'
-import { increaseTime, mineBlocks }  from '../../utils/debugUtils'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import AppTile from '../library/AppTile'
@@ -19,6 +19,17 @@ enum TimeOption {
   days = 'days',
   weeks = 'weeks',
   years = 'years',
+}
+
+const debugProvider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545/')
+
+const increaseTime = async (timeIncreaseS: number): Promise<void> => {
+  await debugProvider.send("evm_increaseTime", [Math.floor(timeIncreaseS)])
+  await debugProvider.send("evm_mine", [])
+}
+
+const mineBlocks = async (count = 1): Promise<void> => {
+  for(let i = 0; i < count; i++) await debugProvider.send("evm_mine", [])
 }
 
 const DebugUtils = () => {
