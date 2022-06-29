@@ -234,7 +234,7 @@ const RecentTransactions = () => {
                       userAddress === null
                       ? null
                       : <Button
-                          small
+                          size='sm'
                           kind='tertiary'
                           disabled={txs.length === 0}
                           onClick={() => dispatch(clearUserTransactions(userAddress))}>
