@@ -31,9 +31,6 @@ const AddLiquidity = () => {
 
   const [token0Count, setToken0Count] = useState(0)
   const [token1Count, setToken1Count] = useState(0)
-  // TODO remove?
-  const [isToken0Focused, setIsToken0Focused] = useState(false)
-  const [isToken1Focused, setIsToken1Focused] = useState(false)
 
   const {
     liquidityPage,
@@ -245,7 +242,6 @@ const AddLiquidity = () => {
             light
             frozen={false}
             defaultButton={{ title: 'Max', action: setMaxForToken0 }}
-            onFocusUpdate={setIsToken0Focused}
             subTitle={
               <Text>
                 You have
@@ -268,7 +264,6 @@ const AddLiquidity = () => {
             light
             frozen={false}
             defaultButton={{title: 'Max', action: setMaxForToken1}}
-            onFocusUpdate={setIsToken1Focused}
             subTitle={
               <Text>
                 You have

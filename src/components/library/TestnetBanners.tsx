@@ -52,7 +52,7 @@ const TestnetBanner = ({
   )
 }
 
-const TestnetBanners = ({}:{}) => {
+const TestnetBanners = () => {
   const dispatch = useAppDispatch()
 
   const {

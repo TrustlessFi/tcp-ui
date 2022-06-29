@@ -1,6 +1,4 @@
 import { ReactNode} from 'react'
-import { useHistory } from 'react-router-dom'
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   LogoGithub32,
   LogoTwitter32,
@@ -9,15 +7,9 @@ import {
 } from '@carbon/icons-react'
 import SpacedList from './SpacedList'
 import Center from './Center'
-import ComposeTweetButton from './ComposeTweetButton'
-import {
-  Link,
-} from 'carbon-components-react'
 import { convertSVGtoURI } from '../../utils/'
 import TrustlessLogos, { TrustlessLogoColor } from './TrustlessLogos'
-import { Button, ButtonSize } from 'carbon-components-react'
-import { Tab, tabToPath } from '../../App'
-import waitFor from '../../slices/waitFor'
+import { Button } from 'carbon-components-react'
 import { isMobile } from 'react-device-detect'
 
 export const SocialLink = ({

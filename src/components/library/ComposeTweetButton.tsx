@@ -44,7 +44,6 @@ export const getTweetElement = (tweetType: TweetType): ReactNode => {
 
     for(let i = 0; i < outerParts.length; i++) {
       const outerPart = outerParts[i]
-        console.log({outerParts, token, outerPart, i})
       if (typeof outerPart === 'string') {
         const innerParts = outerPart.split(token)
         innerParts.map((innerPart, index) => {

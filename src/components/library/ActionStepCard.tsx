@@ -1,4 +1,3 @@
-import { Tile } from 'carbon-components-react'
 import LargeText from './LargeText'
 import CreateTransactionButton from './CreateTransactionButton'
 import { TransactionArgs } from '../../slices/transactions'
@@ -12,10 +11,8 @@ import {
   Number_732,
   Number_832,
   Number_932,
-  Checkbox32,
-  CheckboxChecked32,
 } from '@carbon/icons-react'
-import { red, orange, green, yellow, gray } from '@carbon/colors';
+import { gray } from '@carbon/colors';
 import { isMobile } from 'react-device-detect'
 
 const numberToIcon = (value: number, color?: string) => {

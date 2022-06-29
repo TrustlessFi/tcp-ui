@@ -1,7 +1,5 @@
 import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile, Link } from 'carbon-components-react'
-import { TransactionType } from '../../slices/transactions'
-import CreateTransactionButton from '../library/CreateTransactionButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
 import CopyErrorsTile from '../library/CopyErrorsTile'
@@ -161,107 +159,6 @@ const WalletInfo = () => {
         tooltip='Tcp allows holders to govern the Tcp protocol throught a governance process. Ask the community to learn more.'
       />
     </SpacedList>
-  )
-}
-
-/*
-const TweetTile = () => {
-  return (
-    <Tile style={{ width: 500, paddingLeft: 40, paddingRight: 40, paddingTop: 20, paddingBottom: 40 }}>
-      <SpacedList spacing={20}>
-        <>
-          <Center>
-            <a href='https://twitter.com/trustlessfi' target='_blank' >
-              <LogoTwitter32 width={64} height={64} />
-            </a>
-          </Center>
-          <Center>
-            <LargeText>
-              Tweet Trustless
-            </LargeText>
-          </Center>
-        </>
-        <SpacedList spacing={20}>
-          {
-            Object.keys(TweetType).reverse().filter(t => !isNaN(Number(t))).map(t => Number(t) as TweetType).map(t =>
-              <Tile light style={{display: 'flex'}}>
-                  <div style={{width: 280}}>
-                    <Text lineHeight={1.5}>
-                      {getTweetElement(t)}
-                    </Text>
-                  </div>
-                  <div style={{alignSelf: 'center', marginLeft: 20}}>
-                    <Center>
-                      <ComposeTweetButton tweetType={t} />
-                    </Center>
-                  </div>
-              </Tile>
-            )
-          }
-        </SpacedList>
-      </SpacedList>
-    </Tile>
-  )
-}
-*/
-
-
-/*
-const ViewOnEtherscanButton = ({
-  title,
-}: {
-  title?: string
-}) => {
-  const {
-    userAddress,
-    chainID,
-  } = waitFor([
-    'userAddress',
-    'chainID',
-  ], selector, useAppDispatch())
-
-  return (
-    userAddress === null || chainID === null
-      ? <ConnectWalletButton size='sm' />
-      : <Button
-        onClick={() => window.open(getEtherscanAddressLink(userAddress, chainID), '_blank')}
-        size='sm'>
-        {title === undefined ? 'View on Etherscan' : title}
-      </Button>
-  )
-}
-*/
-
-const Counter = () => {
-  const dispatch = useAppDispatch()
-
-  const {
-    counterInfo,
-    rootContracts,
-  } = waitFor([
-    'counterInfo',
-    'rootContracts',
-  ], selector, dispatch)
-
-  console.log({counterInfo})
-
-  return (
-    <Tile>
-      <SpacedList spacing={20} row>
-        <Text>Counter: [{counterInfo === null ? 'Loading...' : counterInfo.counterValue}]</Text>
-        <CreateTransactionButton
-          disabled={counterInfo === null}
-          size='sm'
-          kind='ghost'
-          title='Increment counter'
-          txArgs={{
-            type: TransactionType.IncrementCounter,
-            counterValue: counterInfo === null ? 0 : counterInfo.counterValue,
-            dataAggregator: rootContracts === null ? '' : rootContracts.protocolDataAggregator,
-          }}
-        />
-      </SpacedList>
-    </Tile>
   )
 }
 

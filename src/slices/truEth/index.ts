@@ -39,8 +39,6 @@ const truEthSlice = createChainDataSlice({
         }
       )
 
-      console.log("HERE 2")
-
       const result = {
         isAdmin: args.userAddress === truEthData.firstAdmin || truEthData.isAdmin,
         isMinter: truEthData.isMinter,

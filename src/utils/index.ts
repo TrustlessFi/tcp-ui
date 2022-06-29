@@ -1,9 +1,8 @@
-import { BigNumber, BigNumberish, utils, Contract } from "ethers"
+import { BigNumber, BigNumberish, utils } from "ethers"
 import JSBI from "jsbi"
 import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
-import getProvider from './getProvider'
 import { contract } from './getContract'
 
 

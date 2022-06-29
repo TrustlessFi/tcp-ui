@@ -1,7 +1,6 @@
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import { PayloadAction } from '@reduxjs/toolkit'
-import { TransactionType } from '../transactions'
 
 export interface walletState {
   connecting: boolean

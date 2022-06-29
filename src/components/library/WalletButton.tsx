@@ -1,10 +1,8 @@
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
-import { abbreviateAddress } from '../../utils'
 import waitFor from '../../slices/waitFor'
 import { Wallet16 } from '@carbon/icons-react';
 import {
-  Tooltip,
   Button,
  } from 'carbon-components-react'
 import { setTab } from '../../slices/tabs'
@@ -12,10 +10,8 @@ import { CSSProperties } from 'react'
 import { Tab, tabToPath } from '../../App'
 
 const WalletButton = ({
-  address,
   style
 }: {
-  address: string,
   style?: CSSProperties,
 }) => {
   const dispatch = useAppDispatch()

@@ -14,7 +14,6 @@ import PositionInfoItem from '../library/PositionInfoItem'
 import ActionSteps from '../library/ActionSteps'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
-import LargeText from '../library/LargeText'
 import TitleText from '../library/TitleText'
 import Bold from '../library/Bold'
 import { red } from '@carbon/colors';

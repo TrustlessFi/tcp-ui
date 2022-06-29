@@ -76,7 +76,13 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "react/jsx-pascal-case": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "@typescript-eslint/no-redeclare": "off",
+      "array-callback-return": "off"
+    }
   },
   "browserslist": {
     "production": [

@@ -4,7 +4,7 @@ import { getNullableProvider, provider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
 import Positions from './components/Positions'
 import Stake from './components/Stake/'
-import RecentTransactions from './components/RecentTransactions'
+import WalletTab from './components/WalletTab'
 import WalletChecker from './components/WalletChecker'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
@@ -16,7 +16,6 @@ import { TransactionStatus, waitForTransaction } from './slices/transactions'
 import { setSwitchNetworkButtonClicked } from './slices/wallet'
 import { getSortedUserTxs } from './components/library'
 import TestnetBanners from './components/library/TestnetBanners'
-import SpacedList from './components/library/SpacedList'
 import waitFor from './slices/waitFor'
 import { isMobile } from 'react-device-detect'
 
@@ -40,7 +39,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Position: <Positions />,
   Stake: <Stake />,
   Liquidity: <Liquidity />,
-  Transactions: <RecentTransactions />,
+  Transactions: <WalletTab />,
 }
 
 const App: FunctionComponent<{}> = () => {

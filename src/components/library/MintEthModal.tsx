@@ -37,8 +37,6 @@ const MintEthModal = () => {
     'rootContracts',
   ], selector, dispatch)
 
-  console.log({truEthInfo})
-
   if (truEthInfo === null || (!truEthInfo.isAdmin && !truEthInfo.isMinter)) {
     return <></>
   }

@@ -7,9 +7,6 @@ import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import RawErrorBoundary from './components/library/RawErrorBoundary'
 
-import { BrowserView, MobileView } from 'react-device-detect'
-import MobileApp from './MobileApp'
-
 import './App.css'
 import './styles/night_app.scss'
 

@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
+import { useAppDispatch } from '../../app/hooks'
 import { clearTab } from '../../slices/tabs'
 import Center from './Center'
 import Text from '../library/Text'
