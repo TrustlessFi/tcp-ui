@@ -8,25 +8,21 @@ import { xor } from '../../utils'
 import SmallLink from '../library/SmallLink';
 
 
-export const getEtherscanTxLink = (txHash: string, chainID: ChainID) => {
+export const getEtherscanTxLink = (txHash: string, chainID: ChainID): string => {
   switch (chainID) {
     case ChainID.Hardhat:
       return `https://etherscan.io/tx/${txHash}`
     case ChainID.ZKSyncGoerli:
       return `https://zksync2-testnet.zkscan.io/tx/${txHash}`
-    default:
-      assertUnreachable(chainID)
   }
 }
 
-export const getEtherscanAddressLink = (address: string, chainID: ChainID) => {
+export const getEtherscanAddressLink = (address: string, chainID: ChainID): string => {
   switch (chainID) {
     case ChainID.Hardhat:
       return `https://etherscan.io/address/${address}`
     case ChainID.ZKSyncGoerli:
       return `https://zksync2-testnet.zkscan.io/address/${address}`
-    default:
-      assertUnreachable(chainID)
   }
 }
 

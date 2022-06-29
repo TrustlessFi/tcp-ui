@@ -317,7 +317,7 @@ export enum Fee {
   HIGH = 10000,
 }
 
-export const getSpaceForFee = (fee: Fee) => {
+export const getSpaceForFee = (fee: Fee): number => {
   switch (fee) {
     case Fee.LOW:
       return 10
@@ -325,8 +325,6 @@ export const getSpaceForFee = (fee: Fee) => {
       return 60
     case Fee.HIGH:
       return 200
-    default:
-      return 10
   }
 }
 

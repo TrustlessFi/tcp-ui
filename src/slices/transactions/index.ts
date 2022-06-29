@@ -254,7 +254,7 @@ export type TransactionInfo = {
 
 export type TransactionState = {[hash: string]: TransactionInfo}
 
-export const getTxLongName = (args: TransactionArgs) => {
+export const getTxLongName = (args: TransactionArgs): string => {
   const type = args.type
   switch(type) {
     case TransactionType.CreatePosition:
@@ -301,13 +301,10 @@ export const getTxLongName = (args: TransactionArgs) => {
 
     case TransactionType.IncrementCounter:
       return `Increment counter from: ${args.counterValue}`
-    default:
-      assertUnreachable(type)
   }
-  return ''
 }
 
-export const getTxShortName = (type: TransactionType) => {
+export const getTxShortName = (type: TransactionType): string => {
   switch(type) {
     case TransactionType.CreatePosition:
       return 'Create Position'
@@ -352,13 +349,10 @@ export const getTxShortName = (type: TransactionType) => {
 
     case TransactionType.IncrementCounter:
       return `Increment counter`
-    default:
-      assertUnreachable(type)
   }
-  return ''
 }
 
-export const getTxIDFromArgs = (args: TransactionArgs) => {
+export const getTxIDFromArgs = (args: TransactionArgs): string => {
   const type = args.type
 
   const getApproveID = (tokenAddress: string, spenderAddress: string) =>
@@ -390,10 +384,7 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.RemoveMintTruEthAdmin:
     case TransactionType.IncrementCounter:
       return type
-    default:
-      assertUnreachable(type)
   }
-  return ''
 }
 
 
