@@ -311,7 +311,6 @@ const ManagePosition = () => {
         key='edit_button'
         onClick={() => setIsEditing(true)}
         size='sm'
-        small
         kind='primary'>
         Edit Position
       </Button>

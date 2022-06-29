@@ -43,7 +43,7 @@ const SocialLinks = () => {
     <Button
       onClick={() => window.open('https://twitter.com/trustlessfi/status/1516941542329622532')}
       renderIcon={Launch32}
-      size='small'>
+      size='sm'>
       Retweet Trustless
     </Button>
 
