@@ -58,9 +58,9 @@ export enum TransactionType {
 }
 
 export enum TransactionStatus {
-  Pending,
-  Success,
-  Failure,
+  Pending = 'Pending',
+  Success = 'Success',
+  Failure = 'Failure',
 }
 
 export interface txCreatePosition {

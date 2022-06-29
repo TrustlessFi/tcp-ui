@@ -14,9 +14,9 @@ import TrustlessLogos, { TrustlessLogoColor } from './TrustlessLogos'
 import { Button, ButtonKind} from 'carbon-components-react'
 
 export enum TweetType {
-  Mild,
-  Medium,
-  Spicy,
+  Mild = 'Mild',
+  Medium = 'Medium',
+  Spicy = 'Spicy',
 }
 
 export const tweets: {[tweetType in TweetType]: string} =

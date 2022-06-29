@@ -78,10 +78,10 @@ export enum CacheDuration {
 }
 
 export enum SliceDataType {
-  Local,
-  LocalUserData,
-  ChainData,
-  ChainUserData,
+  Local = 'Local',
+  LocalUserData = 'LocalUserData',
+  ChainData = 'ChainData',
+  ChainUserData = 'ChainUserData',
 }
 
 const getCacheDuration = (cacheDuration?: CacheDuration) =>

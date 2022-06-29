@@ -2,8 +2,8 @@ import { TransactionInfo, TransactionState } from '../../slices/transactions'
 import { ChainID } from '@trustlessfi/addresses'
 
 export enum UserTxSortOption {
-  NONCE_ASCENDING,
-  NONCE_DESCENDING,
+  NONCE_ASCENDING = 'NONCE_ASCENDING',
+  NONCE_DESCENDING = 'NONCE_DESCENDING',
 }
 
 export const getSortedUserTxs = (
