@@ -6,6 +6,7 @@ import { chainIDState } from './chainID'
 import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { counterInfo } from './counter'
+import { errorsState } from './errors'
 import { governorInfo } from './governor'
 import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
@@ -32,6 +33,7 @@ import { walletState } from './wallet'
 export type RootState = {
   cacheBreaker: cacheBreakerState
   chainID: chainIDState
+  errors: errorsState
   rootContracts: rootContracts | null
   userAddress: string | null
   notifications: notificationState

@@ -241,7 +241,7 @@ export const parseMetamaskError = (error: any): {messages: string[], code?: numb
     const end = message.lastIndexOf('}')
     if (end < begin ) return {messages: [message], code: error.code}
 
-    const jsonString = message.substr(begin, (end - begin)+ 1)
+    const jsonString = message.substring(begin, (end - begin)+ 1)
     const innerObject = JSON.parse(jsonString)
     if (innerObject.hasOwnProperty('message')) return {messages: [innerObject.message], code: error.code}
     if (innerObject.hasOwnProperty('value')) {

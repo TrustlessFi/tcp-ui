@@ -27,6 +27,9 @@ import {
   setApprovingLendHue,
   setApprovingPool,
 } from '../onboarding'
+import {
+  addWalletError,
+} from '../errors'
 
 export enum TransactionType {
   CreatePosition,
@@ -400,14 +403,8 @@ export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + 
 const executeTransaction = async (
   args: TransactionArgs,
   provider: ethers.providers.Web3Provider,
-  chainID: ChainID,
 ): Promise<ContractTransaction> => {
   const overrides = {}
-  /*
-    chainID === ChainID.ZKSyncGoerli
-    ? { gasLimit: 21001 }
-    : {}
-  */
 
   const getMarket = (address: string) =>
     getContract<Market>(ProtocolContract.Market, address)
@@ -683,9 +680,10 @@ export const submitTransaction = createAsyncThunk(
     let rawTransaction: ContractTransaction
     try {
       dispatch(setWaitingForMetamask(getTxIDFromArgs(args)))
-      rawTransaction = await executeTransaction(args, provider, data.chainID)
+      rawTransaction = await executeTransaction(args, provider)
       dispatch(setNotWaitingForMetamask())
     } catch (e) {
+      dispatch(addWalletError({error: e}))
       const errorMessages = parseMetamaskError(e)
       console.error("failureMessages: " + errorMessages.messages.join(', '))
 

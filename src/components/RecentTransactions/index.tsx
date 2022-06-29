@@ -1,10 +1,10 @@
 import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile, Link } from 'carbon-components-react'
-import AppTile from '../library/AppTile'
-import { TransactionType, txWithdraw } from '../../slices/transactions'
+import { TransactionType } from '../../slices/transactions'
 import CreateTransactionButton from '../library/CreateTransactionButton'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
+import CopyErrorsTile from '../library/CopyErrorsTile'
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
@@ -372,6 +372,7 @@ const RecentTransactions = () => {
           }
         </SpacedList>
       </Tile>
+      <CopyErrorsTile />
     </OneColumnDisplay>
   )
 }

@@ -1,5 +1,6 @@
 import cacheBreakerSlice from './cacheBreaker'
 import chainIDSlice from './chainID'
+import errorsSlice from './errors'
 import userAddressSlice from './userAddress'
 import balancesSlice from './balances'
 import contractsSlice from './contracts'
@@ -33,6 +34,7 @@ import { RootState }  from './fetchNodes'
 const allSlicesRaw = {
   cacheBreaker: cacheBreakerSlice,
   chainID: chainIDSlice,
+  errors: errorsSlice,
   rootContracts: rootContractsSlice,
   userAddress: userAddressSlice,
   liquidityPage: liquidityPageSlice,

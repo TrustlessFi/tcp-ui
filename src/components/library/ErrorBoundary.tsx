@@ -1,14 +1,15 @@
-import { Component, ErrorInfo } from 'react'
+import { Component, ErrorInfo, ReactNode } from 'react'
+import { connect } from 'react-redux'
 import AppErrorDisplay from './AppErrorDisplay'
+import { addRenderError } from '../../slices/errors'
+import { AppDispatch } from '../../app/store'
 
 interface ErrorBoundaryProps {
+  children: ReactNode
+  addRenderError: (error: {}) => unknown
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean
-}
-
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+class ErrorBoundary extends Component<ErrorBoundaryProps, {hasError: boolean}> {
 
   constructor (props: ErrorBoundaryProps) {
     super(props)
@@ -17,13 +18,18 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   static getDerivedStateFromError (error: Error) {
       // Update state so the next render will show the fallback UI.
-    console.error('Error Boundary caught in getDerivedStateFromError: ', error)
+    console.error('Error Boundary caught in getDerivedStateFromError: ', {error})
+
     return { hasError: true }
   }
 
   componentDidCatch (error: Error, errorInfo: ErrorInfo) {
     // You can also log the error to an error reporting service
-    console.error("Error Boundary caught in componentDidCatch: ", error, errorInfo)
+    const errorObject = {error, errorInfo}
+
+    this.props.addRenderError({errorObject})
+
+    console.error("Error Boundary caught in componentDidCatch: ", errorObject)
   }
 
   render () {
@@ -33,4 +39,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
-export default ErrorBoundary
+const mapDispatchToProps = (dispatch: AppDispatch) => ({
+  addRenderError: (error: {}) => dispatch(addRenderError(error))
+})
+
+export default connect(null, mapDispatchToProps)(ErrorBoundary)
