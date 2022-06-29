@@ -118,7 +118,7 @@ const Wallet = () => {
 
   if (countPendingTxs > 0) {
     return <Button
-      size="small"
+      size='sm'
       onClick={() => {
         history.push(tabToPath(Tab.Transactions))
         dispatch(setTab(Tab.Transactions))

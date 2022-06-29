@@ -82,7 +82,7 @@ export const ComposeTweetButton = ({
 
   return (
     <Button
-      size="small"
+      size='sm'
       kind={kind}
       renderIcon={Launch32}
       onClick={() => window.open(composeTweetURL)}>
