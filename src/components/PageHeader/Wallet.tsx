@@ -16,26 +16,11 @@ import { AppDispatch } from '../../app/store'
 import { walletConnected } from '../../slices/wallet'
 import { userAddressFound } from '../../slices/userAddress'
 import { equalStringsCaseInsensitive, reloadPage } from '../../utils'
-import allSlices from '../../slices/allSlices'
-import { SliceDataType, CacheDuration } from '../../slices/'
 import waitFor from '../../slices/waitFor'
 import { setTab } from '../../slices/tabs'
 import { Tab, tabToPath } from '../../App'
 import { cacheIndex } from '../../slices/cacheBreaker'
-
-export const clearUserData = (dispatch: AppDispatch) =>
-  Object.values(allSlices)
-    .filter(slice => slice.sliceType === SliceDataType.ChainUserData || slice.sliceType === SliceDataType.LocalUserData)
-      .map(slice => dispatch(slice.slice.actions.clearData()))
-
-export const clearEphemeralStorage = () =>
-  Object.values(allSlices)
-    .filter(slice => slice.cacheDuration !== CacheDuration.INFINITE)
-      .map(slice => localStorage.removeItem(slice.name))
-
-export const clearAllStorage = (dispatch: AppDispatch) =>
-  Object.values(allSlices)
-    .map(slice => dispatch(slice.slice.actions.clearData()))
+import { clearUserData, clearAllStorage, clearEphemeralStorage } from '../library/clearData'
 
 export const getWalletConnectedFunction = (dispatch: AppDispatch) => (accounts: string[]) => {
   const account = accounts.length > 0 ? accounts[0] : null
