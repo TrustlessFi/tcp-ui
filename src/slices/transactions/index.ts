@@ -32,29 +32,29 @@ import {
 } from '../errors'
 
 export enum TransactionType {
-  CreatePosition,
-  UpdatePosition,
-  IncreaseStake,
-  DecreaseStake,
-  ApproveHue,
-  ApproveLendHue,
-  ApproveEth,
-  ClaimAllLiquidityPositionRewards,
-  ClaimAllPositionRewards,
-  ApprovePoolToken,
-  AddLiquidity,
-  RemoveLiquidity,
+  CreatePosition = 'CreatePosition',
+  UpdatePosition = 'UpdatePosition',
+  IncreaseStake = 'IncreaseStake',
+  DecreaseStake = 'DecreaseStake',
+  ApproveHue = 'ApproveHue',
+  ApproveLendHue = 'ApproveLendHue',
+  ApproveEth = 'ApproveEth',
+  ClaimAllLiquidityPositionRewards = 'ClaimAllLiquidityPositionRewards',
+  ClaimAllPositionRewards = 'ClaimAllPositionRewards',
+  ApprovePoolToken = 'ApprovePoolToken',
+  AddLiquidity = 'AddLiquidity',
+  RemoveLiquidity = 'RemoveLiquidity',
 
-  MintTruEth,
-  TestnetMultiMint,
-  AddMintTruEthAuth,
-  RemoveMintTruEthAuth,
-  AddMintTruEthAdmin,
-  RemoveMintTruEthAdmin,
+  MintTruEth = 'MintTruEth',
+  TestnetMultiMint = 'TestnetMultiMint',
+  AddMintTruEthAuth = 'AddMintTruEthAuth',
+  RemoveMintTruEthAuth = 'RemoveMintTruEthAuth',
+  AddMintTruEthAdmin = 'AddMintTruEthAdmin',
+  RemoveMintTruEthAdmin = 'RemoveMintTruEthAdmin',
 
-  SetPhaseOneStartTime,
+  SetPhaseOneStartTime = 'SetPhaseOneStartTime',
 
-  IncrementCounter,
+  IncrementCounter = 'IncrementCounter',
 }
 
 export enum TransactionStatus {
@@ -389,7 +389,7 @@ export const getTxIDFromArgs = (args: TransactionArgs) => {
     case TransactionType.AddMintTruEthAdmin:
     case TransactionType.RemoveMintTruEthAdmin:
     case TransactionType.IncrementCounter:
-      return (type as number).toString()
+      return type
     default:
       assertUnreachable(type)
   }
