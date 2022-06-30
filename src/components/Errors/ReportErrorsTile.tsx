@@ -38,21 +38,7 @@ const ReportErrorsTitle = () => {
     dispatch(removeErrors(completeErrorIDs))
   }
 
-  const reportErrorsButton =
-    <Button
-      size='sm'
-      kind='secondary'
-      onClick={reportErrors}>
-      Report Errors
-    </Button>
-
-  const copySessionIdButton =
-    <Button
-      size='sm'
-      kind='secondary'
-      onClick={() => navigator.clipboard.writeText(errors.sessionId)}>
-      Copy Session Id
-    </Button>
+  const sessionId = errors.sessionId
 
   return (
     <Tile style={{
@@ -65,15 +51,26 @@ const ReportErrorsTitle = () => {
       <div style={{display: 'float'}}>
         <div style={{float: 'right'}}>
           {
-            errors.errors.length === 0
-              ? copySessionIdButton
-              : reportErrorsButton
+            errors.errors.length === 0 && sessionId !== null
+              ? <Button
+                  size='sm'
+                  kind='secondary'
+                  onClick={() => navigator.clipboard.writeText(sessionId)}>
+                  Copy Session Id
+                </Button>
+              : <Button
+                  size='sm'
+                  kind='secondary'
+                  disabled={errors.errors.length === 0}
+                  onClick={reportErrors}>
+                  Report Errors
+                </Button>
           }
         </div>
         <div style={{display: 'float', alignItems: 'center'}}>
           <span style={{float: 'left', paddingTop: 2}}>
             <LargeText size={18} style={{marginLeft: 10}}>
-              {numDisplay(countErrors)} Errors
+              {numDisplay(countErrors)} Pending {countErrors === 1 ? 'Error' : 'Errors'}
             </LargeText>
             <span style={{position: 'relative', top: '2px', left: '4px'}}>
               <TrustlessTooltip text={tooltipText} />

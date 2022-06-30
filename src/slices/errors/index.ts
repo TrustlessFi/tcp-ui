@@ -2,12 +2,14 @@ import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { timeS, getUUID } from '../../utils'
+import { TransactionInfo } from '../transactions'
 
 export interface reportableError {
   error: {} | string
   errorType: string
   address?: string
   chainId?: number
+  transactionInfo?: TransactionInfo
 }
 
 type TcpUIError = {
@@ -18,14 +20,15 @@ type TcpUIError = {
   timestamp: number
   errorId: string
   sessionId: string
+  transactionInfo: {}
 }
 
 export type errorsState = {
   errors: TcpUIError[]
-  sessionId: string
+  sessionId: string | null
 }
 
-const initialState: errorsState = {errors: [], sessionId: getUUID()}
+const initialState: errorsState = {errors: [], sessionId: null}
 
 const walletSlice = createLocalSlice({
   name: 'errors',
@@ -34,7 +37,10 @@ const walletSlice = createLocalSlice({
   cacheDuration: CacheDuration.INFINITE,
   reducers: {
     addError: (state, action: PayloadAction<reportableError>) => {
-      const { error, errorType, address, chainId } = action.payload
+      const { error, errorType, address, chainId, transactionInfo } = action.payload
+      if (state.sessionId === null) {
+        state.sessionId = getUUID()
+      }
       state.errors.push({
         error: typeof error === 'string' ? { message: error } : error,
         errorType: errorType,
@@ -43,6 +49,7 @@ const walletSlice = createLocalSlice({
         timestamp: timeS(),
         errorId: getUUID(),
         sessionId: state.sessionId,
+        transactionInfo: transactionInfo === undefined ? {} : transactionInfo
       })
     },
     removeErrors: (state, action: PayloadAction<string[]>) => {

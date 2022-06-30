@@ -30,7 +30,6 @@ import {
 } from '../onboarding'
 import { reportError, ErrorType } from '../../components/Errors'
 
-
 export enum TransactionType {
   CreatePosition = 'CreatePosition',
   UpdatePosition = 'UpdatePosition',
@@ -387,8 +386,6 @@ export const getTxIDFromArgs = (args: TransactionArgs): string => {
   }
 }
 
-
-
 export const getTxErrorName = (type: TransactionType) => getTxShortName(type) + ' Failed'
 
 const executeTransaction = async (
@@ -669,6 +666,17 @@ export const submitTransaction = createAsyncThunk(
 
     const provider = getProvider()
 
+    let tx = {
+      hash: '',
+      nonce: 0,
+      userAddress,
+      startTimeMS: timeMS(),
+      type: args.type,
+      status: TransactionStatus.Pending,
+      chainID: data.chainID,
+      args: data.args,
+    }
+
     let rawTransaction: ContractTransaction
     try {
       dispatch(setWaitingForMetamask(getTxIDFromArgs(args)))
@@ -679,7 +687,8 @@ export const submitTransaction = createAsyncThunk(
         errorType: ErrorType.TransactionError,
         error: e as any,
         address: userAddress,
-        chainId
+        chainId,
+        transactionInfo: tx,
       }, dispatch as AppDispatch)
       const errorMessages = parseMetamaskError(e)
 
@@ -701,16 +710,8 @@ export const submitTransaction = createAsyncThunk(
       return
     }
 
-    const tx = {
-      hash: rawTransaction.hash,
-      nonce: rawTransaction.nonce,
-      userAddress,
-      startTimeMS: timeMS(),
-      type: args.type,
-      status: TransactionStatus.Pending,
-      chainID: data.chainID,
-      args: data.args,
-    }
+    tx.hash = rawTransaction.hash
+    tx.nonce = rawTransaction.nonce
 
     dispatch(transactionCreated(tx))
 
