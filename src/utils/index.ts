@@ -4,6 +4,7 @@ import { ERC20, ProtocolToken, UniswapV3Pool } from "@trustlessfi/typechain"
 import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
 import { contract } from './getContract'
+import { v4 as uuid } from 'uuid'
 
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
@@ -218,7 +219,6 @@ export type Merge<A, B> = { [K in keyof (A | B)]: K extends keyof B ? B[K] : A[K
 
 
 export const parseMetamaskError = (error: any): {messages: string[], code?: number } => {
-  const metamaskError = error
   if (error.hasOwnProperty('error')) error = error.error
 
   if (error.hasOwnProperty('data')) {
@@ -258,7 +258,6 @@ export const parseMetamaskError = (error: any): {messages: string[], code?: numb
     }
   }
 
-  console.error({metamaskError})
   return {messages: ['Unknown metamask error']}
 }
 
@@ -474,13 +473,6 @@ export const sqrtBigNumber = (input: BigNumberish): BigNumber => {
 }
 
 
-
-
-
-
-
-
-
 export const numberToHex = (val: number) => '0x' + val.toString(16)
 
 export const convertSVGtoURI = (svg: string) =>
@@ -583,5 +575,8 @@ export const addTokenToWallet = async (
 
 export const reloadPage = () => window.location.reload()
 
-export const isLocalhost = () => 
+export const isLocalhost = () =>
   window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+
+
+export const getUUID = () => uuid()

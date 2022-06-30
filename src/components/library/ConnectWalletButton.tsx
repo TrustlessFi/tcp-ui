@@ -5,8 +5,11 @@ import { Button, ButtonKind, ButtonSize } from 'carbon-components-react'
 import { CSSProperties } from 'react';
 import { walletConnecting, walletConnectionFailed } from '../../slices/wallet'
 import { AppDispatch } from '../../app/store'
+import { reportError, ErrorType } from '../../components/Errors'
+import waitFor from '../../slices/waitFor'
 
-const connectWallet = async (dispatch: AppDispatch) => {
+const connectWallet = async (args: {dispatch: AppDispatch, address: string, chainID: number}) => {
+  const { dispatch, address, chainID } = args
   dispatch(walletConnecting())
 
   const walletConnected = getWalletConnectedFunction(dispatch)
@@ -20,7 +23,14 @@ const connectWallet = async (dispatch: AppDispatch) => {
           console.warn('Wallet connection rejected by user.')
           break
         default:
-          console.error(`Encountered unexpected error ${error.code}: '${error.message}'.`)
+          reportError({
+              errorType: ErrorType.WalletConnectError,
+              error: { message: `Encountered unexpected error ${error.code}: '${error.message}'.`},
+              address,
+              chainId: chainID,
+            },
+            dispatch
+          )
       }
 
       dispatch(walletConnectionFailed())
@@ -38,8 +48,15 @@ const ConnectWalletButton = ({
 }) => {
   const dispatch = useAppDispatch()
 
-  const userAddress = selector(state => state.userAddress)
-  const wallet = selector(state => state.wallet)
+  const {
+    userAddress,
+    chainID,
+    wallet,
+  } = waitFor([
+    'userAddress',
+    'chainID',
+    'wallet',
+  ], selector, dispatch)
 
   const text = wallet.connecting
     ? 'Confirm in Metamask...'
@@ -51,7 +68,11 @@ const ConnectWalletButton = ({
 
   const onClick = async () =>
     metamaskInstalled
-    ? await connectWallet(dispatch)
+    ? await connectWallet({
+        dispatch,
+        chainID: chainID === null ? 0 : chainID,
+        address: userAddress === null ? '' : userAddress
+      })
     : (new MetaMaskOnboarding()).startOnboarding()
 
   return (

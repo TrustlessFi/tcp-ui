@@ -2,6 +2,7 @@ import { AsyncThunk } from '@reduxjs/toolkit'
 import { AppDispatch, store } from '../app/store'
 import { RootState, sliceStateValues, FetchNode } from './fetchNodes'
 import { AppSelector } from '../app/hooks'
+import { reportError, ErrorType } from '../components/Errors'
 
 import { sliceState, NonNullValues, SliceDataType } from './'
 import allSlices from './allSlices'
@@ -25,7 +26,7 @@ const getWaitFunction = <
     if (Object.values(inputArgs).includes(null)) return null
 
     if (state.error !== null) {
-      console.error(state.error.message)
+      reportError({errorType: ErrorType.WaitForError, error: state.error}, dispatch)
       throw state.error
     }
 

@@ -21,15 +21,15 @@ import { numDisplay } from '../../utils'
 import { createLocalSlice, CacheDuration } from '../'
 import { RootState } from '../fetchNodes'
 import allSlices from '../allSlices'
+import { AppDispatch } from '../../app/store'
 import {
   setApprovingEth,
   setApprovingHue,
   setApprovingLendHue,
   setApprovingPool,
 } from '../onboarding'
-import {
-  addWalletError,
-} from '../errors'
+import { reportError, ErrorType } from '../../components/Errors'
+
 
 export enum TransactionType {
   CreatePosition = 'CreatePosition',
@@ -665,6 +665,7 @@ export const submitTransaction = createAsyncThunk(
   async (data: TransactionData, {dispatch}): Promise<void> => {
     const args = data.args
     const userAddress = data.userAddress
+    const chainId = data.chainID
 
     const provider = getProvider()
 
@@ -674,9 +675,13 @@ export const submitTransaction = createAsyncThunk(
       rawTransaction = await executeTransaction(args, provider)
       dispatch(setNotWaitingForMetamask())
     } catch (e) {
-      dispatch(addWalletError({error: e}))
+      reportError({
+        errorType: ErrorType.TransactionError,
+        error: e as any,
+        address: userAddress,
+        chainId
+      }, dispatch as AppDispatch)
       const errorMessages = parseMetamaskError(e)
-      console.error("failureMessages: " + errorMessages.messages.join(', '))
 
       const reasonString =
         errorMessages.messages.length > 0

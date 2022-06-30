@@ -2,7 +2,7 @@ import { CSSProperties, useState, useEffect } from 'react'
 import { Button, InlineLoading, InlineLoadingStatus, Tile, Link } from 'carbon-components-react'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import { clearUserTransactions, TransactionStatus, getTxLongName } from '../../slices/transactions'
-import CopyErrorsTile from '../library/CopyErrorsTile'
+import ReportErrorsTile from '../Errors/ReportErrorsTile'
 import Center from '../library/Center'
 import SpacedList from '../library/SpacedList'
 import Text from '../library/Text'
@@ -269,7 +269,7 @@ const RecentTransactions = () => {
           }
         </SpacedList>
       </Tile>
-      <CopyErrorsTile />
+      <ReportErrorsTile />
     </OneColumnDisplay>
   )
 }

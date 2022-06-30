@@ -41,12 +41,12 @@ const ExplorerLink = ({
   const chainID = selector(state => state.chainID)
 
   if (chainID === null) {
-    console.error('ExplorerLink: Chain ID Null')
+    console.warn('ExplorerLink: Chain ID Null')
     return <></>
   }
 
   if (!xor(txHash !== undefined, address !== undefined)) {
-    console.error('ExplorerLink: Provide only one of address, txhash')
+    console.warn('ExplorerLink: Provide only one of address, txhash')
   }
 
   const etherscanLink = txHash !== undefined
