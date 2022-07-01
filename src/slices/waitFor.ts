@@ -14,9 +14,9 @@ const getWaitFunction = <
     stateSelector: (state: RootState) => sliceState<Value>
     dependencies: Dependencies
     thunk: AsyncThunk<Value, NonNullValues<Dependencies>, {}>
+    name: string
   }) => (selector: AppSelector, dispatch: AppDispatch) => {
-
-    const { stateSelector, thunk, dependencies} = waitForData
+    const { stateSelector, thunk, dependencies, name } = waitForData
     const state = selector(stateSelector)
 
     const inputArgs = Object.fromEntries(Object.keys(dependencies).map(fetchNode =>
@@ -26,7 +26,16 @@ const getWaitFunction = <
     if (Object.values(inputArgs).includes(null)) return null
 
     if (state.error !== null) {
-      reportError({errorType: ErrorType.WaitForError, error: state.error}, dispatch)
+      reportError({
+        errorType: ErrorType.WaitForError,
+        error: state.error,
+        extraData: {
+          name,
+          dependencies,
+          inputArgs,
+          state,
+        }
+      }, dispatch)
       throw state.error
     }
 

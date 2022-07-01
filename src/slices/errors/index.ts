@@ -10,6 +10,7 @@ export interface reportableError {
   address?: string
   chainId?: number
   transactionInfo?: TransactionInfo
+  extraData?: {}
 }
 
 type TcpUIError = {
@@ -21,6 +22,7 @@ type TcpUIError = {
   errorId: string
   sessionId: string
   transactionInfo: {}
+  extraData: {}
 }
 
 export type errorsState = {
@@ -37,7 +39,7 @@ const walletSlice = createLocalSlice({
   cacheDuration: CacheDuration.INFINITE,
   reducers: {
     addError: (state, action: PayloadAction<reportableError>) => {
-      const { error, errorType, address, chainId, transactionInfo } = action.payload
+      const { error, errorType, address, chainId, transactionInfo, extraData } = action.payload
       if (state.sessionId === null) {
         state.sessionId = getUUID()
       }
@@ -49,7 +51,8 @@ const walletSlice = createLocalSlice({
         timestamp: timeS(),
         errorId: getUUID(),
         sessionId: state.sessionId,
-        transactionInfo: transactionInfo === undefined ? {} : transactionInfo
+        transactionInfo: transactionInfo === undefined ? {} : transactionInfo,
+        extraData: extraData === undefined ? {} : extraData,
       })
     },
     removeErrors: (state, action: PayloadAction<string[]>) => {
