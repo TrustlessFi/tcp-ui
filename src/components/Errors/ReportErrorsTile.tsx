@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Tile, Button } from 'carbon-components-react'
 import LargeText from '../library/LargeText'
 import TrustlessTooltip from '../library/TrustlessTooltip'
@@ -15,6 +16,8 @@ const ReportErrorsTitle = () => {
   } = waitFor([
     'errors',
   ], selector, dispatch)
+
+  const [ copyClicked, setCopyClicked ] = useState(false)
 
   const countErrors = errors.errors.length
 
@@ -40,6 +43,12 @@ const ReportErrorsTitle = () => {
 
   const sessionId = errors.sessionId
 
+  const onCopyClick = (sessionId: string) => {
+    navigator.clipboard.writeText(sessionId)
+    setCopyClicked(true)
+    setTimeout(() => setCopyClicked(false), 2500)
+  }
+
   return (
     <Tile style={{
       paddingTop: 20,
@@ -55,8 +64,8 @@ const ReportErrorsTitle = () => {
               ? <Button
                   size='sm'
                   kind='secondary'
-                  onClick={() => navigator.clipboard.writeText(sessionId)}>
-                  Copy Session Id
+                  onClick={() => onCopyClick(sessionId)}>
+                  {copyClicked ? 'Copied!' : 'Copy Session Id'}
                 </Button>
               : <Button
                   size='sm'
