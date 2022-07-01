@@ -683,13 +683,6 @@ export const submitTransaction = createAsyncThunk(
       rawTransaction = await executeTransaction(args, provider)
       dispatch(setNotWaitingForMetamask())
     } catch (e) {
-      reportError({
-        errorType: ErrorType.TransactionError,
-        error: e as any,
-        address: userAddress,
-        chainId,
-        transactionInfo: tx,
-      }, dispatch as AppDispatch)
       const errorMessages = parseMetamaskError(e)
 
       const reasonString =
@@ -698,6 +691,14 @@ export const submitTransaction = createAsyncThunk(
         : null
 
       if (errorMessages.code !== 4001) {
+        reportError({
+          errorType: ErrorType.TransactionError,
+          error: e as any,
+          address: userAddress,
+          chainId,
+          transactionInfo: tx,
+        }, dispatch as AppDispatch)
+
         dispatch(addNotification({
           type: args.type,
           userAddress,
