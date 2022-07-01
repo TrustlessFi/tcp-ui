@@ -27,7 +27,10 @@ export const TrustlessTooltip = ({
   return (
     <div
       style={{position: 'relative', display: 'inline-block', cursor: 'pointer'}}
-      onClick={() => updateActive(!isActive)}
+      onClick={(e) => {
+        e.stopPropagation()
+        updateActive(!isActive)
+      }}
       onMouseEnter={() => updateActive(true)}
       onMouseLeave={() => updateActive(false)} >
       <Information16 width={15} style={{opacity: '80%'}} />
