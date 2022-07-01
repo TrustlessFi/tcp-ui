@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Tile, Button } from 'carbon-components-react'
+import { Tile, Button, Loading, InlineLoading } from 'carbon-components-react'
 import LargeText from '../library/LargeText'
 import TrustlessTooltip from '../library/TrustlessTooltip'
 import { numDisplay, sum } from '../../utils'
@@ -18,6 +18,7 @@ const ReportErrorsTitle = () => {
   ], selector, dispatch)
 
   const [ copyClicked, setCopyClicked ] = useState(false)
+  const [ waiting, setWaiting ] = useState(false)
 
   const countErrors = errors.errors.length
 
@@ -34,6 +35,9 @@ const ReportErrorsTitle = () => {
     requestURL: 'https://trustless-error-endpoint.herokuapp.com/submitErrors',
     requestType: RequestType.POST,
     resultProcessor: (result: Record<string, any>) => result.errorsWritten,
+    startHook: () => setWaiting(true),
+    endHook: () => setWaiting(false),
+    failHook: () => setWaiting(false),
   })
 
   const reportErrors = async () => {
@@ -43,10 +47,14 @@ const ReportErrorsTitle = () => {
 
   const sessionId = errors.sessionId
 
+  let timeout: NodeJS.Timeout | null = null
+
   const onCopyClick = (sessionId: string) => {
     navigator.clipboard.writeText(sessionId)
     setCopyClicked(true)
-    setTimeout(() => setCopyClicked(false), 2500)
+
+    if (timeout !== null) clearTimeout(timeout)
+    timeout = setTimeout(() => setCopyClicked(false), 2000)
   }
 
   return (
@@ -64,21 +72,25 @@ const ReportErrorsTitle = () => {
               ? <Button
                   size='sm'
                   kind='secondary'
-                  onClick={() => onCopyClick(sessionId)}>
+                  onClick={copyClicked ? undefined : () => onCopyClick(sessionId)}>
                   {copyClicked ? 'Copied!' : 'Copy Session Id'}
                 </Button>
-              : <Button
+              :
+              <span style={{whiteSpace: 'nowrap'}}>
+                <Button
                   size='sm'
                   kind='secondary'
-                  disabled={errors.errors.length === 0}
+                  renderIcon={waiting ? InlineLoading : undefined}
+                  disabled={errors.errors.length === 0 || waiting}
                   onClick={reportErrors}>
                   Report Errors
                 </Button>
+              </span>
           }
         </div>
         <div style={{display: 'float', alignItems: 'center'}}>
           <span style={{float: 'left', paddingTop: 2}}>
-            <LargeText size={18} style={{marginLeft: 10}}>
+            <LargeText size={18} >
               {numDisplay(countErrors)} Pending {countErrors === 1 ? 'Error' : 'Errors'}
             </LargeText>
             <span style={{position: 'relative', top: '2px', left: '4px'}}>
