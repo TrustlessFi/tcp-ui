@@ -33,7 +33,6 @@ const getWaitFunction = <
           name,
           dependencies,
           inputArgs,
-          state,
         }
       }, dispatch)
       throw state.error
