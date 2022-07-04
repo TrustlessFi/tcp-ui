@@ -1,0 +1,23 @@
+{
+  "TDAO": {
+    "TDao": ""
+  },
+  "TCP": {
+    "Governor": "",
+    "ProtocolDataAggregator": "",
+    "GenesisAllocation": ""
+  },
+  "TrustlessMulticall": {
+    "multicall": ""
+  },
+  "Uniswap": {
+    "factory": "",
+    "router": ""
+  },
+  "Aux": {
+    "ethPriceProvider": "",
+    "weth": "",
+    "chainEth": "",
+    "testnetMultiMint": ""
+  }
+}
