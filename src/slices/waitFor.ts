@@ -32,7 +32,6 @@ const getWaitFunction = <
         extraData: {
           name,
           dependencies,
-          inputArgs,
         }
       }, dispatch)
       throw state.error
