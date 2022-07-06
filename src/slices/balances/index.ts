@@ -6,9 +6,9 @@ import {
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
-  rc,
   oneContractManyFunctionMC,
   manyContractOneFunctionMC,
+  idsToArg,
 } from '@trustlessfi/multicall'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { TruEth } from '@trustlessfi/typechain'
@@ -72,34 +72,29 @@ const balancesSlice = createChainDataSlice({
       } = await executeMulticalls(
         multicall,
         {
-          userTruEthBalance: oneContractManyFunctionMC(
+          userTruEthBalance: oneContractManyFunctionMC( // big number unscale
             truEth,
-            { balanceOf: rc.BigNumberUnscale },
             { balanceOf: [args.userAddress] },
           ),
-          userBalance: manyContractOneFunctionMC(
+          userBalance: manyContractOneFunctionMC( // big number
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress]])),
             'balanceOf',
-            rc.BigNumber
+            idsToArg(tokenAddresses, [args.userAddress] as [string]),
           ),
-          accountingBalance: manyContractOneFunctionMC(
+          accountingBalance: manyContractOneFunctionMC( // big number
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.contracts.Accounting]])),
             'balanceOf',
-            rc.BigNumber
+            idsToArg(tokenAddresses, [args.contracts.Accounting] as [string]),
           ),
-          marketApprovals: manyContractOneFunctionMC(
+          marketApprovals: manyContractOneFunctionMC( // big number
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Market]])),
             'allowance',
-            rc.BigNumber,
+            idsToArg(tokenAddresses, [args.userAddress, args.contracts.Market] as [string, string]),
           ),
-          rewardsApprovals: manyContractOneFunctionMC(
+          rewardsApprovals: manyContractOneFunctionMC( // big number
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Rewards]])),
             'allowance',
-            rc.BigNumber,
+            idsToArg(tokenAddresses, [args.userAddress, args.contracts.Rewards] as [string, string]),
           ),
         }
       )

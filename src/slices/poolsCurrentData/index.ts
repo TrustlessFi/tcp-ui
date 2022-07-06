@@ -8,8 +8,8 @@ import {
   oneContractOneFunctionMC,
   oneContractManyFunctionMC,
   rc,
-  idToIdAndNoArg,
-  idToIdAndArg,
+  idsToNoArg,
+  idsToIds,
 } from '@trustlessfi/multicall'
 import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/typechain'
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
@@ -83,7 +83,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           uniswapPoolAddresses: manyContractOneFunctionMC(
             charmWrapper,
-            idToIdAndNoArg(charmPoolAddresses),
+            idsToNoArg(charmPoolAddresses),
             'pool',
             rc.String,
           ),
@@ -93,7 +93,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
             (result: any) => result as poolPosition,
             Object.fromEntries(
               charmPoolAddresses.map(
-                poolAddress => [poolAddress, [args.userAddress, poolAddress]]
+                poolAddress => [poolAddress, [args.userAddress, poolAddress] as [string, string]]
               )
             ),
           ),
@@ -111,7 +111,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           sqrtPriceX96Instant: manyContractOneFunctionMC(
             poolContract,
-            idToIdAndNoArg(Object.values(uniswapPoolAddresses)),
+            idsToNoArg(Object.values(uniswapPoolAddresses)),
             'slot0',
             rc.String,
           ),
@@ -126,19 +126,19 @@ const poolsCurrentDataSlice = createChainDataSlice({
             rewards,
             'getMinLiquidityByPeriod',
             (result: any) => result as PromiseType<ReturnType<Rewards['getMinLiquidityByPeriod']>>,
-            idToIdAndArg(charmPoolAddresses),
+            idsToIds(charmPoolAddresses),
           ),
           rs: oneContractOneFunctionMC(
             accounting,
             'getRewardStatus',
             (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
-            idToIdAndArg(charmPoolAddresses),
+            idsToIds(charmPoolAddresses),
           ),
           poolsLiquidity: oneContractOneFunctionMC(
             accounting,
             'poolLiquidity',
             rc.BigNumberToString,
-            idToIdAndArg(charmPoolAddresses),
+            idsToIds(charmPoolAddresses),
           ),
         }
       )

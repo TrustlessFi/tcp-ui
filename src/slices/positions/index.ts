@@ -4,7 +4,11 @@ import {
   timeToPeriod, unscale, bnf,
  } from '../../utils'
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { oneContractOneFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
+import {
+  oneContractOneFunctionMC,
+  executeMulticalls,
+  idsToIds,
+} from '@trustlessfi/multicall'
 import { PromiseType } from '@trustlessfi/utils'
 import { thunkArgs } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
@@ -45,7 +49,7 @@ const positionsSlice = createChainDataSlice({
           accounting,
           'getPosition',
           (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,
-          Object.fromEntries(positionIDs.map(positionID => [positionID.toString(), [positionID]]))
+          idsToIds(positionIDs.map(pid => pid.toString())),
         ),
       })
 
