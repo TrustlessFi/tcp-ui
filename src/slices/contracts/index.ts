@@ -4,7 +4,7 @@ import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '
 import getContract from '../../utils/getContract'
 import { createChainDataSlice, CacheDuration } from '../'
 import { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { Accounting, TDao } from '@trustlessfi/typechain'
 
 export type contractsInfo = { [key in ProtocolContract | TDaoContract]: string }
@@ -26,33 +26,33 @@ const contractsSlice = createChainDataSlice({
           tcpContracts: oneContractManyFunctionMC(
             governor,
             {
-              accounting: rc.String,
-              auctions: rc.String,
-              tcp: rc.String,
-              hue: rc.String,
-              huePositionNFT: rc.String,
-              enforcedDecentralization: rc.String,
-              lendHue: rc.String,
-              liquidations: rc.String,
-              market: rc.String,
-              prices: rc.String,
-              protocolLock: rc.String,
-              rates: rc.String,
-              rewards: rc.String,
-              settlement: rc.String,
-              timelock: rc.String,
-              governorAlpha: rc.String,
-              tcpAllocation: rc.String,
+              accounting: [],
+              auctions: [],
+              tcp: [],
+              hue: [],
+              huePositionNFT: [],
+              enforcedDecentralization: [],
+              lendHue: [],
+              liquidations: [],
+              market: [],
+              prices: [],
+              protocolLock: [],
+              rates: [],
+              rewards: [],
+              settlement: [],
+              timelock: [],
+              governorAlpha: [],
+              tcpAllocation: [],
             }
           ),
           tdaoContracts: oneContractManyFunctionMC(
             tdao,
             {
-              timelock: rc.String,
-              tDaoGovernorAlpha: rc.String,
-              tDaoToken: rc.String,
-              tDaoPositionNFT: rc.String,
-              votingRewardsSafe: rc.String,
+              timelock: [],
+              tDaoGovernorAlpha: [],
+              tDaoToken: [],
+              tDaoPositionNFT: [],
+              votingRewardsSafe: []
             }
           )
         }
@@ -65,9 +65,7 @@ const contractsSlice = createChainDataSlice({
         {
           truEth: oneContractManyFunctionMC(
             accounting,
-            {
-              truEth: rc.String,
-            }
+            { truEth: [] }
           )
         }
       )

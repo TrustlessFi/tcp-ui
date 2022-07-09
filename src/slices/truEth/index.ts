@@ -1,7 +1,7 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { TruEth } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
@@ -27,14 +27,10 @@ const truEthSlice = createChainDataSlice({
           truEthData: oneContractManyFunctionMC(
             truEth,
             {
-              firstAdmin: rc.String,
-              isAdmin: rc.Boolean,
-              isMinter: rc.Boolean,
-            },
-            {
+              firstAdmin: [],
               isAdmin: [args.userAddress],
               isMinter: [args.userAddress],
-            }
+            },
           ),
         }
       )

@@ -69,11 +69,13 @@ export type FetchNode = keyof RootState
 export type sliceStateValues = {
   [node in FetchNode]:
     RootState[node] extends sliceState<unknown>
-    ? RootState[node]['value']
-    : RootState[node]
+      ? RootState[node]['value']
+      : RootState[node]
 }
 
-export type thunkDependencies<R extends FetchNode> = {[node in keyof Pick<RootState, R>]: sliceStateValues[node]}
+export type thunkDependencies<R extends FetchNode> = {
+  [node in keyof Pick<RootState, R>]: sliceStateValues[node]
+}
 
 export type thunkArgs<R extends FetchNode> = NonNullValues<thunkDependencies<R>>
 

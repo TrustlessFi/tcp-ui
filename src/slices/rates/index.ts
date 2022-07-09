@@ -1,8 +1,9 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rates } from '@trustlessfi/typechain/'
+import { unscale } from '../../utils'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
-import { thunkArgs, RootState  } from '../fetchNodes'
+import { oneContractManyFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
+import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
 export interface ratesInfo {
@@ -26,19 +27,23 @@ const ratesInfoSlice = createChainDataSlice({
           ratesInfo: oneContractManyFunctionMC(
             rates,
             {
-              positiveInterestRate: rc.Boolean,
-              interestRateAbsoluteValue: rc.BigNumberUnscale,
-              getReferencePools: rc.StringArray,
+              positiveInterestRate: [],
+              interestRateAbsoluteValue: [],
+              getReferencePools: [],
             },
           )
         }
       )
 
+
+
       return {
         interestRate:
-          ratesInfo.positiveInterestRate
-          ? ratesInfo.interestRateAbsoluteValue
-          : -ratesInfo.interestRateAbsoluteValue,
+          unscale(
+            ratesInfo.positiveInterestRate
+            ? ratesInfo.interestRateAbsoluteValue
+            : ratesInfo.interestRateAbsoluteValue.mul(-1),
+          ),
         referencePools: ratesInfo.getReferencePools,
       }
     },

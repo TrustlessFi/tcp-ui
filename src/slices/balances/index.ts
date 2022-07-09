@@ -6,9 +6,9 @@ import {
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
-  rc,
   oneContractManyFunctionMC,
   manyContractOneFunctionMC,
+  idsToArg,
 } from '@trustlessfi/multicall'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { TruEth } from '@trustlessfi/typechain'
@@ -74,32 +74,27 @@ const balancesSlice = createChainDataSlice({
         {
           userTruEthBalance: oneContractManyFunctionMC(
             truEth,
-            { balanceOf: rc.BigNumberUnscale },
             { balanceOf: [args.userAddress] },
           ),
           userBalance: manyContractOneFunctionMC(
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress]])),
             'balanceOf',
-            rc.BigNumber
+            idsToArg(tokenAddresses, [args.userAddress] as [string]),
           ),
           accountingBalance: manyContractOneFunctionMC(
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.contracts.Accounting]])),
             'balanceOf',
-            rc.BigNumber
+            idsToArg(tokenAddresses, [args.contracts.Accounting] as [string]),
           ),
           marketApprovals: manyContractOneFunctionMC(
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Market]])),
             'allowance',
-            rc.BigNumber,
+            idsToArg(tokenAddresses, [args.userAddress, args.contracts.Market] as [string, string]),
           ),
           rewardsApprovals: manyContractOneFunctionMC(
             tokenContract,
-            Object.fromEntries(tokenAddresses.map(address => [address, [args.userAddress, args.contracts.Rewards]])),
             'allowance',
-            rc.BigNumber,
+            idsToArg(tokenAddresses, [args.userAddress, args.contracts.Rewards] as [string, string]),
           ),
         }
       )
@@ -155,7 +150,7 @@ const balancesSlice = createChainDataSlice({
       }
 
       return {
-        userEthBalance: userTruEthBalance.balanceOf,
+        userEthBalance: unscale(userTruEthBalance.balanceOf),
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 

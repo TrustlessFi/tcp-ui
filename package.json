@@ -14,7 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@trustlessfi/addresses": "^0.13.1",
     "@trustlessfi/artifacts": "^0.3.22",
-    "@trustlessfi/multicall": "^0.4.25",
+    "@trustlessfi/multicall": "^0.6.1",
     "@trustlessfi/typechain": "^0.8.22",
     "@types/carbon-components": "^10.27.1",
     "@types/carbon-components-react": "^7.49.0",

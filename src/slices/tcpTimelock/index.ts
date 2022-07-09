@@ -3,7 +3,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { createChainDataSlice, CacheDuration } from '../'
 import { TcpTimelock } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
 export interface tcpTimelockInfo {
   guardian: string
@@ -24,9 +24,7 @@ const tcpTimelockSlice = createChainDataSlice({
         {
           tcpTimelockInfo: oneContractManyFunctionMC(
             tcpTimelock,
-            {
-              guardian: rc.String,
-            }
+            { guardian: [] }
           )
         }
       )
