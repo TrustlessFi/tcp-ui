@@ -5,7 +5,7 @@ export interface cacheBreakerState {
   cacheIndex: number
 }
 
-export const cacheIndex = 4
+export const cacheIndex = 5
 
 const initialState = { cacheIndex } as cacheBreakerState
 
