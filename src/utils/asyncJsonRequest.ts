@@ -44,7 +44,7 @@ class AsyncJsonRequest<
       default:
         assertUnreachable(this.requestType)
     }
-    throw ''
+    throw new Error('')
   }
 
   async execute (input: InputType) {
