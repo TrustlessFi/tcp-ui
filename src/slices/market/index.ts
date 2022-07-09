@@ -3,8 +3,8 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { createChainDataSlice } from '../'
 import { Market } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { mnt } from '../../utils'
-import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { mnt, unscale } from '../../utils'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
 export interface marketInfo {
   lastPeriodGlobalInterestAccrued: number
@@ -32,23 +32,29 @@ const marketSlice = createChainDataSlice({
           marketInfo: oneContractManyFunctionMC(
             market,
             {
-              lastPeriodGlobalInterestAccrued: rc.BigNumberToNumber,
-              collateralizationRequirement: rc.BigNumberUnscale,
-              minPositionSize: rc.BigNumberUnscale,
-              twapDuration: rc.Number,
-              interestPortionToLenders: rc.BigNumberUnscale,
-              periodLength: rc.BigNumberToNumber,
-              firstPeriod: rc.BigNumberToNumber,
-              valueOfLendTokensInHue: rc.BigNumberUnscale,
-            },
-            {
+              lastPeriodGlobalInterestAccrued: [],
+              collateralizationRequirement: [],
+              minPositionSize: [],
+              twapDuration: [],
+              interestPortionToLenders: [],
+              periodLength: [],
+              firstPeriod: [],
               valueOfLendTokensInHue: [mnt(1)]
-            }
+            },
           )
         }
       )
 
-      return marketInfo
+      return {
+        lastPeriodGlobalInterestAccrued: marketInfo.lastPeriodGlobalInterestAccrued.toNumber(),
+        collateralizationRequirement: unscale(marketInfo.collateralizationRequirement),
+        minPositionSize: unscale(marketInfo.minPositionSize),
+        twapDuration: marketInfo.twapDuration,
+        interestPortionToLenders: unscale(marketInfo.interestPortionToLenders),
+        periodLength: marketInfo.periodLength.toNumber(),
+        firstPeriod: marketInfo.firstPeriod.toNumber(),
+        valueOfLendTokensInHue: unscale(marketInfo.valueOfLendTokensInHue),
+      }
     },
 })
 

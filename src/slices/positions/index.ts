@@ -9,7 +9,6 @@ import {
   executeMulticalls,
   idsToIds,
 } from '@trustlessfi/multicall'
-import { PromiseType } from '@trustlessfi/utils'
 import { thunkArgs } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
@@ -40,7 +39,6 @@ const positionsSlice = createChainDataSlice({
       const positionNFT = getContract<HuePositionNFT>(ProtocolContract.HuePositionNFT, args.contracts.HuePositionNFT)
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
 
-
       // fetch the positions
       const positionIDs = await positionNFT.positionIDs(args.userAddress)
 
@@ -48,7 +46,6 @@ const positionsSlice = createChainDataSlice({
         positions: oneContractOneFunctionMC(
           accounting,
           'getPosition',
-          (result: any) => result as PromiseType<ReturnType<Accounting['getPosition']>>,
           idsToIds(positionIDs.map(pid => pid.toString())),
         ),
       })

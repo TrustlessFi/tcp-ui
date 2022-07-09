@@ -7,7 +7,6 @@ import {
   manyContractOneFunctionMC,
   oneContractOneFunctionMC,
   oneContractManyFunctionMC,
-  rc,
   idsToNoArg,
   idsToIds,
 } from '@trustlessfi/multicall'
@@ -15,11 +14,9 @@ import { UniswapV3Pool, Accounting, Rewards, CharmWrapper } from '@trustlessfi/t
 import poolArtifact from '@trustlessfi/artifacts/dist/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import charmWrapperArtifact from '@trustlessfi/artifacts/dist/contracts/charm/CharmWrapper.sol/CharmWrapper.json'
 import {
-  sqrtPriceX96ToTick, PromiseType, timeToPeriod, bnf,
+  sqrtPriceX96ToTick, timeToPeriod, bnf,
   unscale
 } from '../../utils'
-
-type poolPosition = PromiseType<ReturnType<Accounting['getPoolPosition']>>
 
 export interface poolsCurrentData {
   [poolID: string]: {
@@ -83,14 +80,12 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           uniswapPoolAddresses: manyContractOneFunctionMC(
             charmWrapper,
-            idsToNoArg(charmPoolAddresses),
             'pool',
-            rc.String,
+            idsToNoArg(charmPoolAddresses),
           ),
           userLiquidityPositions: oneContractOneFunctionMC(
             accounting,
             'getPoolPosition',
-            (result: any) => result as poolPosition,
             Object.fromEntries(
               charmPoolAddresses.map(
                 poolAddress => [poolAddress, [args.userAddress, poolAddress] as [string, string]]
@@ -111,33 +106,29 @@ const poolsCurrentDataSlice = createChainDataSlice({
         {
           sqrtPriceX96Instant: manyContractOneFunctionMC(
             poolContract,
-            idsToNoArg(Object.values(uniswapPoolAddresses)),
             'slot0',
-            rc.String,
+            idsToNoArg(Object.values(uniswapPoolAddresses)),
           ),
           currentRewardsInfo: oneContractManyFunctionMC(
             rewards,
             {
-              lastPeriodGlobalRewardsAccrued: rc.BigNumberToNumber,
-              currentPeriod: rc.BigNumberToNumber,
+              lastPeriodGlobalRewardsAccrued: [],
+              currentPeriod: [],
             }
           ),
           minLiquidityByPeriod: oneContractOneFunctionMC(
             rewards,
             'getMinLiquidityByPeriod',
-            (result: any) => result as PromiseType<ReturnType<Rewards['getMinLiquidityByPeriod']>>,
             idsToIds(charmPoolAddresses),
           ),
           rs: oneContractOneFunctionMC(
             accounting,
             'getRewardStatus',
-            (result: any) => result as PromiseType<ReturnType<Accounting['getRewardStatus']>>,
             idsToIds(charmPoolAddresses),
           ),
           poolsLiquidity: oneContractOneFunctionMC(
             accounting,
             'poolLiquidity',
-            rc.BigNumberToString,
             idsToIds(charmPoolAddresses),
           ),
         }
@@ -147,7 +138,7 @@ const poolsCurrentDataSlice = createChainDataSlice({
 
         let approximateRewards = bnf(0)
         const lastTimePositionRewarded = userLiquidityPositions[address].lastTimeRewarded.toNumber()
-        const lastPeriodGlobalRewardsAccrued = currentRewardsInfo.lastPeriodGlobalRewardsAccrued
+        const lastPeriodGlobalRewardsAccrued = currentRewardsInfo.lastPeriodGlobalRewardsAccrued.toNumber()
 
         const getRewardsPeriodForTime = (time: number) =>
           timeToPeriod(time, args.rewardsInfo.periodLength, args.rewardsInfo.firstPeriod)
@@ -181,12 +172,12 @@ const poolsCurrentDataSlice = createChainDataSlice({
 
         return [address, {
           sqrtPriceX96: sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString(),
-          instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]]),
-          poolLiquidity: poolsLiquidity[address],
+          instantTick: sqrtPriceX96ToTick(sqrtPriceX96Instant[uniswapPoolAddresses[address]].toString()),
+          poolLiquidity: poolsLiquidity[address].toString(),
           cumulativeLiquidity: rs[address].cumulativeLiquidity.toString(),
           totalRewards: rs[address].totalRewards.toString(),
           lastPeriodGlobalRewardsAccrued,
-          currentPeriod: currentRewardsInfo.currentPeriod,
+          currentPeriod: currentRewardsInfo.currentPeriod.toNumber(),
           poolID: args.poolsMetadata[address].poolID,
           minLiquidityByPeriod: {
             period: minLiquidityByPeriod[address].period.toNumber(),

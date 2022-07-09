@@ -24,9 +24,7 @@ const partialGovernorSlice = createChainDataSlice({
         {
           governorInfo: oneContractManyFunctionMC(
             governor,
-            {
-              currentPhase: [],
-            },
+            { currentPhase: [] },
           )
         }
       )

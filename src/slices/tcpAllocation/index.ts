@@ -1,8 +1,7 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
-import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { unscale } from '../../utils'
-import { PromiseType } from '@trustlessfi/utils'
-import { TDao, TcpAllocation } from '@trustlessfi/typechain'
+import { TcpAllocation } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
@@ -37,23 +36,18 @@ const tcpAllocationSlice = createChainDataSlice({
         tdaoInfo: oneContractManyFunctionMC(
           tcpAllocation,
           {
-            restrictedToUnlockDuration: rc.Boolean,
-            restrictedUnlockTime: rc.BigNumberToNumber,
-            startTime: rc.BigNumberToNumber,
-            getUserAllocation:
-              (result: any) => result as PromiseType<ReturnType<TcpAllocation['getUserAllocation']>>,
-          },
-          {
             restrictedToUnlockDuration: [args.userAddress],
+            restrictedUnlockTime: [],
+            startTime: [],
             getUserAllocation: [args.userAddress],
-          }
+          },
         ),
       })
 
       return {
         restrictedToUnlockDuration: tdaoInfo.restrictedToUnlockDuration,
-        restrictedUnlockTime: tdaoInfo.restrictedUnlockTime,
-        startTime: tdaoInfo.startTime,
+        restrictedUnlockTime: tdaoInfo.restrictedUnlockTime.toNumber(),
+        startTime: tdaoInfo.startTime.toNumber(),
         totalAllocation: unscale(tdaoInfo.getUserAllocation.totalAllocation),
         minimumAverageTokensAllocatedxLockYears: tdaoInfo.getUserAllocation.minimumAverageTokensAllocatedxLockYears.toString(),
         tokensAllocated: unscale(tdaoInfo.getUserAllocation.tokensAllocated),

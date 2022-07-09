@@ -72,26 +72,26 @@ const balancesSlice = createChainDataSlice({
       } = await executeMulticalls(
         multicall,
         {
-          userTruEthBalance: oneContractManyFunctionMC( // big number unscale
+          userTruEthBalance: oneContractManyFunctionMC(
             truEth,
             { balanceOf: [args.userAddress] },
           ),
-          userBalance: manyContractOneFunctionMC( // big number
+          userBalance: manyContractOneFunctionMC(
             tokenContract,
             'balanceOf',
             idsToArg(tokenAddresses, [args.userAddress] as [string]),
           ),
-          accountingBalance: manyContractOneFunctionMC( // big number
+          accountingBalance: manyContractOneFunctionMC(
             tokenContract,
             'balanceOf',
             idsToArg(tokenAddresses, [args.contracts.Accounting] as [string]),
           ),
-          marketApprovals: manyContractOneFunctionMC( // big number
+          marketApprovals: manyContractOneFunctionMC(
             tokenContract,
             'allowance',
             idsToArg(tokenAddresses, [args.userAddress, args.contracts.Market] as [string, string]),
           ),
-          rewardsApprovals: manyContractOneFunctionMC( // big number
+          rewardsApprovals: manyContractOneFunctionMC(
             tokenContract,
             'allowance',
             idsToArg(tokenAddresses, [args.userAddress, args.contracts.Rewards] as [string, string]),
@@ -150,7 +150,7 @@ const balancesSlice = createChainDataSlice({
       }
 
       return {
-        userEthBalance: userTruEthBalance.balanceOf,
+        userEthBalance: unscale(userTruEthBalance.balanceOf),
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 

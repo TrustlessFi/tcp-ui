@@ -1,7 +1,8 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Rewards } from '@trustlessfi/typechain'
+import { unscale } from '../../utils'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { executeMulticalls, rc, oneContractManyFunctionMC } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 
@@ -29,17 +30,22 @@ const rewardsInfoSlice = createChainDataSlice({
           rewardsInfo: oneContractManyFunctionMC(
             rewards,
             {
-              weth: rc.String,
-              countPools: rc.Number,
-              firstPeriod: rc.BigNumberToNumber,
-              periodLength: rc.BigNumberToNumber,
-              maxCollateralLiquidityDecreasePerPeriod: rc.BigNumberUnscale,
+              weth: [],
+              countPools: [],
+              firstPeriod: [],
+              periodLength: [],
+              maxCollateralLiquidityDecreasePerPeriod: [],
             }
           ),
         }
       )
 
-      return rewardsInfo
+      return {
+        ...rewardsInfo,
+        firstPeriod: rewardsInfo.firstPeriod.toNumber(),
+        periodLength: rewardsInfo.periodLength.toNumber(),
+        maxCollateralLiquidityDecreasePerPeriod: unscale(rewardsInfo.maxCollateralLiquidityDecreasePerPeriod),
+      }
     },
 })
 

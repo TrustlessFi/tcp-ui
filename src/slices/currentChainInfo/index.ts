@@ -3,7 +3,6 @@ import { createChainDataSlice, CacheDuration } from '../'
 import { getMulticallContract } from '../../utils/getContract'
 import {
   executeMulticalls,
-  rc,
   oneContractManyFunctionMC,
 } from '@trustlessfi/multicall'
 
@@ -28,18 +27,18 @@ const currentChainInfoSlice = createChainDataSlice({
           chainInfo: oneContractManyFunctionMC(
             multicall,
             {
-              getBlockNumber: rc.BigNumberToNumber,
-              getCurrentBlockTimestamp: rc.BigNumberToNumber,
-              getChainId: rc.BigNumberToNumber,
+              getBlockNumber: [],
+              getCurrentBlockTimestamp: [],
+              getChainId: [],
             },
           ),
         }
       )
 
       return {
-        blockNumber: chainInfo.getBlockNumber,
-        blockTimestamp: chainInfo.getCurrentBlockTimestamp,
-        chainID: chainInfo.getChainId,
+        blockNumber: chainInfo.getBlockNumber.toNumber(),
+        blockTimestamp: chainInfo.getCurrentBlockTimestamp.toNumber(),
+        chainID: chainInfo.getChainId.toNumber(),
       }
     }
 })

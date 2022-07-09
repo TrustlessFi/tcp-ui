@@ -1,5 +1,5 @@
 import { getMulticallContract, getContract } from '../../utils/getContract'
-import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
+import { oneContractManyFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
 import { thunkArgs, RootState  } from '../fetchNodes'
 import { createChainDataSlice, CacheDuration } from '../'
 import { RootContract } from '../contracts/ProtocolContract'
@@ -17,22 +17,23 @@ const counterInfoSlice = createChainDataSlice({
   thunkFunction:
     async (args: thunkArgs<'rootContracts'>) => {
       const trustlessMulticall = getMulticallContract(args.rootContracts.trustlessMulticall)
-      const dataAggregator = getContract<ProtocolDataAggregator>(RootContract.ProtocolDataAggregator, args.rootContracts.protocolDataAggregator)
+      const dataAggregator = getContract<ProtocolDataAggregator>(
+        RootContract.ProtocolDataAggregator,
+        args.rootContracts.protocolDataAggregator,
+      )
 
       const { counter } = await executeMulticalls(
         trustlessMulticall,
         {
           counter: oneContractManyFunctionMC(
             dataAggregator,
-            {
-              counter: rc.BigNumberToNumber,
-            },
+            { counter: [] },
           )
         }
       )
 
       return {
-        counterValue: counter.counter
+        counterValue: counter.counter.toNumber()
       }
     },
 })

@@ -4,7 +4,6 @@ import {
 import ProtocolContract, { RootContract } from '../contracts/ProtocolContract';
 import {
   executeMulticalls,
-  rc,
   manyContractOneFunctionMC,
   oneContractOneFunctionMC,
   idsToNoArg,
@@ -57,9 +56,9 @@ const poolsMetadataSlice = createChainDataSlice({
       const { token0, token1, poolIDs } = await executeMulticalls(
         trustlessMulticall,
         {
-          token0: manyContractOneFunctionMC(poolContract, idsToNoArg(poolAddresses), 'token0', rc.String),
-          token1: manyContractOneFunctionMC(poolContract, idsToNoArg(poolAddresses), 'token1', rc.String),
-          poolIDs: oneContractOneFunctionMC(rewards, 'poolIDForPool', rc.Number, idsToIds(poolAddresses)),
+          token0: manyContractOneFunctionMC(poolContract, 'token0', idsToNoArg(poolAddresses)),
+          token1: manyContractOneFunctionMC(poolContract, 'token1', idsToNoArg(poolAddresses)),
+          poolIDs: oneContractOneFunctionMC(rewards, 'poolIDForPool', idsToIds(poolAddresses)),
         }
       )
 
@@ -69,9 +68,9 @@ const poolsMetadataSlice = createChainDataSlice({
       const { name, symbol, decimals } = await executeMulticalls(
         trustlessMulticall,
         {
-          name: manyContractOneFunctionMC(tokenContract, idsToNoArg(tokenAddresses), 'name', rc.String),
-          symbol: manyContractOneFunctionMC(tokenContract, idsToNoArg(tokenAddresses), 'symbol', rc.String),
-          decimals: manyContractOneFunctionMC(tokenContract, idsToNoArg(tokenAddresses), 'decimals', rc.Number),
+          name: manyContractOneFunctionMC(tokenContract, 'name', idsToNoArg(tokenAddresses)),
+          symbol: manyContractOneFunctionMC(tokenContract, 'symbol', idsToNoArg(tokenAddresses)),
+          decimals: manyContractOneFunctionMC(tokenContract, 'decimals', idsToNoArg(tokenAddresses)),
         },
       )
 

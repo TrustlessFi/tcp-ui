@@ -1,9 +1,10 @@
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { Liquidations } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { executeMulticalls, oneContractManyFunctionMC, rc } from '@trustlessfi/multicall'
+import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 import { thunkArgs, RootState } from '../fetchNodes'
 import { createChainDataSlice } from '../'
+import { unscale } from '../../utils'
 
 export interface liquidationsInfo {
   twapDuration: number
@@ -26,15 +27,19 @@ const liquidationsSlice = createChainDataSlice({
           liquidationsInfo: oneContractManyFunctionMC(
             liquidations,
             {
-              twapDuration: rc.Number,
-              discoveryIncentive: rc.BigNumberUnscale,
-              liquidationIncentive: rc.BigNumberUnscale,
+              twapDuration: [],
+              discoveryIncentive: [],
+              liquidationIncentive: []
             },
           ),
         }
       )
 
-      return liquidationsInfo
+      return {
+        ...liquidationsInfo,
+        discoveryIncentive: unscale(liquidationsInfo.discoveryIncentive),
+        liquidationIncentive: unscale(liquidationsInfo.liquidationIncentive),
+      }
     },
 })
 

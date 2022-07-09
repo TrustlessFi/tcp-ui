@@ -2,8 +2,9 @@ import { thunkArgs, RootState } from '../fetchNodes'
 import getContract, { getMulticallContract } from '../../utils/getContract'
 import { createChainDataSlice } from '../'
 import { Prices } from '@trustlessfi/typechain'
+import { unscale } from '../../utils'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { oneContractManyFunctionMC, rc, executeMulticalls } from '@trustlessfi/multicall'
+import { oneContractManyFunctionMC, executeMulticalls } from '@trustlessfi/multicall'
 
 export interface pricesInfo { ethPrice: number }
 
@@ -21,13 +22,12 @@ const pricesSlice = createChainDataSlice({
         {
           ethPrice: oneContractManyFunctionMC(
             prices,
-            { calculateInstantCollateralPrice: rc.BigNumberUnscale },
             { calculateInstantCollateralPrice: [args.liquidationsInfo.twapDuration] },
           ),
         }
       )
 
-      return { ethPrice: ethPrice.calculateInstantCollateralPrice }
+      return { ethPrice: unscale(ethPrice.calculateInstantCollateralPrice) }
     },
 })
 
