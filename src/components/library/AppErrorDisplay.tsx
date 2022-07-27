@@ -35,16 +35,16 @@ const AppErrorDisplay = () => {
           />
         </Center>
         <SpacedList spacing={20}>
-          <Center>
-            <LargeText size={36}>
+          <LargeText size={36}>
+            <Center>
               Something went wrong!
+            </Center>
           </LargeText>
-          </Center>
-          <Center>
-            <Text size={16}>
+          <Text size={16}>
+            <Center>
               There was an error, but your assets are safe.
-            </Text>
-          </Center>
+            </Center>
+          </Text>
         </SpacedList>
         <Center>
           <Link onClick={onClick} style={{cursor: 'pointer'}}>
