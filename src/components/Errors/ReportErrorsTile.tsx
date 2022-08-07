@@ -32,7 +32,7 @@ const ReportErrorsTitle = () => {
   )
 
   const request = new AsyncJsonRequest<typeof errors, string[]>({
-    requestURL: 'https://trustless-error-endpoint.herokuapp.com/submitErrors',
+    requestURL: 'https://trustless-api-endpoint.herokuapp.com/submitErrors',
     requestType: RequestType.POST,
     resultProcessor: (result: Record<string, any>) => result.errorsWritten,
     startHook: () => setWaiting(true),
