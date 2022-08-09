@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import waitFor from '../../slices/waitFor'
 import { Position } from '../../slices/positions'
 import {
-  numDisplay, roundToXDecimals, isZeroish, empty, hours, years,
+  numDisplay, roundToXDecimals, isZeroish, empty, hours, years, scale, bnf
 } from '../../utils/'
 import reason from '../library/ErrorReasonType'
 import SpacedList from '../library/SpacedList'
@@ -175,13 +175,22 @@ const ManagePosition = () => {
     balances !== null &&
     contracts !== null &&
     balances.tokens[contracts.Hue].approval.Market !== undefined &&
-    balances.tokens[contracts.Hue].approval.Market.approved
+    isDebtDecrease &&
+    bnf(balances.tokens[contracts.Hue].approval.Market.allowance).gte(scale(-debtIncrease))
+
+  console.log("here 1")
 
   const ethApproved =
     balances !== null &&
     contracts !== null &&
     balances.tokens[contracts.TruEth].approval.Market !== undefined &&
-    balances.tokens[contracts.TruEth].approval.Market.approved
+    collateralIncrease > 0 &&
+    bnf(balances.tokens[contracts.TruEth].approval.Market.allowance).gte(scale(collateralIncrease))
+
+  console.log({collateralIncrease, ethApproved, })
+  if (balances !== null && contracts !== null) {
+    console.log({truEthAllowance: balances.tokens[contracts.TruEth].approval.Market.allowance})
+  }
 
   const setCollateralCountToMax = () => {
     const userEthBalance =
