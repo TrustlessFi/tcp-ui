@@ -53,7 +53,7 @@ const balancesSlice = createChainDataSlice({
       // eslint-disable-next-line array-callback-return
       Object.values(args.poolsMetadata).map(pool => {
         const addAddress = (address: string) => {
-          if (!tokenAddresses.includes(pool.token0.address) && address !== args.rewardsInfo.weth) {
+          if (!tokenAddresses.includes(address) && address !== args.rewardsInfo.weth) {
             tokenAddresses.push(address)
           }
         }
