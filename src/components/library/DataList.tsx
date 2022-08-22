@@ -10,18 +10,20 @@ import {
   InlineLoading,
 } from 'carbon-components-react'
 
+export interface DataListRows {[title: string]: string | number | null}
+
 const DataList = ({
   rows,
 }: {
-  rows: {[key: string]: string | null},
+  rows: DataListRows,
 }) =>
-<StructuredListWrapper>
+<StructuredListWrapper isCondensed>
   <StructuredListBody>
     {Object.entries(rows).map(([title, value]) => (
       <StructuredListRow tabIndex={0}>
         <StructuredListCell>
           <Bold>
-          {title}
+            {title}
           </Bold>
         </StructuredListCell>
         <StructuredListCell>

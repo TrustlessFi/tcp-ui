@@ -4,7 +4,6 @@ import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multi
 import { HuePositionNFT } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
 import { createChainDataSlice } from '../'
-import { unscale } from '../../utils'
 
 export interface huePositionNftInfo {
   totalSupply: number

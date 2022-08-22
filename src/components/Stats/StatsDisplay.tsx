@@ -2,7 +2,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
 import TitleText from '../library/TitleText'
-import DataList  from '../library/DataList'
+import DataList, { DataListRows } from '../library/DataList'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Tile,
@@ -15,9 +15,9 @@ const StatsSection = ({
   rows,
 }: {
   title: string
-  rows: {[key: string]: string | null},
+  rows: DataListRows
 }) =>
-  <SpacedList spacing={32}>
+  <SpacedList spacing={16}>
     <TitleText>
       {title}
     </TitleText>
@@ -31,16 +31,22 @@ const StatsDisplay = () => {
     hueInfo,
     huePositionNftInfo,
     balances,
+    liquidationsInfo,
+    marketInfo,
+    protocolBalances,
   } = waitFor([
     'hueInfo',
     'huePositionNftInfo',
     'balances',
+    'liquidationsInfo',
+    'marketInfo',
+    'protocolBalances',
   ], selector, dispatch)
 
   return (
     <OneColumnDisplay loading={false}>
       <Tile style={{padding: 40, marginTop: 40}}>
-        <SpacedList spacing={64}>
+        <SpacedList spacing={15}>
           <StatsSection
             title='Debt'
             rows={{
@@ -59,7 +65,29 @@ const StatsDisplay = () => {
               'Average Position Collateral':
                 balances === null || huePositionNftInfo === null
                   ? null
-                  : `${numDisplay(balances.accountingEthBalance / (huePositionNftInfo.nextPositionID - 1))} TruEth `
+                  : `${numDisplay(balances.accountingEthBalance / (huePositionNftInfo.nextPositionID - 1))} TruEth `,
+              'Minimum Position Size':
+                marketInfo === null
+                  ? null
+                  : `${numDisplay(marketInfo.minPositionSize)} Hue `
+            }}
+          />
+          <StatsSection
+            title='Lending'
+            rows={{
+              'Total Hue Lent': protocolBalances === null ? null : `${numDisplay(protocolBalances.accountingHueBalance)} Hue`,
+            }}
+          />
+          <StatsSection
+            title='Liquidation Configuration'
+            rows={{
+              'Discovery Incentive': liquidationsInfo === null ? null : `${numDisplay(liquidationsInfo.discoveryIncentive * 100)} %`,
+              'Liquidation Incentive': liquidationsInfo === null
+                  ? null
+                  : `${numDisplay((liquidationsInfo.liquidationIncentive - 1) * 100)} %`,
+              'Twap Duration': liquidationsInfo === null
+                  ? null
+                  : `${numDisplay(liquidationsInfo.twapDuration / 60)} minutes`,
             }}
           />
         </SpacedList>

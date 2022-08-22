@@ -19,6 +19,7 @@ import pricesSlice from './prices'
 import ratesSlice from './rates'
 import truEthSlice from './truEth'
 import onboardingSlice from './onboarding'
+import protocolBalancesSlice from './protocolBalances'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
@@ -61,6 +62,7 @@ const allSlicesRaw = {
   poolsMetadata: poolsMetadataSlice,
   positions: positionsSlice,
   pricesInfo: pricesSlice,
+  protocolBalances: protocolBalancesSlice,
   ratesInfo: ratesSlice,
   truEthInfo: truEthSlice,
   rewardsInfo: rewardsSlice,

@@ -18,6 +18,7 @@ import { poolsCurrentData } from './poolsCurrentData'
 import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
 import { pricesInfo } from './prices'
+import { protocolBalances } from './protocolBalances'
 import { ratesInfo } from './rates'
 import { truEthInfo } from './truEth'
 import { rewardsInfo } from './rewards'
@@ -60,6 +61,7 @@ export type RootState = {
   poolsMetadata: sliceState<poolsMetadata>
   positions: sliceState<positions>
   pricesInfo: sliceState<pricesInfo>
+  protocolBalances: sliceState<protocolBalances>
   ratesInfo: sliceState<ratesInfo>
   truEthInfo: sliceState<truEthInfo>
   rewardsInfo: sliceState<rewardsInfo>

@@ -33,7 +33,6 @@ export interface balances {
         }
       }
       balances: {
-        [ProtocolContract.Accounting]: number
       }
     }
   }
@@ -174,7 +173,6 @@ const balancesSlice = createChainDataSlice({
               [ProtocolContract.Rewards]: getApprovalFor(ProtocolContract.Rewards, address),
             },
             balances: {
-              [ProtocolContract.Accounting]: unscale(accountingBalance[address], decimals),
             }
           }]
         }))
