@@ -7,6 +7,8 @@ import contractsSlice from './contracts'
 import counterSlice from './counter'
 import currentChainInfoSlice from './currentChainInfo'
 import governorSlice from './governor'
+import hueSlice from './hue'
+import huePositionNftSlice from './huePositionNft'
 import liquidationsSlice from './liquidations'
 import liquidityPageSlice from './liquidityPage'
 import marketSlice from './market'
@@ -50,6 +52,8 @@ const allSlicesRaw = {
   contracts: contractsSlice,
   currentChainInfo: currentChainInfoSlice,
   governorInfo: governorSlice,
+  hueInfo: hueSlice,
+  huePositionNftInfo: huePositionNftSlice,
   liquidationsInfo: liquidationsSlice,
   marketInfo: marketSlice,
   counterInfo: counterSlice,

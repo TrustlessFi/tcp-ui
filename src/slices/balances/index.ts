@@ -15,6 +15,7 @@ import { TruEth } from '@trustlessfi/typechain'
 
 export interface balances {
   userEthBalance: number
+  accountingEthBalance: number
   tokens: {
     [tokenAddress: string]:  {
       token: {
@@ -65,6 +66,7 @@ const balancesSlice = createChainDataSlice({
 
       const {
         userTruEthBalance,
+        accountingTruEthBalance,
         userBalance,
         marketApprovals,
         rewardsApprovals,
@@ -75,6 +77,10 @@ const balancesSlice = createChainDataSlice({
           userTruEthBalance: oneContractManyFunctionMC(
             truEth,
             { balanceOf: [args.userAddress] },
+          ),
+          accountingTruEthBalance: oneContractManyFunctionMC(
+            truEth,
+            { balanceOf: [args.contracts.Accounting] },
           ),
           userBalance: manyContractOneFunctionMC(
             tokenContract,
@@ -151,6 +157,7 @@ const balancesSlice = createChainDataSlice({
 
       return {
         userEthBalance: unscale(userTruEthBalance.balanceOf),
+        accountingEthBalance: unscale(accountingTruEthBalance.balanceOf),
         tokens: Object.fromEntries(tokenAddresses.map(address => {
           const decimals = poolsMetadataMap[address].decimals
 

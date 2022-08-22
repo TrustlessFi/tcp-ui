@@ -7,6 +7,8 @@ import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { counterInfo } from './counter'
 import { errorsState } from './errors'
+import { hueInfo } from './hue'
+import { huePositionNftInfo } from './huePositionNft'
 import { governorInfo } from './governor'
 import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
@@ -50,6 +52,8 @@ export type RootState = {
   counterInfo: sliceState<counterInfo>
   currentChainInfo: sliceState<currentChainInfo>
   governorInfo: sliceState<governorInfo>
+  hueInfo: sliceState<hueInfo>
+  huePositionNftInfo: sliceState<huePositionNftInfo>
   liquidationsInfo: sliceState<liquidationsInfo>
   marketInfo: sliceState<marketInfo>
   poolsCurrentData: sliceState<poolsCurrentData>
