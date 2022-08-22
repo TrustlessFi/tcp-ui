@@ -7,6 +7,8 @@ import contractsSlice from './contracts'
 import counterSlice from './counter'
 import currentChainInfoSlice from './currentChainInfo'
 import governorSlice from './governor'
+import hueSlice from './hue'
+import huePositionNftSlice from './huePositionNft'
 import liquidationsSlice from './liquidations'
 import liquidityPageSlice from './liquidityPage'
 import marketSlice from './market'
@@ -17,6 +19,7 @@ import pricesSlice from './prices'
 import ratesSlice from './rates'
 import truEthSlice from './truEth'
 import onboardingSlice from './onboarding'
+import protocolBalancesSlice from './protocolBalances'
 import rewardsSlice from './rewards'
 import rootContractsSlice from './rootContracts'
 import systemDebtSlice from './systemDebt'
@@ -50,6 +53,8 @@ const allSlicesRaw = {
   contracts: contractsSlice,
   currentChainInfo: currentChainInfoSlice,
   governorInfo: governorSlice,
+  hueInfo: hueSlice,
+  huePositionNftInfo: huePositionNftSlice,
   liquidationsInfo: liquidationsSlice,
   marketInfo: marketSlice,
   counterInfo: counterSlice,
@@ -57,6 +62,7 @@ const allSlicesRaw = {
   poolsMetadata: poolsMetadataSlice,
   positions: positionsSlice,
   pricesInfo: pricesSlice,
+  protocolBalances: protocolBalancesSlice,
   ratesInfo: ratesSlice,
   truEthInfo: truEthSlice,
   rewardsInfo: rewardsSlice,

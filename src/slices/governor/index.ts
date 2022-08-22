@@ -9,7 +9,7 @@ export interface governorInfo {
   phase: number
 }
 
-const partialGovernorSlice = createChainDataSlice({
+const governorSlice = createChainDataSlice({
   name: 'governor',
   dependencies: ['rootContracts'],
   stateSelector: (state: RootState) => state.governorInfo,
@@ -33,4 +33,4 @@ const partialGovernorSlice = createChainDataSlice({
     },
 })
 
-export default partialGovernorSlice
+export default governorSlice

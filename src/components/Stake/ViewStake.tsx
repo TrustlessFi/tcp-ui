@@ -21,12 +21,14 @@ const ViewStake = () => {
     ratesInfo,
     sdi,
     contracts,
+    protocolBalances,
   } = waitFor([
     'balances',
     'marketInfo',
     'ratesInfo',
     'sdi',
     'contracts',
+    'protocolBalances'
   ], selector, dispatch)
 
   const userAddress = selector(state => state.userAddress)
@@ -38,16 +40,14 @@ const ViewStake = () => {
     marketInfo === null ||
     ratesInfo === null ||
     sdi === null ||
-    contracts === null
+    contracts === null ||
+    protocolBalances === null
 
   const apr = dataNull ? 0 : getAPR({
     marketInfo,
     ratesInfo,
     sdi,
-    lentHue:
-      balances === null || contracts === null
-        ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting
+    lentHue: protocolBalances.accountingHueBalance,
   })
 
   const protoLentHueCount = dataNull ? 0 : balances.tokens[contracts.LendHue].userBalance * marketInfo.valueOfLendTokensInHue

@@ -7,6 +7,8 @@ import { contractsInfo } from './contracts'
 import { currentChainInfo } from './currentChainInfo'
 import { counterInfo } from './counter'
 import { errorsState } from './errors'
+import { hueInfo } from './hue'
+import { huePositionNftInfo } from './huePositionNft'
 import { governorInfo } from './governor'
 import { liquidityPageState } from './liquidityPage'
 import { liquidationsInfo } from './liquidations'
@@ -16,6 +18,7 @@ import { poolsCurrentData } from './poolsCurrentData'
 import { poolsMetadata } from './poolsMetadata'
 import { positions } from './positions'
 import { pricesInfo } from './prices'
+import { protocolBalances } from './protocolBalances'
 import { ratesInfo } from './rates'
 import { truEthInfo } from './truEth'
 import { rewardsInfo } from './rewards'
@@ -50,12 +53,15 @@ export type RootState = {
   counterInfo: sliceState<counterInfo>
   currentChainInfo: sliceState<currentChainInfo>
   governorInfo: sliceState<governorInfo>
+  hueInfo: sliceState<hueInfo>
+  huePositionNftInfo: sliceState<huePositionNftInfo>
   liquidationsInfo: sliceState<liquidationsInfo>
   marketInfo: sliceState<marketInfo>
   poolsCurrentData: sliceState<poolsCurrentData>
   poolsMetadata: sliceState<poolsMetadata>
   positions: sliceState<positions>
   pricesInfo: sliceState<pricesInfo>
+  protocolBalances: sliceState<protocolBalances>
   ratesInfo: sliceState<ratesInfo>
   truEthInfo: sliceState<truEthInfo>
   rewardsInfo: sliceState<rewardsInfo>

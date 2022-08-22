@@ -35,6 +35,7 @@ const IncreaseStake = () => {
     sdi,
     userAddress,
     onboarding,
+    protocolBalances,
   } = waitFor([
     'balances',
     'marketInfo',
@@ -44,6 +45,7 @@ const IncreaseStake = () => {
     'sdi',
     'userAddress',
     'onboarding',
+    'protocolBalances',
   ], selector, dispatch)
 
   useEffect(() => {
@@ -62,16 +64,14 @@ const IncreaseStake = () => {
     marketInfo === null ||
     ratesInfo === null ||
     contracts === null ||
-    sdi === null
+    sdi === null ||
+    protocolBalances === null
 
   const apr = dataNull ? 0 : getAPR({
     marketInfo,
     ratesInfo,
     sdi,
-    lentHue:
-      balances === null || contracts === null
-        ? 0
-        : balances.tokens[contracts.Hue].balances.Accounting,
+    lentHue: protocolBalances.accountingHueBalance,
     additional: amount,
   })
 

@@ -133,10 +133,7 @@ const ManagePosition = () => {
   }, [balances, contracts])
 
   const position: null | Position = positions === null || Object.values(positions).length === 0 ? null : Object.values(positions)[0]
-  const positionDebtCount =
-    position === null
-    ? 0
-    : position.debtCount * getHourAPR()
+  const positionDebtCount = position === null ? 0 : position.debtCount * getHourAPR()
 
   const collateralIncrease = collateralCount - (position === null ? 0 : position.collateralCount)
   const debtIncrease = parseFloat(roundToXDecimals(debtCount - positionDebtCount, DEBT_DECIMALS))
