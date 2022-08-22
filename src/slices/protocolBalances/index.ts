@@ -9,6 +9,7 @@ import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multi
 export interface protocolBalances {
   accountingHueBalance: number
   accountingTruEthBalance: number
+  reserves: number
 }
 
 const protocolBalancesSlice = createChainDataSlice({
@@ -21,7 +22,7 @@ const protocolBalancesSlice = createChainDataSlice({
       const hue = getContract<Hue>(ProtocolContract.Hue, args.contracts.Hue)
       const truEth = getContract<TruEth>(ProtocolContract.TruEth, args.contracts.TruEth)
 
-      const { accountingHueBalance, accountingTruEthBalance } = await executeMulticalls(
+      const { accountingHueBalance, accountingTruEthBalance, reserves } = await executeMulticalls(
         trustlessMulticall,
         {
           accountingHueBalance: oneContractManyFunctionMC(
@@ -37,6 +38,13 @@ const protocolBalancesSlice = createChainDataSlice({
               balanceOf: [args.contracts.Accounting],
               decimals: [],
             },
+          ),
+          reserves: oneContractManyFunctionMC(
+            hue,
+            {
+              balanceOf: [args.contracts.Hue],
+              decimals: [],
+            },
           )
         }
       )
@@ -44,6 +52,7 @@ const protocolBalancesSlice = createChainDataSlice({
       return {
         accountingHueBalance: unscale(accountingHueBalance.balanceOf, accountingHueBalance.decimals),
         accountingTruEthBalance: unscale(accountingTruEthBalance.balanceOf, accountingTruEthBalance.decimals),
+        reserves: unscale(reserves.balanceOf, reserves.decimals),
       }
     },
 })

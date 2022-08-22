@@ -34,6 +34,7 @@ const StatsDisplay = () => {
     liquidationsInfo,
     marketInfo,
     protocolBalances,
+    ratesInfo,
   } = waitFor([
     'hueInfo',
     'huePositionNftInfo',
@@ -41,7 +42,28 @@ const StatsDisplay = () => {
     'liquidationsInfo',
     'marketInfo',
     'protocolBalances',
+    'ratesInfo'
   ], selector, dispatch)
+
+  const totalRevenue =
+    ratesInfo === null || hueInfo === null
+      ? null
+      : ratesInfo.interestRate * hueInfo.totalSupply
+
+  const interestPortionToLenders =
+    marketInfo === null
+      ? null
+      : marketInfo.interestPortionToLenders
+
+  const revenueToLenders =
+    totalRevenue === null || interestPortionToLenders === null
+      ? null
+      : totalRevenue * interestPortionToLenders
+
+  const excessRevenue =
+    totalRevenue === null || revenueToLenders === null
+      ? null
+      : totalRevenue - revenueToLenders
 
   return (
     <OneColumnDisplay loading={false}>
@@ -76,6 +98,17 @@ const StatsDisplay = () => {
             title='Lending'
             rows={{
               'Total Hue Lent': protocolBalances === null ? null : `${numDisplay(protocolBalances.accountingHueBalance)} Hue`,
+            }}
+          />
+          <StatsSection
+            title='Revenue'
+            rows={{
+              'Current Interest on Debt': ratesInfo === null ? null : `${numDisplay(ratesInfo.interestRate * 100)} %`,
+              'Total Annual Revenue': totalRevenue === null ? null : `${numDisplay(totalRevenue, 0)} Hue`,
+              'Revenue Portion to Lenders': interestPortionToLenders === null ? null : `${numDisplay(interestPortionToLenders * 100)} %`,
+              'Revenue to Lenders': revenueToLenders === null ? null : `${numDisplay(revenueToLenders)} Hue`,
+              'Excess Revenue': excessRevenue === null ? null : `${numDisplay(excessRevenue)} Hue`,
+              'Current Reserves': protocolBalances === null ? null : `${numDisplay(protocolBalances.reserves, 0)} Hue`,
             }}
           />
           <StatsSection
