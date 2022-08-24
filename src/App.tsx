@@ -2,6 +2,8 @@ import { ReactNode, FunctionComponent, useEffect } from 'react'
 import { useAppDispatch, useAppSelector as selector } from './app/hooks'
 import { getNullableProvider, provider } from './utils/getProvider'
 import PageHeader from './components/PageHeader'
+import InformationBanner from './components/library/InformationBanner'
+import OneColumnDisplay from './components/library/OneColumnDisplay'
 import Positions from './components/Positions'
 import Stake from './components/Stake/'
 import WalletTab from './components/WalletTab'
@@ -82,6 +84,14 @@ const App: FunctionComponent<{}> = () => {
         <HashRouter>
           <div style={{marginTop: isMobile ? 48 : 68 }}>
             <PageHeader />
+            <OneColumnDisplay>
+              <InformationBanner
+                kind='warning'
+                isCloseable={false}
+                text='Due to a zkSync testnet regenesis, this dapp will be down 8/30 to 9/6. Read more'
+                link='https://twitter.com/zksync/status/1562105912743014400'
+              />
+            </OneColumnDisplay>
             <WalletChecker>
               <Switch>
                 {Object.values(Tab).map((tab, index) => {
