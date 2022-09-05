@@ -88,7 +88,7 @@ const App: FunctionComponent<{}> = () => {
               <InformationBanner
                 kind='warning'
                 isCloseable={false}
-                text='Due to a zkSync testnet regenesis, this dapp will be down 8/30 to 9/6. Read more'
+                text='Due to a zkSync testnet regenesis, this dapp will be down 8/30 to 9/7. Read more'
                 link='https://twitter.com/zksync/status/1562105912743014400'
               />
             </OneColumnDisplay>

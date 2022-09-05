@@ -41,9 +41,14 @@ const AppErrorDisplay = () => {
             </Center>
           </LargeText>
           <Text size={16}>
-            <Center>
-              There was an error, but your assets are safe.
-            </Center>
+            <SpacedList spacing={20}>
+              <Center>
+                There was an error, but your assets are safe.
+              </Center>
+              <Center>
+                The testnet will be upgraded and accessible again by September 7th.
+              </Center>
+            </SpacedList>
           </Text>
         </SpacedList>
         <Center>
