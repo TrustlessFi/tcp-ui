@@ -17,7 +17,6 @@
     "@types/carbon__colors": "^10.31.0",
     "@types/carbon__icons-react": "^10.31.2",
     "@types/carbon__themes": "^0.0.1",
-    "@types/jest": "^27.4.1",
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.41",
     "@types/react-dom": "^17.0.14",
