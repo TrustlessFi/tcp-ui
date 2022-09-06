@@ -1,11 +1,8 @@
-import { CSSProperties, ReactNode } from 'react';
 import Bold from './Bold'
 import {
-  Tile,
   StructuredListRow,
   StructuredListBody,
   StructuredListCell,
-  StructuredListHead,
   StructuredListWrapper,
   InlineLoading,
 } from 'carbon-components-react'

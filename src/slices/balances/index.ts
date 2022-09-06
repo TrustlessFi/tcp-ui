@@ -69,7 +69,6 @@ const balancesSlice = createChainDataSlice({
         userBalance,
         marketApprovals,
         rewardsApprovals,
-        accountingBalance
       } = await executeMulticalls(
         multicall,
         {
@@ -85,11 +84,6 @@ const balancesSlice = createChainDataSlice({
             tokenContract,
             'balanceOf',
             idsToArg(tokenAddresses, [args.userAddress] as [string]),
-          ),
-          accountingBalance: manyContractOneFunctionMC(
-            tokenContract,
-            'balanceOf',
-            idsToArg(tokenAddresses, [args.contracts.Accounting] as [string]),
           ),
           marketApprovals: manyContractOneFunctionMC(
             tokenContract,

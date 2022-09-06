@@ -3,7 +3,7 @@ import getContract, { getMulticallContract } from '../../utils/getContract'
 import { createChainDataSlice } from '../'
 import { Hue, TruEth } from '@trustlessfi/typechain'
 import ProtocolContract from '../contracts/ProtocolContract'
-import { mnt, unscale } from '../../utils'
+import { unscale } from '../../utils'
 import { executeMulticalls, oneContractManyFunctionMC } from '@trustlessfi/multicall'
 
 export interface protocolBalances {
