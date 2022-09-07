@@ -1,5 +1,5 @@
 import { useAppSelector as selector } from '../../app/hooks'
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react'
 import { ChainID } from '@trustlessfi/addresses'
 import { CarbonIconType } from '@carbon/icons-react'
 
@@ -12,7 +12,7 @@ export const getEtherscanTxLink = (txHash: string, chainID: ChainID): string => 
     case ChainID.Hardhat:
       return `https://etherscan.io/tx/${txHash}`
     case ChainID.ZKSyncGoerli:
-      return `https://zksync2-testnet.zkscan.io/tx/${txHash}`
+      return `https://scan-v2.zksync.dev/transactions/${txHash}`
   }
 }
 
@@ -21,7 +21,7 @@ export const getEtherscanAddressLink = (address: string, chainID: ChainID): stri
     case ChainID.Hardhat:
       return `https://etherscan.io/address/${address}`
     case ChainID.ZKSyncGoerli:
-      return `https://zksync2-testnet.zkscan.io/address/${address}`
+      return `https://scan-v2.zksync.dev/accounts/${address}`
   }
 }
 
@@ -36,7 +36,7 @@ const ExplorerLink = ({
   address?: string,
   icon?: CarbonIconType,
   style?: CSSProperties,
-  children: React.ReactChild
+  children: ReactNode,
 }) => {
   const chainID = selector(state => state.chainID)
 
