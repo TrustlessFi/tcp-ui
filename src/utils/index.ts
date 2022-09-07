@@ -5,6 +5,7 @@ import { TickMath } from '@uniswap/v3-sdk'
 import { poolMetadata } from '../slices/poolsMetadata'
 import { contract } from './getContract'
 import { v4 as uuid } from 'uuid'
+import { Buffer } from 'buffer'
 
 
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'

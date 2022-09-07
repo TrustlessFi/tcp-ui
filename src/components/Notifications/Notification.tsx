@@ -60,7 +60,6 @@ const Notification = ({ notif }: { notif: notificationInfo, }) => {
     if (closeCalled.current) return
     closeCalled.current = true
 
-    clearInterval()
     setVisible(false)
     setTimeout(() => dispatch(notificationClosed(notif.uid)), FADE_OUT_MS)
   }

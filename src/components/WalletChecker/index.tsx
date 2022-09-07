@@ -16,7 +16,7 @@ const TakeWalletAction: FunctionComponent<{walletAction: ReactNode}> = ({ wallet
   )
 }
 
-const WalletChecker: FunctionComponent<{}> = ({ children }) => {
+const WalletChecker: FunctionComponent<{children: ReactNode}> = ({ children }) => {
   const dispatch = useAppDispatch()
 
   const {

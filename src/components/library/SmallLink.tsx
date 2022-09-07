@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { Link } from 'carbon-components-react'
 import { CarbonIconType } from '@carbon/icons-react'
 
@@ -13,7 +13,7 @@ const SmallLink = ({
   href?: string,
   onClick?: () => void,
   style?: CSSProperties,
-  children: React.ReactChild,
+  children: ReactNode,
 }) => {
   const linkAttributes = {
     renderIcon: icon,

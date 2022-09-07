@@ -1,4 +1,4 @@
-import { Component, ErrorInfo } from "react"
+import { Component, ErrorInfo, ReactNode } from 'react'
 import Center from './Center'
 import SpacedList from './SpacedList'
 import LargeText from './LargeText'
@@ -6,6 +6,7 @@ import Text from './Text'
 
 interface ErrorBoundaryProps {
   ignoreError: boolean
+  children: ReactNode
 }
 
 interface ErrorBoundaryState {

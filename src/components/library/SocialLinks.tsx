@@ -29,16 +29,6 @@ export const SocialLink = ({
 }
 
 const SocialLinks = () => {
-  /*
-  const dispatch = useAppDispatch()
-  const history = useHistory()
-
-  const navigateToWallet = () => {
-    history.push(tabToPath(Tab.Transactions))
-    dispatch(setTab(Tab.Transactions))
-  }
-  */
-
   const shareButton =
     <Button
       onClick={() => window.open('https://twitter.com/trustlessfi/status/1516941542329622532')}

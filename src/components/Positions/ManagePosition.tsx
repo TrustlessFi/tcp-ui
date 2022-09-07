@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactFragment, ReactNode } from "react"
+import { useState, useEffect, ReactElement, ReactNode } from "react"
 import {
   Tag32,
   Locked32,
@@ -383,7 +383,7 @@ const ManagePosition = () => {
       ? {action: 'deposit', amount: `${numDisplay(collateralIncrease, COLLATERAL_DECIMALS)} TruEth`}
       : {action: 'receive', amount: `${numDisplay(Math.abs(collateralIncrease), COLLATERAL_DECIMALS)} TruEth`})
 
-  const successDisplay: ReactFragment | null =
+  const successDisplay: ReactElement | null =
     debtChangeSuccessDisplay === null && collateralChangeSuccessDisplay === null
     ? null
     : (debtChangeSuccessDisplay !== null && collateralChangeSuccessDisplay !== null
