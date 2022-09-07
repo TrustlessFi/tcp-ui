@@ -187,7 +187,7 @@ const MintEthModal = () => {
             type: TransactionType.TestnetMultiMint,
             testnetMultiMint: rootContracts === null ? '' : rootContracts.testnetMultiMint,
             chainEth: rootContracts === null ? '' : rootContracts.chainEth,
-            chainEthCount: 1e-5,
+            chainEthCount: 1e-3,
             truEthCount: amount,
             addresses: tokenList,
           }}
