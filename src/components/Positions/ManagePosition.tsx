@@ -181,13 +181,13 @@ const ManagePosition = () => {
     balances.tokens[contracts.TruEth].approval.Market.approved
 
   const setCollateralCountToMax = () => {
-    const userEthBalance =
-      balances !== null && balances.userEthBalance > txCostBuffer
-      ? balances.userEthBalance - txCostBuffer
+    const userTruEthBalance =
+      balances !== null && balances.userTruEthBalance > txCostBuffer
+      ? balances.userTruEthBalance - txCostBuffer
       : 0
     const positionCollateral = position === null ? 0 : position.collateralCount
 
-    updateCollateralCount(userEthBalance + positionCollateral)
+    updateCollateralCount(userTruEthBalance + positionCollateral)
   }
 
   const setDebtToHighCollateralRatio = () => {
@@ -253,7 +253,7 @@ const ManagePosition = () => {
     },
     insufficientEthInWallet: {
       message: 'You don\'t have enough TruEth in your wallet.',
-      failing: balances === null || collateralIncrease === null ? false : balances.userEthBalance < collateralIncrease,
+      failing: balances === null || collateralIncrease === null ? false : balances.userTruEthBalance < collateralIncrease,
     },
     insufficientHueInWallet: {
       message: 'You don\'t have enough Hue in your wallet.',
@@ -489,7 +489,7 @@ const ManagePosition = () => {
                 You have
                 {' '}
                 <Bold>
-                  {balances === null ? '-' : numDisplay(balances.userEthBalance, COLLATERAL_DECIMALS)}
+                  {balances === null ? '-' : numDisplay(balances.userTruEthBalance, COLLATERAL_DECIMALS)}
                 </Bold>
                 {' '}
                 TruEth in your wallet

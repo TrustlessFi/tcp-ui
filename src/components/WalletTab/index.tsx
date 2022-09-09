@@ -139,7 +139,7 @@ const WalletInfo = () => {
         decimals={4}
         size={28}
         style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 12, paddingBottom: 12 }}
-        balance={balances === null ? undefined : balances.userEthBalance}
+        balance={balances === null ? undefined : balances.userTruEthBalance}
         tooltip='TruEth is used as collateral to borrow Hue on the Position tab.'
       />
       <TokenCard

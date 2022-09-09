@@ -118,7 +118,7 @@ const AddLiquidity = () => {
       balances === null
       ? null
       : (token0IsWeth
-        ? balances.userEthBalance
+        ? balances.userTruEthBalance
         : balances.tokens[pool.token0.address].userBalance)
 
   const token0Approved =
@@ -132,7 +132,7 @@ const AddLiquidity = () => {
       balances === null
       ? null
       : (token1IsWeth
-        ? balances.userEthBalance
+        ? balances.userTruEthBalance
         : balances.tokens[pool.token1.address].userBalance)
 
   const token1Approved =
