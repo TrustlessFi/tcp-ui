@@ -46,6 +46,8 @@ import tDaoGovernorAlphaArtifact from '@trustlessfi/artifacts/dist/contracts/cor
 import tDaoTimelockArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
 import tDaoVotingRewardsSafeArtifact from '@trustlessfi/artifacts/dist/contracts/core/TDao/TDaoTimelock.sol/TDaoTimelock.json'
 
+import nftPyramidArtifact from '../pyramid-artifacts/artifacts/contracts/TrustlessPyramidNft.sol/TrustlessPyramidNft.json'
+
 type abi = {[key in string]: any}[]
 type contractAbi = { abi: abi }
 type TrustlessContract = ProtocolContract | RootContract | TDaoContract | TDaoRootContract
@@ -76,6 +78,7 @@ const artifactLookup = (): {[key in TrustlessContract]: contractAbi} => ({
   [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
   [RootContract.ChainEth]: erc20Artifact,
   [RootContract.TestnetMultiMint]: testnetMultiMint,
+  [RootContract.NftPyramid]: nftPyramidArtifact,
 
   [TDaoRootContract.TDao]: tDaoArtifact,
 

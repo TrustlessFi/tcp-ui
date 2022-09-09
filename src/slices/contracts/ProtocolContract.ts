@@ -26,6 +26,7 @@ export enum RootContract {
   TrustlessMulticall = 'TrustlessMulticall',
   TestnetMultiMint = 'TestnetMultiMint',
   ChainEth = 'ChainEth',
+  NftPyramid = 'NftPyramid',
 }
 
 export enum TDaoContract {
