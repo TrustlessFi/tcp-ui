@@ -3411,13 +3411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.16.0":
-  version: 0.16.0
-  resolution: "@trustlessfi/addresses@npm:0.16.0"
+"@trustlessfi/addresses@npm:^0.16.1":
+  version: 0.16.1
+  resolution: "@trustlessfi/addresses@npm:0.16.1"
   dependencies:
     "@types/node": ^17.0.23
     typescript: ^4.6.3
-  checksum: 0bd96578c8b89e3b2889dace7dd7e02491240f9371f53b9583decf93a30ae4ac2b2cf1b5b50d8b6472a275abbd665875570c6301be174d1ed0017019d7ce1964
+  checksum: 9786541f76a5801f2e31a7bcfea65db4c9bb09f15c93cb31d02817a199250f2998e49be9e50ba9e1e3108a90c5808243eb3fa3ff2953ec8e58d47fbfa1e2f65b
   languageName: node
   linkType: hard
 
@@ -13674,7 +13674,7 @@ __metadata:
     "@carbon/themes": ^10.55.0
     "@metamask/onboarding": ^1.0.1
     "@reduxjs/toolkit": ^1.8.5
-    "@trustlessfi/addresses": ^0.16.0
+    "@trustlessfi/addresses": ^0.16.1
     "@trustlessfi/artifacts": ^0.3.23
     "@trustlessfi/multicall": ^0.6.2
     "@trustlessfi/typechain": ^0.8.27
