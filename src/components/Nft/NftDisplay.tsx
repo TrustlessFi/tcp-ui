@@ -20,10 +20,27 @@ import {
 import {
   Calculation32,
   Tag32,
+  Launch16,
 } from '@carbon/icons-react';
 import { numDisplay } from '../../utils'
 
 import { InlineLoading } from 'carbon-components-react'
+
+const collectionPage = 'https://mintsquare.io/collection/zksync-testnet/0x1c36fe89BBE10ce872cE4c52A5EbfcEB62967936/nfts'
+
+const NftCardHeader = () => {
+  return (
+    <SpacedList spacing={10} row>
+      <TitleText>
+        Trustless Pyramid
+      </TitleText>
+      <a href={collectionPage} target='_blank'>
+        <Launch16 />
+      </a>
+    </SpacedList>
+  )
+}
+
 
 const NftDisplayContent = ({
   nftPyramid,
@@ -42,9 +59,7 @@ const NftDisplayContent = ({
   return (
     <SpacedList spacing={40}>
       <SpacedList spacing={20}>
-        <TitleText>
-          Trustless Pyramid
-        </TitleText>
+        <NftCardHeader />
         <SpacedList spacing={5} row>
           <TitleText>
             {numDisplay(nftPyramid!.supplyCount)} / {numDisplay(nftPyramid!.maxSupply)}
@@ -125,9 +140,12 @@ const NftDisplay = () => {
       <Tile style={{padding: 40, marginTop: 40}}>
         {
           nftPyramid === null || balances === null || rootContracts === null
-            ? <Center>
-                <InlineLoading />
-              </Center>
+            ? <SpacedList>
+                <NftCardHeader />
+                <Center>
+                  <InlineLoading />
+                </Center>
+              </SpacedList>
             : <NftDisplayContent nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
         }
       </Tile>
