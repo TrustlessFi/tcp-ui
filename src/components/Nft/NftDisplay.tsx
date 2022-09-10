@@ -41,8 +41,7 @@ const NftCardHeader = () => {
   )
 }
 
-
-const NftDisplayContent = ({
+const MintNft = ({
   nftPyramid,
   balances,
   nftAddress,
@@ -146,7 +145,7 @@ const NftDisplay = () => {
                   <InlineLoading />
                 </Center>
               </SpacedList>
-            : <NftDisplayContent nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
+            : <MintNft nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
         }
       </Tile>
     </OneColumnDisplay>

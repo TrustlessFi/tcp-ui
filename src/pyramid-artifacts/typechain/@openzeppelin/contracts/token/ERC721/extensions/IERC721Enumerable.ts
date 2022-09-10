@@ -9,7 +9,6 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
-  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -26,85 +25,42 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "../common";
+} from "../../../../../common";
 
-export interface TrustlessPyramidNftInterface extends utils.Interface {
+export interface IERC721EnumerableInterface extends utils.Interface {
   functions: {
-    "MAX_MINT()": FunctionFragment;
-    "MAX_SUPPLY()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "baseURI()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
-    "imageBaseURI()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(uint256)": FunctionFragment;
-    "mintIsActive()": FunctionFragment;
-    "name()": FunctionFragment;
-    "nextTokenId()": FunctionFragment;
-    "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
-    "price()": FunctionFragment;
-    "reserve(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setBaseURI(string)": FunctionFragment;
-    "setImageBaseURI(string)": FunctionFragment;
-    "setPrice(uint256)": FunctionFragment;
-    "startMint()": FunctionFragment;
-    "stopMint()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "symbol()": FunctionFragment;
     "tokenByIndex(uint256)": FunctionFragment;
     "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
-    "tokenURI(uint256)": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
-    "withdraw()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "MAX_MINT"
-      | "MAX_SUPPLY"
       | "approve"
       | "balanceOf"
-      | "baseURI"
       | "getApproved"
-      | "imageBaseURI"
       | "isApprovedForAll"
-      | "mint"
-      | "mintIsActive"
-      | "name"
-      | "nextTokenId"
-      | "owner"
       | "ownerOf"
-      | "price"
-      | "reserve"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
-      | "setBaseURI"
-      | "setImageBaseURI"
-      | "setPrice"
-      | "startMint"
-      | "stopMint"
       | "supportsInterface"
-      | "symbol"
       | "tokenByIndex"
       | "tokenOfOwnerByIndex"
-      | "tokenURI"
       | "totalSupply"
       | "transferFrom"
-      | "withdraw"
   ): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "MAX_MINT", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "MAX_SUPPLY",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -113,40 +69,16 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     functionFragment: "balanceOf",
     values: [PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "imageBaseURI",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "mint",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mintIsActive",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "nextTokenId",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(
     functionFragment: "ownerOf",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(functionFragment: "price", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "reserve",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -171,24 +103,9 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setBaseURI",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setImageBaseURI",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setPrice",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(functionFragment: "startMint", values?: undefined): string;
-  encodeFunctionData(functionFragment: "stopMint", values?: undefined): string;
-  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [PromiseOrValue<BytesLike>]
   ): string;
-  encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenByIndex",
     values: [PromiseOrValue<BigNumberish>]
@@ -196,10 +113,6 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "tokenOfOwnerByIndex",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tokenURI",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
@@ -213,39 +126,18 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
-  encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "MAX_MINT", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "MAX_SUPPLY", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "imageBaseURI",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "mintIsActive",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "nextTokenId",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "price", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "reserve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom(address,address,uint256)",
     data: BytesLike
@@ -258,19 +150,10 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setImageBaseURI",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "setPrice", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "startMint", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "stopMint", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokenByIndex",
     data: BytesLike
@@ -279,7 +162,6 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     functionFragment: "tokenOfOwnerByIndex",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -288,7 +170,6 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
@@ -337,12 +218,12 @@ export type TransferEvent = TypedEvent<
 
 export type TransferEventFilter = TypedEventFilter<TransferEvent>;
 
-export interface TrustlessPyramidNft extends BaseContract {
+export interface IERC721Enumerable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: TrustlessPyramidNftInterface;
+  interface: IERC721EnumerableInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -364,10 +245,6 @@ export interface TrustlessPyramidNft extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    MAX_MINT(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    MAX_SUPPLY(overrides?: CallOverrides): Promise<[BigNumber]>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -377,16 +254,12 @@ export interface TrustlessPyramidNft extends BaseContract {
     balanceOf(
       owner: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    baseURI(overrides?: CallOverrides): Promise<[string]>;
+    ): Promise<[BigNumber] & { balance: BigNumber }>;
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    imageBaseURI(overrides?: CallOverrides): Promise<[string]>;
+    ): Promise<[string] & { operator: string }>;
 
     isApprovedForAll(
       owner: PromiseOrValue<string>,
@@ -394,30 +267,10 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    mintIsActive(overrides?: CallOverrides): Promise<[boolean]>;
-
-    name(overrides?: CallOverrides): Promise<[string]>;
-
-    nextTokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    price(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    reserve(
-      reserveCount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    ): Promise<[string] & { owner: string }>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: PromiseOrValue<string>,
@@ -436,30 +289,7 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
-      approved: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setBaseURI(
-      baseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setImageBaseURI(
-      imageBaseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setPrice(
-      _price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    startMint(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    stopMint(
+      _approved: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -467,8 +297,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    symbol(overrides?: CallOverrides): Promise<[string]>;
 
     tokenByIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -481,11 +309,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    tokenURI(
-      tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
@@ -494,15 +317,7 @@ export interface TrustlessPyramidNft extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
-
-    withdraw(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
   };
-
-  MAX_MINT(overrides?: CallOverrides): Promise<BigNumber>;
-
-  MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
 
   approve(
     to: PromiseOrValue<string>,
@@ -515,14 +330,10 @@ export interface TrustlessPyramidNft extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  baseURI(overrides?: CallOverrides): Promise<string>;
-
   getApproved(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  imageBaseURI(overrides?: CallOverrides): Promise<string>;
 
   isApprovedForAll(
     owner: PromiseOrValue<string>,
@@ -530,30 +341,10 @@ export interface TrustlessPyramidNft extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  mint(
-    mintCount: PromiseOrValue<BigNumberish>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  mintIsActive(overrides?: CallOverrides): Promise<boolean>;
-
-  name(overrides?: CallOverrides): Promise<string>;
-
-  nextTokenId(overrides?: CallOverrides): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
   ownerOf(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
-
-  price(overrides?: CallOverrides): Promise<BigNumber>;
-
-  reserve(
-    reserveCount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: PromiseOrValue<string>,
@@ -572,30 +363,7 @@ export interface TrustlessPyramidNft extends BaseContract {
 
   setApprovalForAll(
     operator: PromiseOrValue<string>,
-    approved: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setBaseURI(
-    baseURI_: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setImageBaseURI(
-    imageBaseURI_: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setPrice(
-    _price: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  startMint(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  stopMint(
+    _approved: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -603,8 +371,6 @@ export interface TrustlessPyramidNft extends BaseContract {
     interfaceId: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  symbol(overrides?: CallOverrides): Promise<string>;
 
   tokenByIndex(
     index: PromiseOrValue<BigNumberish>,
@@ -617,11 +383,6 @@ export interface TrustlessPyramidNft extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  tokenURI(
-    tokenId: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
@@ -631,15 +392,7 @@ export interface TrustlessPyramidNft extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  withdraw(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   callStatic: {
-    MAX_MINT(overrides?: CallOverrides): Promise<BigNumber>;
-
-    MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -651,14 +404,10 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    baseURI(overrides?: CallOverrides): Promise<string>;
-
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    imageBaseURI(overrides?: CallOverrides): Promise<string>;
 
     isApprovedForAll(
       owner: PromiseOrValue<string>,
@@ -666,30 +415,10 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    mintIsActive(overrides?: CallOverrides): Promise<boolean>;
-
-    name(overrides?: CallOverrides): Promise<string>;
-
-    nextTokenId(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    price(overrides?: CallOverrides): Promise<BigNumber>;
-
-    reserve(
-      reserveCount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: PromiseOrValue<string>,
@@ -708,35 +437,14 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
-      approved: PromiseOrValue<boolean>,
+      _approved: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    setBaseURI(
-      baseURI_: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setImageBaseURI(
-      imageBaseURI_: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setPrice(
-      _price: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    startMint(overrides?: CallOverrides): Promise<void>;
-
-    stopMint(overrides?: CallOverrides): Promise<void>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    symbol(overrides?: CallOverrides): Promise<string>;
 
     tokenByIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -749,11 +457,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tokenURI(
-      tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
@@ -762,8 +465,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    withdraw(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -802,10 +503,6 @@ export interface TrustlessPyramidNft extends BaseContract {
   };
 
   estimateGas: {
-    MAX_MINT(overrides?: CallOverrides): Promise<BigNumber>;
-
-    MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -817,14 +514,10 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    baseURI(overrides?: CallOverrides): Promise<BigNumber>;
-
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    imageBaseURI(overrides?: CallOverrides): Promise<BigNumber>;
 
     isApprovedForAll(
       owner: PromiseOrValue<string>,
@@ -832,29 +525,9 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    mintIsActive(overrides?: CallOverrides): Promise<BigNumber>;
-
-    name(overrides?: CallOverrides): Promise<BigNumber>;
-
-    nextTokenId(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    price(overrides?: CallOverrides): Promise<BigNumber>;
-
-    reserve(
-      reserveCount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     "safeTransferFrom(address,address,uint256)"(
@@ -874,30 +547,7 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
-      approved: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setBaseURI(
-      baseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setImageBaseURI(
-      imageBaseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setPrice(
-      _price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    startMint(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    stopMint(
+      _approved: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -905,8 +555,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     tokenByIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -916,11 +564,6 @@ export interface TrustlessPyramidNft extends BaseContract {
     tokenOfOwnerByIndex(
       owner: PromiseOrValue<string>,
       index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    tokenURI(
-      tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -932,17 +575,9 @@ export interface TrustlessPyramidNft extends BaseContract {
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
-
-    withdraw(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    MAX_MINT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    MAX_SUPPLY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -954,14 +589,10 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    imageBaseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
       owner: PromiseOrValue<string>,
@@ -969,29 +600,9 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    mintIsActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    nextTokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     ownerOf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    price(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    reserve(
-      reserveCount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
@@ -1011,30 +622,7 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     setApprovalForAll(
       operator: PromiseOrValue<string>,
-      approved: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setBaseURI(
-      baseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setImageBaseURI(
-      imageBaseURI_: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setPrice(
-      _price: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    startMint(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    stopMint(
+      _approved: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1042,8 +630,6 @@ export interface TrustlessPyramidNft extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     tokenByIndex(
       index: PromiseOrValue<BigNumberish>,
@@ -1056,21 +642,12 @@ export interface TrustlessPyramidNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    tokenURI(
-      tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: PromiseOrValue<string>,
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdraw(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
