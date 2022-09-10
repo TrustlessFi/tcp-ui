@@ -8,7 +8,7 @@
     "@carbon/themes": "^10.55.0",
     "@metamask/onboarding": "^1.0.1",
     "@reduxjs/toolkit": "^1.8.5",
-    "@trustlessfi/addresses": "^0.16.1",
+    "@trustlessfi/addresses": "^0.16.2",
     "@trustlessfi/artifacts": "^0.3.23",
     "@trustlessfi/multicall": "^0.6.2",
     "@trustlessfi/typechain": "^0.8.27",
