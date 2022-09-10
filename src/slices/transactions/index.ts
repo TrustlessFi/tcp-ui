@@ -316,7 +316,7 @@ export const getTxLongName = (args: TransactionArgs): string => {
       return `Increment counter from: ${args.counterValue}`
 
     case TransactionType.MintNftPyramid:
-      return `Mint ${args.countToMint} Pyramid Nfts`
+      return `Mint ${args.countToMint} Pyramid Nft${args.countToMint > 1 ? 's' : ''}`
   }
 }
 
@@ -598,6 +598,7 @@ export const waitForTransaction = async (
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
     const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
     const clearCounterInfo = () => dispatch(allSlices.counterInfo.slice.actions.clearData())
+    const clearNftPyramidInfo = () => dispatch(allSlices.nftPyramid.slice.actions.clearData())
 
     const clearMarketState = () => {
       clearSDI()
@@ -674,8 +675,11 @@ export const waitForTransaction = async (
         clearTruEth()
         break
 
-      case TransactionType.TestnetMultiMint:
       case TransactionType.MintNftPyramid:
+        clearNftPyramidInfo()
+        break
+
+      case TransactionType.TestnetMultiMint:
         // TODO show the user's NFTs and stuff
         // Do nothing
         break
