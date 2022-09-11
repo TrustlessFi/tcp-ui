@@ -1,19 +1,11 @@
 import { useState, useEffect } from "react"
-import { red } from '@carbon/colors';
-import OneColumnDisplay from '../library/OneColumnDisplay'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
 import TitleText from '../library/TitleText'
 import RelativeLoading from '../library/RelativeLoading'
 import Text from '../library/Text'
-import Bold from '../library/Bold'
 import Center from '../library/Center'
-import PositionInfoItem from '../library/PositionInfoItem'
-import FullNumberInput from '../library/FullNumberInput'
-import CreateTransactionButton from '../library/CreateTransactionButton'
 import { nftPyramid } from '../../slices/nftPyramid'
-import { balances } from '../../slices/balances'
-import { TransactionType } from '../../slices/transactions'
 import Axios from 'axios'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
@@ -24,11 +16,6 @@ import {
   StructuredListRow,
   StructuredListCell
 } from 'carbon-components-react'
-import {
-  Calculation32,
-  Tag32,
-  Launch16,
-} from '@carbon/icons-react';
 import { numDisplay } from '../../utils'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 
@@ -74,8 +61,6 @@ const UserNftDisplayRow = ({
   nftId: number,
 }) => {
   const [nftItem, setNftItem ] = useState<nftItem | null | undefined>(undefined)
-  const [loading, setLoading ] = useState(true)
-
 
   const getImageUriForId = (id: number) =>
     `${pinataDomain}${extractIpfsHandleFromUri(nftPyramid.imageBaseURI)}/${id}.png`

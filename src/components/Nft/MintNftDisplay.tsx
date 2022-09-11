@@ -1,30 +1,23 @@
 import { useState } from "react"
 import { red } from '@carbon/colors';
-import OneColumnDisplay from '../library/OneColumnDisplay'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
 import TitleText from '../library/TitleText'
 import Text from '../library/Text'
 import Bold from '../library/Bold'
-import Center from '../library/Center'
 import PositionInfoItem from '../library/PositionInfoItem'
 import FullNumberInput from '../library/FullNumberInput'
 import CreateTransactionButton from '../library/CreateTransactionButton'
-import { nftPyramid } from '../../slices/nftPyramid'
-import { balances } from '../../slices/balances'
 import { TransactionType } from '../../slices/transactions'
 import { useAppDispatch, useAppSelector as selector } from '../../app/hooks'
 import {
   Tile,
 } from 'carbon-components-react'
 import {
-  Calculation32,
   Tag32,
   Launch16,
 } from '@carbon/icons-react';
 import { numDisplay } from '../../utils'
-
-import { InlineLoading } from 'carbon-components-react'
 
 const collectionPage = 'https://mintsquare.io/collection/zksync-testnet/0x1c36fe89BBE10ce872cE4c52A5EbfcEB62967936/nfts'
 
@@ -34,7 +27,7 @@ const MintNftCardHeader = () => {
       <TitleText>
         Trustless Pyramid
       </TitleText>
-      <a href={collectionPage} target='_blank'>
+      <a href={collectionPage} target='_blank' rel='noreferrer'>
         <Launch16 />
       </a>
     </SpacedList>
