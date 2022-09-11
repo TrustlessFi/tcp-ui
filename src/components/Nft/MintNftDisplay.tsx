@@ -19,17 +19,29 @@ import {
 } from '@carbon/icons-react';
 import { numDisplay } from '../../utils'
 
-const collectionPage = 'https://mintsquare.io/collection/zksync-testnet/0x1c36fe89BBE10ce872cE4c52A5EbfcEB62967936/nfts'
+const getCollectionPage = (address: string) =>
+  `https://mintsquare.io/collection/zksync-testnet/${address}/nfts`
 
 const MintNftCardHeader = () => {
+  const dispatch = useAppDispatch()
+  const {
+    rootContracts,
+  } = waitFor([
+    'rootContracts',
+  ], selector, dispatch)
+
   return (
     <SpacedList spacing={10} row>
       <TitleText>
         Trustless Pyramid
       </TitleText>
-      <a href={collectionPage} target='_blank' rel='noreferrer'>
-        <Launch16 />
-      </a>
+      {
+        rootContracts === null
+        ? null
+        : <a href={getCollectionPage(rootContracts.nftPyramid)} target='_blank' rel='noreferrer'>
+            <Launch16 />
+          </a>
+      }
     </SpacedList>
   )
 }

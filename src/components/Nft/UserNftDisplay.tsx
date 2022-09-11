@@ -51,7 +51,6 @@ const extractIpfsHandleFromUri = (ipfsUri: string) => {
 }
 
 const pinataDomain = 'https://trustlessfi.mypinata.cloud/ipfs/'
-const mintSquareDomain = 'https://mintsquare.io/asset/zksync-testnet/0x1c36fe89bbe10ce872ce4c52a5ebfceb62967936/'
 
 const UserNftDisplayRow = ({
   nftPyramid,
@@ -60,15 +59,23 @@ const UserNftDisplayRow = ({
   nftPyramid: nftPyramid
   nftId: number,
 }) => {
+  const dispatch = useAppDispatch()
+
   const [nftItem, setNftItem ] = useState<nftItem | null | undefined>(undefined)
+
+  const {
+    rootContracts,
+  } = waitFor([
+    'rootContracts',
+  ], selector, dispatch)
+
 
   const getImageUriForId = (id: number) =>
     `${pinataDomain}${extractIpfsHandleFromUri(nftPyramid.imageBaseURI)}/${id}.png`
   const getDataUriForId = (id: number) =>
     `${pinataDomain}${extractIpfsHandleFromUri(nftPyramid.baseURI)}/${id}`
-  const getMintSquareUrl = (id: number) =>
-    `${mintSquareDomain}${id}`
-
+  const getMintSquareUrl = (address: string, id: number) =>
+    `https://mintsquare.io/asset/zksync-testnet/${address}/${id}`
 
   useEffect(() => {
     const fetchData = async () => {
@@ -83,7 +90,10 @@ const UserNftDisplayRow = ({
   return (
     <StructuredListRow
       tabIndex={0}
-      onClick={() => window.open(getMintSquareUrl(nftId))}
+      onClick={
+        rootContracts === null
+          ? () => {}
+          : () => window.open(getMintSquareUrl(rootContracts.nftPyramid, nftId))}
       style={{cursor: 'pointer'}}
     >
       <StructuredListCell style={{verticalAlign: 'middle' }}>

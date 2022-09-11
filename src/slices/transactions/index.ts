@@ -553,7 +553,7 @@ const executeTransaction = async (
       return await getProtocolDataAggregator(args.dataAggregator).incrementCounter()
 
     case TransactionType.MintNftPyramid:
-      return await getNftPyramid(args.NftPyramid).mint(args.countToMint, { value: scale(args.countToMint * args.price)})
+      return await getNftPyramid(args.NftPyramid).publicMint(args.countToMint, { value: scale(args.countToMint * args.price)})
 
     default:
       assertUnreachable(type)

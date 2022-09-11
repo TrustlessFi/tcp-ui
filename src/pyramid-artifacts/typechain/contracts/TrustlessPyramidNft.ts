@@ -32,19 +32,23 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
   functions: {
     "MAX_MINT()": FunctionFragment;
     "MAX_SUPPLY()": FunctionFragment;
+    "addMintAuth(address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
+    "authorizedMinter(address)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "baseURI()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "imageBaseURI()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(uint256)": FunctionFragment;
+    "mint(address)": FunctionFragment;
     "mintIsActive()": FunctionFragment;
     "name()": FunctionFragment;
     "nextTokenId()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "price()": FunctionFragment;
+    "publicMint(uint256)": FunctionFragment;
+    "removeMintAuth(address)": FunctionFragment;
     "reserve(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,bytes)": FunctionFragment;
@@ -68,7 +72,9 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "MAX_MINT"
       | "MAX_SUPPLY"
+      | "addMintAuth"
       | "approve"
+      | "authorizedMinter"
       | "balanceOf"
       | "baseURI"
       | "getApproved"
@@ -81,6 +87,8 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
       | "owner"
       | "ownerOf"
       | "price"
+      | "publicMint"
+      | "removeMintAuth"
       | "reserve"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
@@ -106,8 +114,16 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "addMintAuth",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "approve",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "authorizedMinter",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
@@ -128,7 +144,7 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "mintIsActive",
@@ -145,6 +161,14 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "price", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "publicMint",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeMintAuth",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(
     functionFragment: "reserve",
     values: [PromiseOrValue<BigNumberish>]
@@ -217,7 +241,15 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "MAX_MINT", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "MAX_SUPPLY", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "addMintAuth",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "authorizedMinter",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
   decodeFunctionResult(
@@ -245,6 +277,11 @@ export interface TrustlessPyramidNftInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "price", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "publicMint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "removeMintAuth",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "reserve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom(address,address,uint256)",
@@ -368,11 +405,21 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     MAX_SUPPLY(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    addMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    authorizedMinter(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     balanceOf(
       owner: PromiseOrValue<string>,
@@ -395,8 +442,8 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<[boolean]>;
 
     mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      to: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     mintIsActive(overrides?: CallOverrides): Promise<[boolean]>;
@@ -413,6 +460,16 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<[string]>;
 
     price(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    publicMint(
+      mintCount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    removeMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     reserve(
       reserveCount: PromiseOrValue<BigNumberish>,
@@ -504,11 +561,21 @@ export interface TrustlessPyramidNft extends BaseContract {
 
   MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
 
+  addMintAuth(
+    minter: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   approve(
     to: PromiseOrValue<string>,
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  authorizedMinter(
+    arg0: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   balanceOf(
     owner: PromiseOrValue<string>,
@@ -531,8 +598,8 @@ export interface TrustlessPyramidNft extends BaseContract {
   ): Promise<boolean>;
 
   mint(
-    mintCount: PromiseOrValue<BigNumberish>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    to: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   mintIsActive(overrides?: CallOverrides): Promise<boolean>;
@@ -549,6 +616,16 @@ export interface TrustlessPyramidNft extends BaseContract {
   ): Promise<string>;
 
   price(overrides?: CallOverrides): Promise<BigNumber>;
+
+  publicMint(
+    mintCount: PromiseOrValue<BigNumberish>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeMintAuth(
+    minter: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   reserve(
     reserveCount: PromiseOrValue<BigNumberish>,
@@ -640,11 +717,21 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
 
+    addMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    authorizedMinter(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     balanceOf(
       owner: PromiseOrValue<string>,
@@ -667,9 +754,9 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<boolean>;
 
     mint(
-      mintCount: PromiseOrValue<BigNumberish>,
+      to: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<BigNumber>;
 
     mintIsActive(overrides?: CallOverrides): Promise<boolean>;
 
@@ -685,6 +772,16 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<string>;
 
     price(overrides?: CallOverrides): Promise<BigNumber>;
+
+    publicMint(
+      mintCount: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     reserve(
       reserveCount: PromiseOrValue<BigNumberish>,
@@ -806,10 +903,20 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     MAX_SUPPLY(overrides?: CallOverrides): Promise<BigNumber>;
 
+    addMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    authorizedMinter(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     balanceOf(
@@ -833,8 +940,8 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<BigNumber>;
 
     mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      to: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     mintIsActive(overrides?: CallOverrides): Promise<BigNumber>;
@@ -851,6 +958,16 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<BigNumber>;
 
     price(overrides?: CallOverrides): Promise<BigNumber>;
+
+    publicMint(
+      mintCount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     reserve(
       reserveCount: PromiseOrValue<BigNumberish>,
@@ -943,10 +1060,20 @@ export interface TrustlessPyramidNft extends BaseContract {
 
     MAX_SUPPLY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    addMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    authorizedMinter(
+      arg0: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     balanceOf(
@@ -970,8 +1097,8 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     mint(
-      mintCount: PromiseOrValue<BigNumberish>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+      to: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     mintIsActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -988,6 +1115,16 @@ export interface TrustlessPyramidNft extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     price(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    publicMint(
+      mintCount: PromiseOrValue<BigNumberish>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeMintAuth(
+      minter: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     reserve(
       reserveCount: PromiseOrValue<BigNumberish>,
