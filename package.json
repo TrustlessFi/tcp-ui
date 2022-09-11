@@ -18,7 +18,7 @@
     "@types/carbon__icons-react": "^10.31.2",
     "@types/carbon__themes": "^0.0.1",
     "@types/node": "^18.7.16",
-    "@types/react": "^18.0.18",
+    "@types/react": "^18.0.19",
     "@types/react-dom": "^18.0.6",
     "@types/react-lottie": "^1.2.6",
     "@types/react-redux": "^7.1.24",

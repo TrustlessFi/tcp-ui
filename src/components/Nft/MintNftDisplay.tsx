@@ -28,7 +28,7 @@ import { InlineLoading } from 'carbon-components-react'
 
 const collectionPage = 'https://mintsquare.io/collection/zksync-testnet/0x1c36fe89BBE10ce872cE4c52A5EbfcEB62967936/nfts'
 
-const NftCardHeader = () => {
+const MintNftCardHeader = () => {
   return (
     <SpacedList spacing={10} row>
       <TitleText>
@@ -41,7 +41,7 @@ const NftCardHeader = () => {
   )
 }
 
-const MintNft = ({
+const MintNftDisplay = ({
   nftPyramid,
   balances,
   nftAddress,
@@ -58,7 +58,7 @@ const MintNft = ({
   return (
     <SpacedList spacing={40}>
       <SpacedList spacing={20}>
-        <NftCardHeader />
+        <MintNftCardHeader />
         <SpacedList spacing={5} row>
           <TitleText>
             {numDisplay(nftPyramid!.supplyCount)} / {numDisplay(nftPyramid!.maxSupply)}
@@ -121,7 +121,7 @@ const MintNft = ({
 }
 
 
-const NftDisplay = () => {
+const MintNftWrapper = () => {
   const dispatch = useAppDispatch()
 
   const {
@@ -135,21 +135,19 @@ const NftDisplay = () => {
   ], selector, dispatch)
 
   return (
-    <OneColumnDisplay loading={false}>
-      <Tile style={{padding: 40, marginTop: 40}}>
-        {
-          nftPyramid === null || balances === null || rootContracts === null
-            ? <SpacedList>
-                <NftCardHeader />
-                <Center>
-                  <InlineLoading />
-                </Center>
-              </SpacedList>
-            : <MintNft nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
-        }
-      </Tile>
-    </OneColumnDisplay>
+    <Tile style={{padding: 40, marginTop: 40}}>
+      {
+        nftPyramid === null || balances === null || rootContracts === null
+          ? <SpacedList>
+              <MintNftCardHeader />
+              <Center>
+                <InlineLoading />
+              </Center>
+            </SpacedList>
+          : <MintNftDisplay nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
+      }
+    </Tile>
   )
 }
 
-export default NftDisplay
+export default MintNftWrapper
