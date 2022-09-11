@@ -9,6 +9,7 @@ import WalletChecker from './components/WalletChecker'
 import ErrorBoundary from './components/library/ErrorBoundary'
 import Liquidity from './components/Liquidity'
 import Stats from './components/Stats'
+import Nft from './components/Nft'
 import { Switch, Route, HashRouter } from "react-router-dom"
 import LocalStorageManager from './components/library/LocalStorageManager'
 import Notifications from './components/Notifications'
@@ -25,6 +26,7 @@ export enum Tab {
   Stake = 'Stake',
   Liquidity = 'Liquidity',
   Stats = 'Stats',
+  Nft = 'Nft',
   Transactions = 'Transactions',
 }
 
@@ -42,6 +44,7 @@ const tabToRender: {[key in Tab]: ReactNode} = {
   Stake: <Stake />,
   Liquidity: <Liquidity />,
   Stats: <Stats />,
+  Nft: <Nft />,
   Transactions: <WalletTab />,
 }
 

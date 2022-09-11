@@ -10,6 +10,9 @@ import {
   Market, Rewards, Governor, Hue, LendHue, TruEth,
   TestnetMultiMint, ProtocolDataAggregator,
  } from '@trustlessfi/typechain'
+import {
+  TrustlessPyramidNft
+} from '../../pyramid-artifacts/typechain'
 import getContract, { contract } from '../../utils/getContract'
 import { scale, timeMS } from '../../utils'
 import { UIID } from '../../constants'
@@ -54,6 +57,8 @@ export enum TransactionType {
   SetPhaseOneStartTime = 'SetPhaseOneStartTime',
 
   IncrementCounter = 'IncrementCounter',
+
+  MintNftPyramid = 'MintNftPyramid',
 }
 
 export enum TransactionStatus {
@@ -209,6 +214,13 @@ export interface txIncrementCounter {
   dataAggregator: string
 }
 
+export interface txMintNftPyramid {
+  type: TransactionType.MintNftPyramid
+  price: number
+  NftPyramid: string
+  countToMint: number
+}
+
 export type TransactionArgs =
   | txCreatePosition
   | txUpdatePosition
@@ -232,6 +244,8 @@ export type TransactionArgs =
 
   | txSetPhaseOneStartTime
   | txIncrementCounter
+
+  | txMintNftPyramid
 
 export interface TransactionData {
   args: TransactionArgs
@@ -300,6 +314,9 @@ export const getTxLongName = (args: TransactionArgs): string => {
 
     case TransactionType.IncrementCounter:
       return `Increment counter from: ${args.counterValue}`
+
+    case TransactionType.MintNftPyramid:
+      return `Mint ${args.countToMint} Pyramid Nft${args.countToMint > 1 ? 's' : ''}`
   }
 }
 
@@ -348,6 +365,9 @@ export const getTxShortName = (type: TransactionType): string => {
 
     case TransactionType.IncrementCounter:
       return `Increment counter`
+
+    case TransactionType.MintNftPyramid:
+      return `Mint Pyramid Nfts`
   }
 }
 
@@ -382,6 +402,7 @@ export const getTxIDFromArgs = (args: TransactionArgs): string => {
     case TransactionType.AddMintTruEthAdmin:
     case TransactionType.RemoveMintTruEthAdmin:
     case TransactionType.IncrementCounter:
+    case TransactionType.MintNftPyramid:
       return type
   }
 }
@@ -428,6 +449,10 @@ const executeTransaction = async (
 
   const getProtocolDataAggregator = (address: string) =>
     getContract<ProtocolDataAggregator>(RootContract.ProtocolDataAggregator, address)
+      .connect(provider.getSigner())
+
+  const getNftPyramid = (address: string) =>
+    getContract<TrustlessPyramidNft>(RootContract.NftPyramid, address)
       .connect(provider.getSigner())
 
   const type = args.type
@@ -527,6 +552,9 @@ const executeTransaction = async (
     case TransactionType.IncrementCounter:
       return await getProtocolDataAggregator(args.dataAggregator).incrementCounter()
 
+    case TransactionType.MintNftPyramid:
+      return await getNftPyramid(args.NftPyramid).publicMint(args.countToMint, { value: scale(args.countToMint * args.price)})
+
     default:
       assertUnreachable(type)
   }
@@ -570,6 +598,7 @@ export const waitForTransaction = async (
     const clearTcpTimelock = () => dispatch(allSlices.tcpTimelock.slice.actions.clearData())
     const clearTcpAllocation = () => dispatch(allSlices.tcpAllocation.slice.actions.clearData())
     const clearCounterInfo = () => dispatch(allSlices.counterInfo.slice.actions.clearData())
+    const clearNftPyramidInfo = () => dispatch(allSlices.nftPyramid.slice.actions.clearData())
 
     const clearMarketState = () => {
       clearSDI()
@@ -646,7 +675,12 @@ export const waitForTransaction = async (
         clearTruEth()
         break
 
+      case TransactionType.MintNftPyramid:
+        clearNftPyramidInfo()
+        break
+
       case TransactionType.TestnetMultiMint:
+        // TODO show the user's NFTs and stuff
         // Do nothing
         break
     default:

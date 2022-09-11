@@ -16,6 +16,7 @@ import poolsCurrentDataSlice from './poolsCurrentData'
 import poolsMetadataSlice from './poolsMetadata'
 import positionsSlice from './positions'
 import pricesSlice from './prices'
+import nftPyramidSlice from './nftPyramid'
 import ratesSlice from './rates'
 import truEthSlice from './truEth'
 import onboardingSlice from './onboarding'
@@ -57,6 +58,7 @@ const allSlicesRaw = {
   huePositionNftInfo: huePositionNftSlice,
   liquidationsInfo: liquidationsSlice,
   marketInfo: marketSlice,
+  nftPyramid: nftPyramidSlice,
   counterInfo: counterSlice,
   poolsCurrentData: poolsCurrentDataSlice,
   poolsMetadata: poolsMetadataSlice,

@@ -3411,13 +3411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trustlessfi/addresses@npm:^0.15.1":
-  version: 0.15.1
-  resolution: "@trustlessfi/addresses@npm:0.15.1"
+"@trustlessfi/addresses@npm:^0.16.3":
+  version: 0.16.3
+  resolution: "@trustlessfi/addresses@npm:0.16.3"
   dependencies:
     "@types/node": ^17.0.23
     typescript: ^4.6.3
-  checksum: 6beb91a99c1aae411c02584d8dcf89acde05f06741f59af37e51564bbd288db7a04b56f4236d77f835fbbfd4b34011f3135d0556080a03cb440adbd2aaa471cc
+  checksum: 5f5dfd077dccbca60559790c6f83dce7fe6458a2197dbf280f31e1193be854352a2e6f3a6d836b918776d90ba6d0f6911b152dd4987d5f7c60a404cbf7300f3b
   languageName: node
   linkType: hard
 
@@ -3762,10 +3762,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.7.15":
-  version: 18.7.15
-  resolution: "@types/node@npm:18.7.15"
-  checksum: 1435fc7fe44744467a3ba8ace646455be228516530dbb3db64a03cca6abcfdc5ba2e48a3eafc71f25f836d2ca871132361c58a5e760237a53674cb09151147d9
+"@types/node@npm:^18.7.16":
+  version: 18.7.16
+  resolution: "@types/node@npm:18.7.16"
+  checksum: 01a3d35c764a3f0e7370b56e1ad4203731131883c65784e020009014171b3f53c4649cde6c7aa4f1026b907ee87ef6ae6ece2bc518151dc7b81100fe8b1db3ad
   languageName: node
   linkType: hard
 
@@ -3817,6 +3817,16 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: db571047af1a567631758700b9f7d143e566df939cfe5fbf7535347cc0c726a1cdbb5e3f8566d076e54cf708b6c1166689de194a9ba09ee35efc9e1d45911685
+  languageName: node
+  linkType: hard
+
+"@types/react-lazy-load-image-component@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "@types/react-lazy-load-image-component@npm:1.5.2"
+  dependencies:
+    "@types/react": "*"
+    csstype: ^3.0.2
+  checksum: f52dfd2eb58d14c3cb7ba4ca5938a10d4925bee7fa8d654f13c8af36e81d9fce3ebce7d51c29f1f78e09134244e0b91607a4b8051a6eb33d63c4355685442d08
   languageName: node
   linkType: hard
 
@@ -12143,6 +12153,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-lazy-load-image-component@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "react-lazy-load-image-component@npm:1.5.5"
+  dependencies:
+    lodash.debounce: ^4.0.8
+    lodash.throttle: ^4.1.1
+  peerDependencies:
+    react: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+    react-dom: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+  checksum: 596d36aae6c7d2664eac90cc4f2b57d37511fb2408f293a97ed32e8fbe9351daee8a59435d1f96ac30cb3cad921f3f4d504cdb4e213200b3c6822471b47dd8bf
+  languageName: node
+  linkType: hard
+
 "react-lottie@npm:^1.2.3":
   version: 1.2.3
   resolution: "react-lottie@npm:1.2.3"
@@ -12788,16 +12811,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.54.8":
-  version: 1.54.8
-  resolution: "sass@npm:1.54.8"
+"sass@npm:^1.54.9":
+  version: 1.54.9
+  resolution: "sass@npm:1.54.9"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: 72893b2dc6284a6194fc560a578da57ab0082130ee558a96bcb9893cc7b517b836dac6e17b3a52b040975e70b4cdefb1268907df955a706b5bf70e3860afcfba
+  checksum: 90182b566072b48e2263c5a87229ab85164e13b71b24847ba76a8e68eb952cb69a7dcef815f4ccc0189dd2d0c254311acff6972166603338d33bbc96f6d500c6
   languageName: node
   linkType: hard
 
@@ -13674,7 +13697,7 @@ __metadata:
     "@carbon/themes": ^10.55.0
     "@metamask/onboarding": ^1.0.1
     "@reduxjs/toolkit": ^1.8.5
-    "@trustlessfi/addresses": ^0.15.1
+    "@trustlessfi/addresses": ^0.16.3
     "@trustlessfi/artifacts": ^0.3.23
     "@trustlessfi/multicall": ^0.6.2
     "@trustlessfi/typechain": ^0.8.27
@@ -13683,9 +13706,10 @@ __metadata:
     "@types/carbon__colors": ^10.31.0
     "@types/carbon__icons-react": ^10.31.2
     "@types/carbon__themes": ^0.0.1
-    "@types/node": ^18.7.15
-    "@types/react": ^18.0.18
+    "@types/node": ^18.7.16
+    "@types/react": ^18.0.19
     "@types/react-dom": ^18.0.6
+    "@types/react-lazy-load-image-component": ^1.5.2
     "@types/react-lottie": ^1.2.6
     "@types/react-redux": ^7.1.24
     "@types/react-router-dom": ^5.3.3
@@ -13708,12 +13732,13 @@ __metadata:
     react-device-detect: ^2.2.2
     react-dom: ^18.2.0
     react-flexbox-grid: ^2.1.2
+    react-lazy-load-image-component: ^1.5.5
     react-lottie: ^1.2.3
     react-redux: ^8.0.2
     react-router-dom: 5.3.3
     react-scripts: 5.0.1
-    sass: ^1.54.8
-    typescript: ^4.8.2
+    sass: ^1.54.9
+    typescript: ^4.8.3
     uuid: ^9.0.0
     zksync-web3: ^0.8.1
   languageName: unknown
@@ -14023,13 +14048,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.8.2":
-  version: 4.8.2
-  resolution: "typescript@npm:4.8.2"
+"typescript@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "typescript@npm:4.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 7f5b81d0d558c9067f952c7af52ab7f19c2e70a916817929e4a5b256c93990bf3178eccb1ac8a850bc75df35f6781b6f4cb3370ce20d8b1ded92ed462348f628
+  checksum: 8286a5edcaf3d68e65c451aa1e7150ad1cf53ee0813c07ec35b7abdfdb10f355ecaa13c6a226a694ae7a67785fd7eeebf89f845da0b4f7e4a35561ddc459aba0
   languageName: node
   linkType: hard
 
@@ -14043,13 +14068,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.8.2#~builtin<compat/typescript>":
-  version: 4.8.2
-  resolution: "typescript@patch:typescript@npm%3A4.8.2#~builtin<compat/typescript>::version=4.8.2&hash=7ad353"
+"typescript@patch:typescript@^4.8.3#~builtin<compat/typescript>":
+  version: 4.8.3
+  resolution: "typescript@patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 6f49363af8af2fe480da1d5fa68712644438785208b06690a3cbe5e7365fd652c3a0f1e587bc8684d78fb69de3dde4de185c0bad7bb4f3664ddfc813ce8caad6
+  checksum: 0404a09c625df01934ef774b45ce1ca57ccae41cd625fcdbb82056715320d9329e70d9d75c2c732ec6ef947444ca978c189a332b71fa21f5c1437d5a83e24906
   languageName: node
   linkType: hard
 

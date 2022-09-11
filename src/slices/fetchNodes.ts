@@ -20,6 +20,7 @@ import { positions } from './positions'
 import { pricesInfo } from './prices'
 import { protocolBalances } from './protocolBalances'
 import { ratesInfo } from './rates'
+import { nftPyramid } from './nftPyramid'
 import { truEthInfo } from './truEth'
 import { rewardsInfo } from './rewards'
 import { rootContracts } from './rootContracts'
@@ -57,6 +58,7 @@ export type RootState = {
   huePositionNftInfo: sliceState<huePositionNftInfo>
   liquidationsInfo: sliceState<liquidationsInfo>
   marketInfo: sliceState<marketInfo>
+  nftPyramid: sliceState<nftPyramid>
   poolsCurrentData: sliceState<poolsCurrentData>
   poolsMetadata: sliceState<poolsMetadata>
   positions: sliceState<positions>

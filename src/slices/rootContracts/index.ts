@@ -13,6 +13,7 @@ export interface rootContracts {
   tdao: string
   chainEth: string
   testnetMultiMint: string
+  nftPyramid: string
 }
 
 const rootContractsSlice = createLocalSlice({
@@ -32,6 +33,7 @@ const rootContractsSlice = createLocalSlice({
           tdao: getAddress(chainID, 'TDAO', 'TDao', localHardhatAddresses),
           chainEth: getAddress(chainID, 'Aux', 'chainEth', localHardhatAddresses),
           testnetMultiMint: getAddress(chainID, 'Aux', 'testnetMultiMint', localHardhatAddresses),
+          nftPyramid: getAddress(chainID, 'Nft', 'Pyramid', localHardhatAddresses),
         }
       } catch(e) {
         return null

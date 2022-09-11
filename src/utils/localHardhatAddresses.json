@@ -19,5 +19,8 @@
     "weth": "",
     "chainEth": "",
     "testnetMultiMint": ""
+  },
+  "Nft": {
+    "Pyramid": ""
   }
 }
