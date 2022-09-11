@@ -50,14 +50,11 @@ const extractNftAttributes = <T extends {[key in string]: string}>(nftItem: nftI
 
 
 const extractIpfsHandleFromUri = (ipfsUri: string) => {
-  console.log({ipfsUri})
   ipfsUri = ipfsUri.trim()
-  console.log({ipfsUri})
   const ipfsProtocolString = 'ipfs://'
   if (ipfsUri.startsWith(ipfsProtocolString)) {
     ipfsUri = ipfsUri.substring(ipfsProtocolString.length)
   }
-  console.log({ipfsUri})
   if (ipfsUri.endsWith('/')) {
     ipfsUri = ipfsUri.substring(0, ipfsUri.length - 1)
   }
@@ -131,11 +128,6 @@ const UserNftDisplay = ({
             ({numDisplay(nftPyramid!.userBalance)})
           </Text>
         </SpacedList>
-        <Text style={{opacity: 0.7}}>
-          Current Mint price:
-          {' '}
-          <Bold>{numDisplay(nftPyramid!.price, 2)} Eth</Bold>
-        </Text>
         <StructuredListWrapper ariaLabel="Structured list">
           <StructuredListHead>
             <StructuredListRow>
@@ -176,11 +168,19 @@ const UserNftDisplayWrapper = () => {
     nftPyramid,
     balances,
     rootContracts,
+    chainID,
+    userAddress,
   } = waitFor([
     'nftPyramid',
     'balances',
     'rootContracts',
+    'chainID',
+    'userAddress',
   ], selector, dispatch)
+
+  if (chainID === null || userAddress === null) {
+    return <></>
+  }
 
   return (
     <Tile style={{padding: 40, marginTop: 40}}>

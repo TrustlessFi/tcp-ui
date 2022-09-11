@@ -41,86 +41,6 @@ const MintNftCardHeader = () => {
   )
 }
 
-const MintNftDisplay = ({
-  nftPyramid,
-  balances,
-  nftAddress,
-}: {
-  nftPyramid: nftPyramid
-  balances: balances
-  nftAddress: string
-}) => {
-  const [countToMint, setCountToMint] = useState(0)
-  console.log({countToMint})
-
-  const totalSpend = countToMint * nftPyramid.price
-
-  return (
-    <SpacedList spacing={40}>
-      <SpacedList spacing={20}>
-        <MintNftCardHeader />
-        <SpacedList spacing={5} row>
-          <TitleText>
-            {numDisplay(nftPyramid!.supplyCount)} / {numDisplay(nftPyramid!.maxSupply)}
-          </TitleText>
-          <Text>
-            Minted
-          </Text>
-        </SpacedList>
-        <Text style={{opacity: 0.7}}>
-          Current Mint price:
-          {' '}
-          <Bold>{numDisplay(nftPyramid!.price, 2)} Eth</Bold>
-        </Text>
-      </SpacedList>
-      <FullNumberInput
-        title='Count to mint'
-        action={(value: number) => setCountToMint(value)}
-        light
-        value={parseFloat(numDisplay(countToMint, 0).replace(',', ''))}
-        unit='Hue'
-        defaultButton={{
-          title: 'Max',
-          action: () => setCountToMint(nftPyramid!.maxMint),
-        }}
-        subTitle={
-          <Text>
-            You have
-            {' '}
-            <Text color={balances.userEthBalance < totalSpend ? red[50]: undefined}>
-              <Bold>
-                {numDisplay(balances.userEthBalance, 3)}{' '}
-                Eth
-              </Bold>
-            </Text>
-            {' '}
-            in your wallet
-          </Text>
-        }
-      />
-      <PositionInfoItem
-        key='apr_info'
-        icon={<Tag32 />}
-        title='Total Cost'
-        value={numDisplay(totalSpend, 2)}
-        unit='Eth'
-      />
-      <CreateTransactionButton
-        disabled={countToMint <= 0 || countToMint > nftPyramid.maxMint}
-        size='md'
-        title='Mint'
-        txArgs={{
-          type: TransactionType.MintNftPyramid,
-          NftPyramid: nftAddress,
-          price: nftPyramid.price,
-          countToMint,
-        }}
-      />
-    </SpacedList>
-  )
-}
-
-
 const MintNftWrapper = () => {
   const dispatch = useAppDispatch()
 
@@ -134,20 +54,93 @@ const MintNftWrapper = () => {
     'rootContracts',
   ], selector, dispatch)
 
+  const [countToMint, setCountToMint] = useState(0)
+  console.log({countToMint})
+
+  const totalSpend = nftPyramid === null ? 0 : countToMint * nftPyramid.price
+
   return (
     <Tile style={{padding: 40, marginTop: 40}}>
-      {
-        nftPyramid === null || balances === null || rootContracts === null
-          ? <SpacedList>
-              <MintNftCardHeader />
-              <Center>
-                <InlineLoading />
-              </Center>
-            </SpacedList>
-          : <MintNftDisplay nftPyramid={nftPyramid} balances={balances} nftAddress={rootContracts.nftPyramid} />
-      }
+      <SpacedList spacing={40}>
+        <SpacedList spacing={20}>
+          <MintNftCardHeader />
+          <SpacedList spacing={5} row>
+            <TitleText>
+              {
+                nftPyramid === null
+                  ? '- / -'
+                  : `${numDisplay(nftPyramid.supplyCount)} / ${numDisplay(nftPyramid.maxSupply)}`
+              }
+            </TitleText>
+            <Text>
+              Minted
+            </Text>
+          </SpacedList>
+          <Text style={{opacity: 0.7}}>
+            Current Mint price:
+            {' '}
+            <Bold>
+              {
+                nftPyramid === null
+                ? '-'
+                : numDisplay(nftPyramid.price, 2)
+              }
+              {' '}
+              Eth
+            </Bold>
+          </Text>
+        </SpacedList>
+        <FullNumberInput
+          title='Count to mint'
+          action={(value: number) => setCountToMint(value)}
+          light
+          value={parseFloat(numDisplay(countToMint, 0).replace(',', ''))}
+          unit='Hue'
+          defaultButton={{
+            title: 'Max',
+            action: () => setCountToMint(nftPyramid === null ? 0 : nftPyramid.maxMint),
+          }}
+          subTitle={
+            <Text>
+              You have
+              {' '}
+              <Text color={balances !== null && balances.userEthBalance < totalSpend ? red[50]: undefined}>
+                <Bold>
+                  {
+                    balances === null
+                      ? '-'
+                      : numDisplay(balances.userEthBalance, 3)
+                  }{' '}
+                  Eth
+                </Bold>
+              </Text>
+              {' '}
+              in your wallet
+            </Text>
+          }
+        />
+        <PositionInfoItem
+          key='apr_info'
+          icon={<Tag32 />}
+          title='Total Cost'
+          value={numDisplay(totalSpend, 2)}
+          unit='Eth'
+        />
+        <CreateTransactionButton
+          disabled={nftPyramid === null ? true : countToMint <= 0 || countToMint > nftPyramid.maxMint}
+          size='md'
+          title='Mint'
+          txArgs={{
+            type: TransactionType.MintNftPyramid,
+            NftPyramid: rootContracts === null ? '' : rootContracts.nftPyramid,
+            price: nftPyramid === null ? 0 : nftPyramid.price,
+            countToMint,
+          }}
+        />
+      </SpacedList>
     </Tile>
   )
 }
+
 
 export default MintNftWrapper
