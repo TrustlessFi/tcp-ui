@@ -32,23 +32,12 @@ import { numDisplay } from '../../utils'
 
 import { InlineLoading } from 'carbon-components-react'
 
-const collectionPage = 'https://mintsquare.io/collection/zksync-testnet/0x1c36fe89BBE10ce872cE4c52A5EbfcEB62967936/nfts'
-
-
-
 interface nftItem {
   image: string
   name: string
   id: number
   description: string
   attributes: {trait_type: string, value: string}[]
-}
-
-enum Rarity {
-  Sapphire = 'Sapphire',
-  Emerald = 'Emerald',
-  Ruby = 'Ruby',
-  Onyx = 'Onyx',
 }
 
 const extractNftAttributes = <T extends {[key in string]: string}>(nftItem: nftItem): T => {
@@ -117,7 +106,7 @@ const UserNftDisplayRow = ({
         {nftItem ? nftItem.name : ''}
       </StructuredListCell>
       <StructuredListCell style={{verticalAlign: 'middle' }}>
-        {nftItem ? extractNftAttributes<{rarity: Rarity}>(nftItem).rarity : ''}
+        {nftItem ? extractNftAttributes<{rarity: string}>(nftItem).rarity : ''}
       </StructuredListCell>
       <StructuredListCell style={{verticalAlign: 'middle' }}>
           <img src={getImageUriForId(nftId)} width={50} height={50} />
@@ -125,7 +114,6 @@ const UserNftDisplayRow = ({
     </StructuredListRow>
   )
 }
-
 
 const UserNftDisplay = ({
   nftPyramid,
