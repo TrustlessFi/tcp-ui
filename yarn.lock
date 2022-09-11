@@ -3820,6 +3820,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-lazy-load-image-component@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "@types/react-lazy-load-image-component@npm:1.5.2"
+  dependencies:
+    "@types/react": "*"
+    csstype: ^3.0.2
+  checksum: f52dfd2eb58d14c3cb7ba4ca5938a10d4925bee7fa8d654f13c8af36e81d9fce3ebce7d51c29f1f78e09134244e0b91607a4b8051a6eb33d63c4355685442d08
+  languageName: node
+  linkType: hard
+
 "@types/react-lottie@npm:^1.2.6":
   version: 1.2.6
   resolution: "@types/react-lottie@npm:1.2.6"
@@ -12143,6 +12153,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-lazy-load-image-component@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "react-lazy-load-image-component@npm:1.5.5"
+  dependencies:
+    lodash.debounce: ^4.0.8
+    lodash.throttle: ^4.1.1
+  peerDependencies:
+    react: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+    react-dom: ^15.x.x || ^16.x.x || ^17.x.x || ^18.x.x
+  checksum: 596d36aae6c7d2664eac90cc4f2b57d37511fb2408f293a97ed32e8fbe9351daee8a59435d1f96ac30cb3cad921f3f4d504cdb4e213200b3c6822471b47dd8bf
+  languageName: node
+  linkType: hard
+
 "react-lottie@npm:^1.2.3":
   version: 1.2.3
   resolution: "react-lottie@npm:1.2.3"
@@ -13686,6 +13709,7 @@ __metadata:
     "@types/node": ^18.7.16
     "@types/react": ^18.0.19
     "@types/react-dom": ^18.0.6
+    "@types/react-lazy-load-image-component": ^1.5.2
     "@types/react-lottie": ^1.2.6
     "@types/react-redux": ^7.1.24
     "@types/react-router-dom": ^5.3.3
@@ -13708,6 +13732,7 @@ __metadata:
     react-device-detect: ^2.2.2
     react-dom: ^18.2.0
     react-flexbox-grid: ^2.1.2
+    react-lazy-load-image-component: ^1.5.5
     react-lottie: ^1.2.3
     react-redux: ^8.0.2
     react-router-dom: 5.3.3

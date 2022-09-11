@@ -4,6 +4,7 @@ import OneColumnDisplay from '../library/OneColumnDisplay'
 import waitFor from '../../slices/waitFor'
 import SpacedList from '../library/SpacedList'
 import TitleText from '../library/TitleText'
+import RelativeLoading from '../library/RelativeLoading'
 import Text from '../library/Text'
 import Bold from '../library/Bold'
 import Center from '../library/Center'
@@ -29,6 +30,7 @@ import {
   Launch16,
 } from '@carbon/icons-react';
 import { numDisplay } from '../../utils'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 import { InlineLoading } from 'carbon-components-react'
 
@@ -71,6 +73,10 @@ const UserNftDisplayRow = ({
   nftPyramid: nftPyramid
   nftId: number,
 }) => {
+  const [nftItem, setNftItem ] = useState<nftItem | null | undefined>(undefined)
+  const [loading, setLoading ] = useState(true)
+
+
   const getImageUriForId = (id: number) =>
     `${pinataDomain}${extractIpfsHandleFromUri(nftPyramid.imageBaseURI)}/${id}.png`
   const getDataUriForId = (id: number) =>
@@ -78,7 +84,6 @@ const UserNftDisplayRow = ({
   const getMintSquareUrl = (id: number) =>
     `${mintSquareDomain}${id}`
 
-  const [nftItem, setNftItem ] = useState<nftItem | null | undefined>(undefined)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,80 +105,33 @@ const UserNftDisplayRow = ({
         {nftId}
       </StructuredListCell>
       <StructuredListCell style={{verticalAlign: 'middle' }}>
-        {nftItem ? nftItem.name : ''}
+        {nftItem ? nftItem.name : '-'}
       </StructuredListCell>
       <StructuredListCell style={{verticalAlign: 'middle' }}>
-        {nftItem ? extractNftAttributes<{rarity: string}>(nftItem).rarity : ''}
+        {nftItem ? extractNftAttributes<{rarity: string}>(nftItem).rarity : '-'}
       </StructuredListCell>
       <StructuredListCell style={{verticalAlign: 'middle' }}>
-          <img src={getImageUriForId(nftId)} width={50} height={50} />
+      <LazyLoadImage
+        height={50}
+        src={getImageUriForId(nftId)} // use normal <img> attributes as props
+        width={50}
+        alt={`Trustless Pyramid #${nftId}`}
+        placeholder={<InlineLoading />}
+      />
       </StructuredListCell>
     </StructuredListRow>
   )
 }
 
-const UserNftDisplay = ({
-  nftPyramid,
-}: {
-  nftPyramid: nftPyramid
-}) => {
-  return (
-    <SpacedList spacing={40}>
-      <SpacedList spacing={20}>
-        <SpacedList spacing={5} row>
-          <TitleText>
-            Your Nfts
-          </TitleText>
-          <Text>
-            ({numDisplay(nftPyramid!.userBalance)})
-          </Text>
-        </SpacedList>
-        <StructuredListWrapper ariaLabel="Structured list">
-          <StructuredListHead>
-            <StructuredListRow>
-              <StructuredListCell head>
-                ID
-              </StructuredListCell>
-              <StructuredListCell head>
-                Name
-              </StructuredListCell>
-              <StructuredListCell head>
-                Rarity
-              </StructuredListCell>
-              <StructuredListCell head>
-              </StructuredListCell>
-            </StructuredListRow>
-          </StructuredListHead>
-          <StructuredListBody>
-            {
-              nftPyramid.userNftIDs.map(id =>
-                <UserNftDisplayRow
-                  nftPyramid={nftPyramid}
-                  nftId={id}
-                />
-              )
-            }
-          </StructuredListBody>
-        </StructuredListWrapper>
-      </SpacedList>
-    </SpacedList>
-  )
-}
-
-
-const UserNftDisplayWrapper = () => {
+const UserNftDisplay = () => {
   const dispatch = useAppDispatch()
 
   const {
     nftPyramid,
-    balances,
-    rootContracts,
     chainID,
     userAddress,
   } = waitFor([
     'nftPyramid',
-    'balances',
-    'rootContracts',
     'chainID',
     'userAddress',
   ], selector, dispatch)
@@ -183,18 +141,69 @@ const UserNftDisplayWrapper = () => {
   }
 
   return (
-    <Tile style={{padding: 40, marginTop: 40}}>
-      {
-        nftPyramid === null || balances === null || rootContracts === null
-          ? <SpacedList>
-              <Center>
-                <InlineLoading />
-              </Center>
-            </SpacedList>
-          : <UserNftDisplay nftPyramid={nftPyramid} />
-      }
-    </Tile>
+    <div style={{position: 'relative'}}>
+      <RelativeLoading show={nftPyramid === null} />
+      <Tile style={{
+        position: 'relative',
+        marginTop: 40,
+        paddingTop: 40,
+        paddingLeft: 40,
+        paddingRight: 40,
+      }}>
+        <SpacedList spacing={20}>
+          <SpacedList spacing={5} row>
+            <TitleText>
+              Your Nfts
+            </TitleText>
+            {
+              nftPyramid === null
+                ? null
+                : <Text>
+                    ({numDisplay(nftPyramid.userBalance)})
+                  </Text>
+            }
+          </SpacedList>
+          {
+            nftPyramid === null
+            ? null
+            : (
+              nftPyramid.userNftIDs.length === 0
+              ? <Center style={{marginTop: 20}}>
+                  You don't have any yet.
+                </Center>
+              : <StructuredListWrapper ariaLabel="Structured list">
+                  <StructuredListHead>
+                    <StructuredListRow>
+                      <StructuredListCell head>
+                        ID
+                      </StructuredListCell>
+                      <StructuredListCell head>
+                        Name
+                      </StructuredListCell>
+                      <StructuredListCell head>
+                        Rarity
+                      </StructuredListCell>
+                      <StructuredListCell head>
+                      </StructuredListCell>
+                    </StructuredListRow>
+                  </StructuredListHead>
+                  <StructuredListBody>
+                  {
+                    nftPyramid.userNftIDs.map(id =>
+                      <UserNftDisplayRow
+                        nftPyramid={nftPyramid}
+                        nftId={id}
+                      />
+                    )
+                  }
+                  </StructuredListBody>
+                </StructuredListWrapper>
+              )
+        }
+        </SpacedList>
+      </Tile>
+    </div>
   )
 }
 
-export default UserNftDisplayWrapper
+export default UserNftDisplay

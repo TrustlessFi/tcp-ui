@@ -22,6 +22,7 @@ const nftPyramidSlice = createChainDataSlice({
   name: 'nftPyramid',
   dependencies: ['rootContracts', 'contracts', 'userAddress'],
   stateSelector: (state: RootState) => state.nftPyramid,
+  isUserData: true,
   thunkFunction:
     async (args: thunkArgs<'rootContracts' | 'contracts' | 'userAddress'>) => {
       const nftPyramid = getContract<TrustlessPyramidNft>(RootContract.NftPyramid, args.rootContracts.nftPyramid)
@@ -72,7 +73,7 @@ const nftPyramidSlice = createChainDataSlice({
         baseURI: nftPyramidInfo.baseURI,
         imageBaseURI: nftPyramidInfo.imageBaseURI,
         userBalance: nftPyramidInfo.balanceOf.toNumber(),
-        userNftIDs: Object.values(nftIDs).map(n => n.toNumber()),
+        userNftIDs: Object.values(nftIDs).map(n => n.toNumber()).sort((a, b) => a - b),
       }
 
       console.log({nftData})
