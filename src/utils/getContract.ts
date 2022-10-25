@@ -9,7 +9,7 @@ import { zeroAddress } from '../utils/'
 import ProtocolContract, { RootContract, TDaoContract, TDaoRootContract } from '../slices/contracts/ProtocolContract'
 
 // ==================== Typechain =========================
-import { TrustlessMulticallViewOnly } from "@trustlessfi/typechain"
+import { TrustlessMulticallViewOnly, TrustlessMulticallArtifact, TrustlessMulticallViewOnlyArtifact } from "@trustlessfi/multicall/"
 
 // ================ ARTIFACTS =======================
 import accountingArtifact from "@trustlessfi/artifacts/dist/contracts/core/storage/Accounting.sol/Accounting.json"
@@ -29,8 +29,6 @@ import rewardsArtifact from "@trustlessfi/artifacts/dist/contracts/core/logic/Re
 import settlementArtifact from "@trustlessfi/artifacts/dist/contracts/core/logic/Settlement.sol/Settlement.json"
 import tcpArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/Tcp.sol/Tcp.json"
 import tcpGovernorAlphaArtifact from "@trustlessfi/artifacts/dist/contracts/core/governance/TcpGovernorAlpha.sol/TcpGovernorAlpha.json"
-import trustlessMulticallArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticall.sol/TrustlessMulticall.json"
-import trustlessMulticallViewOnlyArtifact from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/multicall/TrustlessMulticallViewOnly.sol/TrustlessMulticallViewOnly.json"
 import erc20Artifact from '@trustlessfi/artifacts/dist/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json'
 import truEthArtifact from "@trustlessfi/artifacts/dist/contracts/core/tokens/TruEth.sol/TruEth.json"
 import testnetMultiMint from "@trustlessfi/artifacts/dist/contracts/core/auxiliary/TestnetMultiMint.sol/TestnetMultiMint.json"
@@ -75,7 +73,7 @@ const artifactLookup = (): {[key in TrustlessContract]: contractAbi} => ({
 
   [RootContract.Governor]: governorArtifact,
   [RootContract.ProtocolDataAggregator]: protocolDataAggregatorArtifact,
-  [RootContract.TrustlessMulticall]: trustlessMulticallArtifact,
+  [RootContract.TrustlessMulticall]: TrustlessMulticallArtifact,
   [RootContract.ChainEth]: erc20Artifact,
   [RootContract.TestnetMultiMint]: testnetMultiMint,
   [RootContract.NftPyramid]: nftPyramidArtifact,
@@ -106,8 +104,8 @@ export const contract = <T>(args: {
         args.contract! === RootContract.TrustlessMulticall
         ? (
             args.multicallViewOnly === true
-            ? trustlessMulticallViewOnlyArtifact.abi
-            : trustlessMulticallArtifact.abi
+            ? TrustlessMulticallViewOnlyArtifact.abi
+            : TrustlessMulticallArtifact.abi
           )
         : artifactLookup()[args.contract!].abi
       )

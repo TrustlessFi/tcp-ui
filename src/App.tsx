@@ -20,6 +20,7 @@ import { getSortedUserTxs } from './components/library'
 import TestnetBanners from './components/library/TestnetBanners'
 import waitFor from './slices/waitFor'
 import { isMobile } from 'react-device-detect'
+import TestnetClosedDisplay from './components/library/TestnetClosedDisplay'
 
 export enum Tab {
   Position = 'Position',
@@ -79,27 +80,30 @@ const App: FunctionComponent<{}> = () => {
     if (chainID !== null) dispatch(setSwitchNetworkButtonClicked(false))
   }, [chainID])
 
+  return <TestnetClosedDisplay />
+
+  /*
   return (
     <div>
       <ErrorBoundary>
         <HashRouter>
           <div style={{marginTop: isMobile ? 48 : 68 }}>
             <PageHeader />
-            <WalletChecker>
-              <Switch>
-                {Object.values(Tab).map((tab, index) => {
-                  const path = '/' + tab.toLowerCase()
-                  const paths = index === 0 ? ['/', path] : [path]
-                  return paths.map(path => (
-                    <Route exact={path === '/'} path={path} key={path}>
-                      <ErrorBoundary>
-                        {tabToRender[tab]}
-                      </ErrorBoundary>
-                    </Route>
-                  ))
-                })}
-              </Switch>
-            </WalletChecker>
+  <WalletChecker>
+    <Switch>
+      {Object.values(Tab).map((tab, index) => {
+        const path = '/' + tab.toLowerCase()
+        const paths = index === 0 ? ['/', path] : [path]
+        return paths.map(path => (
+          <Route exact={path === '/'} path={path} key={path}>
+            <ErrorBoundary>
+              {tabToRender[tab]}
+            </ErrorBoundary>
+          </Route>
+        ))
+      })}
+    </Switch>
+  </WalletChecker>
           </div>
           <div style={{marginTop: 20}}>
             <TestnetBanners />
@@ -113,6 +117,7 @@ const App: FunctionComponent<{}> = () => {
       </ErrorBoundary>
     </div>
   )
+  */
 }
 
 export default App
