@@ -1,5 +1,3 @@
-import { useAppDispatch } from '../../app/hooks'
-import { clearTab } from '../../slices/tabs'
 import Center from './Center'
 import Text from './Text'
 import LargeText from './LargeText'
@@ -11,7 +9,6 @@ import {
 } from 'carbon-components-react'
 
 const TestnetClosedDisplay = () => {
-  const dispatch = useAppDispatch()
 
   const lottieOptions: LottieOptions = {
     animationData: JSON.parse(AnimationLotties.ErrorPage),
@@ -31,16 +28,21 @@ const TestnetClosedDisplay = () => {
             width={250}
           />
         </Center>
-        <SpacedList spacing={20}>
+        <SpacedList spacing={32}>
           <LargeText size={36}>
             <Center>
-              The demo is offline due to zkSync maintenance.
+              The zkSync testnet chain has a bug.
             </Center>
           </LargeText>
           <Text size={16}>
-            <Center>
-              Check back soon! Further information can be found in the Trustless Discord.
-            </Center>
+              <SpacedList spacing={16}>
+                <Center>
+                  Support for large contracts was recently broken. 
+                </Center>
+                <Center>
+                  As soon as zkSync fixes this bug the Hue demo will be back online!
+                </Center>
+              </SpacedList>
           </Text>
         </SpacedList>
         <Center>
